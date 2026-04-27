@@ -1,267 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/product_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/wishlist_provider.dart';
+import '../main.dart';
+import '../theme/omni_theme.dart';
+import '../utils/currency_helper.dart';
 import '../models/product.dart';
 import 'product_detail_screen.dart';
-import 'omni_catalog_screen.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
-
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
 }
 
-class _CatalogScreenState extends State<CatalogScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _CatalogScreenState extends State<CatalogScreen> {
+  String _sortBy = 'newest';
+  bool _gridView = true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          const LegacyCatalogWidget(),
-          const OmniCatalogScreen(),
-        ],
-      ),
-      bottomNavigationBar: TabBar(
-        controller: _tabController,
-        tabs: const [
-          Tab(icon: Icon(Icons.grid_view), text: 'Grid'),
-          Tab(icon: Icon(Icons.explore), text: 'Explore'),
-        ],
-      ),
-    );
-  }
-}
+    final locale = context.watch<LocaleBox>();
+    final products = context.watch<ProductProvider>();
+    final cart = context.read<CartProvider>();
+    final wishlist = context.read<WishlistProvider>();
+    final isArabic = locale.isArabic;
+    String t(String en, String ar) => isArabic ? ar : en;
 
-class LegacyCatalogWidget extends StatefulWidget {
-  const LegacyCatalogWidget({super.key});
+    var sorted = List<Product>.from(products.products);
+    switch (_sortBy) {
+      case 'price_low': sorted.sort((a, b) => a.price.compareTo(b.price)); break;
+      case 'price_high': sorted.sort((a, b) => b.price.compareTo(a.price)); break;
+      case 'name': sorted.sort((a, b) => a.displayName.compareTo(b.displayName)); break;
+    }
 
-  @override
-  State<LegacyCatalogWidget> createState() => _LegacyCatalogState();
-}
-
-class _LegacyCatalogState extends State<LegacyCatalogWidget> {
-  final TextEditingController _searchController = TextEditingController();
-  String? _selectedCategory;
-  String _sortBy = 'name';
-  bool _sortAsc = true;
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearch(String query) {
-    Provider.of<ProductProvider>(context, listen: false).searchProducts(query);
-  }
-
-  void _onCategoryChanged(String? category) {
-    setState(() => _selectedCategory = category);
-    Provider.of<ProductProvider>(context, listen: false).filterByCategory(category);
-  }
-
-  void _onSortChanged(String sortBy) {
-    setState(() {
-      if (_sortBy == sortBy) {
-        _sortAsc = !_sortAsc;
-      } else {
-        _sortBy = sortBy;
-        _sortAsc = true;
-      }
-    });
-    Provider.of<ProductProvider>(context, listen: false).sortProducts(sortBy, _sortAsc);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OmniMarket'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search products...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(icon: const Icon(Icons.clear), onPressed: () {
-                        _searchController.clear();
-                        _onSearch('');
-                      })
-                    : null,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.surface,
-              ),
-              onChanged: _onSearch,
-            ),
-          ),
-        ),
+        title: Text(t('OmniMarket', 'أومني')),
         actions: [
+          IconButton(icon: Icon(_gridView ? Icons.view_list : Icons.grid_view, size: 22), onPressed: () => setState(() => _gridView = !_gridView), tooltip: t('Toggle', 'تبديل')),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.sort),
-            onSelected: _onSortChanged,
+            icon: const Icon(Icons.sort, size: 22),
+            tooltip: t('Sort', 'ترتيب'),
+            onSelected: (v) => setState(() => _sortBy = v),
             itemBuilder: (context) => [
-              PopupMenuItem(value: 'name', child: Text('Name ${_sortBy == 'name' ? (_sortAsc ? '↑' : '↓') : ''}')),
-              PopupMenuItem(value: 'price', child: Text('Price ${_sortBy == 'price' ? (_sortAsc ? '↑' : '↓') : ''}')),
-              PopupMenuItem(value: 'created_at', child: Text('Newest ${_sortBy == 'created_at' ? (_sortAsc ? '↑' : '↓') : ''}')),
+              PopupMenuItem(value: 'newest', child: Text(t('Newest', 'الأحدث'))),
+              PopupMenuItem(value: 'price_low', child: Text(t('Price: Low to High', 'ال��عر: من الأقل'))),
+              PopupMenuItem(value: 'price_high', child: Text(t('Price: High to Low', 'السعر: من الأعلى'))),
+              PopupMenuItem(value: 'name', child: Text(t('Name A-Z', 'اسم'))),
             ],
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 50,
-            child: Consumer<ProductProvider>(
-              builder: (context, provider, _) {
-                final categoryNames = provider.uniqueCategories;
-                final categories = ['All', ...categoryNames];
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final isSelected = category == 'All' ? _selectedCategory == null : _selectedCategory == category;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: FilterChip(
-                        label: Text(category),
-                        selected: isSelected,
-                        onSelected: (_) => _onCategoryChanged(category == 'All' ? null : category),
+      body: products.isLoading
+          ? const LoadingWidget()
+          : sorted.isEmpty
+              ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(Icons.inventory_2_outlined, size: 64, color: OmniTheme.textMuted),
+                  const SizedBox(height: 16),
+                  Text(t('No products found', 'لا توجد منتجات'), style: TextStyle(color: OmniTheme.textSecondary)),
+                ]))
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossCount = constraints.maxWidth > 900 ? 4 : (constraints.maxWidth > 600 ? 3 : 2);
+                    final isSmall = constraints.maxWidth < 400;
+                    return GridView.builder(
+                      padding: EdgeInsets.all(isSmall ? 8 : 12),
+                      physics: const BouncingScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: _gridView ? crossCount : 1,
+                        childAspectRatio: _gridView ? (isSmall ? 0.65 : 0.72) : 3.0,
+                        crossAxisSpacing: isSmall ? 8 : 12,
+                        mainAxisSpacing: isSmall ? 8 : 12,
                       ),
+                      itemCount: sorted.length,
+                      itemBuilder: (context, index) {
+                        final product = sorted[index];
+                        return _ProductCard(product: product, isSmall: isSmall, gridView: _gridView, isWishlisted: wishlist.isInWishlist(product.id), isInCart: cart.isInCart(product.id));
+                      },
                     );
                   },
-                );
-              },
-            ),
-          ),
-          Expanded(
-            child: Consumer<ProductProvider>(
-              builder: (context, provider, _) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (provider.products.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.inventory_2, size: 64, color: Colors.grey),
-                        const SizedBox(height: 16),
-                        const Text('No products found', style: TextStyle(fontSize: 18)),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () => provider.loadProducts(refresh: true),
-                          child: const Text('Refresh'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: provider.products.length,
-                  itemBuilder: (context, index) {
-                    final product = provider.products[index];
-                    return _ProductCard(product: product);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+                ),
     );
   }
 }
 
 class _ProductCard extends StatelessWidget {
   final Product product;
+  final bool isSmall;
+  final bool gridView;
+  final bool isWishlisted;
+  final bool isInCart;
 
-  const _ProductCard({required this.product});
+  const _ProductCard({required this.product, required this.isSmall, required this.gridView, required this.isWishlisted, required this.isInCart});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                color: Colors.grey[200],
-                child: product.imageUrls?.isNotEmpty == true
-                    ? CachedNetworkImage(imageUrl: product.mainImageUrl, fit: BoxFit.cover, placeholder: (_, __) => const Center(child: CircularProgressIndicator(strokeWidth: 2)), errorWidget: (_, __, ___) => const Icon(Icons.image, size: 48))
-                    : const Icon(Icons.image, size: 48),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    final locale = context.watch<LocaleBox>();
+    final cart = context.read<CartProvider>();
+    final wishlist = context.read<WishlistProvider>();
+    final isArabic = locale.isArabic;
+    String t(String en, String ar) => isArabic ? ar : en;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 300 + (product.id.hashCode % 200)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => Transform.scale(scale: value, child: child),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('\$${product.price.toStringAsFixed(2)}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
-                        Consumer<CartProvider>(
-                          builder: (context, cart, _) {
-                            final inCart = cart.isInCart(product.id);
-                            return IconButton(
-                              icon: Icon(inCart ? Icons.check_circle : Icons.add_shopping_cart, color: inCart ? Colors.green : null),
-                              onPressed: inCart ? null : () => cart.addToCart(product),
-                              visualDensity: VisualDensity.compact,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    Container(color: OmniTheme.backgroundColor, child: Image.network(product.mainImageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.image, size: 40, color: OmniTheme.textMuted))),
+                    Positioned(top: 8, right: 8, child: GestureDetector(
+                      onTap: () => wishlist.toggleWishlist(product),
+                      child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: OmniTheme.surfaceColor, shape: BoxShape.circle), child: Icon(isWishlisted ? Icons.favorite : Icons.favorite_border, color: isWishlisted ? Colors.red : OmniTheme.textMuted, size: 18)),
+                    )),
+                    if (product.safeDiscount > 0) Positioned(top: 8, left: 8, child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(color: OmniTheme.errorColor, borderRadius: BorderRadius.circular(20)),
+                      child: Text('-${(product.safeDiscount * 100).toInt()}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    )),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(flex: 2, child: Padding(padding: const EdgeInsets.all(10), child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(product.displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, fontSize: isSmall ? 11 : 13)),
+                  const Spacer(),
+                  Text('\$${product.price.toStringAsFixed(2)}', style: TextStyle(color: OmniTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: isSmall ? 13 : 15)),
+                  Text('${CurrencyHelper.formatSYP(CurrencyHelper.usdToSyp(product.price))} ₤', style: TextStyle(fontSize: 10, color: OmniTheme.textMuted)),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 28,
+                    child: ElevatedButton(
+                      onPressed: () => isInCart ? cart.removeFromCart(product.id) : cart.addToCart(product),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isInCart ? OmniTheme.backgroundColor : OmniTheme.primaryColor,
+                        foregroundColor: isInCart ? OmniTheme.textSecondary : Colors.white,
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Icon(isInCart ? Icons.check : Icons.add, size: 14),
+                        const SizedBox(width: 4),
+                        Text(isInCart ? t('Added', 'مضاف') : t('Add', 'إضافة'), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ))),
+            ],
+          ),
         ),
       ),
     );

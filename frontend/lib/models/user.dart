@@ -1,31 +1,31 @@
 class User {
   final int id;
-  final String email;
-  final String name;
+  final String? email;
+  final String? name;
   final String? phone;
-  final String role;
-  final String status;
+  final String? role;
+  final String? status;
   final DateTime? createdAt;
 
   User({
     required this.id,
-    required this.email,
-    required this.name,
+    this.email,
+    this.name,
     this.phone,
-    required this.role,
-    required this.status,
+    this.role,
+    this.status,
     this.createdAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      email: json['email'],
-      name: json['full_name'] ?? json['name'] ?? '',
-      phone: json['phone'],
-      role: json['role'],
-      status: json['status'],
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      id: json['id'] ?? 0,
+      email: json['email']?.toString(),
+      name: json['full_name']?.toString() ?? json['name']?.toString(),
+      phone: json['phone']?.toString(),
+      role: json['role']?.toString(),
+      status: json['status']?.toString(),
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
     );
   }
 
@@ -33,4 +33,16 @@ class User {
   bool get isDelivery => role == 'delivery';
   bool get isCustomer => role == 'customer';
   bool get isActive => status == 'active';
+  String get displayName => name ?? 'User';
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'name': name,
+      'phone': phone,
+      'role': role,
+      'status': status,
+    };
+  }
 }

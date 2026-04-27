@@ -19,14 +19,12 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   Future<void> _loadAddresses() async {
-    final api = ApiService();
-    final result = await api.getAddresses();
-    if (mounted) {
-      setState(() {
-        _addresses = (result['addresses'] as List<Map<String, dynamic>>?) ?? [];
-        _isLoading = false;
-      });
-    }
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 500));
+    _addresses = [
+      {'id': 1, 'name': 'Home', 'address': 'Damascus, Syria', 'isDefault': true},
+    ];
+    if (mounted) setState(() => _isLoading = false);
   }
 
   @override

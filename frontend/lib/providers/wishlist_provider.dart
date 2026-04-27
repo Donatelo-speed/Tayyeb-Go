@@ -1,71 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert';
 import '../models/product.dart';
 
-class WishlistProvider with ChangeNotifier {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  final Map<int, Product> _items = {};
-  String? _currentUserId;
+class WishlistProvider extends ChangeNotifier {
+  List<Product> _items = [];
+  bool _isLoading = false;
 
-  List<Product> get products => _items.values.toList();
+  List<Product> get items => _items;
   int get itemCount => _items.length;
-  bool get isEmpty => _items.isEmpty;
-  bool isInWishlist(int productId) => _items.containsKey(productId);
+  bool get isLoading => _isLoading;
 
-  void setUser(String userId) {
-    if (_currentUserId != userId) {
-      _currentUserId = userId;
-      _loadWishlist();
-    }
-  }
-
-  Future<void> _loadWishlist() async {
-    if (_currentUserId == null) return;
-    try {
-      final saved = await _storage.read(key: 'wishlist_${_currentUserId}');
-      if (saved != null) {
-        final List<dynamic> data = jsonDecode(saved);
-        _items.clear();
-        for (final item in data) {
-          _items[item['id']] = Product.fromJson(item);
-        }
-        notifyListeners();
-      }
-    } catch (e) {
-      // Start fresh
-    }
-  }
-
-  Future<void> _saveWishlist() async {
-    if (_currentUserId == null) return;
-    final data = _items.values.map((p) => p.toJson()).toList();
-    await _storage.write(key: 'wishlist_${_currentUserId}', value: jsonEncode(data));
-  }
+  bool isInWishlist(int productId) => _items.any((p) => p.id == productId);
 
   void addToWishlist(Product product) {
-    _items[product.id] = product;
-    notifyListeners();
-    _saveWishlist();
+    if (!isInWishlist(product.id)) {
+      _items.add(product);
+      notifyListeners();
+    }
   }
 
   void removeFromWishlist(int productId) {
-    _items.remove(productId);
+    _items.removeWhere((p) => p.id == productId);
     notifyListeners();
-    _saveWishlist();
   }
 
   void toggleWishlist(Product product) {
     if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+      _items.removeWhere((p) => p.id == product.id);
     } else {
-      addToWishlist(product);
+      _items.add(product);
     }
-  }
-
-  void clearWishlist() {
-    _items.clear();
     notifyListeners();
-    _saveWishlist();
   }
 }

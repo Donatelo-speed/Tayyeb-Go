@@ -2,85 +2,101 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
 
-class ProductProvider with ChangeNotifier {
-  final ApiService _apiService = ApiService();
+class ProductProvider extends ChangeNotifier {
+  final ApiService _api = ApiService();
+  
   List<Product> _products = [];
-  List<String> _categories = [];
-  Product? _selectedProduct;
+  List<Map<String, dynamic>> _categories = [];
   bool _isLoading = false;
   String? _error;
   int _currentPage = 1;
   int _totalPages = 1;
-  int _totalProducts = 0;
-  String _searchQuery = '';
   String? _selectedCategory;
-  String? _selectedSubCategory;
-  String _sortBy = 'created_at';
-  String _sortOrder = 'desc';
-  double? _minPrice;
-  double? _maxPrice;
+  String _searchQuery = '';
 
   List<Product> get products => _products;
-  List<String> get categories => _categories;
-  Product? get selectedProduct => _selectedProduct;
+  List<Map<String, dynamic>> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get error => _error;
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
-  int get totalProducts => _totalProducts;
-  String get searchQuery => _searchQuery;
   String? get selectedCategory => _selectedCategory;
-  String? get selectedSubCategory => _selectedSubCategory;
-
-  List<String> get uniqueCategories {
-    final cats = _categories.toSet().toList();
-    cats.sort();
-    return cats;
-  }
-
-  List<String> getSubCategories(String category) {
-    return [];
-  }
 
   Future<void> loadProducts({bool refresh = false}) async {
-    if (refresh) { _currentPage = 1; _products = []; }
+    if (refresh) _currentPage = 1;
+    
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
-      final response = await _apiService.getProducts(
-        page: _currentPage, limit: 20, search: _searchQuery.isEmpty ? null : _searchQuery,
-        category: _selectedCategory, subCategory: _selectedSubCategory,
-        sortBy: _sortBy, order: _sortOrder, minPrice: _minPrice, maxPrice: _maxPrice,
+      
+      final data = await _api.getProducts(
+        category: _selectedCategory,
+        search: _searchQuery.isEmpty ? null : _searchQuery,
+        page: _currentPage
       );
-      final productList = (response['products'] as List).map((p) => Product.fromJson(p)).toList();
-      if (refresh) { _products = productList; } else { _products.addAll(productList); }
-      _totalProducts = response['pagination']['total'];
-      _totalPages = response['pagination']['totalPages'];
+      
+      final list = (data['products'] as List).map((p) => Product.fromJson(p)).toList();
+      if (refresh || _currentPage == 1) {
+        _products = list;
+      } else {
+        _products.addAll(list);
+      }
+      
+      final pagination = data['pagination'] ?? {};
+      _totalPages = pagination['totalPages'] ?? 1;
       _isLoading = false;
       notifyListeners();
-    } catch (e) { _error = e.toString(); _isLoading = false; notifyListeners(); }
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      loadDummyProducts();
+    }
   }
 
   Future<void> loadCategories() async {
-    try { _categories = await _apiService.fetchCategories(); notifyListeners(); } catch (e) { _error = e.toString(); notifyListeners(); }
+    try {
+      final data = await _api.getCategories();
+      _categories = (data['categories'] as List).cast<Map<String, dynamic>>();
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
   }
 
-  Future<void> loadProduct(int id) async {
-    try { _isLoading = true; notifyListeners(); _selectedProduct = await _apiService.getProduct(id); _isLoading = false; notifyListeners(); }
-    catch (e) { _error = e.toString(); _isLoading = false; notifyListeners(); }
+  void search(String query) {
+    _searchQuery = query;
+    loadProducts(refresh: true);
   }
 
-  void searchProducts(String query) { _searchQuery = query; loadProducts(refresh: true); }
-  void filterByCategory(String? category) { _selectedCategory = category; loadProducts(refresh: true); }
-  void sortProducts(String sortBy, bool ascending) { _sortBy = sortBy; _sortOrder = ascending ? 'asc' : 'desc'; loadProducts(refresh: true); }
+  void setCategory(String? category) {
+    _selectedCategory = category;
+    loadProducts(refresh: true);
+  }
 
-  void setSearch(String query) { _searchQuery = query; loadProducts(refresh: true); }
-  void setCategory(String? category) { if (_selectedCategory != category) { _selectedCategory = category; _selectedSubCategory = null; loadProducts(refresh: true); } }
-  void setSubCategory(String? subCategory) { _selectedSubCategory = subCategory; loadProducts(refresh: true); }
-  void setSort(String sortBy, String order) { _sortBy = sortBy; _sortOrder = order; loadProducts(refresh: true); }
-  void setPriceRange(double? min, double? max) { _minPrice = min; _maxPrice = max; loadProducts(refresh: true); }
-  void clearFilters() { _searchQuery = ''; _selectedCategory = null; _selectedSubCategory = null; _minPrice = null; _maxPrice = null; _sortBy = 'created_at'; _sortOrder = 'desc'; loadProducts(refresh: true); }
-  void loadNextPage() { if (_currentPage < _totalPages && !_isLoading) { _currentPage++; loadProducts(); } }
-  bool get hasMoreProducts => _currentPage < _totalPages;
+  void clearFilters() {
+    _selectedCategory = null;
+    _searchQuery = '';
+    loadProducts(refresh: true);
+  }
+
+  void loadDummyProducts() {
+    _products = [
+      Product(id: 1, name: 'Fresh Apples', description: 'Organic red apples', price: 3.99, stockQuantity: 50, category: 'Fruits'),
+      Product(id: 2, name: 'Bananas', description: 'Fresh bananas', price: 1.49, stockQuantity: 100, category: 'Fruits'),
+      Product(id: 3, name: 'Organic Milk', description: 'Fresh organic milk 1L', price: 4.99, stockQuantity: 30, category: 'Dairy'),
+      Product(id: 4, name: 'Whole Bread', description: 'Fresh baked bread', price: 2.99, stockQuantity: 20, category: 'Bakery'),
+      Product(id: 5, name: 'Tomatoes', description: 'Fresh red tomatoes', price: 2.49, stockQuantity: 40, category: 'Vegetables'),
+      Product(id: 6, name: 'Orange Juice', description: 'Fresh squeezed juice', price: 3.49, stockQuantity: 25, category: 'Beverages'),
+      Product(id: 7, name: 'Chicken Breast', description: 'Fresh chicken', price: 7.99, stockQuantity: 15, category: 'Meat'),
+      Product(id: 8, name: 'Greek Yogurt', description: 'Creamy yogurt', price: 2.99, stockQuantity: 35, category: 'Dairy'),
+      Product(id: 9, name: 'Potatoes', description: 'Fresh potatoes 1kg', price: 1.99, stockQuantity: 60, category: 'Vegetables'),
+      Product(id: 10, name: 'Eggs', description: 'Farm fresh eggs (12)', price: 3.99, stockQuantity: 40, category: 'Dairy'),
+      Product(id: 11, name: 'Strawberries', description: 'Fresh strawberries', price: 4.99, stockQuantity: 20, category: 'Fruits'),
+      Product(id: 12, name: 'Cucumber', description: 'Fresh cucumbers', price: 1.29, stockQuantity: 45, category: 'Vegetables'),
+    ];
+    notifyListeners();
+  }
 }

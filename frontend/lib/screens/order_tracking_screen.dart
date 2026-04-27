@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
-import '../widgets/tracking_maps.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final int? orderId;
@@ -15,6 +14,7 @@ class OrderTrackingScreen extends StatefulWidget {
 class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   Map<String, dynamic>? _order;
   bool _isLoading = true;
+  final ApiService _api = ApiService();
 
   @override
   void initState() {
@@ -25,10 +25,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   Future<void> _loadOrder() async {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final result = await ApiEndpoints.get('/orders/${widget.orderId ?? ''}', token: authProvider.token);
+      final result = await _api.getOrder(widget.orderId ?? 0);
       if (mounted) {
         setState(() {
-          _order = result['order'];
+          _order = result;
           _isLoading = false;
         });
       }
@@ -80,14 +80,25 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomerOrderTrackingWidget(
-                    order: _order,
-                    driverName: _order?['driver']?['name'],
-                    driverPhone: _order?['driver']?['phone'],
-                    driverLat: _order?['driver']?['current_location']?['lat'],
-                    driverLng: _order?['driver']?['current_location']?['lng'],
-                    estimatedTime: _order?['estimated_delivery'],
-                    status: _order?['status'],
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.local_shipping, size: 48, color: Colors.green),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Order Status: ${_order?['status'] ?? 'Unknown'}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Estimated delivery: ${_order?['estimated_delivery'] ?? 'N/A'}',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   const Text('Order Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),

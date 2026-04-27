@@ -109,7 +109,7 @@ class _ProductCardContentState extends State<_ProductCardContent> with SingleTic
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      Text(widget.product.displayName, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                       const Spacer(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,7 +177,7 @@ class _QuickAddButton extends StatelessWidget {
             GestureDetector(
               onTap: inCart ? null : () {
                 cart.addToCart(product);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product.name} added to cart'), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product.displayName} added to cart'), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating));
               },
               child: Container(
                 padding: const EdgeInsets.all(8),
