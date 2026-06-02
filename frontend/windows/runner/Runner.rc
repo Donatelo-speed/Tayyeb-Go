@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.omnimarket" "\0"
-            VALUE "FileDescription", "omnimarket" "\0"
+            VALUE "CompanyName", "com.tayyebgo" "\0"
+            VALUE "FileDescription", "tayyebgo" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "omnimarket" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.omnimarket. All rights reserved." "\0"
-            VALUE "OriginalFilename", "omnimarket.exe" "\0"
-            VALUE "ProductName", "omnimarket" "\0"
+            VALUE "InternalName", "tayyebgo" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.tayyebgo. All rights reserved." "\0"
+            VALUE "OriginalFilename", "tayyebgo.exe" "\0"
+            VALUE "ProductName", "tayyebgo" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,0 +1,19 @@
+name: tayyebgo_multi_tenant
+description: Multi-vertical tenant management for TayyebGo — Tenant, VerticalType, ServiceArea
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cloud_firestore: ^5.6.12
+  provider: ^6.1.2
+  tayyebgo_core:
+    path: ../tayyebgo_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

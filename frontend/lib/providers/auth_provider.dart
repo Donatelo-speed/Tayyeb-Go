@@ -1,188 +1,208 @@
 import 'package:flutter/material.dart';
-import '../models/user.dart';
-import '../services/api_service.dart';
-import '../services/token_manager.dart';
-import '../services/biometric_auth.dart';
-import '../config.dart';
-
-enum AuthState { initial, loading, authenticated, unauthenticated, error }
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb hide AuthProvider;
+import '../models/user_model.dart';
+import 'locale_provider.dart';
+import '../services/auth_service.dart';
+import '../services/auth_gate.dart';
+import '../screens/home_screen.dart';
+import '../screens/admin/admin_dashboard_screen.dart';
+import '../screens/cashier/cashier_dashboard_screen.dart';
+import '../screens/delivery/delivery_dashboard_screen.dart';
+import '../screens/vendor/vendor_dashboard_screen.dart';
+import '../screens/splash_screen.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final ApiService _api = ApiService();
-  
-  AuthState _state = AuthState.initial;
-  User? _user;
+  UserModel? _user;
+  bool _isLoading = false;
   String? _error;
-  String? _token;
-  bool _biometricEnabled = false;
 
-  AuthState get state => _state;
-  User? get user => _user;
+  UserModel? get user => _user;
+  bool get isLoading => _isLoading;
+  bool get isAuthenticated => _user != null;
   String? get error => _error;
-  String? get token => _token;
-  bool get biometricEnabled => _biometricEnabled;
-  
-  bool get isAuthenticated => _state == AuthState.authenticated;
-  bool get isAdmin => _user?.role == 'admin';
-  bool get isDelivery => _user?.role == 'delivery';
-  bool get isCustomer => _user?.role == 'customer' || _user == null;
 
-  Future<void> checkAuth() async {
-    await checkAuthStatus();
-  }
-  
-  Future<void> checkAuthStatus() async {
+  /// Called by _SessionGate after Firebase Auth restores the persisted session.
+  /// Fetches the Firestore user doc and sets [_user] so the rest of the app
+  /// can read role metadata for routing.
+  Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
-      _state = AuthState.loading;
-      notifyListeners();
-      
-      _token = await TokenManager.getAccessToken();
-      if (_token != null && _token!.startsWith('demo_')) {
-        _user = User(id: 1, email: 'demo@demo.com', name: 'Demo User', role: 'customer', status: 'active');
-        _state = AuthState.authenticated;
-      } else if (_token != null) {
-        final data = await _api.me();
-        _user = User.fromJson(data);
-        _state = AuthState.authenticated;
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+      if (doc.exists) {
+        _user = UserModel.fromFirestore(doc);
       } else {
-        _state = AuthState.unauthenticated;
+        _user = UserModel(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? '',
+          photoUrl: firebaseUser.photoURL,
+          role: UserRole.customer,
+        );
       }
-    } catch (e) {
-      _state = AuthState.unauthenticated;
-      _token = null;
+    } catch (_) {
+      _user = null;
     }
     notifyListeners();
+    return _user;
   }
 
-  Future<bool> login(String email, String password, {bool useBiometric = false}) async {
-    _state = AuthState.loading;
+  bool get isSuperAdmin => _user?.role == UserRole.superAdmin;
+  bool get isRestaurantOwner => _user?.role == UserRole.restaurantOwner;
+  bool get isCashier => _user?.role == UserRole.cashier;
+  bool get isDriver => _user?.role == UserRole.driver;
+  bool get isCustomer => _user?.role == UserRole.customer;
+
+  String get userRole => _user?.role.name ?? 'customer';
+
+  Future<bool> login(
+      String email, String password, BuildContext context) async {
+    _isLoading = true;
     _error = null;
     notifyListeners();
-    
-    if (useBiometric) {
-      final authenticated = await BiometricAuth.authenticateWithBiometrics(
-        reason: 'Authenticate to login to OmniMarket',
-      );
-      if (!authenticated) {
-        _state = AuthState.error;
-        _error = 'Biometric authentication failed';
+
+    try {
+      // Try Firebase Auth first (session persisted to IndexedDB on web)
+      final credential = await fb.FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email.trim(), password: password);
+      if (credential.user == null) {
+        _error = 'Authentication returned empty user';
+        _isLoading = false;
         notifyListeners();
         return false;
       }
-    }
-    
-    // Try demo login first
-    final demoResult = _tryDemoLogin(email, password);
-    if (demoResult != null) {
-      _user = demoResult;
-      _token = 'demo_token_${DateTime.now().millisecondsSinceEpoch}';
-      await TokenManager.saveTokens(accessToken: _token!);
-      _state = AuthState.authenticated;
+      // Firebase Auth succeeded — let _SessionGate / _AuthGate resolve
+      // the Firestore profile reactively. No navigation needed here.
+      _isLoading = false;
       notifyListeners();
       return true;
-    }
-    
-    // Try API login
-    try {
-      final data = await _api.login(email, password);
-      _token = data['token'];
-      _user = User.fromJson(data['user']);
-      await TokenManager.saveTokens(
-        accessToken: _token!,
-        refreshToken: data['refreshToken'],
-        expiresIn: Duration(seconds: data['expiresIn'] ?? 3600),
-      );
-      _state = AuthState.authenticated;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      // If API fails and demo mode is on, use demo
-      if (Config.demoMode) {
-        final demoResult = _tryDemoLogin(email, password);
-        if (demoResult != null) {
-          _user = demoResult;
-          _token = 'demo_token_${DateTime.now().millisecondsSinceEpoch}';
-          await TokenManager.saveTokens(accessToken: _token!);
-          _state = AuthState.authenticated;
-          notifyListeners();
-          return true;
-        }
-      }
-      _state = AuthState.error;
-      _error = 'Invalid credentials';
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> enableBiometric() async {
-    final available = await BiometricAuth.isBiometricAvailable();
-    if (!available) return false;
-    
-    final authenticated = await BiometricAuth.authenticateWithBiometrics(
-      reason: 'Enable biometric login for OmniMarket',
-    );
-    
-    if (authenticated) {
-      _biometricEnabled = true;
-      notifyListeners();
-      return true;
-    }
-    return false;
-  }
-
-  User? _tryDemoLogin(String email, String password) {
-    final emailLower = email.toLowerCase();
-    
-    if (emailLower == 'customer@test.com' && password == 'password123') {
-      return User(id: 1, email: email, name: 'Ahmed Hassan', phone: '+963912345678', role: 'customer', status: 'active');
-    } else if (emailLower == 'driver@omnimarket.sy' && password == 'driver123') {
-      return User(id: 2, email: email, name: 'Khalid Mahmoud', phone: '+963944567890', role: 'delivery', status: 'active');
-    } else if (emailLower == 'admin@omnimarket.sy' && password == 'admin123') {
-      return User(id: 3, email: email, name: 'Admin User', phone: '+963911111111', role: 'admin', status: 'active');
-    }
-    return null;
-  }
-
-  Future<bool> register(String email, String password, String name, {String? phone}) async {
-    try {
-      _state = AuthState.loading;
-      notifyListeners();
-      
-      final data = await _api.register(email, password, name, phone: phone);
-      _token = data['token'];
-      _user = User.fromJson(data['user']);
-      await TokenManager.saveTokens(
-        accessToken: _token!,
-        refreshToken: data['refreshToken'],
-        expiresIn: Duration(seconds: data['expiresIn'] ?? 3600),
-      );
-      _state = AuthState.authenticated;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      // Demo mode registration
-      if (Config.demoMode) {
-        _user = User(id: DateTime.now().millisecondsSinceEpoch, email: email, name: name, phone: phone, role: 'customer', status: 'active');
-        _token = 'demo_token_${DateTime.now().millisecondsSinceEpoch}';
-        await TokenManager.saveTokens(accessToken: _token!);
-        _state = AuthState.authenticated;
+    } on fb.FirebaseAuthException catch (e) {
+      // ── Demo mode fallback: hardcoded DemoUsers (no Firebase Auth).
+      //     _SessionGate watches AuthProvider.isAuthenticated and will
+      //     switch to HomeScreen reactively.
+      final demoUser = DemoUsers.findByEmailAndPassword(
+          email.trim(), password);
+      if (demoUser != null) {
+        _user = demoUser;
+        _isLoading = false;
         notifyListeners();
         return true;
       }
-      _state = AuthState.error;
-      _error = e.toString();
+      _error = e.message ?? 'Login failed';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = 'Login failed: ${e.toString()}';
+      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  Future<void> logout() async {
-    await TokenManager.clearTokens();
+  void _routeToRoleDashboard(BuildContext context, UserRole role) {
+    Widget targetScreen;
+    String? vendorId;
+    String? vendorName;
+
+    if (_user != null) {
+      vendorId = _user!.vendorId;
+    }
+
+    switch (role) {
+      case UserRole.superAdmin:
+        targetScreen = const AdminDashboardScreen();
+        break;
+      case UserRole.restaurantOwner:
+        targetScreen = VendorDashboardScreen(
+          vendorId: vendorId ?? 'vendor-1',
+          vendorName: _user?.displayName ?? 'Restaurant',
+        );
+        break;
+      case UserRole.cashier:
+        targetScreen = const CashierDashboardScreen();
+        break;
+      case UserRole.driver:
+        targetScreen = const DeliveryDashboardScreen();
+        break;
+      case UserRole.customer:
+        targetScreen = CustomerHome(locale: context.read<LocaleProvider>());
+        break;
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => targetScreen),
+      (route) => false,
+    );
+  }
+
+  void routeToDashboardByRole(BuildContext context) {
+    if (_user == null) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+      return;
+    }
+    _routeToRoleDashboard(context, _user!.role);
+  }
+
+  /// Full session teardown:
+  /// 1. Flush in-memory caches via [AuthGateService] logout listeners.
+  /// 2. Sign out of Firebase Auth.
+  /// 3. Null local user and notify.
+  /// 4. Force-navigate to [LoginScreen] via root navigator key.
+  Future<void> logout(BuildContext context) async {
+    try {
+      await AuthGateService.instance.fireLogoutCallbacks();
+    } catch (_) {}
     _user = null;
-    _token = null;
-    _biometricEnabled = false;
-    _state = AuthState.unauthenticated;
     notifyListeners();
+    rootNavigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  void setUser(UserModel user) {
+    _user = user;
+    notifyListeners();
+  }
+
+  /// Lightweight sign-out (no Firebase, no routing — used internally).
+  Future<void> signOut() async {
+    _user = null;
+    notifyListeners();
+  }
+
+  Future<void> updateProfile({
+    String? displayName,
+    String? email,
+    String? phone,
+    String? photoUrl,
+  }) async {
+    if (_user == null) return;
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(_user!.id).update({
+        if (displayName != null) 'displayName': displayName,
+        if (email != null) 'email': email,
+        if (phone != null) 'phone': phone,
+        if (photoUrl != null) 'photoUrl': photoUrl,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      _user = _user!.copyWith(
+        displayName: displayName,
+        email: email,
+        phone: phone,
+        photoUrl: photoUrl,
+      );
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to update profile: $e';
+      notifyListeners();
+    }
   }
 }

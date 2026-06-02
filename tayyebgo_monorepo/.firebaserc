@@ -1,0 +1,23 @@
+{
+  "projects": {
+    "default": "tayyebgo-prod"
+  },
+  "targets": {
+    "tayyebgo-prod": {
+      "hosting": {
+        "customer": [
+          "tayyebgo-customer"
+        ],
+        "partner": [
+          "tayyebgo-partner"
+        ],
+        "driver": [
+          "tayyebgo-driver"
+        ],
+        "admin": [
+          "tayyebgo-admin"
+        ]
+      }
+    }
+  }
+}

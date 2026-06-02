@@ -1,224 +1,276 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../providers/cart_provider.dart';
 import '../providers/auth_provider.dart';
-import '../theme/omni_theme.dart';
-import '../main.dart';
+import '../models/product.dart';
+import '../theme/tayyebgo_theme.dart';
+import 'tracking/tracking_screen.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
-  @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
-  bool _isLoading = false;
-  final List<_Order> _orders = [];
-  int _selectedFilter = 0;
-  late AnimationController _animController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    _animController.forward();
-    _loadOrders();
-  }
-
-  @override
-  void dispose() { _animController.dispose(); super.dispose(); }
-
-  Future<void> _loadOrders() async {
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(milliseconds: 500));
-    _orders.addAll([
-      _Order(id: '#ORD-2847', date: DateTime.now().subtract(const Duration(hours: 2)), status: 'processing', total: 45.50, items: 3),
-      _Order(id: '#ORD-2846', date: DateTime.now().subtract(const Duration(days: 1)), status: 'shipped', total: 28.00, items: 2),
-      _Order(id: '#ORD-2845', date: DateTime.now().subtract(const Duration(days: 2)), status: 'delivered', total: 62.00, items: 5, rating: 5),
-      _Order(id: '#ORD-2844', date: DateTime.now().subtract(const Duration(days: 5)), status: 'delivered', total: 35.00, items: 3, rating: 4),
-      _Order(id: '#ORD-2843', date: DateTime.now().subtract(const Duration(days: 7)), status: 'delivered', total: 89.00, items: 7, rating: 5),
-    ]);
-    setState(() => _isLoading = false);
-  }
-
-  List<_Order> get _filtered {
-    if (_selectedFilter == 0) return _orders;
-    if (_selectedFilter == 1) return _orders.where((o) => o.status == 'processing' || o.status == 'shipped').toList();
-    return _orders.where((o) => o.status == 'delivered' || o.status == 'cancelled').toList();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.watch<LocaleBox>();
-    final isArabic = locale.isArabic;
-    String t(String en, String ar) => isArabic ? ar : en;
-    final filters = [t('All', 'الكل'), t('Active', 'نشطة'), t('Completed', 'مكتملة')];
+    final auth = context.watch<AuthProvider>();
+    final userId = auth.user?.id;
 
     return Scaffold(
-      backgroundColor: OmniTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(t('My Orders', 'طلباتي')),
-        backgroundColor: OmniTheme.surfaceColor,
-        foregroundColor: OmniTheme.textPrimary,
+        title: const Text('My Orders'),
+        backgroundColor: TayyebGoTheme.surfaceColor,
         elevation: 0,
       ),
-      body: Column(children: [
-        Container(
-          margin: const EdgeInsets.all(12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(gradient: LinearGradient(colors: [OmniTheme.primaryColor, OmniTheme.primaryLight], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(16)),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            _Stat(label: t('Total', 'الإجمالي'), value: '${_orders.length}'),
-            _Stat(label: t('Delivered', 'مكتملة'), value: '${_orders.where((o) => o.status == 'delivered').length}'),
-            _Stat(label: t('In Progress', 'قيد'), value: '${_orders.where((o) => o.status != 'delivered').length}'),
-          ]),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(color: OmniTheme.surfaceColor, borderRadius: BorderRadius.circular(12)),
-          child: Row(children: filters.asMap().entries.map((e) => Expanded(child: GestureDetector(
-            onTap: () => setState(() => _selectedFilter = e.key),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: _selectedFilter == e.key ? OmniTheme.primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-              child: Text(e.value, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _selectedFilter == e.key ? Colors.white : OmniTheme.textMuted)),
+      body: userId == null
+          ? const Center(child: Text('Sign in to view orders'))
+          : StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('orders')
+                  .where('customerId', isEqualTo: userId)
+                  .orderBy('createdAt', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return _buildStaticOrders(context);
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final docs = snapshot.data!.docs;
+                if (docs.isEmpty) return _buildStaticOrders(context);
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final d = docs[index].data() as Map<String, dynamic>;
+                    return _OrderCard(
+                      orderId: docs[index].id,
+                      customerId: d['customerId'] as String? ?? '',
+                      total: (d['totalAmount'] as num?)?.toDouble() ?? 0.0,
+                      items: d['items'] as List? ?? [],
+                      status: d['status'] as String? ?? 'pending',
+                      date: d['createdAt'] as Timestamp?,
+                    );
+                  },
+                );
+              },
             ),
-          ))).toList()),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: _isLoading
-              ? const LoadingWidget()
-              : _filtered.isEmpty
-                  ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.receipt_long, size: 64, color: OmniTheme.textMuted), const SizedBox(height: 12), Text(t('No orders', 'لا توجد طلبات'), style: TextStyle(color: OmniTheme.textSecondary))]))
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: _filtered.length,
-                      itemBuilder: (context, index) => _OrderCard(order: _filtered[index], isArabic: isArabic, onTap: () => _showDetails(context, _filtered[index], isArabic)),
-                    ),
-        ),
-      ]),
     );
   }
 
-  void _showDetails(BuildContext context, _Order order, bool isArabic) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.65,
-        maxChildSize: 0.9,
-        minChildSize: 0.5,
-        expand: false,
-        builder: (context, scrollController) => Container(
-          padding: const EdgeInsets.all(20),
-          child: ListView(controller: scrollController, children: [
-            Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: OmniTheme.borderColor, borderRadius: BorderRadius.circular(2)))),
-            const SizedBox(height: 20),
-            Text(order.id, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _StatusTracker(status: order.status, isArabic: isArabic),
-            const SizedBox(height: 24),
-            _DetailRow(label: isArabic ? 'التاريخ' : 'Date', value: '${order.date.day}/${order.date.month}/${order.date.year}'),
-            _DetailRow(label: isArabic ? 'عدد المنتجات' : 'Items', value: '${order.items}'),
-            _DetailRow(label: isArabic ? 'المجموع' : 'Total', value: '\$${order.total.toStringAsFixed(2)}'),
-            _DetailRow(label: isArabic ? 'الحالة' : 'Status', value: _statusLabel(order.status, isArabic)),
-            if (order.status == 'delivered' && order.rating == null) ...[
-              const SizedBox(height: 24),
-              SizedBox(width: double.infinity, height: 48, child: ElevatedButton(onPressed: () {}, child: Text(isArabic ? 'قيّم الطلب' : 'Rate Order'))),
-            ],
-          ]),
-        ),
-      ),
+  Widget _buildStaticOrders(BuildContext context) {
+    final orders = [
+      {'id': '#ORD-2847', 'date': 'May 20, 2026', 'status': 'Processing', 'total': 45.50, 'items': 3, 'itemsList': ['Pizza', 'Coke', 'Fries']},
+      {'id': '#ORD-2846', 'date': 'May 19, 2026', 'status': 'Out for Delivery', 'total': 28.00, 'items': 2, 'itemsList': ['Burger', 'Fries']},
+      {'id': '#ORD-2845', 'date': 'May 18, 2026', 'status': 'Delivered', 'total': 62.00, 'items': 5, 'itemsList': ['Shawarma', 'Rice', 'Salad', 'Coke', 'Cake']},
+      {'id': '#ORD-2844', 'date': 'May 15, 2026', 'status': 'Delivered', 'total': 35.00, 'items': 3, 'itemsList': ['Pizza', 'Garlic Bread', 'Coke']},
+    ];
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        return _StaticOrderCard(order: order);
+      },
     );
   }
-
-  String _statusLabel(String status, bool isArabic) {
-    switch (status) { case 'processing': return isArabic ? 'قيد التحضير' : 'Processing'; case 'shipped': return isArabic ? 'شحن' : 'Shipped'; case 'delivered': return isArabic ? 'تم التوصيل' : 'Delivered'; case 'cancelled': return isArabic ? 'ملغى' : 'Cancelled'; default: return status; }
-  }
-}
-
-class _Order {
-  final String id, status;
-  final DateTime date;
-  final double total;
-  final int items;
-  final int? rating;
-  _Order({required this.id, required this.date, required this.status, required this.total, required this.items, this.rating});
-}
-
-class _Stat extends StatelessWidget {
-  final String label, value;
-  const _Stat({required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) => Column(children: [Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)), Text(label, style: const TextStyle(fontSize: 12, color: Colors.white70))]);
 }
 
 class _OrderCard extends StatelessWidget {
-  final _Order order;
-  final bool isArabic;
-  final VoidCallback onTap;
-  const _OrderCard({required this.order, required this.isArabic, required this.onTap});
+  final String orderId, customerId, status;
+  final double total;
+  final List items;
+  final Timestamp? date;
+  const _OrderCard({required this.orderId, required this.customerId, required this.total, required this.items, required this.status, required this.date});
+
+  Color _statusColor(String s) {
+    switch (s) {
+      case 'pending': return Colors.orange;
+      case 'accepted': return Colors.blue;
+      case 'preparing': return Colors.amber;
+      case 'ready_for_driver': return Colors.teal;
+      case 'picked_up': return Colors.indigo;
+      case 'en_route': return Colors.blue;
+      case 'delivered': return Colors.green;
+      default: return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(order.status);
+    final cart = context.read<CartProvider>();
+    final sc = _statusColor(status);
+    final itemCount = items.length;
+    final dateStr = date != null
+        ? '${date!.toDate().month}/${date!.toDate().day}/${date!.toDate().year}'
+        : '';
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: status == 'en_route' || status == 'picked_up' || status == 'ready_for_driver'
+          ? () => Navigator.push(context, MaterialPageRoute(
+              builder: (_) => TrackingScreen(orderId: orderId)))
+          : null,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: OmniTheme.surfaceColor, borderRadius: BorderRadius.circular(14), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)]),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Text(order.id, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const Spacer(),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20)), child: Text(_statusLabel(order.status, isArabic), style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.w600))),
-          ]),
-          const SizedBox(height: 12),
-          Row(children: [
-            Icon(Icons.shopping_bag, size: 16, color: OmniTheme.textMuted),
-            const SizedBox(width: 8),
-            Text('${order.items} ${isArabic ? 'منتجات' : 'items'}', style: TextStyle(color: OmniTheme.textSecondary)),
-            const Spacer(),
-            Text('\$${order.total.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: OmniTheme.primaryColor)),
-          ]),
-          if (order.rating != null) ...[const SizedBox(height: 8), Row(children: List.generate(5, (i) => Icon(i < order.rating! ? Icons.star : Icons.star_border, size: 16, color: Colors.amber)))],
-        ]),
+        decoration: BoxDecoration(
+          color: TayyebGoTheme.surfaceColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Text(orderId.length > 8 ? '#${orderId.substring(0, 8)}' : orderId,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: sc.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(status.replaceAll('_', ' ').toUpperCase(),
+                    style: TextStyle(color: sc, fontWeight: FontWeight.w600, fontSize: 10)),
+              ),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.shopping_bag, size: 16, color: TayyebGoTheme.textMuted),
+              const SizedBox(width: 6),
+              Text('$itemCount items', style: TextStyle(color: TayyebGoTheme.textSecondary)),
+              const Spacer(),
+              Text('\$${total.toStringAsFixed(2)}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: TayyebGoTheme.primaryColor)),
+            ]),
+            if (dateStr.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(dateStr, style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 12)),
+            ],
+            if (status == 'delivered') ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    _reorder(context, items, cart);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Items added to cart!')),
+                    );
+                  },
+                  icon: const Icon(Icons.replay, size: 16),
+                  label: const Text('Reorder', style: TextStyle(fontSize: 13)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: TayyebGoTheme.primaryColor,
+                    side: const BorderSide(color: TayyebGoTheme.primaryColor),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 
-  String _statusLabel(String status, bool isArabic) {
-    switch (status) { case 'processing': return isArabic ? 'قيد التحضير' : 'Processing'; case 'shipped': return isArabic ? 'شحن' : 'Shipped'; case 'delivered': return isArabic ? 'تم التوصيل' : 'Delivered'; case 'cancelled': return isArabic ? 'ملغى' : 'Cancelled'; default: return status; }
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) { case 'processing': return Colors.orange; case 'shipped': return Colors.blue; case 'delivered': return Colors.green; case 'cancelled': return Colors.red; default: return Colors.grey; }
+  void _reorder(BuildContext context, List items, CartProvider cart) {
+    for (final item in items) {
+      if (item is Map<String, dynamic>) {
+        final name = item['name'] as String? ?? 'Item';
+        final price = (item['basePrice'] as num?)?.toDouble() ?? 0.0;
+        final qty = (item['quantity'] as num?)?.toInt() ?? 1;
+        cart.addLine(
+          Product(
+            id: int.tryParse(item['productId']?.toString() ?? '0') ?? 0,
+            name: name,
+            price: price,
+            stockQuantity: 100,
+          ),
+          quantity: qty,
+        );
+      }
+    }
   }
 }
 
-class _StatusTracker extends StatelessWidget {
-  final String status;
-  final bool isArabic;
-  const _StatusTracker({required this.status, required this.isArabic});
+class _StaticOrderCard extends StatelessWidget {
+  final Map<String, dynamic> order;
+  const _StaticOrderCard({required this.order});
+
+  Color _statusColor(String s) {
+    switch (s) {
+      case 'Processing': return Colors.orange;
+      case 'Out for Delivery': return Colors.blue;
+      case 'Delivered': return Colors.green;
+      default: return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final steps = ['processing', 'shipped', 'delivered'];
-    final idx = steps.indexOf(status);
-    return Row(children: steps.asMap().entries.map((e) => Expanded(child: Column(children: [
-      Container(height: 4, decoration: BoxDecoration(color: idx >= e.key ? Colors.green : OmniTheme.borderColor, borderRadius: BorderRadius.circular(2))),
-      const SizedBox(height: 4),
-      Text(['Processing', 'Shipped', 'Delivered'][e.key], style: TextStyle(fontSize: 10, color: idx >= e.key ? Colors.green : OmniTheme.textMuted)),
-    ]))).toList());
-  }
-}
+    final cart = context.read<CartProvider>();
+    final sc = _statusColor(order['status']);
 
-class _DetailRow extends StatelessWidget {
-  final String label, value;
-  const _DetailRow({required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) => Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: TextStyle(color: OmniTheme.textSecondary)), Text(value, style: const TextStyle(fontWeight: FontWeight.w500))]));
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: TayyebGoTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Text(order['id'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: sc.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+              child: Text(order['status'], style: TextStyle(color: sc, fontWeight: FontWeight.w600, fontSize: 11)),
+            ),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: [
+            Icon(Icons.shopping_bag, size: 16, color: TayyebGoTheme.textMuted),
+            const SizedBox(width: 6),
+            Text('${order['items']} items', style: TextStyle(color: TayyebGoTheme.textSecondary)),
+            const Spacer(),
+            Text('\$${(order['total'] as num).toStringAsFixed(2)}',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: TayyebGoTheme.primaryColor)),
+          ]),
+          if (order['status'] == 'Delivered') ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  for (final name in (order['itemsList'] as List)) {
+                    cart.addLine(
+                      Product(id: 1, name: name as String, price: 10.0, stockQuantity: 100),
+                    );
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Items added to cart!')),
+                  );
+                },
+                icon: const Icon(Icons.replay, size: 16),
+                label: const Text('Reorder', style: TextStyle(fontSize: 13)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: TayyebGoTheme.primaryColor,
+                  side: const BorderSide(color: TayyebGoTheme.primaryColor),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }

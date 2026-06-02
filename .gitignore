@@ -1,0 +1,35 @@
+# Dependencies
+**/node_modules/
+**/.dart_tool/
+**/.packages
+**/pubspec.lock
+
+# Flutter
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Environment
+**/.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter test coverage
+**/coverage/
+
+# Misc
+*.log
+*.swp
+*.swo
+
+# Firebase
+**/serviceAccountKey.json
+**/firebase-import.json
+**/.firebaserc

@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/cart_provider.dart';
-import '../main.dart';
-import '../theme/omni_theme.dart';
-import 'login_screen.dart';
-import 'settings_screen.dart';
-import 'privacy_policy_screen.dart';
-import 'wishlist_screen.dart';
-import 'orders_screen.dart';
-import 'address_screen.dart';
+import '../providers/locale_provider.dart';
+import '../models/user_model.dart';
+import '../theme/tayyebgo_theme.dart';
+import 'splash_screen.dart';
+import 'tracking/profile_tab_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.watch<LocaleBox>();
-    final isArabic = locale.isArabic;
-    String t(String en, String ar) => isArabic ? ar : en;
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
 
     return Scaffold(
-      backgroundColor: OmniTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(t('Profile', 'الملف الشخصي')),
-        backgroundColor: OmniTheme.surfaceColor,
+        title: const Text('Profile'),
+        backgroundColor: TayyebGoTheme.surfaceColor,
         elevation: 0,
         actions: [
           IconButton(
@@ -33,174 +27,279 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          final user = auth.user;
-
-          if (user == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person_off, size: 80, color: OmniTheme.textMuted),
-                  const SizedBox(height: 16),
-                  Text(t('Please login', 'لم تسجل الدخول'), style: TextStyle(fontSize: 18, color: OmniTheme.textSecondary, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushReplacement(context, SmoothPageTransition(page: const LoginScreen())),
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                    child: Text(t('Login', 'تسجيل الدخول')),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: TayyebGoTheme.surfaceColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
               ),
-            );
-          }
-
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(color: OmniTheme.surfaceColor, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))]),
-                child: Column(children: [
+              child: Column(
+                children: [
                   CircleAvatar(
                     radius: 44,
-                    backgroundColor: OmniTheme.primaryColor,
-                    child: Text(user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : '?', style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)),
+                    backgroundColor: TayyebGoTheme.primaryColor,
+                    child: Text(
+                      (user?.displayName ?? 'U')[0].toUpperCase(),
+                      style: const TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text(user.displayName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text(user?.displayName ?? 'User', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text(user.email ?? '', style: TextStyle(color: OmniTheme.textSecondary)),
-                  if (user.phone != null && user.phone!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(user.phone!, style: TextStyle(color: OmniTheme.textMuted, fontSize: 13)),
-                  ],
+                  Text(user?.email ?? '', style: TextStyle(color: TayyebGoTheme.textSecondary)),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(color: _roleColor(user.role ?? 'customer').withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-                    child: Text(_roleLabel(user.role ?? 'customer', isArabic), style: TextStyle(color: _roleColor(user.role ?? 'customer'), fontWeight: FontWeight.w600)),
+                    decoration: BoxDecoration(
+                      color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      user?.role.displayName ?? 'customer',
+                      style: const TextStyle(color: TayyebGoTheme.primaryColor, fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ]),
+                ],
               ),
-              const SizedBox(height: 20),
-
-              _buildSection([
-                _MenuItem(icon: Icons.favorite_outline, title: t('Wishlist', 'المفضلة'), subtitle: t('Your favorites', 'قائمة أمنياتك'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()))),
-                _MenuDivider(),
-                _MenuItem(icon: Icons.receipt_long_outlined, title: t('Orders', 'الطلبات'), subtitle: t('Your orders', 'سجل طلباتك'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OrdersScreen()))),
-                _MenuDivider(),
-                _MenuItem(icon: Icons.location_on_outlined, title: t('Addresses', 'العناوين'), subtitle: t('Delivery addresses', 'عناوين التوصيل'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddressScreen()))),
-                _MenuDivider(),
-                _MenuItem(icon: Icons.language_outlined, title: t('Language', 'اللغة'), subtitle: t('Switch language', 'تغيير اللغة'),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: OmniTheme.primaryColor, borderRadius: BorderRadius.circular(20)),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(isArabic ? Icons.arrow_back : Icons.arrow_forward, color: Colors.white, size: 16),
-                      const SizedBox(width: 4),
-                      Text(isArabic ? 'عربي' : 'EN', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                    ]),
-                  ),
-                  onTap: () => locale.toggle(),
-                ),
-              ]),
-
-              const SizedBox(height: 16),
-
-              _buildSection([
-                _MenuItem(icon: Icons.help_outline, title: t('Help & Support', 'الدعم'), subtitle: t('Contact us', 'تواصل معنا'), onTap: () {}),
-                _MenuDivider(),
-                _MenuItem(icon: Icons.description_outlined, title: t('Terms & Privacy', 'الشروط والخصوصية'), subtitle: t('Privacy policy', 'سياسة الخصوصية'), onTap: () {}),
-              ]),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () => _logout(context, isArabic),
-                  icon: const Icon(Icons.logout, color: OmniTheme.errorColor),
-                  label: Text(t('Logout', 'تسجيل الخروج'), style: const TextStyle(color: OmniTheme.errorColor)),
-                  style: OutlinedButton.styleFrom(side: const BorderSide(color: OmniTheme.errorColor), padding: const EdgeInsets.all(16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+            ),
+            const SizedBox(height: 20),
+            _ProfileMenuItem(
+              icon: Icons.favorite_outline, title: 'Wishlist', subtitle: 'Your favorite items',
+              onTap: () {},
+            ),
+            _ProfileMenuItem(
+              icon: Icons.receipt_long_outlined, title: 'Orders', subtitle: 'Your order history',
+              onTap: () {},
+            ),
+            _ProfileMenuItem(
+              icon: Icons.location_on_outlined, title: 'Addresses', subtitle: 'Delivery addresses',
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileTabScreen(tab: 'addresses'))),
+            ),
+            _ProfileMenuItem(
+              icon: Icons.payment_outlined, title: 'Payment Methods', subtitle: 'Manage payment options',
+              onTap: () {},
+            ),
+            _ProfileMenuItem(
+              icon: Icons.help_outline, title: 'Help & Support', subtitle: 'Contact us',
+              onTap: () {},
+            ),
+            _ProfileMenuItem(
+              icon: Icons.description_outlined, title: 'Terms & Privacy', subtitle: 'Privacy policy',
+              onTap: () {},
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+              auth.logout(context);
+                },
+                icon: const Icon(Icons.logout, color: TayyebGoTheme.errorColor),
+                label: const Text('Logout', style: TextStyle(color: TayyebGoTheme.errorColor)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: TayyebGoTheme.errorColor),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
-              const SizedBox(height: 32),
-            ]),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildSection(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(color: OmniTheme.surfaceColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)]),
-      child: Column(children: children),
-    );
-  }
-
-  String _roleLabel(String role, bool isArabic) {
-    switch (role) { case 'admin': return isArabic ? 'مسؤول' : 'Admin'; case 'delivery': return isArabic ? 'سائق' : 'Driver'; default: return isArabic ? 'عميل' : 'Customer'; }
-  }
-
-  Color _roleColor(String role) {
-    switch (role) { case 'admin': return Colors.purple; case 'delivery': return Colors.orange; default: return OmniTheme.primaryColor; }
-  }
-
-  void _logout(BuildContext context, bool isArabic) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(isArabic ? 'Logout' : 'تسجيل الخروج'),
-        content: Text(isArabic ? 'Are you sure?' : 'هل أنت متأكد؟'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(isArabic ? 'Cancel' : 'إلغاء')),
-          FilledButton(
-            onPressed: () {
-              context.read<AuthProvider>().logout();
-              context.read<CartProvider>().clearCart();
-              Navigator.pop(ctx);
-              Navigator.pushAndRemoveUntil(context, SmoothPageTransition(page: const LoginScreen()), (route) => false);
-            },
-            style: FilledButton.styleFrom(backgroundColor: OmniTheme.errorColor),
-            child: Text(isArabic ? 'Logout' : 'خروج'),
-          ),
-        ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _MenuItem extends StatelessWidget {
+class _ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final Widget? trailing;
-
-  const _MenuItem({required this.icon, required this.title, required this.subtitle, required this.onTap, this.trailing});
+  const _ProfileMenuItem({required this.icon, required this.title, required this.subtitle, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(color: OmniTheme.primaryColor.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: OmniTheme.primaryColor, size: 22),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: TayyebGoTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8)],
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: TextStyle(color: OmniTheme.textMuted, fontSize: 12)),
-      trailing: trailing ?? const Icon(Icons.chevron_right, color: OmniTheme.textMuted),
-      onTap: onTap,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: TayyebGoTheme.primaryColor),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Text(subtitle, style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 12)),
+        trailing: const Icon(Icons.chevron_right, color: TayyebGoTheme.textMuted),
+        onTap: onTap,
+      ),
     );
   }
 }
 
-class _MenuDivider extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
-  Widget build(BuildContext context) => Divider(height: 1, indent: 60, endIndent: 16);
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _notificationsEnabled = true;
+  bool _smsUpdates = true;
+  bool _emailPromotions = false;
+  bool _darkMode = false;
+  String _selectedLocale = 'en';
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final locale = context.watch<LocaleProvider>();
+    final role = auth.user?.role;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+        backgroundColor: TayyebGoTheme.primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _sectionHeader('Notifications'),
+          _settingsCard([
+            _switchTile('Push Notifications', 'Order updates and offers', _notificationsEnabled, (v) => setState(() => _notificationsEnabled = v)),
+            _switchTile('SMS Updates', 'Delivery status via SMS', _smsUpdates, (v) => setState(() => _smsUpdates = v)),
+            _switchTile('Email Promotions', 'Weekly deals and news', _emailPromotions, (v) => setState(() => _emailPromotions = v)),
+          ]),
+          const SizedBox(height: 16),
+          _sectionHeader('Appearance'),
+          _settingsCard([
+            _switchTile('Dark Mode', 'Switch to dark theme', _darkMode, (v) => setState(() => _darkMode = v)),
+            ListTile(
+              leading: const Icon(Icons.language, color: TayyebGoTheme.primaryColor),
+              title: const Text('Language'),
+              subtitle: Text(_selectedLocale == 'ar' ? 'Arabic' : 'English'),
+              trailing: SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'en', label: Text('EN')),
+                  ButtonSegment(value: 'ar', label: Text('AR')),
+                ],
+                selected: {_selectedLocale},
+                onSelectionChanged: (v) {
+                  setState(() => _selectedLocale = v.first);
+                  locale.setLocale(v.first);
+                },
+              ),
+            ),
+          ]),
+          // Role-specific settings
+          if (role != null) ...[
+            const SizedBox(height: 16),
+            _sectionHeader('${role.displayName} Preferences'),
+            if (role == UserRole.driver) _driverSettings(),
+            if (role == UserRole.customer) _customerSettings(),
+            if (role == UserRole.restaurantOwner) _vendorSettings(),
+            if (role == UserRole.superAdmin) _adminSettings(),
+          ],
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _driverSettings() {
+    return _settingsCard([
+      _switchTile('Auto-Accept Orders', 'Automatically accept new deliveries', false, (_) {}),
+      _switchTile('Show Earnings on Map', 'Display trip earnings on map', true, (_) {}),
+      ListTile(
+        leading: const Icon(Icons.maximize, color: TayyebGoTheme.primaryColor),
+        title: const Text('Max Delivery Radius'),
+        subtitle: const Text('15 km'),
+        trailing: const Icon(Icons.chevron_right, color: TayyebGoTheme.textMuted),
+      ),
+    ]);
+  }
+
+  Widget _customerSettings() {
+    return _settingsCard([
+      _switchTile('Save Recent Orders', 'Remember your recent orders', true, (_) {}),
+      _switchTile('Location-Based Suggestions', 'Show nearby restaurants', true, (_) {}),
+      ListTile(
+        leading: const Icon(Icons.location_on_outlined, color: TayyebGoTheme.primaryColor),
+        title: const Text('Default Delivery Address'),
+        subtitle: const Text('Set your default address'),
+        trailing: const Icon(Icons.chevron_right, color: TayyebGoTheme.textMuted),
+      ),
+    ]);
+  }
+
+  Widget _vendorSettings() {
+    return _settingsCard([
+      _switchTile('Auto-Print Orders', 'Print new orders automatically', false, (_) {}),
+      _switchTile('Notify on Low Stock', 'Alert when inventory is low', true, (_) {}),
+      ListTile(
+        leading: const Icon(Icons.schedule, color: TayyebGoTheme.primaryColor),
+        title: const Text('Business Hours'),
+        subtitle: const Text('9:00 AM – 11:00 PM'),
+        trailing: const Icon(Icons.chevron_right, color: TayyebGoTheme.textMuted),
+      ),
+    ]);
+  }
+
+  Widget _adminSettings() {
+    return _settingsCard([
+      _switchTile('Audit Log', 'Track all admin actions', true, (_) {}),
+      _switchTile('Maintenance Mode', 'Disable all user operations', false, (_) {}),
+      ListTile(
+        leading: const Icon(Icons.people_outline, color: TayyebGoTheme.primaryColor),
+        title: const Text('Max Admins Per Session'),
+        subtitle: const Text('5 concurrent sessions'),
+        trailing: const Icon(Icons.chevron_right, color: TayyebGoTheme.textMuted),
+      ),
+    ]);
+  }
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: TayyebGoTheme.primaryColor)),
+    );
+  }
+
+  Widget _settingsCard(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: TayyebGoTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8)],
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  SwitchListTile _switchTile(String title, String subtitle, bool value, ValueChanged<bool> onChanged) {
+    return SwitchListTile(
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      subtitle: Text(subtitle, style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 12)),
+      value: value,
+      onChanged: onChanged,
+      activeThumbColor: TayyebGoTheme.primaryColor,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    );
+  }
 }
