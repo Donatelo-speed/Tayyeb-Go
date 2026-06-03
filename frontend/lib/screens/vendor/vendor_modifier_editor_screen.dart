@@ -29,7 +29,7 @@ class _VendorModifierEditorScreenState
 
   List<ModifierGroup> _groups = [];
   bool _loading = true;
-  bool _saving  = false;
+  bool _saving = false;
   String? _error;
 
   @override
@@ -39,10 +39,15 @@ class _VendorModifierEditorScreenState
   }
 
   Future<void> _loadGroups() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final data = await _api.getProductModifiers(
-        widget.vendorId, widget.product.id.toString());
+        widget.vendorId,
+        widget.product.id.toString(),
+      );
       setState(() {
         _groups = (data['modifier_groups'] as List? ?? [])
             .map((g) => ModifierGroup.fromJson(g as Map<String, dynamic>))
@@ -50,7 +55,10 @@ class _VendorModifierEditorScreenState
         _loading = false;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loading = false; });
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
     }
   }
 
@@ -66,7 +74,10 @@ class _VendorModifierEditorScreenState
     setState(() => _saving = true);
     try {
       await _api.createModifierGroup(
-        widget.vendorId, widget.product.id.toString(), result);
+        widget.vendorId,
+        widget.product.id.toString(),
+        result,
+      );
       await _loadGroups();
     } catch (e) {
       _showError(e.toString());
@@ -87,7 +98,11 @@ class _VendorModifierEditorScreenState
     setState(() => _saving = true);
     try {
       await _api.updateModifierGroup(
-        widget.vendorId, widget.product.id.toString(), group.id, result);
+        widget.vendorId,
+        widget.product.id.toString(),
+        group.id,
+        result,
+      );
       await _loadGroups();
     } catch (e) {
       _showError(e.toString());
@@ -97,14 +112,19 @@ class _VendorModifierEditorScreenState
   }
 
   Future<void> _deleteGroup(ModifierGroup group) async {
-    final confirmed = await _confirm('Delete "${group.name}"?',
-        'All options in this group will be removed.');
+    final confirmed = await _confirm(
+      'Delete "${group.name}"?',
+      'All options in this group will be removed.',
+    );
     if (!confirmed) return;
 
     setState(() => _saving = true);
     try {
       await _api.deleteModifierGroup(
-        widget.vendorId, widget.product.id.toString(), group.id);
+        widget.vendorId,
+        widget.product.id.toString(),
+        group.id,
+      );
       await _loadGroups();
     } catch (e) {
       _showError(e.toString());
@@ -142,12 +162,14 @@ class _VendorModifierEditorScreenState
             content: Text(body),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel')),
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: TayyebGoTheme.errorColor,
-                    foregroundColor: Colors.white),
+                  backgroundColor: TayyebGoTheme.errorColor,
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text('Delete'),
               ),
@@ -161,8 +183,10 @@ class _VendorModifierEditorScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product.displayName,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          widget.product.displayName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: TayyebGoTheme.primaryColor,
         foregroundColor: Colors.white,
         bottom: PreferredSize(
@@ -171,7 +195,10 @@ class _VendorModifierEditorScreenState
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               'Modifier Groups',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.8),
+                fontSize: 13,
+              ),
             ),
           ),
         ),
@@ -181,9 +208,12 @@ class _VendorModifierEditorScreenState
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Center(
                 child: SizedBox(
-                  width: 20, height: 20,
+                  width: 20,
+                  height: 20,
                   child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2),
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
                 ),
               ),
             ),
@@ -192,25 +222,27 @@ class _VendorModifierEditorScreenState
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _ErrorState(error: _error!, onRetry: _loadGroups)
-              : _groups.isEmpty
-                  ? _EmptyState(onAdd: _createGroup)
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: _groups.length,
-                      itemBuilder: (_, i) => _GroupCard(
-                        group: _groups[i],
-                        onEdit:         () => _editGroup(_groups[i]),
-                        onDelete:       () => _deleteGroup(_groups[i]),
-                        onToggleOption: (opt) =>
-                            _toggleOption(_groups[i], opt),
-                      ),
-                    ),
+          ? _ErrorState(error: _error!, onRetry: _loadGroups)
+          : _groups.isEmpty
+          ? _EmptyState(onAdd: _createGroup)
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: _groups.length,
+              itemBuilder: (_, i) => _GroupCard(
+                group: _groups[i],
+                onEdit: () => _editGroup(_groups[i]),
+                onDelete: () => _deleteGroup(_groups[i]),
+                onToggleOption: (opt) => _toggleOption(_groups[i], opt),
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: TayyebGoTheme.primaryColor,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Add Group', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Add Group',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         onPressed: _createGroup,
       ),
     );
@@ -242,26 +274,38 @@ class _GroupCard extends StatelessWidget {
         children: [
           // Header row.
           ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
             title: Row(
               children: [
-                Text(group.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(
+                  group.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 if (group.isRequired)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 2),
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.shade50,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text('Required',
-                        style: TextStyle(
-                            fontSize: 10, color: Colors.red.shade700,
-                            fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Required',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.red.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -270,20 +314,28 @@ class _GroupCard extends StatelessWidget {
               '${group.options.length} option${group.options.length != 1 ? 's' : ''}  •  '
               'max ${group.maxSelections}',
               style: const TextStyle(
-                  fontSize: 12, color: TayyebGoTheme.textSecondary),
+                fontSize: 12,
+                color: TayyebGoTheme.textSecondary,
+              ),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined,
-                      color: TayyebGoTheme.primaryColor, size: 20),
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: TayyebGoTheme.primaryColor,
+                    size: 20,
+                  ),
                   onPressed: onEdit,
                   tooltip: 'Edit group',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline,
-                      color: TayyebGoTheme.errorColor, size: 20),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: TayyebGoTheme.errorColor,
+                    size: 20,
+                  ),
                   onPressed: onDelete,
                   tooltip: 'Delete group',
                 ),
@@ -292,16 +344,17 @@ class _GroupCard extends StatelessWidget {
           ),
           const Divider(height: 1),
           // Option rows.
-          ...group.options.map((opt) => _OptionRow(
-                option: opt,
-                onToggle: () => onToggleOption(opt),
-              )),
+          ...group.options.map(
+            (opt) =>
+                _OptionRow(option: opt, onToggle: () => onToggleOption(opt)),
+          ),
           if (group.options.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('No options — edit to add.',
-                  style: TextStyle(
-                      color: TayyebGoTheme.textMuted, fontSize: 13)),
+              child: Text(
+                'No options — edit to add.',
+                style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 13),
+              ),
             ),
         ],
       ),
@@ -321,14 +374,18 @@ class _OptionRow extends StatelessWidget {
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       leading: Icon(
-        option.isDefault ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        option.isDefault
+            ? Icons.radio_button_checked
+            : Icons.radio_button_unchecked,
         size: 18,
         color: TayyebGoTheme.primaryColor.withValues(alpha: 0.6),
       ),
       title: Text(option.name, style: const TextStyle(fontSize: 13)),
       subtitle: option.caloriesDelta != null
-          ? Text('${option.caloriesDelta! > 0 ? '+' : ''}${option.caloriesDelta} cal',
-              style: const TextStyle(fontSize: 11))
+          ? Text(
+              '${option.caloriesDelta! > 0 ? '+' : ''}${option.caloriesDelta} cal',
+              style: const TextStyle(fontSize: 11),
+            )
           : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -341,8 +398,8 @@ class _OptionRow extends StatelessWidget {
               color: option.priceDelta > 0
                   ? TayyebGoTheme.primaryColor
                   : option.priceDelta < 0
-                      ? Colors.green
-                      : TayyebGoTheme.textSecondary,
+                  ? Colors.green
+                  : TayyebGoTheme.textSecondary,
             ),
           ),
           const SizedBox(width: 10),
@@ -371,13 +428,13 @@ class _GroupFormSheet extends StatefulWidget {
 }
 
 class _GroupFormSheetState extends State<_GroupFormSheet> {
-  final _formKey  = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
 
   String _selectionType = 'single';
-  bool   _isRequired    = false;
-  int    _minSelections = 0;
-  int    _maxSelections = 1;
+  bool _isRequired = false;
+  int _minSelections = 0;
+  int _maxSelections = 1;
 
   // Local options before save.
   final List<_DraftOption> _options = [];
@@ -387,18 +444,24 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
     super.initState();
     final g = widget.existing;
     if (g != null) {
-      _nameCtrl.text    = g.name;
-      _selectionType    = g.selectionType == ModifierSelectionType.multi ? 'multi' : 'single';
-      _isRequired       = g.isRequired;
-      _minSelections    = g.minSelections;
-      _maxSelections    = g.maxSelections;
-      _options.addAll(g.options.map((o) => _DraftOption(
-            name:          o.name,
-            priceDelta:    o.priceDelta,
-            isDefault:     o.isDefault,
-            isAvailable:   o.isAvailable,
+      _nameCtrl.text = g.name;
+      _selectionType = g.selectionType == ModifierSelectionType.multi
+          ? 'multi'
+          : 'single';
+      _isRequired = g.isRequired;
+      _minSelections = g.minSelections;
+      _maxSelections = g.maxSelections;
+      _options.addAll(
+        g.options.map(
+          (o) => _DraftOption(
+            name: o.name,
+            priceDelta: o.priceDelta,
+            isDefault: o.isDefault,
+            isAvailable: o.isAvailable,
             caloriesDelta: o.caloriesDelta,
-          )));
+          ),
+        ),
+      );
     }
   }
 
@@ -420,18 +483,22 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
     if (!_formKey.currentState!.validate()) return;
 
     final payload = <String, dynamic>{
-      'name':            _nameCtrl.text.trim(),
-      'selection_type':  _selectionType,
-      'is_required':     _isRequired,
-      'min_selections':  _minSelections,
-      'max_selections':  _maxSelections,
-      'options': _options.map((o) => {
-        'name':           o.name,
-        'price_delta':    o.priceDelta,
-        'is_default':     o.isDefault,
-        'is_available':   o.isAvailable,
-        'calories_delta': o.caloriesDelta,
-      }).toList(),
+      'name': _nameCtrl.text.trim(),
+      'selection_type': _selectionType,
+      'is_required': _isRequired,
+      'min_selections': _minSelections,
+      'max_selections': _maxSelections,
+      'options': _options
+          .map(
+            (o) => {
+              'name': o.name,
+              'price_delta': o.priceDelta,
+              'is_default': o.isDefault,
+              'is_available': o.isAvailable,
+              'calories_delta': o.caloriesDelta,
+            },
+          )
+          .toList(),
     };
 
     Navigator.pop(context, payload);
@@ -441,8 +508,8 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
-      maxChildSize:     0.95,
-      expand:           false,
+      maxChildSize: 0.95,
+      expand: false,
       builder: (_, ctrl) => Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -456,10 +523,12 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
               Center(
                 child: Container(
                   margin: const EdgeInsets.only(top: 10, bottom: 6),
-                  width: 36, height: 4,
+                  width: 36,
+                  height: 4,
                   decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2)),
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
               Padding(
@@ -472,15 +541,20 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                             ? 'New Modifier Group'
                             : 'Edit Group',
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     TextButton(
                       onPressed: _submit,
-                      child: const Text('Save',
-                          style: TextStyle(
-                              color: TayyebGoTheme.primaryColor,
-                              fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(
+                          color: TayyebGoTheme.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -498,10 +572,12 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                         labelText: 'Group Name',
                         hintText: 'e.g. Protein, Extras, Remove Items',
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? 'Name required' : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Name required'
+                          : null,
                     ),
                     const SizedBox(height: 14),
 
@@ -514,13 +590,18 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                             decoration: InputDecoration(
                               labelText: 'Type',
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                             items: const [
                               DropdownMenuItem(
-                                  value: 'single', child: Text('Single (radio)')),
+                                value: 'single',
+                                child: Text('Single (radio)'),
+                              ),
                               DropdownMenuItem(
-                                  value: 'multi', child: Text('Multi (checkbox)')),
+                                value: 'multi',
+                                child: Text('Multi (checkbox)'),
+                              ),
                             ],
                             onChanged: (v) {
                               setState(() {
@@ -533,12 +614,13 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                         const SizedBox(width: 12),
                         Column(
                           children: [
-                            const Text('Required',
-                                style: TextStyle(fontSize: 12)),
+                            const Text(
+                              'Required',
+                              style: TextStyle(fontSize: 12),
+                            ),
                             Switch(
                               value: _isRequired,
-                              onChanged: (v) =>
-                                  setState(() => _isRequired = v),
+                              onChanged: (v) => setState(() => _isRequired = v),
                               activeThumbColor: TayyebGoTheme.primaryColor,
                             ),
                           ],
@@ -577,9 +659,13 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Options',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
+                        const Text(
+                          'Options',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
                         TextButton.icon(
                           onPressed: _addOption,
                           icon: const Icon(Icons.add, size: 18),
@@ -587,20 +673,24 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                         ),
                       ],
                     ),
-                    ..._options.asMap().entries.map((e) => _OptionFormRow(
-                          index: e.key,
-                          option: e.value,
-                          onChanged: (o) =>
-                              setState(() => _options[e.key] = o),
-                          onRemove: () => _removeOption(e.key),
-                        )),
+                    ..._options.asMap().entries.map(
+                      (e) => _OptionFormRow(
+                        index: e.key,
+                        option: e.value,
+                        onChanged: (o) => setState(() => _options[e.key] = o),
+                        onRemove: () => _removeOption(e.key),
+                      ),
+                    ),
                     if (_options.isEmpty)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(20),
-                          child: Text('No options yet.',
-                              style:
-                                  TextStyle(color: TayyebGoTheme.textSecondary)),
+                          child: Text(
+                            'No options yet.',
+                            style: TextStyle(
+                              color: TayyebGoTheme.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
                   ],
@@ -617,17 +707,17 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
 // ─── Draft option (mutable local) ────────────────────────────────────────────
 
 class _DraftOption {
-  String  name;
-  double  priceDelta;
-  bool    isDefault;
-  bool    isAvailable;
-  int?    caloriesDelta;
+  String name;
+  double priceDelta;
+  bool isDefault;
+  bool isAvailable;
+  int? caloriesDelta;
 
   _DraftOption({
-    this.name          = '',
-    this.priceDelta    = 0.0,
-    this.isDefault     = false,
-    this.isAvailable   = true,
+    this.name = '',
+    this.priceDelta = 0.0,
+    this.isDefault = false,
+    this.isAvailable = true,
     this.caloriesDelta,
   });
 
@@ -638,16 +728,16 @@ class _DraftOption {
     bool? isAvailable,
     int? caloriesDelta,
   }) => _DraftOption(
-    name:          name          ?? this.name,
-    priceDelta:    priceDelta    ?? this.priceDelta,
-    isDefault:     isDefault     ?? this.isDefault,
-    isAvailable:   isAvailable   ?? this.isAvailable,
+    name: name ?? this.name,
+    priceDelta: priceDelta ?? this.priceDelta,
+    isDefault: isDefault ?? this.isDefault,
+    isAvailable: isAvailable ?? this.isAvailable,
     caloriesDelta: caloriesDelta ?? this.caloriesDelta,
   );
 }
 
 class _OptionFormRow extends StatelessWidget {
-  final int          index;
+  final int index;
   final _DraftOption option;
   final ValueChanged<_DraftOption> onChanged;
   final VoidCallback onRemove;
@@ -680,7 +770,8 @@ class _OptionFormRow extends StatelessWidget {
                     labelText: 'Option ${index + 1} Name',
                     isDense: true,
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onChanged: (v) => onChanged(option.copyWith(name: v)),
                 ),
@@ -695,18 +786,24 @@ class _OptionFormRow extends StatelessWidget {
                     prefixText: '\$',
                     isDense: true,
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true, signed: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
                   onChanged: (v) => onChanged(
                     option.copyWith(priceDelta: double.tryParse(v) ?? 0),
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close,
-                    color: TayyebGoTheme.errorColor, size: 18),
+                icon: const Icon(
+                  Icons.close,
+                  color: TayyebGoTheme.errorColor,
+                  size: 18,
+                ),
                 onPressed: onRemove,
               ),
             ],
@@ -726,7 +823,8 @@ class _OptionFormRow extends StatelessWidget {
                 active: option.isAvailable,
                 activeColor: Colors.green,
                 onTap: () => onChanged(
-                    option.copyWith(isAvailable: !option.isAvailable)),
+                  option.copyWith(isAvailable: !option.isAvailable),
+                ),
               ),
             ],
           ),
@@ -758,8 +856,7 @@ class _SmallChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? activeColor.withValues(alpha: 0.12) : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: active ? activeColor : Colors.transparent),
+          border: Border.all(color: active ? activeColor : Colors.transparent),
         ),
         child: Text(
           label,
@@ -794,21 +891,25 @@ class _IntStepper extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 12, color: TayyebGoTheme.textSecondary)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: TayyebGoTheme.textSecondary,
+          ),
+        ),
         const SizedBox(height: 4),
         Row(
           children: [
             IconButton(
               icon: const Icon(Icons.remove_circle_outline, size: 22),
               color: TayyebGoTheme.primaryColor,
-              onPressed:
-                  value > min ? () => onChanged(value - 1) : null,
+              onPressed: value > min ? () => onChanged(value - 1) : null,
             ),
-            Text('$value',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              '$value',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             IconButton(
               icon: const Icon(Icons.add_circle_outline, size: 22),
               color: TayyebGoTheme.primaryColor,
@@ -835,9 +936,10 @@ class _EmptyState extends StatelessWidget {
         children: [
           Icon(Icons.tune, size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 12),
-          const Text('No modifier groups yet.',
-              style: TextStyle(
-                  color: TayyebGoTheme.textSecondary, fontSize: 15)),
+          const Text(
+            'No modifier groups yet.',
+            style: TextStyle(color: TayyebGoTheme.textSecondary, fontSize: 15),
+          ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             icon: const Icon(Icons.add),
@@ -867,11 +969,17 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline,
-                color: TayyebGoTheme.errorColor, size: 48),
+            const Icon(
+              Icons.error_outline,
+              color: TayyebGoTheme.errorColor,
+              size: 48,
+            ),
             const SizedBox(height: 12),
-            Text(error, textAlign: TextAlign.center,
-                style: const TextStyle(color: TayyebGoTheme.errorColor)),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: TayyebGoTheme.errorColor),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
           ],

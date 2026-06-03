@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum PaymentMethod { cash, shamCash, paymera, visa }
+
 enum PaymentStatus { pending, processing, completed, failed, refunded }
 
 class PaymentResult {
@@ -20,10 +21,11 @@ class PaymentResult {
 }
 
 class PaymentService {
+
   // =====================================================
   // SHAM CASH INTEGRATION
   // =====================================================
-  
+
   static Future<PaymentResult> payWithShamCash({
     required String orderId,
     required double amount,
@@ -42,10 +44,10 @@ class PaymentService {
       //     'reference': orderId,
       //   }),
       // );
-      
+
       // Demo: Simulate successful payment
       await Future.delayed(const Duration(seconds: 2));
-      
+
       return PaymentResult(
         success: true,
         transactionId: 'SC_${DateTime.now().millisecondsSinceEpoch}',
@@ -63,11 +65,11 @@ class PaymentService {
       );
     }
   }
-  
+
   // =====================================================
   // PAYMERA INTEGRATION
   // =====================================================
-  
+
   static Future<PaymentResult> payWithPaymera({
     required String orderId,
     required double amount,
@@ -76,10 +78,10 @@ class PaymentService {
     try {
       // In production: Redirect to PAYMERA webview
       // Then wait for callback
-      
+
       // Demo: Simulate
       await Future.delayed(const Duration(seconds: 2));
-      
+
       return PaymentResult(
         success: true,
         transactionId: 'PM_${DateTime.now().millisecondsSinceEpoch}',
@@ -98,11 +100,11 @@ class PaymentService {
       );
     }
   }
-  
+
   // =====================================================
   // VISA (Coming Soon Placeholder)
   // =====================================================
-  
+
   static PaymentResult getVisaPlaceholder() {
     return PaymentResult(
       success: false,
@@ -110,11 +112,11 @@ class PaymentService {
       errorMessage: 'Visa/MasterCard integration coming soon!',
     );
   }
-  
+
   // =====================================================
   // PROCESS CHECKOUT
   // =====================================================
-  
+
   static Future<PaymentResult> processCheckout({
     required String orderId,
     required double amount,
@@ -131,7 +133,7 @@ class PaymentService {
           status: PaymentStatus.pending, // Cash collected on delivery
           providerData: {'method': 'cash_on_delivery'},
         );
-        
+
       case PaymentMethod.shamCash:
         return await payWithShamCash(
           orderId: orderId,
@@ -139,14 +141,14 @@ class PaymentService {
           customerPhone: customerPhone ?? '',
           merchantAccount: merchantAccount ?? '',
         );
-        
+
       case PaymentMethod.paymera:
         return await payWithPaymera(
           orderId: orderId,
           amount: amount,
           walletId: walletId ?? '',
         );
-        
+
       case PaymentMethod.visa:
         return getVisaPlaceholder();
     }
@@ -162,7 +164,7 @@ class PaymentSelectionSheet extends StatelessWidget {
   final Function(PaymentMethod) onSelect;
   final bool shamCashEnabled;
   final bool paymeraEnabled;
-  
+
   const PaymentSelectionSheet({
     super.key,
     required this.orderTotal,
@@ -181,21 +183,15 @@ class PaymentSelectionSheet extends StatelessWidget {
         children: [
           const Text(
             'Select Payment Method',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             'Total: ${orderTotal.toStringAsFixed(0)} SYP',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 24),
-          
+
           // Cash on Delivery
           _PaymentOption(
             icon: Icons.money,
@@ -203,7 +199,7 @@ class PaymentSelectionSheet extends StatelessWidget {
             subtitle: 'Pay when you receive your order',
             onTap: () => onSelect(PaymentMethod.cash),
           ),
-          
+
           // Sham Cash
           if (shamCashEnabled)
             _PaymentOption(
@@ -214,7 +210,7 @@ class PaymentSelectionSheet extends StatelessWidget {
               badge: 'Popular',
               badgeColor: Colors.green,
             ),
-          
+
           // PAYMERA
           if (paymeraEnabled)
             _PaymentOption(
@@ -223,7 +219,7 @@ class PaymentSelectionSheet extends StatelessWidget {
               subtitle: 'Scan QR or pay with wallet',
               onTap: () => onSelect(PaymentMethod.paymera),
             ),
-          
+
           // Visa (Coming Soon)
           _PaymentOption(
             icon: Icons.credit_card,
@@ -232,7 +228,7 @@ class PaymentSelectionSheet extends StatelessWidget {
             onTap: null, // Disabled
             isDisabled: true,
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),
@@ -248,7 +244,7 @@ class _PaymentOption extends StatelessWidget {
   final String? badge;
   final Color? badgeColor;
   final bool isDisabled;
-  
+
   const _PaymentOption({
     required this.icon,
     required this.title,
@@ -274,8 +270,8 @@ class _PaymentOption extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isDisabled 
-                ? Colors.grey.shade300 
+            color: isDisabled
+                ? Colors.grey.shade300
                 : Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -298,7 +294,9 @@ class _PaymentOption extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: badgeColor?.withValues(alpha: 0.2) ?? Colors.blue.withValues(alpha: 0.2),
+                  color:
+                      badgeColor?.withValues(alpha: 0.2) ??
+                      Colors.blue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -319,7 +317,7 @@ class _PaymentOption extends StatelessWidget {
             color: isDisabled ? Colors.grey : Colors.grey.shade600,
           ),
         ),
-        trailing: isDisabled 
+        trailing: isDisabled
             ? const Icon(Icons.lock, color: Colors.grey)
             : const Icon(Icons.chevron_right),
         onTap: onTap,

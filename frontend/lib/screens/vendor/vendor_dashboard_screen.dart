@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/vendor_dashboard_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/tayyebgo_theme.dart';
-import '../../widgets/responsive_layout.dart' show DashboardShell, DestItem;
+import '../../widgets/responsive_layout.dart'
+    show DashboardShell, DestItem;
 import '../../widgets/shimmer_loading.dart';
 
 class VendorDashboardScreen extends StatefulWidget {
@@ -29,7 +30,9 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VendorDashboardProvider>().loadVendorDashboard(widget.vendorId);
+      context.read<VendorDashboardProvider>().loadVendorDashboard(
+        widget.vendorId,
+      );
     });
   }
 
@@ -38,10 +41,26 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
     final auth = context.watch<AuthProvider>();
 
     final destinations = const [
-      DestItem(label: 'Dashboard', icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard),
-      DestItem(label: 'Orders', icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long),
-      DestItem(label: 'Menu', icon: Icons.menu_book_outlined, selectedIcon: Icons.menu_book),
-      DestItem(label: 'Analytics', icon: Icons.analytics_outlined, selectedIcon: Icons.analytics),
+      DestItem(
+        label: 'Dashboard',
+        icon: Icons.dashboard_outlined,
+        selectedIcon: Icons.dashboard,
+      ),
+      DestItem(
+        label: 'Orders',
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+      ),
+      DestItem(
+        label: 'Menu',
+        icon: Icons.menu_book_outlined,
+        selectedIcon: Icons.menu_book,
+      ),
+      DestItem(
+        label: 'Analytics',
+        icon: Icons.analytics_outlined,
+        selectedIcon: Icons.analytics,
+      ),
     ];
 
     final screens = [
@@ -70,7 +89,11 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                     gradient: TayyebGoTheme.primaryGradient,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.restaurant, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.restaurant,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -84,7 +107,10 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: TayyebGoTheme.successColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -92,9 +118,20 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.circle, size: 8, color: TayyebGoTheme.successColor),
+                      Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: TayyebGoTheme.successColor,
+                      ),
                       SizedBox(width: 4),
-                      Text('Open', style: TextStyle(fontSize: 12, color: TayyebGoTheme.successColor, fontWeight: FontWeight.w600)),
+                      Text(
+                        'Open',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: TayyebGoTheme.successColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -139,16 +176,22 @@ class _DashboardTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Good ${_greeting()}, Owner!',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  'Good ${_greeting()}, Owner!',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Here\'s your restaurant overview',
-                    style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14)),
+                Text(
+                  'Here\'s your restaurant overview',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ),
@@ -200,8 +243,10 @@ class _DashboardTab extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Quick Actions
-          const Text('Quick Actions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Quick Actions',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -230,14 +275,22 @@ class _DashboardTab extends StatelessWidget {
           const SizedBox(height: 24),
 
           if (data != null && data.recentOrders.isNotEmpty) ...[
-            const Text('Recent Orders',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Recent Orders',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
-            ...data.recentOrders.take(5).map((order) => _OrderCard(
-                  order: order,
-                  onStatusTap: () => provider.updateOrderStatus(
-                      order.orderId, _nextStatus(order.status)),
-                )),
+            ...data.recentOrders
+                .take(5)
+                .map(
+                  (order) => _OrderCard(
+                    order: order,
+                    onStatusTap: () => provider.updateOrderStatus(
+                      order.orderId,
+                      _nextStatus(order.status),
+                    ),
+                  ),
+                ),
           ],
         ],
       ),
@@ -304,14 +357,17 @@ class _DashboardTab extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text('Add New Product',
-                      style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Add New Product',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: nameCtrl,
                     decoration: const InputDecoration(
-                        labelText: 'Product Name', hintText: 'Enter name'),
+                      labelText: 'Product Name',
+                      hintText: 'Enter name',
+                    ),
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Required' : null,
                   ),
@@ -319,14 +375,18 @@ class _DashboardTab extends StatelessWidget {
                   TextFormField(
                     controller: descCtrl,
                     decoration: const InputDecoration(
-                        labelText: 'Description', hintText: 'Enter description'),
+                      labelText: 'Description',
+                      hintText: 'Enter description',
+                    ),
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: priceCtrl,
                     decoration: const InputDecoration(
-                        labelText: 'Price', hintText: '0.00'),
+                      labelText: 'Price',
+                      hintText: '0.00',
+                    ),
                     keyboardType: TextInputType.number,
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Required' : null,
@@ -335,7 +395,9 @@ class _DashboardTab extends StatelessWidget {
                   TextFormField(
                     controller: catCtrl,
                     decoration: const InputDecoration(
-                        labelText: 'Category', hintText: 'e.g. Main Course'),
+                      labelText: 'Category',
+                      hintText: 'e.g. Main Course',
+                    ),
                   ),
                   const SizedBox(height: 32),
                   SizedBox(
@@ -348,27 +410,29 @@ class _DashboardTab extends StatelessWidget {
                           await FirebaseFirestore.instance
                               .collection('menu_items')
                               .add({
-                            'vendorId': vendorId,
-                            'name': nameCtrl.text,
-                            'description': descCtrl.text,
-                            'price': double.tryParse(priceCtrl.text) ?? 0,
-                            'category': catCtrl.text,
-                            'isAvailable': true,
-                            'createdAt': FieldValue.serverTimestamp(),
-                          });
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                                'vendorId': vendorId,
+                                'name': nameCtrl.text,
+                                'description': descCtrl.text,
+                                'price': double.tryParse(priceCtrl.text) ?? 0,
+                                'category': catCtrl.text,
+                                'isAvailable': true,
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(ctx).showSnackBar(
                               const SnackBar(
-                                  content: Text('Product added successfully')),
+                                content: Text('Product added successfully'),
+                              ),
                             );
                           }
                         } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
                               SnackBar(
-                                  content: Text('Failed: $e'),
-                                  backgroundColor: TayyebGoTheme.errorColor),
+                                content: Text('Failed: $e'),
+                                backgroundColor: TayyebGoTheme.errorColor,
+                              ),
                             );
                           }
                         }
@@ -407,7 +471,8 @@ class _DashboardTab extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                width: 40, height: 4,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
@@ -415,22 +480,26 @@ class _DashboardTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Edit Restaurant Info',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text(
+              'Edit Restaurant Info',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 24),
             TextField(
               controller: phoneCtrl,
               decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  hintText: 'Enter phone number'),
+                labelText: 'Phone Number',
+                hintText: 'Enter phone number',
+              ),
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: hoursCtrl,
               decoration: const InputDecoration(
-                  labelText: 'Business Hours',
-                  hintText: 'e.g. 9:00 AM - 11:00 PM'),
+                labelText: 'Business Hours',
+                hintText: 'e.g. 9:00 AM - 11:00 PM',
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -443,22 +512,24 @@ class _DashboardTab extends StatelessWidget {
                         .collection('vendors')
                         .doc(vendorId)
                         .update({
-                      'phone': phoneCtrl.text,
-                      'businessHours': hoursCtrl.text,
-                    });
-                    if (ctx.mounted) Navigator.pop(ctx);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                          'phone': phoneCtrl.text,
+                          'businessHours': hoursCtrl.text,
+                        });
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(ctx).showSnackBar(
                         const SnackBar(
-                            content: Text('Info updated successfully')),
+                          content: Text('Info updated successfully'),
+                        ),
                       );
                     }
                   } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                    if (ctx.mounted) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
                         SnackBar(
-                            content: Text('Failed: $e'),
-                            backgroundColor: TayyebGoTheme.errorColor),
+                          content: Text('Failed: $e'),
+                          backgroundColor: TayyebGoTheme.errorColor,
+                        ),
                       );
                     }
                   }
@@ -476,8 +547,7 @@ class _DashboardTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Vendor QR Code'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -491,15 +561,20 @@ class _DashboardTab extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Center(
-                child: Icon(Icons.qr_code,
-                    size: 140, color: TayyebGoTheme.primaryColor),
+                child: Icon(
+                  Icons.qr_code,
+                  size: 140,
+                  color: TayyebGoTheme.primaryColor,
+                ),
               ),
             ),
             const SizedBox(height: 16),
             Text(
               'tayyebgo://vendor/$vendorId',
               style: const TextStyle(
-                  fontSize: 12, color: TayyebGoTheme.textSecondary),
+                fontSize: 12,
+                color: TayyebGoTheme.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -508,10 +583,11 @@ class _DashboardTab extends StatelessWidget {
           TextButton(
             onPressed: () {
               Clipboard.setData(
-                  ClipboardData(text: 'tayyebgo://vendor/$vendorId'));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Link copied!')),
+                ClipboardData(text: 'tayyebgo://vendor/$vendorId'),
               );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Link copied!')));
             },
             child: const Text('Copy Link'),
           ),
@@ -556,16 +632,21 @@ class _MetricCard extends StatelessWidget {
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 12),
-          Text(value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold)),
-          Text(label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                  fontSize: 12, color: TayyebGoTheme.textSecondary)),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 12,
+              color: TayyebGoTheme.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -602,12 +683,15 @@ class _ActionButton extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 28),
               const SizedBox(height: 8),
-              Text(label,
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: color),
-                  textAlign: TextAlign.center),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -635,40 +719,59 @@ class _OrderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(order.customer,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(
+                  order.customer,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(order.items,
-                    style: const TextStyle(
-                        fontSize: 12, color: TayyebGoTheme.textSecondary),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                Text(
+                  order.items,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: TayyebGoTheme.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 4),
-                Text('\$${order.total.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: TayyebGoTheme.primaryColor)),
+                Text(
+                  '\$${order.total.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: TayyebGoTheme.primaryColor,
+                  ),
+                ),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(order.time,
-                  style: const TextStyle(
-                      fontSize: 11, color: TayyebGoTheme.textMuted)),
+              Text(
+                order.time,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: TayyebGoTheme.textMuted,
+                ),
+              ),
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: onStatusTap,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     order.status.replaceAll('_', ' '),
@@ -705,14 +808,17 @@ class _OrdersTab extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              const Text('All Orders',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'All Orders',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const Spacer(),
               Text(
                 '${data?.recentOrders.length ?? 0} orders',
                 style: const TextStyle(
-                    fontSize: 13, color: TayyebGoTheme.textSecondary),
+                  fontSize: 13,
+                  color: TayyebGoTheme.textSecondary,
+                ),
               ),
             ],
           ),
@@ -725,12 +831,19 @@ class _OrdersTab extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.inbox_outlined,
-                      size: 64, color: TayyebGoTheme.textMuted),
+                  Icon(
+                    Icons.inbox_outlined,
+                    size: 64,
+                    color: TayyebGoTheme.textMuted,
+                  ),
                   SizedBox(height: 16),
-                  Text('No orders yet',
-                      style: TextStyle(
-                          fontSize: 16, color: TayyebGoTheme.textSecondary)),
+                  Text(
+                    'No orders yet',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: TayyebGoTheme.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -744,9 +857,10 @@ class _OrdersTab extends StatelessWidget {
                 final order = data.recentOrders[index];
                 return _OrderCard(
                   order: order,
-                  onStatusTap: () => provider
-                      .updateOrderStatus(
-                          order.orderId, _nextStatus(order.status)),
+                  onStatusTap: () => provider.updateOrderStatus(
+                    order.orderId,
+                    _nextStatus(order.status),
+                  ),
                 );
               },
             ),
@@ -789,11 +903,16 @@ class _MenuTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline,
-                    size: 48, color: TayyebGoTheme.errorColor),
+                const Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: TayyebGoTheme.errorColor,
+                ),
                 const SizedBox(height: 12),
-                Text('Error loading menu: ${snapshot.error}',
-                    style: const TextStyle(color: TayyebGoTheme.textSecondary)),
+                Text(
+                  'Error loading menu: ${snapshot.error}',
+                  style: const TextStyle(color: TayyebGoTheme.textSecondary),
+                ),
               ],
             ),
           );
@@ -809,22 +928,28 @@ class _MenuTab extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const Text('Menu Items',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Menu Items',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   const Spacer(),
-                  Text('${items.length} items',
-                      style: const TextStyle(
-                          fontSize: 13, color: TayyebGoTheme.textSecondary)),
+                  Text(
+                    '${items.length} items',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: TayyebGoTheme.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: items.isEmpty
                   ? const Center(
-                      child: Text('No menu items yet',
-                          style:
-                              TextStyle(color: TayyebGoTheme.textSecondary)),
+                      child: Text(
+                        'No menu items yet',
+                        style: TextStyle(color: TayyebGoTheme.textSecondary),
+                      ),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -842,43 +967,48 @@ class _MenuTab extends StatelessWidget {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: TayyebGoTheme.primaryColor
-                                      .withValues(alpha: 0.1),
+                                  color: TayyebGoTheme.primaryColor.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(Icons.restaurant,
-                                    color: TayyebGoTheme.primaryColor),
+                                child: const Icon(
+                                  Icons.restaurant,
+                                  color: TayyebGoTheme.primaryColor,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                        item['name']?.toString() ?? '',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14)),
+                                      item['name']?.toString() ?? '',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
                                     if (item['description'] != null)
                                       Text(
-                                          item['description'].toString(),
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color:
-                                                  TayyebGoTheme.textSecondary),
-                                          maxLines: 1,
-                                          overflow:
-                                              TextOverflow.ellipsis),
+                                        item['description'].toString(),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: TayyebGoTheme.textSecondary,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                   ],
                                 ),
                               ),
                               Text(
                                 '\$${(item['price'] as num?)?.toDouble().toStringAsFixed(2) ?? '0.00'}',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: TayyebGoTheme.primaryColor),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: TayyebGoTheme.primaryColor,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Container(
@@ -886,9 +1016,7 @@ class _MenuTab extends StatelessWidget {
                                 height: 10,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: (item['isAvailable'] as bool?)
-                                            ??
-                                      true
+                                  color: (item['isAvailable'] as bool?) ?? true
                                       ? TayyebGoTheme.successColor
                                       : TayyebGoTheme.errorColor,
                                 ),
@@ -921,8 +1049,10 @@ class _AnalyticsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Analytics',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text(
+            'Analytics',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 20),
           if (provider.isLoading)
             const Column(
@@ -942,8 +1072,7 @@ class _AnalyticsTab extends StatelessWidget {
             ),
             _AnalyticsRow(
               label: 'Revenue Today',
-              value:
-                  '\$${(data?.todayRevenue ?? 0).toStringAsFixed(2)}',
+              value: '\$${(data?.todayRevenue ?? 0).toStringAsFixed(2)}',
               icon: Icons.attach_money,
             ),
             _AnalyticsRow(
@@ -957,13 +1086,19 @@ class _AnalyticsTab extends StatelessWidget {
               icon: Icons.feedback,
             ),
             const SizedBox(height: 24),
-            const Text('Order Status Breakdown',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Order Status Breakdown',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             if (data != null)
-              ...['pending', 'accepted', 'preparing', 'ready_for_driver', 'delivered']
-                  .map((s) {
+              ...[
+                'pending',
+                'accepted',
+                'preparing',
+                'ready_for_driver',
+                'delivered',
+              ].map((s) {
                 final count = data.recentOrders
                     .where((o) => o.status == s)
                     .length;
@@ -980,14 +1115,18 @@ class _AnalyticsTab extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(s.replaceAll('_', ' '),
-                          style: const TextStyle(
-                              fontSize: 13,
-                              color: TayyebGoTheme.textSecondary)),
+                      Text(
+                        s.replaceAll('_', ' '),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: TayyebGoTheme.textSecondary,
+                        ),
+                      ),
                       const Spacer(),
-                      Text('$count',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w600)),
+                      Text(
+                        '$count',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 );
@@ -1029,13 +1168,18 @@ class _AnalyticsRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(label,
-                style: const TextStyle(
-                    fontSize: 14, color: TayyebGoTheme.textSecondary)),
-          ),
-          Text(value,
+            child: Text(
+              label,
               style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16)),
+                fontSize: 14,
+                color: TayyebGoTheme.textSecondary,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ],
       ),
     );

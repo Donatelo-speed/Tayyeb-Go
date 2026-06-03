@@ -83,20 +83,23 @@ class OrderStateMachine {
         if (!snap.exists) throw Exception('Order not found');
 
         final history = List<Map<String, dynamic>>.from(
-            (snap.data() as Map<String, dynamic>)['statusHistory'] ?? []);
+          (snap.data() as Map<String, dynamic>)['statusHistory'] ?? [],
+        );
         history.add({
           'status': newStatus,
           'timestamp': FieldValue.serverTimestamp(),
           'actorId': actorId ?? '',
-          'note': note,
+          'note': ?note,
         });
 
         tx.update(ref, {
           'status': newStatus,
           'statusHistory': history,
           'updatedAt': FieldValue.serverTimestamp(),
-          if (newStatus == 'accepted') 'acceptedAt': FieldValue.serverTimestamp(),
-          if (newStatus == 'delivered') 'deliveredAt': FieldValue.serverTimestamp(),
+          if (newStatus == 'accepted')
+            'acceptedAt': FieldValue.serverTimestamp(),
+          if (newStatus == 'delivered')
+            'deliveredAt': FieldValue.serverTimestamp(),
         });
       });
 
