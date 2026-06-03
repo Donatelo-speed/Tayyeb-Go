@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -144,6 +145,16 @@ class AuthProvider extends ChangeNotifier {
 
   Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
+      UserRole claimsRole = UserRole.customer;
+      try {
+        final idTokenResult = await firebaseUser.getIdTokenResult();
+        final claims = idTokenResult.claims ?? {};
+        final roleStr = claims['role'] as String?;
+        if (roleStr != null) {
+          claimsRole = UserRole.fromString(roleStr);
+        }
+      } catch (_) {}
+
       final doc = await FirebaseFirestore.instance
           .collection('Users')
           .doc(firebaseUser.uid)
@@ -151,6 +162,9 @@ class AuthProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
       if (doc.exists) {
         _user = UserModel.fromFirestore(doc);
+        if (_user!.role != claimsRole && claimsRole != UserRole.customer) {
+          _user = _user!.copyWith(role: claimsRole);
+        }
       } else {
         final now = DateTime.now();
         _user = UserModel(
@@ -158,7 +172,7 @@ class AuthProvider extends ChangeNotifier {
           email: firebaseUser.email ?? '',
           displayName: firebaseUser.displayName ?? '',
           photoUrl: firebaseUser.photoURL,
-          role: UserRole.customer,
+          role: claimsRole,
           createdAt: now,
           updatedAt: now,
         );

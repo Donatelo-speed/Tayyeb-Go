@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/enums/user_role.dart';
@@ -73,17 +74,15 @@ class UserRepository {
 
   Future<Result<void>> updateRole(String uid, UserRole role, {String? vendorId}) async {
     try {
-      final updates = <String, dynamic>{
+      final fn = FirebaseFunctions.instance.httpsCallable('setUserRole');
+      await fn({
+        'uid': uid,
         'role': role.value,
-        'updatedAt': FieldValue.serverTimestamp(),
-      };
-      if (vendorId != null) {
-        updates['restaurantId'] = vendorId;
-      } else if (role == UserRole.customer || role == UserRole.driver) {
-        updates['restaurantId'] = FieldValue.delete();
-      }
-      await _userRef(uid).update(updates);
+        if (vendorId != null) 'restaurantId': vendorId,
+      });
       return const Success(null);
+    } on FirebaseFunctionsException catch (e) {
+      return Failure(e.message ?? 'Could not update role.', error: e);
     } catch (e) {
       return Failure('Could not update role.', error: e);
     }

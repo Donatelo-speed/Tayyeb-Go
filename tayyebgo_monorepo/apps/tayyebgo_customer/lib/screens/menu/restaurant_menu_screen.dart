@@ -12,7 +12,7 @@ class RestaurantMenuScreen extends StatefulWidget {
     super.key,
     required this.restaurantId,
     required this.restaurantName,
-    this.commissionPercent = 15.0,
+    this.commissionPercent = AppConstants.commissionPercent,
   });
 
   @override

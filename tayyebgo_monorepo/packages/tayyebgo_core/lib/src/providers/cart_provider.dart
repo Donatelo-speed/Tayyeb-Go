@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/app_constants.dart';
 import '../models/product.dart';
 import '../models/modifier.dart';
 import '../models/cart_line_item.dart';
@@ -23,7 +24,7 @@ class CartProvider extends ChangeNotifier {
   String? _appliedCouponCode;
   double _couponDiscount = 0.0;
   double _deliveryOverrideFee = -1.0;
-  double _taxRate = 0.08;
+  double _taxRate = AppConstants.taxRate;
 
   String? get restaurantId => _restaurantId;
   String? get restaurantName => _restaurantName;
@@ -35,7 +36,7 @@ class CartProvider extends ChangeNotifier {
   double get subtotal =>
       _lines.values.fold(0.0, (sum, l) => sum + l.lineTotal);
   double get deliveryFee =>
-      _deliveryOverrideFee >= 0 ? _deliveryOverrideFee : (subtotal > 50.0 ? 0.0 : 5.0);
+      _deliveryOverrideFee >= 0 ? _deliveryOverrideFee : (subtotal > AppConstants.freeDeliveryThreshold ? 0.0 : AppConstants.deliveryFee);
   double get tax => subtotal * _taxRate;
   double get promoDiscount => _couponDiscount;
   double get grandTotal =>
@@ -77,12 +78,12 @@ class CartProvider extends ChangeNotifier {
       _appliedCouponCode = data['coupon_code'] as String?;
       _couponDiscount = (data['coupon_discount'] as num?)?.toDouble() ?? 0.0;
       _deliveryOverrideFee = (data['delivery_override_fee'] as num?)?.toDouble() ?? -1.0;
-      _taxRate = (data['tax_rate'] as num?)?.toDouble() ?? 0.08;
+      _taxRate = (data['tax_rate'] as num?)?.toDouble() ?? AppConstants.taxRate;
       notifyListeners();
     } catch (_) {}
   }
 
-  void setRestaurant(String id, String name, {double commissionPercent = 15.0}) {
+  void setRestaurant(String id, String name, {double commissionPercent = AppConstants.commissionPercent}) {
     _restaurantId = id;
     _restaurantName = name;
     _commissionPercent = commissionPercent;

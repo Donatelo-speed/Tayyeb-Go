@@ -107,6 +107,7 @@ export 'src/theme/tayyebgo_theme.dart';
 export 'src/firebase/firebase_options.dart';
 
 export 'src/constants/route_names.dart' show Routes;
+export 'src/constants/app_constants.dart' show AppConstants;
 export 'src/utils/result.dart' show Result, Success, Failure, VoidResult;
 
 export 'src/repositories/auth_repository.dart' show AuthRepository;

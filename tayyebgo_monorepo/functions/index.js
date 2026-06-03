@@ -113,6 +113,106 @@ exports.cleanupNotifications = functions.scheduler
   });
 
 /**
+ * Helper: check if the caller is a super admin.
+ * Checks custom claims first, then falls back to Firestore for migration.
+ */
+async function isSuperAdmin(request) {
+  if (!request.auth) return false;
+  const claims = request.auth.token;
+  if (claims && claims.role === 'superAdmin') return true;
+  try {
+    const userDoc = await db.collection('Users').doc(request.auth.uid).get();
+    if (!userDoc.exists) return false;
+    return userDoc.data().role === 'superAdmin';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * HTTP-callable function: set a user's role via Firebase custom claims.
+ * Only super admins can call this.
+ * Also updates the Firestore Users doc for backwards compatibility.
+ */
+exports.setUserRole = functions.https.onCall(async (request) => {
+  if (!(await isSuperAdmin(request))) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Only super admins can change roles'
+    );
+  }
+
+  const { uid, role, restaurantId } = request.data;
+  if (!uid || !role) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'uid and role are required'
+    );
+  }
+
+  const validRoles = ['superAdmin', 'restaurantOwner', 'cashier', 'driver', 'customer'];
+  if (!validRoles.includes(role)) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      `Invalid role. Must be one of: ${validRoles.join(', ')}`
+    );
+  }
+
+  try {
+    const claims = { role };
+    if (restaurantId) claims.restaurantId = restaurantId;
+
+    await admin.auth().setCustomUserClaims(uid, claims);
+
+    const updates = {
+      role,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    if (restaurantId) {
+      updates.restaurantId = restaurantId;
+    } else if (role === 'customer' || role === 'driver') {
+      updates.restaurantId = admin.firestore.FieldValue.delete();
+    }
+    await db.collection('Users').doc(uid).update(updates);
+
+    console.log(`Role set: ${uid} -> ${role}${restaurantId ? ` (restaurant: ${restaurantId})` : ''}`);
+    return { success: true };
+  } catch (err) {
+    console.error('setUserRole error:', err.message);
+    throw new functions.https.HttpsError('internal', err.message);
+  }
+});
+
+/**
+ * HTTP-callable function: get a user's custom claims (for debugging).
+ * Only super admins can call this.
+ */
+exports.getUserClaims = functions.https.onCall(async (request) => {
+  if (!(await isSuperAdmin(request))) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Only super admins can read claims'
+    );
+  }
+
+  const { uid } = request.data;
+  if (!uid) {
+    throw new functions.https.HttpsError('invalid-argument', 'uid is required');
+  }
+
+  try {
+    const user = await admin.auth().getUser(uid);
+    return {
+      claims: user.customClaims || {},
+      uid: user.uid,
+      email: user.email,
+    };
+  } catch (err) {
+    throw new functions.https.HttpsError('internal', err.message);
+  }
+});
+
+/**
  * HTTP-callable function: proxy AI requests to OpenAI.
  * Requires authentication.
  * Called from Flutter app instead of calling OpenAI directly.
