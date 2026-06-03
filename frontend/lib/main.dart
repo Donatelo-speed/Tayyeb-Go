@@ -12,6 +12,7 @@ import 'providers/driver_provider.dart';
 import 'providers/vendor_dashboard_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/vendor_provider.dart';
+import 'admin/providers/admin_provider.dart';
 import 'services/auth_service.dart';
 import 'services/auth_gate.dart';
 import 'services/offline_sync_service.dart';
@@ -82,6 +83,7 @@ class TayyebGoApp extends StatelessWidget {
             create: (_) => VendorDashboardProvider()),
         ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
         ChangeNotifierProvider<VendorProvider>(create: (_) => VendorProvider()),
+        ChangeNotifierProvider<AdminProvider>(create: (_) => AdminProvider()),
       ],
       child: TayyebGoAppRoot(firebaseError: firebaseError),
     );

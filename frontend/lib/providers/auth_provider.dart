@@ -76,20 +76,26 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
         return false;
       }
-      // Firebase Auth succeeded — let _SessionGate / _AuthGate resolve
-      // the Firestore profile reactively. No navigation needed here.
+      // Firebase Auth succeeded — resolve the Firestore profile immediately
+      await resolveUser(credential.user!);
       _isLoading = false;
       notifyListeners();
+      // Navigate immediately to dashboard without page refresh
+      if (context.mounted) {
+        _routeToRoleDashboard(context, _user!.role);
+      }
       return true;
     } on fb.FirebaseAuthException catch (e) {
-      // ── Demo mode fallback: hardcoded DemoUsers (no Firebase Auth).
-      //     _SessionGate watches AuthProvider.isAuthenticated and will
-      //     switch to HomeScreen reactively.
+      // Demo mode fallback: hardcoded DemoUsers (no Firebase Auth).
+      // Navigate immediately to dashboard.
       final demoUser = DemoUsers.findByEmailAndPassword(email.trim(), password);
       if (demoUser != null) {
         _user = demoUser;
         _isLoading = false;
         notifyListeners();
+        if (context.mounted) {
+          _routeToRoleDashboard(context, _user!.role);
+        }
         return true;
       }
       _error = e.message ?? 'Login failed';
