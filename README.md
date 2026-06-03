@@ -63,11 +63,11 @@ flutter run
 
 | Role | Email | Password |
 |------|-------|----------|
-| Super Admin | admin@tayyeb.com | any |
-| Restaurant Owner | owner@almandi.com | any |
-| Cashier | cashier@almandi.com | any |
-| Driver | driver@company.com | any |
-| Customer | user@test.com | any |
+| Super Admin | admin@test.com | test123 |
+| Restaurant Owner | owner@test.com | test123 |
+| Cashier | cashier@test.com | test123 |
+| Driver | driver@test.com | test123 |
+| Customer | user@test.com | test123 |
 
 ---
 
