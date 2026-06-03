@@ -1,6 +1,11 @@
 analyzer:
-  exclude:
-    - docs/**
-    - theme/**
-    - tayyebgo_monorepo/**
-    - scripts/**
+  errors:
+    unused_import: warning
+    deprecated_member_use: ignore
+    use_super_parameters: ignore
+    prefer_const_constructors: warning
+    prefer_const_literals_to_create_immutables: warning
+    avoid_print: error
+    prefer_single_quotes: warning
+    sort_constructors_first: warning
+    directives_ordering: warning

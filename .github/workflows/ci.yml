@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, 'dev/**', 'feat/**', 'fix/**']
+  pull_request:
+    branches: [main, master]
+
+env:
+  FLUTTER_VERSION: '3.29'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tayyebgo_admin, tayyebgo_customer, tayyebgo_driver, tayyebgo_partner]
+    defaults:
+      run:
+        working-directory: tayyebgo_monorepo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            tayyebgo_monorepo/**/.dart_tool
+            tayyebgo_monorepo/**/build
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ matrix.app }}-${{ hashFiles('tayyebgo_monorepo/**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-${{ matrix.app }}-
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/packages/tayyebgo_core
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/apps/${{ matrix.app }}
+
+      - run: flutter analyze --no-fatal-infos
+        working-directory: tayyebgo_monorepo/apps/${{ matrix.app }}
+
+  test:
+    name: Test
+    needs: analyze
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tayyebgo_monorepo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            tayyebgo_monorepo/**/.dart_tool
+            tayyebgo_monorepo/**/build
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-test-${{ hashFiles('tayyebgo_monorepo/**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-test-
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/packages/tayyebgo_core
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/apps/tayyebgo_admin
+
+      - run: flutter test --no-pub
+        working-directory: tayyebgo_monorepo/apps/tayyebgo_admin
+
+  build:
+    name: Build Web
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tayyebgo_admin, tayyebgo_customer, tayyebgo_driver, tayyebgo_partner]
+    defaults:
+      run:
+        working-directory: tayyebgo_monorepo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            tayyebgo_monorepo/**/.dart_tool
+            tayyebgo_monorepo/**/build
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-build-${{ matrix.app }}-${{ hashFiles('tayyebgo_monorepo/**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-build-${{ matrix.app }}-
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_VERSION }}-
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/packages/tayyebgo_core
+
+      - run: flutter pub get
+        working-directory: tayyebgo_monorepo/apps/${{ matrix.app }}
+
+      - run: flutter build web --release --dart-define=appEnv=production
+        working-directory: tayyebgo_monorepo/apps/${{ matrix.app }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: web-${{ matrix.app }}
+          path: tayyebgo_monorepo/apps/${{ matrix.app }}/build/web

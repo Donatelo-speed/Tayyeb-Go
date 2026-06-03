@@ -1,0 +1,25 @@
+# Default owner for everything
+* @Donatelo-speed
+
+# Firebase infrastructure
+/tayyebgo_monorepo/firebase.json @Donatelo-speed
+/tayyebgo_monorepo/firestore.rules @Donatelo-speed
+/tayyebgo_monorepo/storage.rules @Donatelo-speed
+/tayyebgo_monorepo/firestore.indexes.json @Donatelo-speed
+/tayyebgo_monorepo/functions/ @Donatelo-speed
+
+# Core shared package
+/tayyebgo_monorepo/packages/tayyebgo_core/ @Donatelo-speed
+
+# App-specific code
+/tayyebgo_monorepo/apps/tayyebgo_admin/ @Donatelo-speed
+/tayyebgo_monorepo/apps/tayyebgo_customer/ @Donatelo-speed
+/tayyebgo_monorepo/apps/tayyebgo_driver/ @Donatelo-speed
+/tayyebgo_monorepo/apps/tayyebgo_partner/ @Donatelo-speed
+
+# CI/CD
+/.github/ @Donatelo-speed
+
+# Documentation
+/docs/ @Donatelo-speed
+/README.md @Donatelo-speed
