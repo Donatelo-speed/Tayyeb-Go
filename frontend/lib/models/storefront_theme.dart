@@ -88,11 +88,11 @@ class StorefrontTheme {
         cardTheme: CardThemeData(
           color: surfaceColor,
           elevation: cardStyle == StorefrontCardStyle.elevated ? 4 : 0,
-          shadowColor: primaryColor.withOpacity(0.1),
+          shadowColor: primaryColor.withValues(alpha: 0.1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(cardBorderRadius),
             side: cardStyle == StorefrontCardStyle.flat
-                ? BorderSide(color: primaryColor.withOpacity(0.12), width: 1)
+                ? BorderSide(color: primaryColor.withValues(alpha: 0.12), width: 1)
                 : BorderSide.none,
           ),
         ),
@@ -163,19 +163,19 @@ class StorefrontTheme {
   Map<String, dynamic> toJson() => {
         'vendor_id': vendorId,
         'primary_color':
-            '#${primaryColor.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+            '#${primaryColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
         'accent_color':
-            '#${accentColor.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+            '#${accentColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
         'surface_color':
-            '#${surfaceColor.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+            '#${surfaceColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
         'on_primary_color':
-            '#${onPrimaryColor.value.toRadixString(16).padLeft(8, '0').substring(2)}',
+            '#${onPrimaryColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}',
         'font_family': fontFamily,
         'hero_banner_url': heroBannerUrl,
         'banner_layout': bannerLayout.name,
         'tagline': tagline,
         'tagline_color': taglineColor != null
-            ? '#${taglineColor!.value.toRadixString(16).padLeft(8, '0').substring(2)}'
+            ? '#${taglineColor!.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}'
             : null,
         'card_style': cardStyle.name,
         'card_border_radius': cardBorderRadius,

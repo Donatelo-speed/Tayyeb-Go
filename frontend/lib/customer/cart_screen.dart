@@ -33,7 +33,7 @@ class CartScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: TayyebGoTheme.primaryColor.withOpacity(0.08),
+                      color: TayyebGoTheme.primaryColor.withValues(alpha: 0.08),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.shopping_cart_outlined, size: 60, color: TayyebGoTheme.primaryColor),
@@ -63,7 +63,7 @@ class CartScreen extends StatelessWidget {
                     color: TayyebGoTheme.surfaceColor,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -5)),
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, -5)),
                     ],
                   ),
                   child: SafeArea(
@@ -147,7 +147,7 @@ class _CartItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: TayyebGoTheme.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Row(
         children: [
@@ -155,7 +155,7 @@ class _CartItemCard extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+              color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.fastfood, size: 40, color: TayyebGoTheme.primaryColor),

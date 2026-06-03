@@ -59,14 +59,14 @@ class ProfileTabScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: TayyebGoTheme.surfaceColor,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+                  color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(Icons.location_on, color: TayyebGoTheme.primaryColor),
@@ -85,7 +85,7 @@ class ProfileTabScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+                              color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text('Default',

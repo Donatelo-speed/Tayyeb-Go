@@ -171,7 +171,7 @@ class _VendorModifierEditorScreenState
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               'Modifier Groups',
-              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
             ),
           ),
         ),
@@ -323,7 +323,7 @@ class _OptionRow extends StatelessWidget {
       leading: Icon(
         option.isDefault ? Icons.radio_button_checked : Icons.radio_button_unchecked,
         size: 18,
-        color: TayyebGoTheme.primaryColor.withOpacity(0.6),
+        color: TayyebGoTheme.primaryColor.withValues(alpha: 0.6),
       ),
       title: Text(option.name, style: const TextStyle(fontSize: 13)),
       subtitle: option.caloriesDelta != null
@@ -351,7 +351,7 @@ class _OptionRow extends StatelessWidget {
             child: Switch(
               value: option.isAvailable,
               onChanged: (_) => onToggle(),
-              activeColor: TayyebGoTheme.primaryColor,
+              activeThumbColor: TayyebGoTheme.primaryColor,
             ),
           ),
         ],
@@ -510,7 +510,7 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _selectionType,
+                            initialValue: _selectionType,
                             decoration: InputDecoration(
                               labelText: 'Type',
                               border: OutlineInputBorder(
@@ -539,7 +539,7 @@ class _GroupFormSheetState extends State<_GroupFormSheet> {
                               value: _isRequired,
                               onChanged: (v) =>
                                   setState(() => _isRequired = v),
-                              activeColor: TayyebGoTheme.primaryColor,
+                              activeThumbColor: TayyebGoTheme.primaryColor,
                             ),
                           ],
                         ),
@@ -756,7 +756,7 @@ class _SmallChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: active ? activeColor.withOpacity(0.12) : Colors.grey.shade100,
+          color: active ? activeColor.withValues(alpha: 0.12) : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
               color: active ? activeColor : Colors.transparent),

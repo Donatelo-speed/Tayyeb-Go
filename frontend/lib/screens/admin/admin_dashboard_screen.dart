@@ -293,9 +293,9 @@ class _LiveStatRowState extends State<_LiveStatRow> {
         if (mounted) {
           setState(() {
             _orderCount = s.docs.length;
-            _revenue = s.docs.fold(0.0, (sum, d) {
+            _revenue = s.docs.fold(0.0, (s, d) {
               final data = d.data();
-              return sum + ((data['totalAmount'] as num?)?.toDouble() ?? 0);
+              return s + ((data['totalAmount'] as num?)?.toDouble() ?? 0);
             });
             _pendingOrders = s.docs
                 .where((d) => d.data()['status'] == 'pending')
@@ -349,15 +349,15 @@ class _LiveStatRowState extends State<_LiveStatRow> {
         _driverCount = driversSnap.docs.length;
         _revenue = ordersSnap.docs.fold(
           0.0,
-          (sum, d) =>
-              sum + ((d.data()['totalAmount'] as num?)?.toDouble() ?? 0),
+          (s, d) =>
+              s + ((d.data()['totalAmount'] as num?)?.toDouble() ?? 0),
         );
         _pendingOrders = ordersSnap.docs
             .where((d) => d.data()['status'] == 'pending')
             .length;
         _commissionTotal = commissionsSnap.docs.fold(
           0.0,
-          (sum, d) => sum + ((d.data()['amount'] as num?)?.toDouble() ?? 0),
+          (s, d) => s + ((d.data()['amount'] as num?)?.toDouble() ?? 0),
         );
       });
     }
@@ -707,7 +707,7 @@ class _RestaurantsViewState extends State<_RestaurantsView> {
                   'createdAt': FieldValue.serverTimestamp(),
                 });
                 if (ctx.mounted) Navigator.pop(ctx);
-                if (mounted) {
+                if (ctx.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -717,7 +717,7 @@ class _RestaurantsViewState extends State<_RestaurantsView> {
                   );
                 }
               } catch (e) {
-                if (mounted) {
+                if (ctx.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Failed: $e'),
@@ -1281,9 +1281,9 @@ class _CommissionsView extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final docs = snapshot.data!.docs;
-        final totalCommission = docs.fold(0.0, (sum, d) {
+        final totalCommission = docs.fold(0.0, (s, d) {
           final data = d.data() as Map<String, dynamic>;
-          return sum + ((data['amount'] as num?)?.toDouble() ?? 0);
+          return s + ((data['amount'] as num?)?.toDouble() ?? 0);
         });
         final settled = docs
             .where((d) => (d.data() as Map)['status'] == 'settled')

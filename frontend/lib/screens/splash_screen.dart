@@ -235,6 +235,7 @@ class _LoginScreenState extends State<LoginScreen>
               'createdAt': FieldValue.serverTimestamp(),
               'updatedAt': FieldValue.serverTimestamp(),
             });
+            if (!mounted) return;
             context.read<AuthProvider>().setUser(
               UserModel(
                 id: firebaseUser.uid,
@@ -245,6 +246,7 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             );
           }
+          if (!mounted) return;
           context.read<AuthProvider>().routeToDashboardByRole(context);
         }
       }

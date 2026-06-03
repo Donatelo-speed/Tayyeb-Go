@@ -216,7 +216,7 @@ class _ColorRow extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.3),
+                color: color.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -238,7 +238,7 @@ class _ColorRow extends StatelessWidget {
       trailing: TextButton(
         onPressed: () => _pickColor(context),
         child: Text(
-          '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
+          '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
           style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
         ),
       ),
@@ -290,7 +290,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     super.initState();
     _current = widget.initial;
     _hexCtrl.text =
-        '#${_current.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+        '#${_current.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
   }
 
   @override
@@ -302,7 +302,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   void _setColor(Color c) {
     setState(() => _current = c);
     _hexCtrl.text =
-        '#${c.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+        '#${c.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
     widget.onChanged(c);
   }
 
@@ -328,7 +328,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
             spacing: 10,
             runSpacing: 10,
             children: _swatches.map((c) {
-              final selected = _current.value == c.value;
+              final selected = _current.toARGB32() == c.toARGB32();
               return GestureDetector(
                 onTap: () => _setColor(c),
                 child: Container(
@@ -536,7 +536,7 @@ class _PreviewStrip extends StatelessWidget {
         color: draft.primaryColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),

@@ -48,7 +48,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> with SingleTicker
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withOpacity(0.6)],
+                    colors: [color, color.withValues(alpha: 0.6)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -60,7 +60,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> with SingleTicker
                       const SizedBox(height: 20),
                       CircleAvatar(
                         radius: 35,
-                        backgroundColor: Colors.white.withOpacity(0.2),
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
                         child: const Icon(Icons.store, color: Colors.white, size: 35),
                       ),
                     ],
@@ -138,13 +138,13 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> with SingleTicker
       decoration: BoxDecoration(
         color: TayyebGoTheme.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
       ),
       child: Row(
         children: [
           Container(
             width: 70, height: 70,
-            decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
             child: Icon(Icons.fastfood, color: color, size: 30),
           ),
           const SizedBox(width: 12),

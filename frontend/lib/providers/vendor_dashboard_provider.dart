@@ -94,7 +94,7 @@ class VendorDashboardProvider extends ChangeNotifier {
             final t = o.createdAt?.toDate();
             return t != null && t.isAfter(todayStart);
           })
-          .fold<double>(0.0, (sum, o) => sum + o.total);
+          .fold<double>(0.0, (s, o) => s + o.total);
 
       _data = VendorDashboardData(
         vendorId: vendorId,

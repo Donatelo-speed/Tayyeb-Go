@@ -88,7 +88,7 @@ class OrderStateMachine {
           'status': newStatus,
           'timestamp': FieldValue.serverTimestamp(),
           'actorId': actorId ?? '',
-          if (note != null) 'note': note,
+          'note': note,
         });
 
         tx.update(ref, {

@@ -203,7 +203,7 @@ class OrderItem {
   // ── Computed helpers ───────────────────────────────────────────────────────
 
   double get modifierDelta =>
-      selectedModifiers.fold(0.0, (sum, m) => sum + m.priceDelta);
+      selectedModifiers.fold(0.0, (s, m) => s + m.priceDelta);
 
   double get unitPrice => basePrice + modifierDelta;
   double get lineTotal => unitPrice * quantity;
@@ -473,7 +473,7 @@ class OrderModel {
 
   bool get isActive => status.isActive;
   bool get isTerminal => status.isTerminal;
-  int get itemCount => items.fold(0, (sum, i) => sum + i.quantity);
+  int get itemCount => items.fold(0, (s, i) => s + i.quantity);
 
   // ── Firestore deserialization ─────────────────────────────────────────────
 

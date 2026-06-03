@@ -182,7 +182,7 @@ class TayyebGoAppRoot extends StatelessWidget {
 /// This prevents the "flash of login screen" on page refresh.
 ///
 /// Architecture:
-///   StreamBuilder<User?> ─── authStateChanges()
+///   StreamBuilder--authStateChanges()
 ///     ├─ ConnectionState.waiting ──► _LoadingScreen
 ///     ├─ snapshot.hasData ──► _AuthGate (fetches Firestore profile, then HomeScreen)
 ///     └─ null / no-data ──► SplashScreen (login)

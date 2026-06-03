@@ -616,7 +616,7 @@ class _SidebarTodayStat extends StatelessWidget {
         final docs = snap.data?.docs ?? [];
         final revenue = docs.fold<double>(
           0,
-          (sum, d) => sum + _toDouble(d.data()['totalAmount']),
+          (s, d) => s + _toDouble(d.data()['totalAmount']),
         );
         return Container(
           margin: const EdgeInsets.all(12),

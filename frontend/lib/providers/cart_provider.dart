@@ -23,10 +23,10 @@ class CartProvider extends ChangeNotifier {
   List<CartLineItem> get lines => _lines.values.toList();
 
   int get totalQuantity =>
-      _lines.values.fold(0, (sum, l) => sum + l.quantity);
+      _lines.values.fold(0, (s, l) => s + l.quantity);
 
   double get subtotal =>
-      _lines.values.fold(0.0, (sum, l) => sum + l.lineTotal);
+      _lines.values.fold(0.0, (s, l) => s + l.lineTotal);
 
   double get deliveryFee => _deliveryOverrideFee >= 0
       ? _deliveryOverrideFee
@@ -50,7 +50,7 @@ class CartProvider extends ChangeNotifier {
 
   int quantityOf(int productId) => _lines.values
       .where((l) => l.product.id == productId)
-      .fold(0, (sum, l) => sum + l.quantity);
+      .fold(0, (s, l) => s + l.quantity);
 
   Future<void> addLine(
     Product product, {

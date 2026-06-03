@@ -63,7 +63,7 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> setPrimaryColor(Color color) async {
     _primaryColor = color;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('primary_color', '#${color.value.toRadixString(16).substring(2)}');
+    await prefs.setString('primary_color', '#${color.toARGB32().toRadixString(16).substring(2)}');
     notifyListeners();
   }
 

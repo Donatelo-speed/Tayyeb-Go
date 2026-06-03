@@ -394,7 +394,7 @@ class _OrderSuccessScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: TayyebGoTheme.successColor.withOpacity(0.1),
+                  color: TayyebGoTheme.successColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.check_circle, size: 80, color: TayyebGoTheme.successColor),

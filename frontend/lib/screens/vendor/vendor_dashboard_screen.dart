@@ -357,16 +357,20 @@ class _DashboardTab extends StatelessWidget {
                             'createdAt': FieldValue.serverTimestamp(),
                           });
                           if (ctx.mounted) Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Product added successfully')),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Product added successfully')),
+                            );
+                          }
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Failed: $e'),
-                                backgroundColor: TayyebGoTheme.errorColor),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Failed: $e'),
+                                  backgroundColor: TayyebGoTheme.errorColor),
+                            );
+                          }
                         }
                       },
                       child: const Text('Add Product'),
@@ -443,16 +447,20 @@ class _DashboardTab extends StatelessWidget {
                       'businessHours': hoursCtrl.text,
                     });
                     if (ctx.mounted) Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Info updated successfully')),
-                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Info updated successfully')),
+                      );
+                    }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Failed: $e'),
-                          backgroundColor: TayyebGoTheme.errorColor),
-                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Failed: $e'),
+                            backgroundColor: TayyebGoTheme.errorColor),
+                      );
+                    }
                   }
                 },
                 child: const Text('Save Changes'),

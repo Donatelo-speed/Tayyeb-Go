@@ -93,7 +93,7 @@ class _VendorCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: TayyebGoTheme.surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
         ),
         child: Column(
           children: [
@@ -101,7 +101,7 @@ class _VendorCard extends StatelessWidget {
               height: 100,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [color, color.withOpacity(0.6)],
+                  colors: [color, color.withValues(alpha: 0.6)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -112,7 +112,7 @@ class _VendorCard extends StatelessWidget {
                   const SizedBox(width: 16),
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                     child: Icon(Icons.store, color: Colors.white, size: 30),
                   ),
                   const SizedBox(width: 12),
@@ -125,7 +125,7 @@ class _VendorCard extends StatelessWidget {
                             style: const TextStyle(
                                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                         Text(vendor.typeDisplay,
-                            style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
                       ],
                     ),
                   ),

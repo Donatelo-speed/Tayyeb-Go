@@ -62,11 +62,17 @@ Always be concise, actionable, and data-driven. Suggest specific actions. Mentio
     String r;
     if (q.contains('weak') || q.contains('problem')) {
       r = '**Platform Health Report**\n\nBased on data analysis:\n• Check Restaurants tab for stores with low ratings or high cancellation rates.\n• Monitor Commission tab for stores near debt ceiling — these may need intervention.\n• Review Orders tab for pattern of cancellations.\n\n**Recommendation:** Run a weekly performance review on all stores with rating < 3.5.';
-    } else if (q.contains('campaign') || q.contains('ramadan') || q.contains('promotion')) r = '**Campaign Draft Created**\n\n📋 **Ramadan Campaign**\n• Type: Percentage Discount (15%)\n• Target: All customers\n• Duration: Ramadan month\n• Push notification: "Ramadan Kareem! 15% off all orders"\n\nDo you want me to create this campaign? Go to the Marketing tab to finalize.';
-    else if (q.contains('driver') || q.contains('perf')) r = '**Driver Performance Summary**\n\nTo analyze driver performance:\n1. Go to Drivers tab — see online/offline status\n2. Check delivery completion rates\n3. Review ratings per driver\n\n**Suggestion:** Reward top 5 drivers monthly with bonus or reduced subscription.';
-    else if (q.contains('store') || q.contains('restaurant')) r = '**Store Management**\n\nTo manage stores:\n1. Go to **Stores** tab\n2. Click **Create** to add a new store\n3. Fill business type, name, location\n4. Toggle open/closed status\n5. Set commission ceiling in **Finance** tab\n\nEach store type has different settings. Restaurants need menu, pharmacies need inventory.';
-    else if (q.contains('revenue') || q.contains('report') || q.contains('analytics')) r = '**Quick Analytics**\n\nGo to **Analytics** tab for full data. Current snapshot includes:\n• Revenue tracking\n• Order volume\n• Store performance rankings\n• Customer growth\n\nFor detailed reports, use **Finance** tab for commission and settlement data.';
-    else r = 'I can help with: Store management, driver analysis, campaign creation, performance monitoring, revenue reports, and platform troubleshooting.\n\nTry: "Show weak stores", "Create campaign", "Analyze drivers", "Revenue report"';
+    } else if (q.contains('campaign') || q.contains('ramadan') || q.contains('promotion')) {
+      r = '**Campaign Draft Created**\n\n📋 **Ramadan Campaign**\n• Type: Percentage Discount (15%)\n• Target: All customers\n• Duration: Ramadan month\n• Push notification: "Ramadan Kareem! 15% off all orders"\n\nDo you want me to create this campaign? Go to the Marketing tab to finalize.';
+    } else if (q.contains('driver') || q.contains('perf')) {
+      r = '**Driver Performance Summary**\n\nTo analyze driver performance:\n1. Go to Drivers tab — see online/offline status\n2. Check delivery completion rates\n3. Review ratings per driver\n\n**Suggestion:** Reward top 5 drivers monthly with bonus or reduced subscription.';
+    } else if (q.contains('store') || q.contains('restaurant')) {
+      r = '**Store Management**\n\nTo manage stores:\n1. Go to **Stores** tab\n2. Click **Create** to add a new store\n3. Fill business type, name, location\n4. Toggle open/closed status\n5. Set commission ceiling in **Finance** tab\n\nEach store type has different settings. Restaurants need menu, pharmacies need inventory.';
+    } else if (q.contains('revenue') || q.contains('report') || q.contains('analytics')) {
+      r = '**Quick Analytics**\n\nGo to **Analytics** tab for full data. Current snapshot includes:\n• Revenue tracking\n• Order volume\n• Store performance rankings\n• Customer growth\n\nFor detailed reports, use **Finance** tab for commission and settlement data.';
+    } else {
+      r = 'I can help with: Store management, driver analysis, campaign creation, performance monitoring, revenue reports, and platform troubleshooting.\n\nTry: "Show weak stores", "Create campaign", "Analyze drivers", "Revenue report"';
+    }
     if (mounted) setState(() => _messages.add(_CopilotMessage(role: 'ai', content: r)));
   }
 

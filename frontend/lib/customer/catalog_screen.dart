@@ -126,7 +126,7 @@ class _ProductGridCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: TayyebGoTheme.surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +135,7 @@ class _ProductGridCard extends StatelessWidget {
               flex: 3,
               child: Container(
                 decoration: BoxDecoration(
-                  color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+                  color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 ),
                 child: const Center(child: Icon(Icons.fastfood, size: 50, color: TayyebGoTheme.primaryColor)),
@@ -192,14 +192,14 @@ class _ProductListCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: TayyebGoTheme.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
       ),
       child: Row(
         children: [
           Container(
             width: 80, height: 80,
             decoration: BoxDecoration(
-              color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+              color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.fastfood, size: 40, color: TayyebGoTheme.primaryColor),
@@ -256,7 +256,7 @@ class ProductDetailScreen extends StatelessWidget {
             Container(
               height: 250,
               width: double.infinity,
-              color: TayyebGoTheme.primaryColor.withOpacity(0.1),
+              color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
               child: const Center(child: Icon(Icons.fastfood, size: 80, color: TayyebGoTheme.primaryColor)),
             ),
             Padding(
