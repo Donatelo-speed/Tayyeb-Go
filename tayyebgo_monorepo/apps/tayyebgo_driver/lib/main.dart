@@ -76,7 +76,7 @@ class _DriverAppState extends State<DriverApp> {
   GoRouter _buildRouter() {
     return AppRouter.create(
       refreshListenable: _authListenable,
-      initialLocation: '/login',
+      initialLocation: '/splash',
       routes: [
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route('/dashboard', const AuthStateRedirector(child: DriverDashboardScreen()), name: 'dashboard'),

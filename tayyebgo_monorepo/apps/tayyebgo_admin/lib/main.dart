@@ -85,7 +85,7 @@ class _AdminAppState extends State<AdminApp> {
   GoRouter _buildRouter() {
     return AppRouter.create(
       refreshListenable: _authListenable,
-      initialLocation: '/login',
+      initialLocation: '/splash',
       routes: [
         AppRouter.route('/login', const AdminLoginScreen(), name: 'login'),
         AppRouter.route(

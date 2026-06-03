@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AiMenuCreationScreen extends StatefulWidget {
   final String restaurantId;
@@ -38,45 +38,27 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
       final bytes = await _selectedImage!.readAsBytes();
       final base64Image = base64Encode(bytes);
 
-      final response = await http.post(
-        Uri.parse('https://api.openai.com/v1/chat/completions'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${const String.fromEnvironment('OPENAI_API_KEY')}',
-        },
-        body: jsonEncode({
-          'model': 'gpt-4o',
-          'messages': [
-            {
-              'role': 'user',
-              'content': [
-                {'type': 'text', 'text': 'Extract all menu items from this image. Return JSON array with: name, price (as number), category, description (optional). Arabic text supported.'},
-                {'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,$base64Image'}},
-              ],
-            },
-          ],
-          'response_format': {'type': 'json_object'},
-        }),
-      );
+      final fn = FirebaseFunctions.instance.httpsCallable('processAiMenuImage');
+      final result = await fn({
+        'base64Image': base64Image,
+      });
 
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        final content = body['choices'][0]['message']['content'] as String;
-        final parsed = jsonDecode(content);
-        final items = parsed['items'] as List<dynamic>? ?? [parsed];
-        if (!mounted) return;
-        setState(() {
-          _detectedItems = items.map((i) => {
-            'name': i['name'] as String? ?? 'Unknown',
-            'price': (i['price'] as num?)?.toDouble() ?? 0,
-            'category': i['category'] as String? ?? 'General',
-            'description': i['description'] as String? ?? '',
-          }).toList();
-        });
-      } else {
-        if (!mounted) return;
-        setState(() => _error = 'AI processing failed (${response.statusCode})');
-      }
+      final data = result.data as Map<String, dynamic>;
+      final content = data['result']['choices'][0]['message']['content'] as String;
+      final parsed = jsonDecode(content);
+      final items = parsed['items'] as List<dynamic>? ?? [parsed];
+      if (!mounted) return;
+      setState(() {
+        _detectedItems = items.map((i) => {
+          'name': i['name'] as String? ?? 'Unknown',
+          'price': (i['price'] as num?)?.toDouble() ?? 0,
+          'category': i['category'] as String? ?? 'General',
+          'description': i['description'] as String? ?? '',
+        }).toList();
+      });
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'AI processing failed: ${e.message}');
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = 'Error: $e');

@@ -78,7 +78,7 @@ class _CustomerAppState extends State<CustomerApp> {
   GoRouter _buildRouter() {
     return AppRouter.create(
       refreshListenable: _authListenable,
-      initialLocation: '/login',
+      initialLocation: '/splash',
       routes: [
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route('/home', const AuthStateRedirector(child: CustomerHomeScreen()), name: 'home'),

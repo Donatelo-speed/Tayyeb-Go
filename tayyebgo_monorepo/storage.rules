@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated()
+        && request.auth.token.role == 'superAdmin';
+    }
+
+    // Public read access to all files
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+
+    // Profile pictures: user can write own, admin can write any
+    match /users/{userId}/profile_picture.jpg {
+      allow write: if isAuthenticated()
+        && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // Restaurant logos/menus: restaurant owner or admin
+    match /restaurants/{restaurantId}/{imageName} {
+      allow write: if isAuthenticated()
+        && (request.auth.token.restaurantId == restaurantId
+          || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Menu item images: restaurant owner/cashier or admin
+    match /menu_items/{restaurantId}/{imageName} {
+      allow write: if isAuthenticated()
+        && (request.auth.token.restaurantId == restaurantId
+          || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Driver documents: driver or admin
+    match /drivers/{driverId}/{documentName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated()
+        && (request.auth.uid == driverId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Generic uploads — only authenticated users
+    match /uploads/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated()
+        && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // Deny everything else by default
+    match /{allPaths=**} {
+      allow write, delete: if false;
+    }
+  }
+}

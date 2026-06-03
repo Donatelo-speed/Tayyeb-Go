@@ -5,6 +5,7 @@ import '../../src/providers/auth_provider.dart';
 import '../../src/screens/access_denied_screen.dart';
 import '../../src/screens/notifications_screen.dart';
 import '../../src/screens/onboarding_screen.dart';
+import '../../src/screens/splash_screen.dart';
 import '../shared_widgets/slide_transition.dart';
 
 abstract class AppRouter {
@@ -33,6 +34,14 @@ abstract class AppRouter {
       refreshListenable: refreshListenable,
       redirect: redirect,
       routes: [
+        GoRoute(
+          path: '/splash',
+          name: 'splash',
+          pageBuilder: (_, state) => SlideTransitionPage(
+            key: state.pageKey,
+            page: const SplashScreen(),
+          ),
+        ),
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',

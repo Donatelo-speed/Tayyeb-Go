@@ -39,6 +39,8 @@ String? appRedirect({
     return null;
   }
 
+  if (location == '/splash') return null;
+
   if (location == '/forgot-password') return null;
 
   if (!isLoggedIn) {
