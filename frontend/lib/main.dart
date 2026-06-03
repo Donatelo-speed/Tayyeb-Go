@@ -16,8 +16,9 @@ import 'admin/providers/admin_provider.dart';
 import 'services/auth_service.dart';
 import 'services/auth_gate.dart';
 import 'services/offline_sync_service.dart';
-import 'theme/tayyebgo_theme.dart';
+import 'theme/design_tokens.dart';
 import 'widgets/page_transitions.dart';
+import 'widgets/shimmer_loading.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 
@@ -99,7 +100,6 @@ class TayyebGoAppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.watch<LocaleProvider>();
 
-    // If Firebase failed, show a diagnostic screen instead of crashing silently
     if (firebaseError != null) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -130,46 +130,188 @@ class TayyebGoAppRoot extends StatelessWidget {
       },
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: TayyebGoTheme.primaryColor,
-          primary: TayyebGoTheme.primaryColor,
-          secondary: TayyebGoTheme.successColor,
-          surface: TayyebGoTheme.surfaceColor,
+          seedColor: TayyebGoColors.primary,
+          brightness: Brightness.light,
+          primary: TayyebGoColors.primary,
+          secondary: TayyebGoColors.secondary,
+          surface: TayyebGoColors.surface,
+          error: TayyebGoColors.error,
         ),
         fontFamily: locale.isArabic ? 'Cairo' : 'Poppins',
-        textTheme: TayyebGoTheme.textTheme,
-        appBarTheme: TayyebGoTheme.appBarTheme,
-        inputDecorationTheme: TayyebGoTheme.inputDecoration,
-        elevatedButtonTheme: TayyebGoTheme.elevatedButton,
-        outlinedButtonTheme: TayyebGoTheme.outlinedButton,
-        navigationBarTheme: TayyebGoTheme.navigationBar,
-        navigationRailTheme: TayyebGoTheme.navigationRail,
-        chipTheme: TayyebGoTheme.chipTheme,
+        scaffoldBackgroundColor: TayyebGoColors.background,
+        textTheme: TayyebGoTokens.textTheme(
+          locale.isArabic ? 'Cairo' : 'Poppins',
+        ),
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: TayyebGoColors.surface,
+          foregroundColor: TayyebGoColors.textPrimary,
+          surfaceTintColor: Colors.transparent,
+          titleTextStyle: TextStyle(
+            color: TayyebGoColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: TayyebGoColors.surfaceAlt,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TayyebGoTokens.radiusSm),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TayyebGoTokens.radiusSm),
+            borderSide:
+                const BorderSide(color: TayyebGoColors.divider),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TayyebGoTokens.radiusSm),
+            borderSide: const BorderSide(
+                color: TayyebGoColors.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TayyebGoTokens.radiusSm),
+            borderSide:
+                const BorderSide(color: TayyebGoColors.error),
+          ),
+          hintStyle: const TextStyle(
+            color: TayyebGoColors.textMuted,
+            fontSize: 14,
+          ),
+          labelStyle: const TextStyle(
+            color: TayyebGoColors.textSecondary,
+            fontSize: 14,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: TayyebGoColors.primary,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(TayyebGoTokens.radiusSm),
+            ),
+            elevation: 0,
+            shadowColor:
+                TayyebGoColors.primary.withValues(alpha: 0.25),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: TayyebGoColors.primary,
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(TayyebGoTokens.radiusSm),
+            ),
+            side: const BorderSide(
+                color: TayyebGoColors.primary, width: 1.5),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          elevation: 8,
+          backgroundColor: TayyebGoColors.surface,
+          indicatorColor:
+              TayyebGoColors.primary.withValues(alpha: 0.1),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: TayyebGoColors.primary,
+              );
+            }
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+              color: TayyebGoColors.textMuted,
+            );
+          }),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const IconThemeData(
+                  color: TayyebGoColors.primary, size: 24);
+            }
+            return const IconThemeData(
+                color: TayyebGoColors.textMuted, size: 24);
+          }),
+        ),
+        navigationRailTheme: NavigationRailThemeData(
+          backgroundColor: TayyebGoColors.surface,
+          indicatorColor:
+              TayyebGoColors.primary.withValues(alpha: 0.1),
+          labelType: NavigationRailLabelType.all,
+          selectedLabelTextStyle: const TextStyle(
+            color: TayyebGoColors.primary,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+          unselectedLabelTextStyle: const TextStyle(
+            color: TayyebGoColors.textMuted,
+            fontSize: 12,
+          ),
+          selectedIconTheme:
+              const IconThemeData(color: TayyebGoColors.primary),
+          unselectedIconTheme:
+              const IconThemeData(color: TayyebGoColors.textMuted),
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: TayyebGoColors.background,
+          selectedColor:
+              TayyebGoColors.primary.withValues(alpha: 0.1),
+          labelStyle: const TextStyle(
+            fontSize: 12,
+            color: TayyebGoColors.textSecondary,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(TayyebGoTokens.radiusFull),
+            side: BorderSide.none,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        ),
         pageTransitionsTheme: smoothPageTransitions,
-        scaffoldBackgroundColor: TayyebGoTheme.backgroundColor,
-        dividerTheme: DividerThemeData(
-          color: TayyebGoTheme.dividerColor,
+        dividerTheme: const DividerThemeData(
+          color: TayyebGoColors.divider,
           thickness: 1,
           space: 1,
         ),
         cardTheme: CardThemeData(
-          color: TayyebGoTheme.surfaceColor,
+          color: TayyebGoColors.surface,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
+            borderRadius:
+                BorderRadius.circular(TayyebGoTokens.radiusMd),
           ),
         ),
         snackBarTheme: SnackBarThemeData(
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(TayyebGoTheme.radiusSm),
+            borderRadius:
+                BorderRadius.circular(TayyebGoTokens.radiusSm),
           ),
         ),
         bottomSheetTheme: const BottomSheetThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(TayyebGoTheme.radiusXl),
-              topRight: Radius.circular(TayyebGoTheme.radiusXl),
+              topLeft: Radius.circular(TayyebGoTokens.radiusXl),
+              topRight: Radius.circular(TayyebGoTokens.radiusXl),
             ),
           ),
         ),
@@ -179,15 +321,6 @@ class TayyebGoAppRoot extends StatelessWidget {
   }
 }
 
-/// Waits for Firebase Auth to restore the persisted session (IndexedDB on web)
-/// before routing the user to either the dashboard or the login screen.
-/// This prevents the "flash of login screen" on page refresh.
-///
-/// Architecture:
-///   StreamBuilder--authStateChanges()
-///     ├─ ConnectionState.waiting ──► _LoadingScreen
-///     ├─ snapshot.hasData ──► _AuthGate (fetches Firestore profile, then HomeScreen)
-///     └─ null / no-data ──► SplashScreen (login)
 class _SessionGate extends StatelessWidget {
   const _SessionGate();
 
@@ -195,17 +328,17 @@ class _SessionGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    // Phase 0: Demo / manually-set user — route directly to HomeScreen
     if (auth.isAuthenticated) {
       return const HomeScreen();
     }
 
-    // Phase 1–3: Firebase Auth session (normal production path)
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _LoadingScreen();
+          return const SplashLoadingScreen(
+            subtitle: 'Restoring session...',
+          );
         }
         if (snapshot.hasData && snapshot.data != null) {
           return _AuthGate(firebaseUser: snapshot.data!);
@@ -216,10 +349,6 @@ class _SessionGate extends StatelessWidget {
   }
 }
 
-/// Fetches the Firestore user document for the restored Firebase session,
-/// then hands off to [HomeScreen] which reads role metadata from [AuthProvider].
-/// This is a separate widget so the async Firestore call lives in initState,
-/// never inside a build method.
 class _AuthGate extends StatefulWidget {
   final User firebaseUser;
   const _AuthGate({required this.firebaseUser});
@@ -244,36 +373,12 @@ class _AuthGateState extends State<_AuthGate> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_resolved) return const _LoadingScreen();
+    if (!_resolved) {
+      return const SplashLoadingScreen(
+        subtitle: 'Loading your profile...',
+      );
+    }
     return const HomeScreen();
-  }
-}
-
-class _LoadingScreen extends StatelessWidget {
-  const _LoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(color: Colors.white),
-            const SizedBox(height: 24),
-            Text(
-              'Tayyeb-Go',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
@@ -284,49 +389,78 @@ class _FirebaseErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: const Color(0xFF0A0D14),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
-              const SizedBox(height: 16),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: TayyebGoColors.error.withValues(alpha: 0.1),
+                ),
+                child: const Icon(
+                  Icons.error_outline_rounded,
+                  size: 40,
+                  color: TayyebGoColors.error,
+                ),
+              ),
+              const SizedBox(height: 20),
               const Text(
-                'Firebase Configuration Error',
+                'Configuration Error',
                 style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-                textAlign: TextAlign.center,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Run `flutterfire configure` in your terminal to generate firebase_options.dart, '
-                'then restart the app.',
-                style: TextStyle(fontSize: 14, color: Colors.white70),
+              Text(
+                'Run flutterfire configure and restart',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.06),
+                  ),
                 ),
                 child: SelectableText(
                   error,
-                  style: const TextStyle(
-                      fontSize: 11, color: Colors.white54, fontFamily: 'monospace'),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white.withValues(alpha: 0.3),
+                    fontFamily: 'monospace',
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  final auth = context.read<AuthProvider>();
-                  auth.signOut();
+                  context.read<AuthProvider>().signOut();
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: TayyebGoColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
                 child: const Text('Retry'),
               ),
             ],

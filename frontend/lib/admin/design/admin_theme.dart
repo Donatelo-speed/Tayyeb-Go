@@ -46,7 +46,7 @@ class AdminTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: bg,
         elevation: 0,
-        scrolledUnderElevation: 0,
+        scrolledUnderElevation: 0.5,
         centerTitle: false,
         titleTextStyle: AdminTypography.h4(isDark),
         iconTheme: IconThemeData(color: textPrimary),
@@ -59,6 +59,7 @@ class AdminTheme {
           borderRadius: BorderRadius.circular(AdminRadius.xl),
           side: BorderSide(color: border, width: 0.5),
         ),
+        shadowColor: AdminColors.primary.withValues(alpha: 0.08),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
@@ -90,9 +91,10 @@ class AdminTheme {
           backgroundColor: AdminColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminRadius.lg)),
           textStyle: AdminTypography.button,
+          shadowColor: AdminColors.primary.withValues(alpha: 0.25),
         ),
       ),
 
@@ -100,7 +102,7 @@ class AdminTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AdminColors.primary,
           side: const BorderSide(color: AdminColors.primary),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminRadius.lg)),
           textStyle: AdminTypography.button,
         ),
@@ -165,7 +167,7 @@ class AdminTheme {
 
       popupMenuTheme: PopupMenuThemeData(
         color: card,
-        elevation: 4,
+        elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminRadius.lg),
           side: BorderSide(color: border, width: 0.5),
@@ -206,8 +208,13 @@ class AdminTheme {
         ),
       ),
 
-      iconTheme: IconThemeData(color: textSecondary),
-      primaryIconTheme: IconThemeData(color: textPrimary),
+      iconTheme: IconThemeData(color: textSecondary, size: 20),
+      primaryIconTheme: IconThemeData(color: textPrimary, size: 20),
+
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminRadius.lg)),
+      ),
     );
   }
 }

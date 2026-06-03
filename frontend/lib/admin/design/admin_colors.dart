@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 class AdminColors {
   AdminColors._();
 
-  static const primary = Color(0xFF6366F1);
-  static const primaryHover = Color(0xFF4F46E5);
-  static const primaryLight = Color(0xFFA5B4FC);
-  static const primaryBg = Color(0xFFEEF2FF);
+  static const primary = Color(0xFF7C3AED);
+  static const primaryHover = Color(0xFF6D28D9);
+  static const primaryLight = Color(0xFFC084FC);
+  static const primaryBg = Color(0xFFF5F3FF);
 
-  static const success = Color(0xFF059669);
+  static const success = Color(0xFF10B981);
   static const successBg = Color(0xFFECFDF5);
-  static const warning = Color(0xFFD97706);
+  static const warning = Color(0xFFF59E0B);
   static const warningBg = Color(0xFFFFFBEB);
-  static const danger = Color(0xFFDC2626);
+  static const danger = Color(0xFFEF4444);
   static const dangerBg = Color(0xFFFEF2F2);
-  static const info = Color(0xFF2563EB);
+  static const info = Color(0xFF3B82F6);
   static const infoBg = Color(0xFFEFF6FF);
 
   static const slate50 = Color(0xFFF8FAFC);
@@ -31,19 +31,19 @@ class AdminColors {
 
   static const darkBg = Color(0xFF0A0A0B);
   static const darkSurface = Color(0xFF131316);
-  static const darkCard = Color(0xFF1A1A1E);
-  static const darkCardHover = Color(0xFF222227);
-  static const darkBorder = Color(0xFF26262B);
-  static const darkInput = Color(0xFF18181B);
+  static const darkCard = Color(0xFF1C1C1E);
+  static const darkCardHover = Color(0xFF242428);
+  static const darkBorder = Color(0xFF2C2C2E);
+  static const darkInput = Color(0xFF1C1C1E);
 
   static const lightBg = Color(0xFFFAFAFA);
   static const lightSurface = Color(0xFFF4F4F5);
   static const lightCard = Color(0xFFFFFFFF);
-  static const lightCardHover = Color(0xFFFAFAFA);
+  static const lightCardHover = Color(0xFFF8F8FA);
   static const lightBorder = Color(0xFFE4E4E7);
   static const lightInput = Color(0xFFF4F4F5);
 
-  static Color textPrimary(bool isDark) => isDark ? const Color(0xFFFAFAFA) : slate900;
+  static Color textPrimary(bool isDark) => isDark ? const Color(0xFFF8FAFC) : slate900;
   static Color textSecondary(bool isDark) => isDark ? const Color(0xFFA1A1AA) : slate500;
   static Color textMuted(bool isDark) => isDark ? const Color(0xFF71717A) : slate400;
   static Color bg(bool isDark) => isDark ? darkBg : lightBg;
