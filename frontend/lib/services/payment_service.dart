@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 enum PaymentMethod { cash, shamCash, paymera, visa }
 enum PaymentStatus { pending, processing, completed, failed, refunded }
@@ -23,8 +20,6 @@ class PaymentResult {
 }
 
 class PaymentService {
-  static const String _baseUrl = 'http://localhost:3000/api';
-  
   // =====================================================
   // SHAM CASH INTEGRATION
   // =====================================================

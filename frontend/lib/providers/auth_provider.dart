@@ -4,10 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb hide AuthProvider;
 import '../models/user_model.dart';
 import 'locale_provider.dart';
-import '../services/auth_service.dart';
 import '../services/auth_gate.dart';
 import '../screens/home_screen.dart';
-import '../screens/admin/admin_dashboard_screen.dart';
+import '../admin/admin_app.dart';
 import '../screens/cashier/cashier_dashboard_screen.dart';
 import '../screens/delivery/delivery_dashboard_screen.dart';
 import '../screens/vendor/vendor_dashboard_screen.dart';
@@ -59,7 +58,10 @@ class AuthProvider extends ChangeNotifier {
   String get userRole => _user?.role.name ?? 'customer';
 
   Future<bool> login(
-      String email, String password, BuildContext context) async {
+    String email,
+    String password,
+    BuildContext context,
+  ) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -83,8 +85,7 @@ class AuthProvider extends ChangeNotifier {
       // ── Demo mode fallback: hardcoded DemoUsers (no Firebase Auth).
       //     _SessionGate watches AuthProvider.isAuthenticated and will
       //     switch to HomeScreen reactively.
-      final demoUser = DemoUsers.findByEmailAndPassword(
-          email.trim(), password);
+      final demoUser = DemoUsers.findByEmailAndPassword(email.trim(), password);
       if (demoUser != null) {
         _user = demoUser;
         _isLoading = false;
@@ -106,7 +107,6 @@ class AuthProvider extends ChangeNotifier {
   void _routeToRoleDashboard(BuildContext context, UserRole role) {
     Widget targetScreen;
     String? vendorId;
-    String? vendorName;
 
     if (_user != null) {
       vendorId = _user!.vendorId;
@@ -114,7 +114,7 @@ class AuthProvider extends ChangeNotifier {
 
     switch (role) {
       case UserRole.superAdmin:
-        targetScreen = const AdminDashboardScreen();
+        targetScreen = const AdminApp();
         break;
       case UserRole.restaurantOwner:
         targetScreen = VendorDashboardScreen(
@@ -186,13 +186,16 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     if (_user == null) return;
     try {
-      await FirebaseFirestore.instance.collection('users').doc(_user!.id).update({
-        if (displayName != null) 'displayName': displayName,
-        if (email != null) 'email': email,
-        if (phone != null) 'phone': phone,
-        if (photoUrl != null) 'photoUrl': photoUrl,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_user!.id)
+          .update({
+            'displayName': ?displayName,
+            'email': ?email,
+            'phone': ?phone,
+            'photoUrl': ?photoUrl,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
       _user = _user!.copyWith(
         displayName: displayName,
         email: email,

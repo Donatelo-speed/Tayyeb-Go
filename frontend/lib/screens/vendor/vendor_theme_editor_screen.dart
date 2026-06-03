@@ -13,7 +13,8 @@ class VendorThemeEditorScreen extends StatefulWidget {
   const VendorThemeEditorScreen({super.key, required this.vendorId});
 
   @override
-  State<VendorThemeEditorScreen> createState() => _VendorThemeEditorScreenState();
+  State<VendorThemeEditorScreen> createState() =>
+      _VendorThemeEditorScreenState();
 }
 
 class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
@@ -23,8 +24,6 @@ class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
   bool _saving = false;
 
   // Color picker state.
-  Color _pickerTarget = Colors.transparent;
-  String? _pickerField;
 
   @override
   void initState() {
@@ -54,7 +53,9 @@ class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(ok ? 'Theme saved!' : 'Save failed — try again.'),
-        backgroundColor: ok ? TayyebGoTheme.primaryColor : TayyebGoTheme.errorColor,
+        backgroundColor: ok
+            ? TayyebGoTheme.primaryColor
+            : TayyebGoTheme.errorColor,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -64,8 +65,10 @@ class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shop Design',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Shop Design',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: TayyebGoTheme.primaryColor,
         foregroundColor: Colors.white,
         actions: [
@@ -76,17 +79,26 @@ class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
                     child: SizedBox(
                       width: 22,
                       height: 22,
-                      child:
-                          CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     ),
                   )
                 : TextButton.icon(
                     onPressed: _save,
-                    icon: const Icon(Icons.save_outlined,
-                        color: Colors.white, size: 18),
-                    label: const Text('Save',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    icon: const Icon(
+                      Icons.save_outlined,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    label: const Text(
+                      'Save',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
           ),
         ],
@@ -96,8 +108,8 @@ class _VendorThemeEditorScreenState extends State<VendorThemeEditorScreen>
           unselectedLabelColor: Colors.white60,
           indicatorColor: Colors.white,
           tabs: const [
-            Tab(icon: Icon(Icons.palette_outlined),   text: 'Colors'),
-            Tab(icon: Icon(Icons.image_outlined),     text: 'Banner'),
+            Tab(icon: Icon(Icons.palette_outlined), text: 'Colors'),
+            Tab(icon: Icon(Icons.image_outlined), text: 'Banner'),
             Tab(icon: Icon(Icons.grid_view_outlined), text: 'Layout'),
           ],
         ),
@@ -159,8 +171,13 @@ class _ColorsTab extends StatelessWidget {
           label: 'Font Family',
           value: draft.fontFamily,
           items: const [
-            'Poppins', 'Lato', 'Roboto', 'Playfair Display',
-            'Cairo', 'Noto Sans Arabic', 'Tajawal',
+            'Poppins',
+            'Lato',
+            'Roboto',
+            'Playfair Display',
+            'Cairo',
+            'Noto Sans Arabic',
+            'Tajawal',
           ],
           onChanged: (f) => onUpdate(draft.copyWith(fontFamily: f!)),
         ),
@@ -199,25 +216,30 @@ class _ColorRow extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
               BoxShadow(
-                  color: color.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2))
+                color: color.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
         ),
       ),
-      title: Text(label,
-          style:
-              const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-      subtitle: Text(subtitle,
-          style: const TextStyle(
-              fontSize: 12, color: TayyebGoTheme.textSecondary)),
+      title: Text(
+        label,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(
+          fontSize: 12,
+          color: TayyebGoTheme.textSecondary,
+        ),
+      ),
       trailing: TextButton(
         onPressed: () => _pickColor(context),
         child: Text(
           '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}',
-          style: const TextStyle(
-              fontFamily: 'monospace', fontSize: 12),
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
         ),
       ),
     );
@@ -227,10 +249,8 @@ class _ColorRow extends StatelessWidget {
     Color picked = color;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => _ColorPickerDialog(
-        initial: color,
-        onChanged: (c) => picked = c,
-      ),
+      builder: (_) =>
+          _ColorPickerDialog(initial: color, onChanged: (c) => picked = c),
     );
     if (confirmed == true) onChanged(picked);
   }
@@ -240,8 +260,7 @@ class _ColorPickerDialog extends StatefulWidget {
   final Color initial;
   final ValueChanged<Color> onChanged;
 
-  const _ColorPickerDialog(
-      {required this.initial, required this.onChanged});
+  const _ColorPickerDialog({required this.initial, required this.onChanged});
 
   @override
   State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
@@ -252,10 +271,18 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   final _hexCtrl = TextEditingController();
 
   static const _swatches = [
-    Color(0xFF16A085), Color(0xFF00B894), Color(0xFFE17055),
-    Color(0xFFD63031), Color(0xFF6C5CE7), Color(0xFF0984E3),
-    Color(0xFFFDAB10), Color(0xFF2D3436), Color(0xFF636E72),
-    Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFFF8F9FA),
+    Color(0xFF16A085),
+    Color(0xFF00B894),
+    Color(0xFFE17055),
+    Color(0xFFD63031),
+    Color(0xFF6C5CE7),
+    Color(0xFF0984E3),
+    Color(0xFFFDAB10),
+    Color(0xFF2D3436),
+    Color(0xFF636E72),
+    Color(0xFF000000),
+    Color(0xFFFFFFFF),
+    Color(0xFFF8F9FA),
   ];
 
   @override
@@ -329,12 +356,12 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               labelText: 'Hex Code',
               hintText: '#RRGGBB',
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
               prefixIcon: const Icon(Icons.tag, size: 18),
             ),
             onSubmitted: (raw) {
-              final hex =
-                  raw.startsWith('#') ? raw.substring(1) : raw;
+              final hex = raw.startsWith('#') ? raw.substring(1) : raw;
               if (hex.length == 6) {
                 try {
                   _setColor(Color(int.parse('FF$hex', radix: 16)));
@@ -351,8 +378,9 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: TayyebGoTheme.primaryColor,
-              foregroundColor: Colors.white),
+            backgroundColor: TayyebGoTheme.primaryColor,
+            foregroundColor: Colors.white,
+          ),
           onPressed: () => Navigator.pop(context, true),
           child: const Text('Apply'),
         ),
@@ -380,7 +408,8 @@ class _BannerTab extends StatelessWidget {
           hint: 'https://…/banner.jpg',
           value: draft.heroBannerUrl ?? '',
           onChanged: (v) => onUpdate(
-              draft.copyWith(heroBannerUrl: v.trim().isEmpty ? null : v.trim())),
+            draft.copyWith(heroBannerUrl: v.trim().isEmpty ? null : v.trim()),
+          ),
         ),
         const SizedBox(height: 12),
         _DropdownRow<StorefrontBannerLayout>(
@@ -388,8 +417,8 @@ class _BannerTab extends StatelessWidget {
           value: draft.bannerLayout,
           items: StorefrontBannerLayout.values,
           itemLabel: (e) => switch (e) {
-            StorefrontBannerLayout.fullWidth  => 'Full Width',
-            StorefrontBannerLayout.splitLeft  => 'Image Left, Info Right',
+            StorefrontBannerLayout.fullWidth => 'Full Width',
+            StorefrontBannerLayout.splitLeft => 'Image Left, Info Right',
             StorefrontBannerLayout.splitRight => 'Info Left, Image Right',
           },
           onChanged: (v) => onUpdate(draft.copyWith(bannerLayout: v)),
@@ -401,7 +430,8 @@ class _BannerTab extends StatelessWidget {
           hint: 'Freshly made, every day.',
           value: draft.tagline ?? '',
           onChanged: (v) => onUpdate(
-              draft.copyWith(tagline: v.trim().isEmpty ? null : v.trim())),
+            draft.copyWith(tagline: v.trim().isEmpty ? null : v.trim()),
+          ),
         ),
         const SizedBox(height: 20),
         _SectionHeader('Promotional Banner'),
@@ -410,14 +440,16 @@ class _BannerTab extends StatelessWidget {
           hint: 'Free delivery over \$30 today!',
           value: draft.promoText ?? '',
           onChanged: (v) => onUpdate(
-              draft.copyWith(promoText: v.trim().isEmpty ? null : v.trim())),
+            draft.copyWith(promoText: v.trim().isEmpty ? null : v.trim()),
+          ),
         ),
         _TextFieldRow(
           label: 'Promo Image URL',
           hint: 'https://…/promo.jpg',
           value: draft.promoBannerUrl ?? '',
           onChanged: (v) => onUpdate(
-              draft.copyWith(promoBannerUrl: v.trim().isEmpty ? null : v.trim())),
+            draft.copyWith(promoBannerUrl: v.trim().isEmpty ? null : v.trim()),
+          ),
         ),
       ],
     );
@@ -443,8 +475,8 @@ class _LayoutTab extends StatelessWidget {
           value: draft.menuLayout,
           items: StorefrontMenuLayout.values,
           itemLabel: (e) => switch (e) {
-            StorefrontMenuLayout.grid    => 'Grid (2 columns)',
-            StorefrontMenuLayout.list    => 'List (full width)',
+            StorefrontMenuLayout.grid => 'Grid (2 columns)',
+            StorefrontMenuLayout.list => 'List (full width)',
             StorefrontMenuLayout.compact => 'Compact (dense list)',
           },
           onChanged: (v) => onUpdate(draft.copyWith(menuLayout: v)),
@@ -469,8 +501,8 @@ class _LayoutTab extends StatelessWidget {
           value: draft.cardStyle,
           items: StorefrontCardStyle.values,
           itemLabel: (e) => switch (e) {
-            StorefrontCardStyle.rounded  => 'Rounded (no shadow)',
-            StorefrontCardStyle.flat     => 'Flat (outlined border)',
+            StorefrontCardStyle.rounded => 'Rounded (no shadow)',
+            StorefrontCardStyle.flat => 'Flat (outlined border)',
             StorefrontCardStyle.elevated => 'Elevated (drop shadow)',
           },
           onChanged: (v) => onUpdate(draft.copyWith(cardStyle: v)),
@@ -481,8 +513,7 @@ class _LayoutTab extends StatelessWidget {
           value: draft.cardBorderRadius,
           min: 0,
           max: 32,
-          onChanged: (v) =>
-              onUpdate(draft.copyWith(cardBorderRadius: v)),
+          onChanged: (v) => onUpdate(draft.copyWith(cardBorderRadius: v)),
         ),
       ],
     );
@@ -505,9 +536,10 @@ class _PreviewStrip extends StatelessWidget {
         color: draft.primaryColor,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 12,
-              offset: const Offset(0, -4))
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
         ],
       ),
       child: Row(
@@ -517,33 +549,32 @@ class _PreviewStrip extends StatelessWidget {
             height: 24,
             decoration: BoxDecoration(
               color: draft.accentColor,
-              borderRadius:
-                  BorderRadius.circular(draft.cardBorderRadius * 0.3),
+              borderRadius: BorderRadius.circular(draft.cardBorderRadius * 0.3),
             ),
           ),
           const SizedBox(width: 12),
           Text(
             'Live Preview  •  ${draft.fontFamily}',
             style: TextStyle(
-                color: draft.onPrimaryColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 13),
+              color: draft.onPrimaryColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
           ),
           const Spacer(),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               color: draft.accentColor,
-              borderRadius:
-                  BorderRadius.circular(draft.cardBorderRadius * 0.5),
+              borderRadius: BorderRadius.circular(draft.cardBorderRadius * 0.5),
             ),
             child: Text(
               'Add to Cart',
               style: TextStyle(
-                  color: draft.onPrimaryColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold),
+                color: draft.onPrimaryColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -561,12 +592,12 @@ class _PalettePreset extends StatelessWidget {
   const _PalettePreset({required this.draft, required this.onUpdate});
 
   static const _presets = [
-    ('Ocean Teal',  Color(0xFF16A085), Color(0xFF00B894)),
-    ('Fiesta Red',  Color(0xFFD63031), Color(0xFFE17055)),
-    ('Royal Blue',  Color(0xFF0984E3), Color(0xFF74B9FF)),
-    ('Night Dark',  Color(0xFF2D3436), Color(0xFF636E72)),
-    ('Saffron',     Color(0xFFE67E22), Color(0xFFF39C12)),
-    ('Berry Purple',Color(0xFF6C5CE7), Color(0xFFA29BFE)),
+    ('Ocean Teal', Color(0xFF16A085), Color(0xFF00B894)),
+    ('Fiesta Red', Color(0xFFD63031), Color(0xFFE17055)),
+    ('Royal Blue', Color(0xFF0984E3), Color(0xFF74B9FF)),
+    ('Night Dark', Color(0xFF2D3436), Color(0xFF636E72)),
+    ('Saffron', Color(0xFFE67E22), Color(0xFFF39C12)),
+    ('Berry Purple', Color(0xFF6C5CE7), Color(0xFFA29BFE)),
   ];
 
   @override
@@ -581,7 +612,8 @@ class _PalettePreset extends StatelessWidget {
           children: _presets.map((p) {
             return GestureDetector(
               onTap: () => onUpdate(
-                  draft.copyWith(primaryColor: p.$2, accentColor: p.$3)),
+                draft.copyWith(primaryColor: p.$2, accentColor: p.$3),
+              ),
               child: Column(
                 children: [
                   Container(
@@ -589,17 +621,22 @@ class _PalettePreset extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: [p.$2, p.$3],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight),
+                        colors: [p.$2, p.$3],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(p.$1,
-                      style: const TextStyle(
-                          fontSize: 10, color: TayyebGoTheme.textSecondary)),
+                  Text(
+                    p.$1,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: TayyebGoTheme.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -620,12 +657,15 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12, top: 4),
-      child: Text(text,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-              color: TayyebGoTheme.textSecondary,
-              letterSpacing: 0.5)),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+          color: TayyebGoTheme.textSecondary,
+          letterSpacing: 0.5,
+        ),
+      ),
     );
   }
 }
@@ -652,10 +692,11 @@ class _TextFieldRow extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
         ),
         onChanged: onChanged,
       ),
@@ -683,21 +724,22 @@ class _DropdownRow<T> extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           labelText: label,
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
         ),
         items: items
-            .map((e) => DropdownMenuItem<T>(
-                  value: e,
-                  child: Text(itemLabel != null
-                      ? itemLabel!(e)
-                      : e.toString()),
-                ))
+            .map(
+              (e) => DropdownMenuItem<T>(
+                value: e,
+                child: Text(itemLabel != null ? itemLabel!(e) : e.toString()),
+              ),
+            )
             .toList(),
         onChanged: onChanged,
       ),
@@ -722,14 +764,20 @@ class _SwitchRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle,
-          style:
-              const TextStyle(fontSize: 12, color: TayyebGoTheme.textSecondary)),
+      title: Text(
+        label,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(
+          fontSize: 12,
+          color: TayyebGoTheme.textSecondary,
+        ),
+      ),
       value: value,
       onChanged: onChanged,
-      activeColor: TayyebGoTheme.primaryColor,
+      activeThumbColor: TayyebGoTheme.primaryColor,
     );
   }
 }
@@ -757,12 +805,17 @@ class _SliderRow extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600)),
-            Text(value.toStringAsFixed(0),
-                style: const TextStyle(
-                    fontSize: 13, color: TayyebGoTheme.textSecondary)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              value.toStringAsFixed(0),
+              style: const TextStyle(
+                fontSize: 13,
+                color: TayyebGoTheme.textSecondary,
+              ),
+            ),
           ],
         ),
         Slider(

@@ -1,0 +1,6 @@
+analyzer:
+  exclude:
+    - docs/**
+    - theme/**
+    - tayyebgo_monorepo/**
+    - scripts/**

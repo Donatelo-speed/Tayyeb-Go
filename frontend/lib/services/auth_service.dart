@@ -91,10 +91,10 @@ class AuthService {
   }) async {
     final updates = <String, dynamic>{
       'updatedAt': FieldValue.serverTimestamp(),
-      if (displayName != null) 'displayName': displayName,
-      if (phone != null) 'phone': phone,
-      if (photoUrl != null) 'photoUrl': photoUrl,
-      if (address != null) 'address': address,
+      'displayName': ?displayName,
+      'phone': ?phone,
+      'photoUrl': ?photoUrl,
+      'address': ?address,
     };
     try {
       await _db.collection('users').doc(uid).update(updates);

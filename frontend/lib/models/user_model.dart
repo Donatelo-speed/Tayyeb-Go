@@ -135,14 +135,14 @@ class UserModel {
     final data = doc.data() ?? {};
 
     // Helper: safely coerce Timestamp / String / null → DateTime?
-    DateTime? _toDateTime(dynamic value) {
+    DateTime? toDateTime(dynamic value) {
       if (value is Timestamp) return value.toDate();
       if (value is String)    return DateTime.tryParse(value);
       return null;
     }
 
     // Helper: safely coerce a nested map to Map<String, String>
-    Map<String, String>? _toStringMap(dynamic value) {
+    Map<String, String>? toStringMap(dynamic value) {
       if (value is Map) {
         return value.map((k, v) => MapEntry(k.toString(), v?.toString() ?? ''));
       }
@@ -159,10 +159,10 @@ class UserModel {
       vendorId:         data['vendorId']         as String?,
       isActive:        (data['isActive']         as bool?)    ?? true,
       loyaltyPoints:   (data['loyaltyPoints']    as int?)     ?? 0,
-      address:         _toStringMap(data['address']),
+      address:         toStringMap(data['address']),
       preferredLocale: (data['preferredLocale']  as String?)  ?? 'en',
-      createdAt:       _toDateTime(data['createdAt']),
-      updatedAt:       _toDateTime(data['updatedAt']),
+      createdAt:       toDateTime(data['createdAt']),
+      updatedAt:       toDateTime(data['updatedAt']),
     );
   }
 

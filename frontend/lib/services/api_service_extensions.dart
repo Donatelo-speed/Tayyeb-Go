@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/storefront_theme.dart';
 import '../providers/driver_status_provider.dart';
 import 'api_service.dart';
 

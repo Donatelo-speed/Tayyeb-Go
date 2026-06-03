@@ -3,6 +3,7 @@
 ///   - Adding Mayo      => +$0.50
 ///   - Removing Ketchup => $0.00
 ///   - Extra Cheese     => +$1.00 (capped at maxSelections)
+library;
 
 enum ModifierSelectionType { single, multi }
 

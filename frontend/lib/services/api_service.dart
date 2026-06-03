@@ -122,7 +122,7 @@ class ApiService {
       return await post('/orders', payload);
     } catch (_) {
       // In demo mode the checkout flow uses Firestore directly.
-      return {'success': true, 'orderId': 'demo-' + DateTime.now().millisecondsSinceEpoch.toString()};
+      return {'success': true, 'orderId': 'demo-${DateTime.now().millisecondsSinceEpoch}'};
     }
   }
 }

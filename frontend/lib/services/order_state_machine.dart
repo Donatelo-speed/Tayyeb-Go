@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../models/order_model.dart';
 
 /// -------------------------------------------------------------------
 /// OrderStateMachine — canonical status transitions with Firestore write

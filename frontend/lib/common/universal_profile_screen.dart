@@ -5,7 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../models/user_model.dart';
 import '../../theme/tayyebgo_theme.dart';
-import '../splash_screen.dart' show LoginScreen;
+import '../screens/splash_screen.dart' show LoginScreen;
 
 class UniversalProfileScreen extends StatefulWidget {
   final UserRole userRole;

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../models/cart_line_item.dart';
 import '../theme/tayyebgo_theme.dart';
-import 'checkout/checkout_screen.dart';
+import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});

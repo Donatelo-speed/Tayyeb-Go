@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FirestoreService {
@@ -22,7 +21,11 @@ class FirestoreService {
     return _db.collection(collection).doc(docId).get();
   }
 
-  static Future<void> updateDocument(String collection, String docId, Map<String, dynamic> data) async {
+  static Future<void> updateDocument(
+    String collection,
+    String docId,
+    Map<String, dynamic> data,
+  ) async {
     try {
       await _db.collection(collection).doc(docId).update(data);
     } catch (e) {
@@ -31,7 +34,10 @@ class FirestoreService {
     }
   }
 
-  static Future<void> createDocument(String collection, Map<String, dynamic> data) async {
+  static Future<void> createDocument(
+    String collection,
+    Map<String, dynamic> data,
+  ) async {
     try {
       await _db.collection(collection).add(data);
     } catch (e) {
@@ -55,15 +61,16 @@ class DatabaseService {
   factory DatabaseService() => _instance;
   DatabaseService._internal();
 
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
   Stream<List<Map<String, dynamic>>> streamRestaurants() {
-    return FirestoreService.restaurants.snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
+    return FirestoreService.restaurants.snapshots().map(
+      (snap) => snap.docs.map(_docToMap).toList(),
     );
   }
 
-  Stream<List<Map<String, dynamic>>> streamOrders({String? vendorId, String? status}) {
+  Stream<List<Map<String, dynamic>>> streamOrders({
+    String? vendorId,
+    String? status,
+  }) {
     Query query = FirestoreService.orders;
     if (vendorId != null) {
       query = query.where('vendorId', isEqualTo: vendorId);
@@ -71,38 +78,50 @@ class DatabaseService {
     if (status != null) {
       query = query.where('status', isEqualTo: status);
     }
-    return query.orderBy('createdAt', descending: true).snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
-    );
+    return query
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map(_docToMap).toList());
   }
 
   Stream<List<Map<String, dynamic>>> streamMenuItems(String vendorId) {
-    return FirestoreService.menuItems.where('vendorId', isEqualTo: vendorId).snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
-    );
+    return FirestoreService.menuItems
+        .where('vendorId', isEqualTo: vendorId)
+        .snapshots()
+        .map((snap) => snap.docs.map(_docToMap).toList());
   }
 
   Stream<List<Map<String, dynamic>>> streamUsers() {
-    return FirestoreService.users.snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
+    return FirestoreService.users.snapshots().map(
+      (snap) => snap.docs.map(_docToMap).toList(),
     );
   }
 
   Stream<List<Map<String, dynamic>>> streamDriverOrders() {
-    return FirestoreService.orders.where('status', isEqualTo: 'ready_for_driver').snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
-    );
+    return FirestoreService.orders
+        .where('status', isEqualTo: 'ready_for_driver')
+        .snapshots()
+        .map((snap) => snap.docs.map(_docToMap).toList());
   }
 
   Stream<List<Map<String, dynamic>>> streamActiveDeliveries(String driverId) {
-    return FirestoreService.orders.where('driverId', isEqualTo: driverId).where('status', whereIn: ['accepted', 'picked_up']).snapshots().map((snap) => 
-      snap.docs.map(_docToMap).toList()
-    );
+    return FirestoreService.orders
+        .where('driverId', isEqualTo: driverId)
+        .where('status', whereIn: ['accepted', 'picked_up'])
+        .snapshots()
+        .map((snap) => snap.docs.map(_docToMap).toList());
   }
 
-  Future<void> updateOrderStatus(String orderId, String status, {String? driverId}) async {
+  Future<void> updateOrderStatus(
+    String orderId,
+    String status, {
+    String? driverId,
+  }) async {
     try {
-      final Map<String, dynamic> data = {'status': status, 'updatedAt': DateTime.now().toIso8601String()};
+      final Map<String, dynamic> data = {
+        'status': status,
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
       if (driverId != null) data['driverId'] = driverId;
       await FirestoreService.orders.doc(orderId).update(data);
     } catch (e) {
@@ -133,9 +152,14 @@ class DatabaseService {
     }
   }
 
-  Future<void> toggleRestaurantStatus(String restaurantId, bool isActive) async {
+  Future<void> toggleRestaurantStatus(
+    String restaurantId,
+    bool isActive,
+  ) async {
     try {
-      await FirestoreService.restaurants.doc(restaurantId).update({'isActive': isActive});
+      await FirestoreService.restaurants.doc(restaurantId).update({
+        'isActive': isActive,
+      });
     } catch (e) {
       debugPrint('toggleRestaurantStatus error: $e');
       rethrow;
@@ -201,27 +225,43 @@ class OrderStatus {
 
   static String getDisplayName(String status) {
     switch (status) {
-      case pending: return 'Pending';
-      case accepted: return 'Accepted';
-      case preparing: return 'Preparing';
-      case readyForDriver: return 'Ready for Driver';
-      case pickedUp: return 'Picked Up';
-      case delivered: return 'Delivered';
-      case cancelled: return 'Cancelled';
-      default: return status;
+      case pending:
+        return 'Pending';
+      case accepted:
+        return 'Accepted';
+      case preparing:
+        return 'Preparing';
+      case readyForDriver:
+        return 'Ready for Driver';
+      case pickedUp:
+        return 'Picked Up';
+      case delivered:
+        return 'Delivered';
+      case cancelled:
+        return 'Cancelled';
+      default:
+        return status;
     }
   }
 
   static Color getColor(String status) {
     switch (status) {
-      case pending: return Colors.orange;
-      case accepted: return Colors.blue;
-      case preparing: return Colors.purple;
-      case readyForDriver: return Colors.cyan;
-      case pickedUp: return Colors.amber;
-      case delivered: return Colors.green;
-      case cancelled: return Colors.red;
-      default: return Colors.grey;
+      case pending:
+        return Colors.orange;
+      case accepted:
+        return Colors.blue;
+      case preparing:
+        return Colors.purple;
+      case readyForDriver:
+        return Colors.cyan;
+      case pickedUp:
+        return Colors.amber;
+      case delivered:
+        return Colors.green;
+      case cancelled:
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 }

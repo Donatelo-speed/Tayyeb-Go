@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LoyaltyProvider extends ChangeNotifier {
@@ -260,7 +259,7 @@ class _CoinDiscountDialogState extends State<CoinDiscountDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'You have ${maxCoins} coins',
+            'You have $maxCoins coins',
             style: const TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 16),

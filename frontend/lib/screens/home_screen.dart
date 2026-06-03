@@ -8,16 +8,16 @@ import '../models/user_model.dart';
 import '../theme/tayyebgo_theme.dart';
 import '../models/product.dart';
 import '../widgets/shimmer_loading.dart';
-import '../screens/admin/admin_dashboard_screen.dart';
+import '../admin/admin_app.dart';
 import '../screens/cashier/cashier_dashboard_screen.dart';
-import '../screens/delivery/delivery_dashboard_screen.dart';
+import '../driver/delivery_dashboard_screen.dart';
 import '../screens/vendor/vendor_dashboard_screen.dart';
-import 'catalog_screen.dart';
-import 'vendors_screen.dart';
-import 'cart_screen.dart';
-import 'orders_screen.dart';
-import 'profile_screen.dart';
-import 'profile/universal_profile_screen.dart';
+import '../customer/catalog_screen.dart';
+import '../customer/vendors_screen.dart';
+import '../customer/cart_screen.dart';
+import '../customer/orders_screen.dart';
+import '../customer/profile_screen.dart';
+import '../common/universal_profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    if (auth.isSuperAdmin) return const AdminDashboardScreen();
+    if (auth.isSuperAdmin) return const AdminApp();
     if (auth.isRestaurantOwner) {
       final vendorId = auth.user?.vendorId ?? 'vendor-1';
       return VendorDashboardScreen(

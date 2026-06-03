@@ -48,9 +48,7 @@ class _KitchenTabletScreenState extends State<KitchenTabletScreen> {
       deliveryType: DeliveryType.delivery,
       timeElapsed: const Duration(minutes: 8),
     ),
-  ];
-  
-  bool _isAlarmPlaying = false;
+];
 
   @override
   void initState() {
@@ -78,20 +76,7 @@ class _KitchenTabletScreenState extends State<KitchenTabletScreen> {
     });
   }
 
-  Future<void> _playAlarm() async {
-    if (!_isAlarmPlaying) {
-      _isAlarmPlaying = true;
-      // Play alarm sound
-      // await _audioPlayer.play(AssetSource('sounds/alarm.mp3'));
-    }
-  }
-
-  void _stopAlarm() {
-    _isAlarmPlaying = false;
-  }
-
   void _acknowledgeOrder(String orderId) {
-    _stopAlarm();
     setState(() {
       _orders = _orders.where((o) => o.id != orderId).toList();
     });
@@ -120,11 +105,6 @@ class _KitchenTabletScreenState extends State<KitchenTabletScreen> {
           ],
         ),
         actions: [
-          if (_isAlarmPlaying)
-            IconButton(
-              icon: const Icon(Icons.notifications_active, color: Colors.red, size: 32),
-              onPressed: _stopAlarm,
-            ),
           const SizedBox(width: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

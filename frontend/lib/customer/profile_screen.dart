@@ -4,7 +4,7 @@ import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../models/user_model.dart';
 import '../theme/tayyebgo_theme.dart';
-import '../customer/profile_tab_screen.dart';
+import 'profile_tab_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

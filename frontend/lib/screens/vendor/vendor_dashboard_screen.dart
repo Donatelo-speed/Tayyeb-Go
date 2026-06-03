@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/vendor_dashboard_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/tayyebgo_theme.dart';
-import '../../widgets/responsive_layout.dart' show DashboardShell, DestItem, ResponsiveLayout;
+import '../../widgets/responsive_layout.dart' show DashboardShell, DestItem;
 import '../../widgets/shimmer_loading.dart';
 
 class VendorDashboardScreen extends StatefulWidget {
@@ -867,7 +866,7 @@ class _MenuTab extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '\$${(item['price'] as num?)?.toDouble()?.toStringAsFixed(2) ?? '0.00'}',
+                                '\$${(item['price'] as num?)?.toDouble().toStringAsFixed(2) ?? '0.00'}',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,

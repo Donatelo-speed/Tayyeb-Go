@@ -5,7 +5,7 @@ import '../providers/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/product.dart';
 import '../theme/tayyebgo_theme.dart';
-import 'tracking/tracking_screen.dart';
+import 'tracking_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});

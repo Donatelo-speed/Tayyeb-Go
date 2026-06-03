@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DeliveryPinService {
@@ -54,8 +53,12 @@ class _DeliveryPinVerificationState extends State<DeliveryPinVerification> {
   
   @override
   void dispose() {
-    for (var c in _controllers) c.dispose();
-    for (var f in _focusNodes) f.dispose();
+    for (var c in _controllers) {
+      c.dispose();
+    }
+    for (var f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
   
@@ -75,7 +78,9 @@ class _DeliveryPinVerificationState extends State<DeliveryPinVerification> {
       
       if (!isValid) {
         // Clear and show error
-        for (var c in _controllers) c.clear();
+        for (var c in _controllers) {
+          c.clear();
+        }
         _focusNodes[0].requestFocus();
         
         ScaffoldMessenger.of(context).showSnackBar(
