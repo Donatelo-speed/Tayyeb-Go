@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/enums/order_status.dart';
 
+@Deprecated('Use OrderStatus from order_status.dart instead')
 enum OrderStatusEx {
   pending,
   accepted,
@@ -18,6 +20,29 @@ enum OrderStatusEx {
         'delivered' => OrderStatusEx.delivered,
         'cancelled' => OrderStatusEx.cancelled,
         _ => OrderStatusEx.pending,
+      };
+
+  OrderStatus get orderStatus => switch (this) {
+        OrderStatusEx.pending => OrderStatus.placed,
+        OrderStatusEx.accepted => OrderStatus.accepted,
+        OrderStatusEx.preparing => OrderStatus.preparing,
+        OrderStatusEx.readyForDriver => OrderStatus.readyForDriver,
+        OrderStatusEx.pickedUp => OrderStatus.pickedUp,
+        OrderStatusEx.delivered => OrderStatus.delivered,
+        OrderStatusEx.cancelled => OrderStatus.cancelled,
+      };
+
+  factory OrderStatusEx.fromOrderStatus(OrderStatus s) => switch (s) {
+        OrderStatus.placed || OrderStatus.pending => OrderStatusEx.pending,
+        OrderStatus.accepted => OrderStatusEx.accepted,
+        OrderStatus.preparing => OrderStatusEx.preparing,
+        OrderStatus.ready => OrderStatusEx.readyForDriver,
+        OrderStatus.readyForDriver => OrderStatusEx.readyForDriver,
+        OrderStatus.dispatched => OrderStatusEx.readyForDriver,
+        OrderStatus.pickedUp => OrderStatusEx.pickedUp,
+        OrderStatus.delivered => OrderStatusEx.delivered,
+        OrderStatus.cancelled => OrderStatusEx.cancelled,
+        OrderStatus.refunded => OrderStatusEx.delivered,
       };
 
   String get firestoreValue => name;
@@ -241,7 +266,7 @@ class OrderModelEx {
   final double promoDiscount;
   final int loyaltyCoinsUsed;
   final int loyaltyCoinsEarned;
-  final OrderStatusEx status;
+  final OrderStatus status;
   final List<OrderStatusEventEx> statusHistory;
   final Map<String, DateTime> statusMetrics;
   final OrderPaymentMethodEx paymentMethod;
@@ -276,7 +301,7 @@ class OrderModelEx {
     this.promoDiscount = 0.0,
     this.loyaltyCoinsUsed = 0,
     this.loyaltyCoinsEarned = 0,
-    this.status = OrderStatusEx.pending,
+    this.status = OrderStatus.placed,
     this.statusHistory = const [],
     this.statusMetrics = const {},
     this.paymentMethod = OrderPaymentMethodEx.cash,
@@ -294,6 +319,9 @@ class OrderModelEx {
     this.acceptedAt,
     this.deliveredAt,
   }) : deliveryAddress = deliveryAddress ?? const DeliveryAddressEx(fullAddress: '');
+
+  @Deprecated('Use .status (OrderStatus) instead')
+  OrderStatusEx get statusEx => OrderStatusEx.fromOrderStatus(status);
 
   bool get isDelivery => fulfillmentType == 'delivery';
   bool get isPickup => fulfillmentType == 'pickup';
@@ -356,7 +384,7 @@ class OrderModelEx {
       promoDiscount: (d['promoDiscount'] as num?)?.toDouble() ?? 0.0,
       loyaltyCoinsUsed: (d['loyaltyCoinsUsed'] as num?)?.toInt() ?? 0,
       loyaltyCoinsEarned: (d['loyaltyCoinsEarned'] as num?)?.toInt() ?? 0,
-      status: OrderStatusEx.fromString(d['status'] as String?),
+      status: OrderStatus.fromValue(d['status'] as String? ?? ''),
       statusHistory: (d['statusHistory'] as List<dynamic>?)
               ?.map((e) => OrderStatusEventEx.fromFirestore(e as Map<String, dynamic>))
               .toList() ??
@@ -396,7 +424,7 @@ class OrderModelEx {
         'promoDiscount': promoDiscount,
         'loyaltyCoinsUsed': loyaltyCoinsUsed,
         'loyaltyCoinsEarned': loyaltyCoinsEarned,
-        'status': status.firestoreValue,
+        'status': status.value,
         'paymentMethod': paymentMethod.firestoreValue,
         'isPaid': isPaid,
         'fulfillmentType': fulfillmentType,
@@ -428,7 +456,7 @@ class OrderModelEx {
     double? promoDiscount,
     int? loyaltyCoinsUsed,
     int? loyaltyCoinsEarned,
-    OrderStatusEx? status,
+    OrderStatus? status,
     List<OrderStatusEventEx>? statusHistory,
     Map<String, DateTime>? statusMetrics,
     OrderPaymentMethodEx? paymentMethod,

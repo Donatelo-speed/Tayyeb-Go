@@ -5,6 +5,5 @@ abstract class AppMotion {
   static const Duration medium = Duration(milliseconds: 280);
   static const Duration slow = Duration(milliseconds: 360);
   static const Duration lazy = Duration(milliseconds: 480);
-
   static const Duration stagger = Duration(milliseconds: 60);
 }

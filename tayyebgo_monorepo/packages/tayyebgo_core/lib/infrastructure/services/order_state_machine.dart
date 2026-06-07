@@ -1,19 +1,23 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import '../../domain/enums/order_status.dart';
+import 'delivery_earnings_service.dart';
 import 'push_notification_service.dart';
 import 'notification_templates.dart';
 
 class OrderStateMachine {
   static const _canonicalPipeline = {
     OrderStatus.placed: [OrderStatus.accepted, OrderStatus.cancelled],
+    OrderStatus.pending: [OrderStatus.accepted, OrderStatus.cancelled],
     OrderStatus.accepted: [OrderStatus.preparing, OrderStatus.cancelled],
     OrderStatus.preparing: [OrderStatus.ready, OrderStatus.cancelled],
     OrderStatus.ready: [OrderStatus.readyForDriver, OrderStatus.cancelled],
     OrderStatus.readyForDriver: [OrderStatus.dispatched, OrderStatus.cancelled],
     OrderStatus.dispatched: [OrderStatus.pickedUp, OrderStatus.cancelled],
     OrderStatus.pickedUp: [OrderStatus.delivered, OrderStatus.cancelled],
-    OrderStatus.delivered: [],
+    OrderStatus.delivered: [OrderStatus.refunded],
     OrderStatus.cancelled: [],
+    OrderStatus.refunded: [],
   };
 
   static bool isValidTransition(OrderStatus from, OrderStatus to) =>
@@ -37,7 +41,6 @@ class OrderStateMachine {
       OrderStatus.dispatched,
       OrderStatus.delivered,
     ].indexOf(currentStatus);
-    // Map readyForDriver and pickedUp to their visual positions
     final effectiveIdx = switch (currentStatus) {
       OrderStatus.readyForDriver => idx != -1 ? idx : 3,
       OrderStatus.pickedUp => idx != -1 ? idx : 4,
@@ -62,9 +65,13 @@ class OrderStateMachine {
     double? longitude,
     String? note,
   }) async {
-    final ref = FirebaseFirestore.instance.collection('Orders').doc(orderId);
+    final ref = FirebaseFirestore.instance.collection('orders').doc(orderId);
     String? customerId;
     String? restaurantName;
+    String? driverId;
+    double? totalAmount;
+    double? deliveryFee;
+    double? commissionPercent;
     await FirebaseFirestore.instance.runTransaction((txn) async {
       final snap = await txn.get(ref);
       if (!snap.exists) throw Exception('Order $orderId not found');
@@ -98,6 +105,7 @@ class OrderStateMachine {
 
       customerId = data['customerId'] as String?;
       restaurantName = data['restaurantName'] as String? ?? 'Restaurant';
+      driverId = data['driverId'] as String?;
 
       switch (newStatus) {
         case OrderStatus.accepted:
@@ -112,11 +120,27 @@ class OrderStateMachine {
           updates['pickedUpAt'] = DateTime.now().toIso8601String();
         case OrderStatus.delivered:
           updates['deliveredAt'] = DateTime.now().toIso8601String();
+          totalAmount =
+              (data['totalAmount'] as num?)?.toDouble() ?? data['totalAmount'] as double?;
+          deliveryFee =
+              (data['deliveryFee'] as num?)?.toDouble() ?? data['deliveryFee'] as double?;
+          commissionPercent =
+              (data['commissionPercent'] as num?)?.toDouble() ?? 15.0;
         default:
       }
 
       txn.update(ref, updates);
     });
+
+    if (newStatus == OrderStatus.delivered && driverId != null && totalAmount != null) {
+      unawaited(DeliveryEarningsService.instance.creditEarnings(
+        driverId: driverId!,
+        orderId: orderId,
+        totalAmount: totalAmount!,
+        deliveryFee: deliveryFee,
+        commissionPercent: commissionPercent,
+      ));
+    }
 
     if (customerId != null) {
       final notif = PushNotificationService();
@@ -144,7 +168,7 @@ class OrderStateMachine {
     double? latitude,
     double? longitude,
   }) async {
-    final ref = FirebaseFirestore.instance.collection('Orders').doc(orderId);
+    final ref = FirebaseFirestore.instance.collection('orders').doc(orderId);
     String? customerId;
     String? restaurantName;
     await FirebaseFirestore.instance.runTransaction((txn) async {

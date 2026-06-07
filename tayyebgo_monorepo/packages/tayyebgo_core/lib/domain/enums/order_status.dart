@@ -1,5 +1,6 @@
 enum OrderStatus {
   placed('placed'),
+  pending('pending'),
   accepted('accepted'),
   preparing('preparing'),
   ready('ready'),
@@ -7,14 +8,24 @@ enum OrderStatus {
   dispatched('dispatched'),
   pickedUp('picked_up'),
   delivered('delivered'),
-  cancelled('cancelled');
+  cancelled('cancelled'),
+  refunded('refunded');
 
   final String value;
   const OrderStatus(this.value);
 
-  static OrderStatus fromValue(String v) =>
-      OrderStatus.values.firstWhere((s) => s.value == v, orElse: () => placed);
+  String get canonicalValue => this == OrderStatus.pending ? 'placed' : value;
 
-  bool get isTerminal => this == delivered || this == cancelled;
+  static OrderStatus fromValue(String v) {
+    if (v == 'pending') return OrderStatus.pending;
+    return OrderStatus.values.firstWhere(
+      (s) => s.value == v,
+      orElse: () => OrderStatus.placed,
+    );
+  }
+
+  bool get isTerminal => this == delivered || this == cancelled || this == refunded;
   bool get isActive => !isTerminal;
+  bool get isCancellable =>
+      this == placed || this == pending || this == accepted;
 }

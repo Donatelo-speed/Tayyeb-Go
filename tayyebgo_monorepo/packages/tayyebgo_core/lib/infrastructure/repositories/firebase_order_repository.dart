@@ -9,7 +9,7 @@ class FirebaseOrderRepository implements IOrderRepository {
   FirebaseOrderRepository._();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  CollectionReference get _orders => _firestore.collection('Orders');
+  CollectionReference get _orders => _firestore.collection('orders');
 
   @override
   Stream<List<Order>> watchOrdersForRestaurant(String restaurantId) =>

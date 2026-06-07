@@ -82,7 +82,7 @@ class AdminFirestoreService {
     _localFlags[key] = value;
   }
 
-  CollectionReference get _stores => _db.collection('Restaurants');
+  CollectionReference get _stores => _db.collection('restaurants');
   CollectionReference get _orders => _db.collection('orders');
   CollectionReference get _drivers => _db.collection('drivers');
   CollectionReference get _users => _db.collection('users');

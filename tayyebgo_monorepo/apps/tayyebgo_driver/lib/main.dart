@@ -91,6 +91,16 @@ class _DriverAppState extends State<DriverApp> {
             page: ActiveDeliveryScreen(requestId: state.pathParameters['id']!),
           ),
         ),
+        GoRoute(
+          path: '/active-delivery-food/:id',
+          name: 'activeDeliveryFood',
+          pageBuilder: (_, state) => SlideTransitionPage(
+            page: ActiveDeliveryScreen(
+              requestId: state.pathParameters['id']!,
+              deliveryType: 'food',
+            ),
+          ),
+        ),
         AppRouter.route('/profile', const ProfileScreen(), name: 'profile'),
         AppRouter.route('/settings', const SettingsScreen(), name: 'settings'),
       ],
@@ -120,13 +130,16 @@ class _DriverAppState extends State<DriverApp> {
         ChangeNotifierProvider(create: (_) => LocaleProvider('en')),
         ChangeNotifierProvider(create: (_) => AnythingProvider()),
         ChangeNotifierProvider(create: (_) => DriverWalletProvider()),
+        ChangeNotifierProvider(create: (_) => DispatchProvider()),
       ],
-      child: ErrorBoundary(
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'TayyebGo - Driver',
-          theme: _buildTheme(),
-          routerConfig: _router,
+      child: _DispatchLifecycle(
+        child: ErrorBoundary(
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'TayyebGo - Driver',
+            theme: _buildTheme(),
+            routerConfig: _router,
+          ),
         ),
       ),
     );
@@ -145,4 +158,26 @@ class _DriverAppState extends State<DriverApp> {
       elevatedButtonTheme: TayyebGoTheme.elevatedButton,
     );
   }
+}
+
+class _DispatchLifecycle extends StatefulWidget {
+  final Widget child;
+  const _DispatchLifecycle({required this.child});
+
+  @override
+  State<_DispatchLifecycle> createState() => _DispatchLifecycleState();
+}
+
+class _DispatchLifecycleState extends State<_DispatchLifecycle> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = context.read<AuthProvider>().user;
+    if (user != null) {
+      context.read<DispatchProvider>().startListening(user.id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

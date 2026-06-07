@@ -46,7 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (user == null) return;
     try {
       final doc = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(user.id)
           .get();
       final data = doc.data();
@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (user == null) return;
     try {
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(user.id)
           .update({
         'notifications.push': _pushEnabled,

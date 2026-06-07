@@ -19,19 +19,19 @@ class ReadStoreTool extends AgentTool {
     final db = FirebaseFirestore.instance;
     QuerySnapshot<Map<String, dynamic>> snap;
     if (q.length >= 20 && !q.contains(' ')) {
-      final doc = await db.collection('Restaurants').doc(q).get();
+      final doc = await db.collection('restaurants').doc(q).get();
       if (!doc.exists) return ToolResult.fail(name, 'No store with ID $q');
       return ToolResult.ok(name, {'store': {...doc.data() ?? {}, 'id': doc.id}},
           summary: 'Loaded store "${(doc.data() ?? {})['name'] ?? q}".');
     }
     snap = await db
-        .collection('Restaurants')
+        .collection('restaurants')
         .where('name', isGreaterThanOrEqualTo: q)
         .where('name', isLessThanOrEqualTo: '$q\uf8ff')
         .limit(5)
         .get();
     if (snap.docs.isEmpty) {
-      snap = await db.collection('Restaurants').orderBy('name').startAt([q]).endAt(['$q\uf8ff']).limit(5).get();
+      snap = await db.collection('restaurants').orderBy('name').startAt([q]).endAt(['$q\uf8ff']).limit(5).get();
     }
     if (snap.docs.isEmpty) return ToolResult.fail(name, 'No store matches "$q"');
     final stores = snap.docs.map((d) => {...d.data(), 'id': d.id}).toList();
@@ -56,7 +56,7 @@ class ListStoresTool extends AgentTool {
   @override
   Future<ToolResult> execute(Map<String, dynamic> args) async {
     final db = FirebaseFirestore.instance;
-    Query<Map<String, dynamic>> q = db.collection('Restaurants');
+    Query<Map<String, dynamic>> q = db.collection('restaurants');
     final isActive = args['isActive'] as bool?;
     if (isActive != null) q = q.where('isActive', isEqualTo: isActive);
     final status = args['businessStatus'] as String?;
@@ -115,7 +115,7 @@ class ListDriversTool extends AgentTool {
   @override
   Future<ToolResult> execute(Map<String, dynamic> args) async {
     final db = FirebaseFirestore.instance;
-    Query<Map<String, dynamic>> q = db.collection('Users').where('role', isEqualTo: 'driver');
+    Query<Map<String, dynamic>> q = db.collection('users').where('role', isEqualTo: 'driver');
     final status = args['status'] as String?;
     if (status != null) q = q.where('status', isEqualTo: status);
     final limit = (args['limit'] as int?) ?? 100;
@@ -144,7 +144,7 @@ class ListCustomersTool extends AgentTool {
     final db = FirebaseFirestore.instance;
     final limit = (args['limit'] as int?) ?? 100;
     final snap = await db
-        .collection('Users')
+        .collection('users')
         .where('role', isEqualTo: 'customer')
         .orderBy('orderCount', descending: true)
         .limit(limit)

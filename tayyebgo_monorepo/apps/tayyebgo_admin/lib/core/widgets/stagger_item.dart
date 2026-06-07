@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../design_system/app_motion.dart';
+import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class StaggerItem extends StatelessWidget {
   final int index;

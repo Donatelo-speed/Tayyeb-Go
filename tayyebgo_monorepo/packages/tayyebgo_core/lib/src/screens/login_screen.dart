@@ -108,6 +108,20 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    if (auth.isAuthenticated) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text('Signed in as ${auth.user?.email ?? ''}'),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

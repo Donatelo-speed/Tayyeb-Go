@@ -12,7 +12,7 @@ class SettlementsView extends StatelessWidget {
       title: 'Driver Settlements',
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('Users')
+            .collection('users')
             .where('role', isEqualTo: 'driver')
             .where('status', isEqualTo: 'active')
             .limit(100)
@@ -160,7 +160,7 @@ class SettlementsView extends StatelessWidget {
         expand: false,
         builder: (_, scrollCtrl) => StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection('Orders')
+              .collection('orders')
               .where('driverId', isEqualTo: driverId)
               .where('status', isEqualTo: 'delivered')
               .where('paymentMethod', isEqualTo: 'cash')

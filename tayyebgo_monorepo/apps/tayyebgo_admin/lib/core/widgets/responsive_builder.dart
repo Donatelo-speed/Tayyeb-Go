@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../design_system/app_breakpoints.dart';
+import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 enum AppLayout { mobile, tablet, desktop, wide }
 

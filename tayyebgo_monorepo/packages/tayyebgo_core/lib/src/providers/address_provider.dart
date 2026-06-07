@@ -19,7 +19,7 @@ class AddressProvider extends ChangeNotifier {
       notifyListeners();
 
       final snap = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('addresses')
           .orderBy('createdAt', descending: true)
@@ -74,7 +74,7 @@ class AddressProvider extends ChangeNotifier {
       }
 
       final docRef = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('addresses')
           .add({
@@ -112,7 +112,7 @@ class AddressProvider extends ChangeNotifier {
       }
 
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('addresses')
           .doc(address.id)
@@ -130,7 +130,7 @@ class AddressProvider extends ChangeNotifier {
   Future<bool> deleteAddress(String userId, String addressId) async {
     try {
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(userId)
           .collection('addresses')
           .doc(addressId)
@@ -156,7 +156,7 @@ class AddressProvider extends ChangeNotifier {
 
   Future<void> _clearDefaultAddress(String userId) async {
     final snap = await FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .doc(userId)
         .collection('addresses')
         .where('isDefault', isEqualTo: true)

@@ -57,7 +57,7 @@ class _SystemHealthViewState extends State<SystemHealthView> {
       setState(() => _activeDrivers = snap.docs.length);
     });
     _storesSub = FirebaseFirestore.instance
-        .collection('Restaurants')
+        .collection('restaurants')
         .where('isActive', isEqualTo: true)
         .snapshots()
         .listen((snap) {
@@ -212,7 +212,7 @@ class _SystemHealthViewState extends State<SystemHealthView> {
       _ServiceStatus('Payments (Stripe)', 'operational', Icons.credit_card_rounded, AppColors.success),
       _ServiceStatus('Maps (OSM)', 'operational', Icons.map_rounded, AppColors.success),
     ];
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -245,7 +245,7 @@ class _SystemHealthViewState extends State<SystemHealthView> {
   }
 
   Widget _activityCard() {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

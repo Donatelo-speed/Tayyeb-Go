@@ -19,7 +19,7 @@ async function main() {
   for (const u of users) {
     try {
       const user = await auth.getUserByEmail(u.email);
-      await db.collection('Users').doc(user.uid).set(
+      await db.collection('users').doc(user.uid).set(
         { role: u.role, displayName: u.displayName, email: u.email, isActive: true },
         { merge: true }
       );

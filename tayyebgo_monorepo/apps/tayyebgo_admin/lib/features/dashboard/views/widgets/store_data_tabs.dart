@@ -56,7 +56,7 @@ class StoreProductsTab extends StatelessWidget {
           }
           final docs = snap.data ?? const [];
           if (docs.isEmpty) {
-            return empty.AppEmptyState(
+            return empty.AdminEmptyState(
               icon: Icons.inventory_2_outlined,
               title: 'No products yet',
               subtitle: 'Products added in the store will appear here.',
@@ -112,7 +112,7 @@ class StoreCategoriesTab extends StatelessWidget {
           }
           final docs = snap.data ?? const [];
           if (docs.isEmpty) {
-            return empty.AppEmptyState(
+            return empty.AdminEmptyState(
               icon: Icons.category_outlined,
               title: 'No categories configured',
               subtitle: 'Menu categories added in the store will appear here.',
@@ -154,7 +154,7 @@ class StoreOrdersTab extends StatelessWidget {
           }
           final docs = snap.data ?? const [];
           if (docs.isEmpty) {
-            return empty.AppEmptyState(
+            return empty.AdminEmptyState(
               icon: Icons.receipt_long_outlined,
               title: 'No orders yet',
               subtitle: 'Orders placed at this store will appear here.',
@@ -203,7 +203,7 @@ class StoreDriversTab extends StatelessWidget {
           }
           final docs = snap.data ?? const [];
           if (docs.isEmpty) {
-            return empty.AppEmptyState(
+            return empty.AdminEmptyState(
               icon: Icons.delivery_dining,
               title: 'No drivers assigned yet',
               subtitle: 'Drivers assigned to this store will appear here.',

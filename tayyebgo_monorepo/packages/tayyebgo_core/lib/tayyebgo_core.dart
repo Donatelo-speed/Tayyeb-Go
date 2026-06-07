@@ -38,6 +38,7 @@ export 'src/providers/anything_provider.dart';
 export 'src/providers/address_provider.dart';
 export 'src/providers/loyalty_provider.dart';
 export 'src/providers/driver_wallet_provider.dart';
+export 'src/providers/dispatch_provider.dart';
 export 'src/models/product.dart';
 export 'src/models/cart_line_item.dart';
 export 'src/models/modifier.dart';
@@ -51,6 +52,7 @@ export 'src/models/order_model.dart'
         DeliveryAddressEx,
         OrderStatusEventEx,
         OrderPaymentMethodEx;
+export 'domain/enums/order_status.dart' show OrderStatus;
 export 'src/models/vendor.dart' show Vendor, DayHours, DeliveryMode;
 export 'src/models/driver_model.dart' show DriverModel, VehicleType;
 export 'src/models/promo_model.dart' show PromoModel, PromoType;
@@ -91,6 +93,10 @@ export 'presentation/theme/app_colors.dart';
 export 'presentation/theme/app_gradients.dart';
 export 'presentation/theme/app_typography.dart';
 export 'presentation/theme/app_spacing.dart';
+export 'presentation/theme/app_radius.dart';
+export 'presentation/theme/app_shadow.dart';
+export 'presentation/theme/app_breakpoints.dart';
+export 'presentation/theme/app_motion.dart';
 export 'presentation/theme/theme_provider.dart';
 export 'presentation/shared_widgets/animated_button.dart';
 export 'presentation/shared_widgets/glass_card.dart';
@@ -157,6 +163,10 @@ export 'infrastructure/services/revenue_service.dart';
 export 'infrastructure/services/order_placement_service.dart';
 export 'infrastructure/services/push_notification_service.dart';
 export 'infrastructure/services/sync_engine.dart';
+export 'infrastructure/services/dispatch_timeout_service.dart';
+export 'infrastructure/services/delivery_earnings_service.dart';
 
 export 'presentation/router/app_router.dart';
 export 'presentation/router/route_guards.dart';
+
+export 'ui/tayyebgo_ui.dart';

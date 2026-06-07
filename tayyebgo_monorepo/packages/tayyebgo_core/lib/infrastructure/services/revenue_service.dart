@@ -34,7 +34,7 @@ class RevenueService {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    var query = _firestore.collection('Orders')
+    var query = _firestore.collection('orders')
       .where('status', isEqualTo: 'delivered') as Query;
     if (restaurantId != null) {
       query = query.where('restaurantId', isEqualTo: restaurantId);
@@ -60,7 +60,7 @@ class RevenueService {
 
     double avgPercent = 15.0;
     if (restaurantId != null) {
-      final restDoc = await _firestore.collection('Restaurants').doc(restaurantId).get();
+      final restDoc = await _firestore.collection('restaurants').doc(restaurantId).get();
       if (restDoc.exists) {
         avgPercent = (restDoc.data()?['commissionPercent'] as num?)?.toDouble() ?? 15.0;
       }

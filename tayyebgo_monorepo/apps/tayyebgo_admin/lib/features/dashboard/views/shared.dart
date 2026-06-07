@@ -146,7 +146,7 @@ class EmptyState extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => empty_impl.AppEmptyState(
+  Widget build(BuildContext context) => empty_impl.AdminEmptyState(
         icon: icon,
         title: title,
         subtitle: subtitle,

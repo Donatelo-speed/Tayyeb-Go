@@ -41,7 +41,7 @@ class _OrdersViewState extends State<OrdersView> {
       showAppBar: false,
       title: 'Orders Management',
         body: StreamScreenBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('Orders').orderBy('createdAt', descending: true).limit(200).snapshots(),
+          stream: FirebaseFirestore.instance.collection('orders').orderBy('createdAt', descending: true).limit(200).snapshots(),
           onLoading: () => const ShimmerLoading(itemCount: 6),
           onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
           onSuccess: (context, snapshot) {
@@ -221,10 +221,30 @@ class _OrdersViewState extends State<OrdersView> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             onPressed: () async {
               try {
-                await FirebaseFirestore.instance.collection('Orders').doc(orderId).update({
-                  'status': 'refunded',
-                  'refundedAt': FieldValue.serverTimestamp(),
-                  'refundedAmount': amount,
+                await FirebaseFirestore.instance.runTransaction((txn) async {
+                  final orderRef = FirebaseFirestore.instance.collection('orders').doc(orderId);
+                  final snap = await txn.get(orderRef);
+                  if (!snap.exists) throw Exception('Order not found');
+                  final data = snap.data()!;
+                  final currentStatus = data['status'] as String? ?? '';
+                  if (currentStatus != 'delivered') {
+                    throw Exception('Only delivered orders can be refunded. Current: $currentStatus');
+                  }
+                  final history = List<Map<String, dynamic>>.from(data['statusHistory'] ?? []);
+                  history.add({
+                    'from': currentStatus,
+                    'to': 'refunded',
+                    'timestamp': DateTime.now().toIso8601String(),
+                    'actorId': 'admin',
+                    'note': 'Refunded \$${amount.toStringAsFixed(2)}',
+                  });
+                  txn.update(orderRef, {
+                    'status': 'refunded',
+                    'refundedAt': FieldValue.serverTimestamp(),
+                    'refundedAmount': amount,
+                    'statusHistory': history,
+                    'updatedAt': FieldValue.serverTimestamp(),
+                  });
                 });
                 await FirebaseFirestore.instance.collection('activity_log').add({
                   'text': 'Order #${orderId.substring(0, 8)} refunded (\$${amount.toStringAsFixed(2)})',
@@ -234,7 +254,7 @@ class _OrdersViewState extends State<OrdersView> {
                 if (ctx.mounted) ctx.showSuccess('Refund processed: \$${amount.toStringAsFixed(2)}');
                 Navigator.pop(ctx);
               } catch (e) {
-                if (ctx.mounted) ctx.showError('Refund failed');
+                if (ctx.mounted) ctx.showError(e.toString());
               }
             },
             child: const Text('Process Refund', style: TextStyle(color: Colors.white)),
@@ -261,14 +281,44 @@ class _OrdersViewState extends State<OrdersView> {
             onPressed: () async {
               if (ctrl.text.trim().isNotEmpty) {
                 try {
-                  await FirebaseFirestore.instance.collection('Orders').doc(orderId).update({
-                    'driverId': ctrl.text.trim(),
-                    'reassignedAt': FieldValue.serverTimestamp(),
+                  await FirebaseFirestore.instance.runTransaction((txn) async {
+                    final orderRef = FirebaseFirestore.instance.collection('orders').doc(orderId);
+                    final snap = await txn.get(orderRef);
+                    if (!snap.exists) throw Exception('Order not found');
+                    final data = snap.data()!;
+                    final currentStatus = data['status'] as String? ?? '';
+                    if (currentStatus != 'pending' && currentStatus != 'accepted' && currentStatus != 'ready_for_driver') {
+                      throw Exception('Can only reassign pending/accepted/ready orders. Current: $currentStatus');
+                    }
+                    final previousDriverId = data['driverId'] as String?;
+                    final history = List<Map<String, dynamic>>.from(data['statusHistory'] ?? []);
+                    history.add({
+                      'from': currentStatus,
+                      'to': currentStatus,
+                      'timestamp': DateTime.now().toIso8601String(),
+                      'actorId': 'admin',
+                      'note': 'Reassigned to driver ${ctrl.text.trim()}',
+                    });
+                    txn.update(orderRef, {
+                      'driverId': ctrl.text.trim(),
+                      'reassignedAt': FieldValue.serverTimestamp(),
+                      'statusHistory': history,
+                      'updatedAt': FieldValue.serverTimestamp(),
+                    });
+                    if (previousDriverId != null) {
+                      txn.update(
+                        FirebaseFirestore.instance.collection('users').doc(previousDriverId),
+                        {
+                          'activeDeliveries': FieldValue.increment(-1),
+                          'currentOrderId': FieldValue.delete(),
+                        },
+                      );
+                    }
                   });
                   if (ctx.mounted) ctx.showSuccess('Driver reassigned');
                   Navigator.pop(ctx);
                 } catch (e) {
-                  if (ctx.mounted) ctx.showError('Failed to reassign driver');
+                  if (ctx.mounted) ctx.showError(e.toString());
                 }
               }
             },

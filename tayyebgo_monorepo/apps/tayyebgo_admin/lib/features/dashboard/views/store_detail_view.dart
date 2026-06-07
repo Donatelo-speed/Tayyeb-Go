@@ -28,7 +28,7 @@ class _StoreDetailViewState extends State<StoreDetailView> {
         stream: AdminFirestoreService.instance.watchStore(widget.storeId),
         builder: (context, snap) {
           if (snap.hasError) {
-            return empty.AppEmptyState(
+            return empty.AdminEmptyState(
               icon: Icons.error_outline,
               title: 'Failed to load store',
               subtitle: snap.error.toString(),

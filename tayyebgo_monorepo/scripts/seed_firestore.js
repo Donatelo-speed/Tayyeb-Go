@@ -171,12 +171,12 @@ async function seed() {
 
   for (const u of users) {
     const { uid, ...data } = u;
-    batch.set(db.collection('Users').doc(uid), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    batch.set(db.collection('users').doc(uid), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
   }
 
   for (const r of restaurants) {
     const { id, ...data } = r;
-    batch.set(db.collection('Restaurants').doc(id), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    batch.set(db.collection('restaurants').doc(id), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
   }
 
   for (const m of menuItems) {
@@ -186,7 +186,7 @@ async function seed() {
 
   for (const o of orders) {
     const { id, ...data } = o;
-    batch.set(db.collection('Orders').doc(id), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    batch.set(db.collection('orders').doc(id), { ...data, createdAt: admin.firestore.FieldValue.serverTimestamp() });
   }
 
   for (const p of promos) {

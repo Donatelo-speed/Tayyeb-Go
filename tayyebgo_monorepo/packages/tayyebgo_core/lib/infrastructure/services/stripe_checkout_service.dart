@@ -68,7 +68,7 @@ class StripeCheckoutService implements IPaymentService {
         'confirmedAt': FieldValue.serverTimestamp(),
       });
       final data = doc.data()!;
-      await _firestore.collection('Orders').doc(data['orderId'] as String?).update({
+      await _firestore.collection('orders').doc(data['orderId'] as String?).update({
         'paymentStatus': 'completed',
         'paidAt': now.toIso8601String(),
         'transactionId': transactionId,

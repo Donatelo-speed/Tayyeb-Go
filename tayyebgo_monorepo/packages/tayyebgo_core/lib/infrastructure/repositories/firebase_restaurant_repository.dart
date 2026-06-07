@@ -6,7 +6,7 @@ class FirebaseRestaurantRepository implements IRestaurantRepository {
   static final FirebaseRestaurantRepository instance = FirebaseRestaurantRepository._();
   FirebaseRestaurantRepository._();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  CollectionReference get _col => _firestore.collection('Restaurants');
+  CollectionReference get _col => _firestore.collection('restaurants');
 
   @override
   Stream<List<Restaurant>> watchAll() => _col

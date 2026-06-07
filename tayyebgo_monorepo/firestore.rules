@@ -10,74 +10,84 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
-      return isAuthenticated()
-        && request.auth.token.role == 'superAdmin';
-    }
-
     function isOwner(uid) {
       return isAuthenticated()
         && request.auth.uid == uid;
     }
 
-    function hasRole(role) {
-      return isAuthenticated()
-        && request.auth.token.role == role;
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
 
-    function isOwnerOrAdmin(uid) {
-      return isAdmin() || isOwner(uid);
+    function getUserRestaurantId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated()
+        && getUserRole() == 'superAdmin';
+    }
+
+    function isDriver() {
+      return isAuthenticated()
+        && getUserRole() == 'driver';
+    }
+
+    function isCustomer() {
+      return isAuthenticated()
+        && getUserRole() == 'customer';
     }
 
     function isRestaurantOwner(restaurantId) {
       return isAuthenticated()
-        && request.auth.token.restaurantId == restaurantId
-        && hasRole('restaurantOwner');
-    }
-
-    function isDriver() {
-      return hasRole('driver');
+        && getUserRole() == 'restaurantOwner'
+        && getUserRestaurantId() == restaurantId;
     }
 
     function isCashier(restaurantId) {
       return isAuthenticated()
-        && request.auth.token.restaurantId == restaurantId
-        && hasRole('cashier');
-    }
-
-    function isCustomer() {
-      return hasRole('customer');
+        && getUserRole() == 'cashier'
+        && getUserRestaurantId() == restaurantId;
     }
 
     // ============================================================
     // USERS
     // ============================================================
     match /users/{userId} {
-      // Users can read their own doc; admins can read all
       allow read: if isOwner(userId) || isAdmin();
-      // Users can update their own non-role fields; admins can update any
       allow create: if isOwner(userId);
       allow update: if isOwner(userId)
         && (!request.resource.data.diff(resource.data).affectedKeys()
               .hasAny(['role', 'isActive']))
         || isAdmin();
       allow delete: if isAdmin();
+
+      // Subcollection: saved addresses
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Subcollection: saved addresses (user_repository.dart path)
+      match /saved_addresses/{addressId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId) || isAdmin();
+      }
     }
 
     // ============================================================
     // RESTAURANTS (Vendors/Stores)
     // ============================================================
     match /restaurants/{restaurantId} {
-      // Public can read active restaurants
       allow read: if isAuthenticated()
         && (resource.data.isActive == true || isAdmin());
-      // Admins can create; owners can update their own
       allow create: if isAdmin();
       allow update: if isAdmin()
         || isRestaurantOwner(restaurantId);
       allow delete: if isAdmin();
 
-      // Subcollections
+      // Subcollection: menu items
       match /menu_items/{itemId} {
         allow read: if isAuthenticated();
         allow write: if isAdmin()
@@ -85,20 +95,57 @@ service cloud.firestore {
           || isCashier(restaurantId);
       }
 
+      // Subcollection: restaurant orders
       match /orders/{orderId} {
-        allow read: if isAuthenticated();
+        allow read: if isAuthenticated()
+          && (resource.data.userId == request.auth.uid
+            || isAdmin()
+            || isRestaurantOwner(restaurantId)
+            || isDriver()
+            || isCashier(restaurantId));
         allow create: if isCustomer();
         allow update: if isAdmin()
           || isRestaurantOwner(restaurantId)
+          || isCashier(restaurantId)
           || isDriver();
         allow delete: if isAdmin();
       }
 
+      // Subcollection: reviews
       match /reviews/{reviewId} {
         allow read: if true;
         allow create: if isCustomer();
         allow update: if isOwner(request.auth.uid);
         allow delete: if isAdmin();
+      }
+
+      // Subcollection: promo codes
+      match /promos/{promoId} {
+        allow read: if isAuthenticated();
+        allow write: if isAdmin()
+          || isRestaurantOwner(restaurantId);
+      }
+
+      // Subcollection: products (admin catalog management)
+      match /products/{productId} {
+        allow read: if isAuthenticated();
+        allow write: if isAdmin()
+          || isRestaurantOwner(restaurantId)
+          || isCashier(restaurantId);
+      }
+
+      // Subcollection: categories (menu organization)
+      match /categories/{categoryId} {
+        allow read: if isAuthenticated();
+        allow write: if isAdmin()
+          || isRestaurantOwner(restaurantId);
+      }
+
+      // Subcollection: promotions (store-level discounts)
+      match /promotions/{promotionId} {
+        allow read: if isAuthenticated();
+        allow write: if isAdmin()
+          || isRestaurantOwner(restaurantId);
       }
     }
 
@@ -124,7 +171,54 @@ service cloud.firestore {
     }
 
     // ============================================================
-    // DELIVERIES / DISPATCH
+    // DRIVER LOCATIONS (live GPS)
+    // ============================================================
+    match /driver_locations/{driverId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(driverId);
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DRIVER WALLETS (earnings/balance)
+    // ============================================================
+    match /driver_wallets/{driverId} {
+      allow read: if isOwner(driverId) || isAdmin();
+      allow write: if isAdmin();
+
+      // Subcollection: wallet transaction history
+      match /transactions/{txnId} {
+        allow read: if isOwner(driverId) || isAdmin();
+        allow create: if isOwner(driverId);
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ============================================================
+    // DISPATCH REQUESTS (auto-dispatch matching)
+    // ============================================================
+    match /dispatch_requests/{requestId} {
+      allow read: if isAdmin() || isDriver();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || isDriver();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // ANYTHING REQUESTS (special delivery orders)
+    // ============================================================
+    match /anything_requests/{requestId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isDriver());
+      allow create: if isCustomer();
+      allow update: if isAdmin() || isDriver();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DELIVERIES / DISPATCH (legacy)
     // ============================================================
     match /dispatches/{dispatchId} {
       allow read: if isAuthenticated();
@@ -132,7 +226,42 @@ service cloud.firestore {
     }
 
     // ============================================================
-    // TRANSACTIONS / PAYOUTS / PAYMENTS
+    // PAYMENTS
+    // ============================================================
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // PAYMENT INTENTS (Stripe)
+    // ============================================================
+    match /payment_intents/{intentId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // PAYMENT METHODS (saved cards)
+    // ============================================================
+    match /payment_methods/{methodId} {
+      allow read: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow write: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // TRANSACTIONS (ledger)
     // ============================================================
     match /transactions/{txnId} {
       allow read: if isAuthenticated()
@@ -141,17 +270,41 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ============================================================
+    // LOYALTY TRANSACTIONS
+    // ============================================================
+    match /loyalty_transactions/{txnId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // PAYOUTS (driver/restaurant settlements)
+    // ============================================================
     match /payouts/{payoutId} {
+      allow read: if isAdmin()
+        || isRestaurantOwner(resource.data.restaurantId)
+        || isOwner(resource.data.driverId);
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // SETTLEMENTS
+    // ============================================================
+    match /settlements/{settlementId} {
       allow read: if isAdmin()
         || isRestaurantOwner(resource.data.restaurantId);
       allow write: if isAdmin();
     }
 
     // ============================================================
-    // PROMOTIONS
+    // PROMOTIONS / PROMOS
     // ============================================================
-    match /promotions/{promoId} {
-      allow read: if true;
+    match /promos/{promoId} {
+      allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
@@ -176,7 +329,15 @@ service cloud.firestore {
     }
 
     // ============================================================
-    // SETTINGS / CONFIG (app-wide)
+    // CONFIG (app-wide settings)
+    // ============================================================
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // SETTINGS (legacy, same as config)
     // ============================================================
     match /settings/{settingId} {
       allow read: if isAuthenticated();
@@ -184,7 +345,7 @@ service cloud.firestore {
     }
 
     // ============================================================
-    // CUSTOMERS
+    // CUSTOMERS (denormalized customer data)
     // ============================================================
     match /customers/{customerId} {
       allow read: if isOwner(customerId) || isAdmin();
@@ -200,11 +361,135 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // BRANCHES (physical locations)
+    // ============================================================
+    match /branches/{branchId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
     // ZONES (dispatch zones)
     // ============================================================
     match /zones/{zoneId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // APPROVALS (admin workflow)
+    // ============================================================
+    match /approvals/{approvalId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // DOCUMENTS (driver/store document verification)
+    // ============================================================
+    match /documents/{documentId} {
+      allow read: if isAdmin()
+        || isOwner(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isAdmin()
+        || isOwner(resource.data.userId);
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DRIVER ASSIGNMENTS (admin auto-dispatch records)
+    // ============================================================
+    match /driverAssignments/{assignmentId} {
+      allow read: if isAdmin() || isDriver();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // SUBSCRIPTIONS (store subscription plans)
+    // ============================================================
+    match /subscriptions/{subscriptionId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // CONTRACTS (driver/restaurant agreements)
+    // ============================================================
+    match /contracts/{contractId} {
+      allow read: if isAdmin()
+        || isOwner(resource.data.userId);
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // COUPONS (discount codes)
+    // ============================================================
+    match /coupons/{couponId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // CAMPAIGNS (marketing)
+    // ============================================================
+    match /campaigns/{campaignId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // REPORTS (generated analytics)
+    // ============================================================
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // FEATURE FLAGS
+    // ============================================================
+    match /feature_flags/{flagId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // SUPPORT TICKETS
+    // ============================================================
+    match /support_tickets/{ticketId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAdmin()
+        || isOwner(resource.data.userId);
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // SUPPORT (docs/knowledge base)
+    // ============================================================
+    match /support/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // MARKETING (content)
+    // ============================================================
+    match /marketing/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ============================================================
+    // EMERGENCY ALERTS (driver SOS)
+    // ============================================================
+    match /emergency_alerts/{alertId} {
+      allow read: if isAdmin();
+      allow create: if isDriver();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     // ============================================================

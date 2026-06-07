@@ -12,7 +12,7 @@ class PaymentProvider {
     required double amount,
     required PaymentMethod method,
   }) async {
-    final paymentRef = _firestore.collection('Payments').doc();
+    final paymentRef = _firestore.collection('payments').doc();
 
     final payment = Payment(
       id: paymentRef.id,
@@ -30,7 +30,7 @@ class PaymentProvider {
 
   Stream<Payment?> watchPayment(String orderId) {
     return _firestore
-        .collection('Payments')
+        .collection('payments')
         .where('orderId', isEqualTo: orderId)
         .limit(1)
         .snapshots()
@@ -51,6 +51,6 @@ class PaymentProvider {
     if (transactionId != null) {
       updates['transactionId'] = transactionId;
     }
-    await _firestore.collection('Payments').doc(paymentId).update(updates);
+    await _firestore.collection('payments').doc(paymentId).update(updates);
   }
 }

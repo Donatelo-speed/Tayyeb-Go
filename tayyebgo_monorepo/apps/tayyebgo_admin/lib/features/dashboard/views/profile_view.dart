@@ -41,7 +41,7 @@ class _HeroCard extends StatelessWidget {
     final name = user?.displayName ?? 'Admin';
     final email = user?.email ?? 'admin@tayyebgo.com';
     final initials = name.isNotEmpty ? name[0].toUpperCase() : 'A';
-    return AppCard(
+    return AdminCard(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
@@ -134,7 +134,7 @@ class _StatsCard extends StatelessWidget {
   const _StatsCard({this.user});
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -225,7 +225,7 @@ class _ActivityCard extends StatelessWidget {
   const _ActivityCard({this.user});
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -336,7 +336,7 @@ class _PermissionsCard extends StatelessWidget {
       ('Feature flags', Icons.toggle_on, true),
       ('Delete data', Icons.delete_forever, false),
     ];
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

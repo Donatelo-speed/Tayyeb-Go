@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../domain/enums/order_status.dart';
 import '../models/order_model.dart';
 import '../utils/result.dart';
 
@@ -12,7 +13,7 @@ class OrderRepository {
   final _uuid = const Uuid();
 
   CollectionReference<Map<String, dynamic>> get _orders =>
-      _firestore.collection('Orders');
+      _firestore.collection('orders');
 
   DocumentReference<Map<String, dynamic>> _orderRef(String orderId) =>
       _orders.doc(orderId);
@@ -21,17 +22,17 @@ class OrderRepository {
       _orders
           .where('restaurantId', isEqualTo: restaurantId)
           .where('status', whereIn: [
-            OrderStatusEx.pending.firestoreValue,
-            OrderStatusEx.accepted.firestoreValue,
-            OrderStatusEx.preparing.firestoreValue,
-            OrderStatusEx.readyForDriver.firestoreValue,
+            OrderStatus.pending.value,
+            OrderStatus.accepted.value,
+            OrderStatus.preparing.value,
+            OrderStatus.readyForDriver.value,
           ])
           .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snap) => snap.docs.map(OrderModelEx.fromFirestore).toList());
 
   Stream<List<OrderModelEx>> watchRestaurantOrders(String restaurantId, {
-    OrderStatusEx? status,
+    OrderStatus? status,
     int limit = 50,
   }) {
     Query<Map<String, dynamic>> q = _orders
@@ -41,7 +42,7 @@ class OrderRepository {
     if (status != null) {
       q = _orders
           .where('restaurantId', isEqualTo: restaurantId)
-          .where('status', isEqualTo: status.firestoreValue)
+          .where('status', isEqualTo: status.value)
           .orderBy('createdAt', descending: true)
           .limit(limit);
     }
@@ -66,18 +67,18 @@ class OrderRepository {
       _orders
           .where('driverId', isEqualTo: driverId)
           .where('status', whereIn: [
-            OrderStatusEx.readyForDriver.firestoreValue,
-            OrderStatusEx.pickedUp.firestoreValue,
+            OrderStatus.readyForDriver.value,
+            OrderStatus.pickedUp.value,
           ])
           .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snap) => snap.docs.map(OrderModelEx.fromFirestore).toList());
 
-  Stream<List<OrderModelEx>> watchAllOrders({OrderStatusEx? status, int limit = 100}) {
+  Stream<List<OrderModelEx>> watchAllOrders({OrderStatus? status, int limit = 100}) {
     Query<Map<String, dynamic>> q;
     if (status != null) {
       q = _orders
-          .where('status', isEqualTo: status.firestoreValue)
+          .where('status', isEqualTo: status.value)
           .orderBy('createdAt', descending: true)
           .limit(limit);
     } else {
@@ -98,7 +99,7 @@ class OrderRepository {
 
   Future<List<OrderModelEx>> getOrdersByRestaurant(String restaurantId, {
     int limit = 20,
-    OrderStatusEx? status,
+    OrderStatus? status,
   }) async {
     try {
       Query<Map<String, dynamic>> q = _orders
@@ -108,7 +109,7 @@ class OrderRepository {
       if (status != null) {
         q = _orders
             .where('restaurantId', isEqualTo: restaurantId)
-            .where('status', isEqualTo: status.firestoreValue)
+            .where('status', isEqualTo: status.value)
             .orderBy('createdAt', descending: true)
             .limit(limit);
       }
@@ -125,13 +126,13 @@ class OrderRepository {
       final ref = _orderRef(id);
       final data = <String, dynamic>{
         ...order.toFirestore(),
-        'status': OrderStatusEx.pending.firestoreValue,
+        'status': OrderStatus.pending.value,
         'statusMetrics': {
           'placed': FieldValue.serverTimestamp(),
         },
         'statusHistory': [
           {
-            'status': OrderStatusEx.pending.firestoreValue,
+            'status': OrderStatus.pending.value,
             'timestamp': Timestamp.now(),
             'actorId': order.customerId ?? 'guest',
           }
@@ -147,20 +148,20 @@ class OrderRepository {
     }
   }
 
-  Future<Result<void>> transitionStatus(String orderId, OrderStatusEx newStatus, String actorId, {String? note}) async {
+  Future<Result<void>> transitionStatus(String orderId, OrderStatus newStatus, String actorId, {String? note}) async {
     try {
       await _firestore.runTransaction((txn) async {
         final ref = _orderRef(orderId);
         final snap = await txn.get(ref);
         if (!snap.exists) throw _OrderException('Order not found.');
         final currentStatusStr = (snap.data()!['status'] as String?) ?? '';
-        final currentStatus = OrderStatusEx.fromString(currentStatusStr);
+        final currentStatus = OrderStatus.fromValue(currentStatusStr);
         if (!_isValidTransition(currentStatus, newStatus)) {
           throw _OrderException(
-            'Cannot move order from ${currentStatus.displayName} \u2192 ${newStatus.displayName}.',
+            'Cannot move order from ${currentStatus.value} \u2192 ${newStatus.value}.',
           );
         }
-        final statusKey = newStatus.firestoreValue;
+        final statusKey = newStatus.value;
         final historyEntry = <String, dynamic>{
           'status': statusKey,
           'timestamp': Timestamp.now(),
@@ -174,11 +175,11 @@ class OrderRepository {
           'updatedAt': FieldValue.serverTimestamp(),
         };
         switch (newStatus) {
-          case OrderStatusEx.accepted:
+          case OrderStatus.accepted:
             updateData['acceptedAt'] = FieldValue.serverTimestamp();
-          case OrderStatusEx.delivered:
+          case OrderStatus.delivered:
             updateData['deliveredAt'] = FieldValue.serverTimestamp();
-          case OrderStatusEx.cancelled:
+          case OrderStatus.cancelled:
             updateData['cancelledAt'] = FieldValue.serverTimestamp();
           default:
             break;
@@ -194,7 +195,7 @@ class OrderRepository {
   }
 
   Future<Result<void>> rejectOrder(String orderId, String actorId, {String? reason}) =>
-      transitionStatus(orderId, OrderStatusEx.cancelled, actorId, note: reason ?? 'Rejected by restaurant');
+      transitionStatus(orderId, OrderStatus.cancelled, actorId, note: reason ?? 'Rejected by restaurant');
 
   Future<Result<void>> assignDriver(String orderId, {required String driverId, required String driverName}) async {
     try {
@@ -202,15 +203,15 @@ class OrderRepository {
         final ref = _orderRef(orderId);
         final snap = await txn.get(ref);
         if (!snap.exists) throw _OrderException('Order not found.');
-        final currentStatus = OrderStatusEx.fromString((snap.data()!['status'] as String?) ?? '');
-        if (currentStatus != OrderStatusEx.readyForDriver) {
+        final currentStatus = OrderStatus.fromValue((snap.data()!['status'] as String?) ?? '');
+        if (currentStatus != OrderStatus.readyForDriver) {
           throw _OrderException(
-            'Order must be ready_for_driver before a driver can be assigned. Current: ${currentStatus.displayName}',
+            'Order must be ready_for_driver before a driver can be assigned. Current: ${currentStatus.value}',
           );
         }
-        const newStatus = OrderStatusEx.pickedUp;
+        final newStatus = OrderStatus.pickedUp;
         final historyEntry = <String, dynamic>{
-          'status': newStatus.firestoreValue,
+          'status': newStatus.value,
           'timestamp': Timestamp.now(),
           'actorId': driverId,
           'note': 'Picked up by $driverName',
@@ -218,8 +219,8 @@ class OrderRepository {
         txn.update(ref, {
           'driverId': driverId,
           'driverName': driverName,
-          'status': newStatus.firestoreValue,
-          'statusMetrics.${newStatus.firestoreValue}': FieldValue.serverTimestamp(),
+          'status': newStatus.value,
+          'statusMetrics.${newStatus.value}': FieldValue.serverTimestamp(),
           'statusHistory': FieldValue.arrayUnion([historyEntry]),
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -253,20 +254,20 @@ class OrderRepository {
         final ref = _orderRef(orderId);
         final snap = await txn.get(ref);
         if (!snap.exists) throw _OrderException('Order not found.');
-        final currentStatus = OrderStatusEx.fromString((snap.data()!['status'] as String?) ?? '');
-        if (currentStatus != OrderStatusEx.pending) {
+        final currentStatus = OrderStatus.fromValue((snap.data()!['status'] as String?) ?? '');
+        if (currentStatus != OrderStatus.pending && currentStatus != OrderStatus.placed) {
           throw _OrderException(
-            'Orders can only be cancelled while pending. Current status: ${currentStatus.displayName}.',
+            'Orders can only be cancelled while pending. Current status: ${currentStatus.value}.',
           );
         }
         final historyEntry = <String, dynamic>{
-          'status': OrderStatusEx.cancelled.firestoreValue,
+          'status': OrderStatus.cancelled.value,
           'timestamp': Timestamp.now(),
           'actorId': customerId,
           'note': reason ?? 'Cancelled by customer',
         };
         txn.update(ref, {
-          'status': OrderStatusEx.cancelled.firestoreValue,
+          'status': OrderStatus.cancelled.value,
           'statusMetrics.cancelled': FieldValue.serverTimestamp(),
           'statusHistory': FieldValue.arrayUnion([historyEntry]),
           'cancelledAt': FieldValue.serverTimestamp(),
@@ -282,18 +283,22 @@ class OrderRepository {
     }
   }
 
-  static const Map<OrderStatusEx, Set<OrderStatusEx>> _validTransitions = {
-    OrderStatusEx.pending: {OrderStatusEx.accepted, OrderStatusEx.cancelled},
-    OrderStatusEx.accepted: {OrderStatusEx.preparing, OrderStatusEx.cancelled},
-    OrderStatusEx.preparing: {OrderStatusEx.readyForDriver, OrderStatusEx.cancelled},
-    OrderStatusEx.readyForDriver: {OrderStatusEx.pickedUp, OrderStatusEx.cancelled},
-    OrderStatusEx.pickedUp: {OrderStatusEx.delivered, OrderStatusEx.cancelled},
-    OrderStatusEx.delivered: {},
-    OrderStatusEx.cancelled: {},
+  static const Map<OrderStatus, Set<OrderStatus>> _validTransitions = {
+    OrderStatus.pending: {OrderStatus.accepted, OrderStatus.cancelled},
+    OrderStatus.placed: {OrderStatus.accepted, OrderStatus.cancelled},
+    OrderStatus.accepted: {OrderStatus.preparing, OrderStatus.cancelled},
+    OrderStatus.preparing: {OrderStatus.ready, OrderStatus.readyForDriver, OrderStatus.cancelled},
+    OrderStatus.ready: {OrderStatus.readyForDriver, OrderStatus.cancelled},
+    OrderStatus.readyForDriver: {OrderStatus.dispatched, OrderStatus.pickedUp, OrderStatus.cancelled},
+    OrderStatus.dispatched: {OrderStatus.pickedUp, OrderStatus.cancelled},
+    OrderStatus.pickedUp: {OrderStatus.delivered, OrderStatus.cancelled},
+    OrderStatus.delivered: {OrderStatus.refunded},
+    OrderStatus.cancelled: {},
+    OrderStatus.refunded: {},
   };
 
-  static bool _isValidTransition(OrderStatusEx from, OrderStatusEx to) {
-    final allowed = _validTransitions[from];
+  static bool _isValidTransition(OrderStatus from, OrderStatus to) {
+    final allowed = _validTransitions[from] ?? _validTransitions[OrderStatus.placed];
     if (allowed == null) return false;
     return allowed.contains(to);
   }

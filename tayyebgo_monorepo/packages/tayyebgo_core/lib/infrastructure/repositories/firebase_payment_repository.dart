@@ -32,7 +32,7 @@ class FirebasePaymentRepository implements IPaymentRepository {
     required String paymentMethodId,
   }) async {
     // Stripe integration placeholder — returns a mock success
-    await _firestore.collection('Orders').doc(orderId).update({
+    await _firestore.collection('orders').doc(orderId).update({
       'paymentStatus': 'completed',
       'paidAt': DateTime.now().toIso8601String(),
     });

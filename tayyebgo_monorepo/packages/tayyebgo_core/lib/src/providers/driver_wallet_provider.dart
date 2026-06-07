@@ -54,6 +54,14 @@ class DriverWalletProvider extends ChangeNotifier {
     try {
       final walletRef = FirebaseFirestore.instance.collection('driver_wallets').doc(driverId);
 
+      final existingTxns = await walletRef
+          .collection('transactions')
+          .where('orderId', isEqualTo: orderId)
+          .where('type', isEqualTo: 'earning')
+          .limit(1)
+          .get();
+      if (existingTxns.docs.isNotEmpty) return true;
+
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final doc = await transaction.get(walletRef);
         if (!doc.exists) {

@@ -55,7 +55,7 @@ class _DriversViewState extends State<DriversView> {
           ),
           Expanded(
             child: StreamScreenBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('Users').where('role', isEqualTo: 'driver').limit(500).snapshots(),
+              stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'driver').limit(500).snapshots(),
               onLoading: () => const ShimmerLoading(itemCount: 4),
               onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
               onSuccess: (context, snapshot) {
@@ -257,7 +257,7 @@ class _DriversViewState extends State<DriversView> {
             onPressed: () async {
               final storeId = storeCtrl.text.trim();
               try {
-                await FirebaseFirestore.instance.collection('Users').doc(driverId).update({
+                await FirebaseFirestore.instance.collection('users').doc(driverId).update({
                   'storeId': storeId.isEmpty ? FieldValue.delete() : storeId,
                   'driverType': storeId.isEmpty ? 'platform' : 'store',
                 });
@@ -278,7 +278,7 @@ class _DriversViewState extends State<DriversView> {
 
   Future<void> _approveDriver(BuildContext context, String id, String name) async {
     try {
-      await FirebaseFirestore.instance.collection('Users').doc(id).update({'isActive': true, 'approvedAt': FieldValue.serverTimestamp()});
+      await FirebaseFirestore.instance.collection('users').doc(id).update({'isActive': true, 'approvedAt': FieldValue.serverTimestamp()});
       await FirebaseFirestore.instance.collection('activity_log').add({
         'text': 'Driver "$name" approved',
         'color': 'green',
@@ -292,7 +292,7 @@ class _DriversViewState extends State<DriversView> {
 
   Future<void> _suspendDriver(BuildContext context, String id, String name) async {
     try {
-      await FirebaseFirestore.instance.collection('Users').doc(id).update({'isActive': false, 'suspendedAt': FieldValue.serverTimestamp()});
+      await FirebaseFirestore.instance.collection('users').doc(id).update({'isActive': false, 'suspendedAt': FieldValue.serverTimestamp()});
       await FirebaseFirestore.instance.collection('activity_log').add({
         'text': 'Driver "$name" suspended',
         'color': 'orange',
@@ -306,7 +306,7 @@ class _DriversViewState extends State<DriversView> {
 
   Future<void> _verifyDriver(BuildContext context, String id, bool currentVerified) async {
     try {
-      await FirebaseFirestore.instance.collection('Users').doc(id).update({'isVerified': !currentVerified});
+      await FirebaseFirestore.instance.collection('users').doc(id).update({'isVerified': !currentVerified});
       if (context.mounted) {
         context.showSuccess(currentVerified ? 'Verification removed' : 'Driver verified');
       }
@@ -324,7 +324,7 @@ class _DriversViewState extends State<DriversView> {
     );
     if (!confirmed) return;
     try {
-      await FirebaseFirestore.instance.collection('Users').doc(id).update({
+      await FirebaseFirestore.instance.collection('users').doc(id).update({
         'ordersCompleted': 0,
         'earnings': 0,
         'rating': 0,

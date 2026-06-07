@@ -19,7 +19,7 @@ class OrderTrackingScreen extends StatelessWidget {
       title: 'Order Status',
       body: StreamScreenBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('Orders')
+            .collection('orders')
             .doc(orderId)
             .snapshots(),
         onLoading: () => const ShimmerLoading(itemCount: 3),
@@ -301,6 +301,7 @@ class OrderTrackingScreen extends StatelessWidget {
   IconData _statusIcon(OrderStatus status) {
     switch (status) {
       case OrderStatus.placed:
+      case OrderStatus.pending:
         return Icons.receipt_long;
       case OrderStatus.accepted:
         return Icons.check_circle_outline;
@@ -313,6 +314,7 @@ class OrderTrackingScreen extends StatelessWidget {
       case OrderStatus.pickedUp:
         return Icons.pedal_bike;
       case OrderStatus.delivered:
+      case OrderStatus.refunded:
         return Icons.verified;
       case OrderStatus.cancelled:
         return Icons.cancel;
@@ -335,6 +337,7 @@ class OrderTrackingScreen extends StatelessWidget {
   String _statusTitle(OrderStatus status) {
     switch (status) {
       case OrderStatus.placed:
+      case OrderStatus.pending:
         return 'Order Placed';
       case OrderStatus.accepted:
         return 'Order Confirmed';
@@ -347,6 +350,7 @@ class OrderTrackingScreen extends StatelessWidget {
       case OrderStatus.pickedUp:
         return 'On the Way';
       case OrderStatus.delivered:
+      case OrderStatus.refunded:
         return 'Delivered!';
       case OrderStatus.cancelled:
         return 'Order Cancelled';

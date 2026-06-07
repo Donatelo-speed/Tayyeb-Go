@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
-import 'features/auth/admin_login_screen.dart';
 import 'features/auth/forgot_password_screen.dart';
 import 'features/dashboard/admin_dashboard_screen.dart';
 
@@ -87,7 +86,7 @@ class _AdminAppState extends State<AdminApp> {
       refreshListenable: _authListenable,
       initialLocation: '/splash',
       routes: [
-        AppRouter.route('/login', const AdminLoginScreen(), name: 'login'),
+        AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route(
           '/forgot-password',
           const ForgotPasswordScreen(),

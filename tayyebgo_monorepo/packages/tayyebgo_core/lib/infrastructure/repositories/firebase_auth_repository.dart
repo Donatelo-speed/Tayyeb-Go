@@ -31,7 +31,7 @@ class FirebaseAuthRepository implements IAuthRepository {
   Stream<AppUser?> get authStateChanges =>
       _auth.authStateChanges().asyncMap((fbUser) async {
         if (fbUser == null) return null;
-        final doc = await _firestore.collection('Users').doc(fbUser.uid).get();
+        final doc = await _firestore.collection('users').doc(fbUser.uid).get();
         if (doc.exists) {
           return AppUser.fromMap(doc.data()!, doc.id);
         }
@@ -86,7 +86,7 @@ class FirebaseAuthRepository implements IAuthRepository {
 
   @override
   Future<AppUser> resolveUser(String firebaseUid) async {
-    final doc = await _firestore.collection('Users').doc(firebaseUid).get();
+    final doc = await _firestore.collection('users').doc(firebaseUid).get();
     if (doc.exists) {
       return AppUser.fromMap(doc.data()!, doc.id);
     }
@@ -104,7 +104,7 @@ class FirebaseAuthRepository implements IAuthRepository {
 
   @override
   Future<void> updateProfile(AppUser user) async {
-    await _firestore.collection('Users').doc(user.id).set(user.toMap());
+    await _firestore.collection('users').doc(user.id).set(user.toMap());
   }
 
   AppUser _resolveOrCreate(fb.User fbUser) {

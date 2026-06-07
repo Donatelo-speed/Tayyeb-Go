@@ -27,7 +27,7 @@ class ShamCashService implements IPaymentService {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await _firestore.collection('Orders').doc(request.orderId).update({
+      await _firestore.collection('orders').doc(request.orderId).update({
         'paymentMethodType': 'sham_cash',
         'paymentStatus': 'pending',
         'transactionId': txnId,
@@ -68,7 +68,7 @@ class ShamCashService implements IPaymentService {
         'status': 'completed',
         'confirmedAt': FieldValue.serverTimestamp(),
       });
-      await _firestore.collection('Orders').doc(data['orderId'] as String?).update({
+      await _firestore.collection('orders').doc(data['orderId'] as String?).update({
         'paymentStatus': 'completed',
         'paidAt': now.toIso8601String(),
       });

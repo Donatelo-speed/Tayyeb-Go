@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
-import '../design_system/app_radius.dart';
-import '../design_system/app_shadow.dart';
 
-class AppCard extends StatelessWidget {
+class AdminCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -14,7 +12,7 @@ class AppCard extends StatelessWidget {
   final VoidCallback? onTap;
   final BoxBorder? border;
 
-  const AppCard({
+  const AdminCard({
     super.key,
     required this.child,
     this.padding,

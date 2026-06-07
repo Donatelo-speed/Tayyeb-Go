@@ -71,7 +71,7 @@ class LoyaltyProvider extends ChangeNotifier {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance.collection('Users').doc(user.id).update({
+      await FirebaseFirestore.instance.collection('users').doc(user.id).update({
         'loyaltyPoints': FieldValue.increment(points),
       });
 
@@ -94,7 +94,7 @@ class LoyaltyProvider extends ChangeNotifier {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance.collection('Users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'loyaltyPoints': FieldValue.increment(points),
       });
 
@@ -117,7 +117,7 @@ class LoyaltyProvider extends ChangeNotifier {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance.collection('Users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'loyaltyPoints': FieldValue.increment(points),
       });
 
@@ -132,7 +132,7 @@ class LoyaltyProvider extends ChangeNotifier {
 
   Future<bool> redeemPoints(String userId, int points, String description) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       final currentPoints = (userDoc.data()?['loyaltyPoints'] as num?)?.toInt() ?? 0;
 
       if (currentPoints < points) return false;
@@ -145,7 +145,7 @@ class LoyaltyProvider extends ChangeNotifier {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      await FirebaseFirestore.instance.collection('Users').doc(userId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'loyaltyPoints': FieldValue.increment(-points),
       });
 

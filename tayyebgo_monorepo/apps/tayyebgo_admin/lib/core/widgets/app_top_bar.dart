@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../features/dashboard/admin_helper.dart';
-import '../design_system/app_motion.dart';
 import 'app_command_bar.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {

@@ -26,7 +26,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           : StreamBuilder<QuerySnapshot>(
               key: ValueKey('order_history_$_retryKey'),
               stream: FirebaseFirestore.instance
-                  .collection('Orders')
+                  .collection('orders')
                   .where('customerId', isEqualTo: customerId)
                   .where('status',
                       whereIn: ['delivered', 'cancelled'])

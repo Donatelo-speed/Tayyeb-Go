@@ -93,7 +93,7 @@ class _OrderStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('Orders')
+          .collection('orders')
           .where('restaurantId', isEqualTo: restaurantId)
           .where('status', whereIn: ['pending', 'accepted', 'preparing'])
           .orderBy('createdAt', descending: true)

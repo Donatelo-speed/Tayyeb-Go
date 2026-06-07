@@ -1,7 +1,7 @@
 {
   "indexes": [
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "restaurantId", "order": "ASCENDING" },
@@ -10,7 +10,7 @@
       ]
     },
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "status", "order": "ASCENDING" },
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "customerId", "order": "ASCENDING" },
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "restaurantId", "order": "ASCENDING" },
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "driverId", "order": "ASCENDING" },
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "collectionGroup": "Orders",
+      "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "customerId", "order": "ASCENDING" },
@@ -84,7 +84,7 @@
       ]
     },
     {
-      "collectionGroup": "Users",
+      "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "role", "order": "ASCENDING" },
@@ -118,7 +118,7 @@
       ]
     },
     {
-      "collectionGroup": "Restaurants",
+      "collectionGroup": "restaurants",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "isActive", "order": "ASCENDING" },
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "collectionGroup": "Payments",
+      "collectionGroup": "payments",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "customerId", "order": "ASCENDING" },
@@ -134,7 +134,7 @@
       ]
     },
     {
-      "collectionGroup": "Payments",
+      "collectionGroup": "payments",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "vendorId", "order": "ASCENDING" },
@@ -198,7 +198,7 @@
       ]
     },
     {
-      "collectionGroup": "Users",
+      "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "role", "order": "ASCENDING" },
@@ -208,7 +208,7 @@
       ]
     },
     {
-      "collectionGroup": "Users",
+      "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "role", "order": "ASCENDING" },

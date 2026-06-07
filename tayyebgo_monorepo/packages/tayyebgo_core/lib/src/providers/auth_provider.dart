@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -145,26 +144,13 @@ class AuthProvider extends ChangeNotifier {
 
   Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
-      UserRole claimsRole = UserRole.customer;
-      try {
-        final idTokenResult = await firebaseUser.getIdTokenResult();
-        final claims = idTokenResult.claims ?? {};
-        final roleStr = claims['role'] as String?;
-        if (roleStr != null) {
-          claimsRole = UserRole.fromString(roleStr);
-        }
-      } catch (_) {}
-
       final doc = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(firebaseUser.uid)
           .get()
           .timeout(const Duration(seconds: 10));
       if (doc.exists) {
         _user = UserModel.fromFirestore(doc);
-        if (_user!.role != claimsRole && claimsRole != UserRole.customer) {
-          _user = _user!.copyWith(role: claimsRole);
-        }
       } else {
         final now = DateTime.now();
         _user = UserModel(
@@ -172,12 +158,12 @@ class AuthProvider extends ChangeNotifier {
           email: firebaseUser.email ?? '',
           displayName: firebaseUser.displayName ?? '',
           photoUrl: firebaseUser.photoURL,
-          role: claimsRole,
+          role: UserRole.customer,
           createdAt: now,
           updatedAt: now,
         );
         await FirebaseFirestore.instance
-            .collection('Users')
+            .collection('users')
             .doc(firebaseUser.uid)
             .set(_user!.toFirestore());
       }
@@ -285,7 +271,7 @@ class AuthProvider extends ChangeNotifier {
         updatedAt: now,
       );
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(credential.user!.uid)
           .set(_user!.toFirestore());
       _isLoading = false;
@@ -506,7 +492,7 @@ class AuthProvider extends ChangeNotifier {
     final userId = fb.FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return [];
     try {
-      final docRef = FirebaseFirestore.instance.collection('Users').doc(userId);
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
       final doc = await docRef.get();
       final existing = List<String>.from(
         (doc.data()?['addresses'] as List<dynamic>?) ?? [],
@@ -578,7 +564,7 @@ class AuthProvider extends ChangeNotifier {
     };
     try {
       await FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(_user!.id)
           .update(updates);
       _user = _user!.copyWith(

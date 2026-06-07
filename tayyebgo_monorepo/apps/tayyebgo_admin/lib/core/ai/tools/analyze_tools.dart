@@ -100,7 +100,7 @@ class AnalyzeDriverPerformanceTool extends AgentTool {
     final limit = (args['limit'] as int?) ?? 10;
     final db = FirebaseFirestore.instance;
     final snap = await db
-        .collection('Users')
+        .collection('users')
         .where('role', isEqualTo: 'driver')
         .limit(200)
         .get();

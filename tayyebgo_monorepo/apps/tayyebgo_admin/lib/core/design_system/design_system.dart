@@ -1,7 +1,5 @@
-export 'app_breakpoints.dart';
-export 'app_motion.dart';
-export 'app_radius.dart';
-export 'app_shadow.dart';
+export 'package:tayyebgo_core/tayyebgo_core.dart'
+    show AppRadius, AppShadow, AppBreakpoints, AppMotion;
 export 'app_spacing.dart';
 export 'app_status.dart';
 export 'app_typography.dart';

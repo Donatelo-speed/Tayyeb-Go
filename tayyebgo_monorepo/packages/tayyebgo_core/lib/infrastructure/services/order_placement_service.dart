@@ -16,7 +16,7 @@ class OrderPlacementService {
     double? dropoffLatitude,
     double? dropoffLongitude,
   }) async {
-    final orderRef = _firestore.collection('Orders').doc();
+    final orderRef = _firestore.collection('orders').doc();
 
     final now = FieldValue.serverTimestamp();
     final statusHistory = [
@@ -49,13 +49,25 @@ class OrderPlacementService {
 
     await orderRef.set(orderData);
 
+    double? pickupLat;
+    double? pickupLon;
+    try {
+      final restaurantDoc =
+          await _firestore.collection('restaurants').doc(restaurantId).get();
+      if (restaurantDoc.exists) {
+        final rData = restaurantDoc.data()!;
+        pickupLat = (rData['latitude'] as num?)?.toDouble();
+        pickupLon = (rData['longitude'] as num?)?.toDouble();
+      }
+    } catch (_) {}
+
     final dispatchRef = _firestore.collection('dispatch_requests').doc();
     await dispatchRef.set({
       'orderId': orderRef.id,
       'restaurantId': restaurantId,
       'status': 'pending',
-      'pickupLat': null,
-      'pickupLon': null,
+      'pickupLat': pickupLat,
+      'pickupLon': pickupLon,
       'dropoffLat': dropoffLatitude,
       'dropoffLon': dropoffLongitude,
       'customerId': customerId,

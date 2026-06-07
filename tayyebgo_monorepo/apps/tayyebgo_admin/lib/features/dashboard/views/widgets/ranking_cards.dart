@@ -37,7 +37,7 @@ class TopStoresCard extends StatelessWidget {
                 return br.compareTo(ar);
               });
               if (stores.isEmpty) {
-                return empty.AppEmptyState(
+                return empty.AdminEmptyState(
                   icon: Icons.storefront,
                   title: 'No store data yet',
                   subtitle: 'Once stores generate revenue, they will appear here.',
@@ -98,7 +98,7 @@ class TopDriversCard extends StatelessWidget {
                 return br.compareTo(ar);
               });
               if (drivers.isEmpty) {
-                return empty.AppEmptyState(
+                return empty.AdminEmptyState(
                   icon: Icons.delivery_dining,
                   title: 'No driver data yet',
                   subtitle: 'Once drivers complete deliveries, they will appear here.',

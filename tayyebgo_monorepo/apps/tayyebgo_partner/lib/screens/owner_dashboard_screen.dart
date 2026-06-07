@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../providers/partner_role_controller.dart';
@@ -38,44 +37,17 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   @override
   Widget build(BuildContext context) {
     context.read<PartnerRoleController>().assertOwnerOnly();
-    return Scaffold(
-      backgroundColor: TayyebGoTheme.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Owner Dashboard'),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.account_circle_outlined),
-            onSelected: (v) async {
-              if (v == 'profile') {
-                context.go('/profile');
-              } else if (v == 'settings') {
-                context.go('/settings');
-              } else if (v == 'logout') {
-                await context.read<AuthProvider>().logout();
-                if (context.mounted) context.go('/login');
-              }
-            },
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: 'profile', child: Text('Profile')),
-              const PopupMenuItem(value: 'settings', child: Text('Settings')),
-              const PopupMenuDivider(),
-              const PopupMenuItem(
-                value: 'logout',
-                child: Text('Sign Out', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
+    return AppScaffold(
+      title: 'Owner Dashboard',
+      bottom: TabBar(
+        controller: _tabCtrl,
+        isScrollable: true,
+        tabs: const [
+          Tab(icon: Icon(Icons.dashboard), text: 'Overview'),
+          Tab(icon: Icon(Icons.menu_book), text: 'Menu'),
+          Tab(icon: Icon(Icons.delivery_dining), text: 'Dispatch'),
+          Tab(icon: Icon(Icons.local_offer), text: 'Marketing'),
         ],
-        bottom: TabBar(
-          controller: _tabCtrl,
-          isScrollable: true,
-          tabs: const [
-            Tab(icon: Icon(Icons.dashboard), text: 'Overview'),
-            Tab(icon: Icon(Icons.menu_book), text: 'Menu'),
-            Tab(icon: Icon(Icons.delivery_dining), text: 'Dispatch'),
-            Tab(icon: Icon(Icons.local_offer), text: 'Marketing'),
-          ],
-        ),
       ),
       body: TabBarView(
         controller: _tabCtrl,
@@ -100,7 +72,7 @@ class _OverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var ordersQuery = FirebaseFirestore.instance.collection('Orders') as Query;
+    var ordersQuery = FirebaseFirestore.instance.collection('orders') as Query;
     if (restaurantId != null) {
       ordersQuery = ordersQuery.where('restaurantId', isEqualTo: restaurantId);
     }
@@ -187,7 +159,7 @@ class _OverviewTab extends StatelessWidget {
             const SizedBox(height: 12),
             StreamBuilder<QuerySnapshot>(
               stream: () {
-                var q = FirebaseFirestore.instance.collection('Orders') as Query;
+                var q = FirebaseFirestore.instance.collection('orders') as Query;
                 if (restaurantId != null) {
                   q = q.where('restaurantId', isEqualTo: restaurantId);
                 }
@@ -280,7 +252,7 @@ class _CommissionCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamScreenBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('Restaurants').doc(restaurantId).snapshots(),
+      stream: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).snapshots(),
       onSuccess: (context, snap) {
         final percent = (snap.data() as Map<String, dynamic>?)?['commissionPercent'] as num? ?? 15.0;
         final commission = grossRevenue * percent.toDouble() / 100;
@@ -547,7 +519,7 @@ class _DispatchTab extends StatelessWidget {
         const SizedBox(height: 16),
         StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection('Users')
+              .collection('users')
               .where('role', isEqualTo: 'driver')
               .limit(200)
               .snapshots(),
@@ -595,7 +567,7 @@ class _DispatchTab extends StatelessWidget {
                         value: isOnline,
                         activeColor: TayyebGoTheme.successColor,
                         onChanged: (v) => FirebaseFirestore.instance
-                            .collection('Users')
+                            .collection('users')
                             .doc(doc.id)
                             .update({'isActive': v}),
                       ),
@@ -766,7 +738,7 @@ void _showPromoDialog(BuildContext context, String? restaurantId) {
 }
 
 void _showRestaurantProfileDialog(BuildContext context, String restaurantId) {
-  FirebaseFirestore.instance.collection('Restaurants').doc(restaurantId).get().then((snap) {
+  FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get().then((snap) {
     if (!snap.exists) return;
     final d = snap.data() as Map<String, dynamic>;
     final nameCtrl = TextEditingController(text: d['name'] as String? ?? '');
@@ -799,7 +771,7 @@ void _showRestaurantProfileDialog(BuildContext context, String restaurantId) {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
-              FirebaseFirestore.instance.collection('Restaurants').doc(restaurantId).update({
+              FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
                 'name': nameCtrl.text.trim(),
                 'cuisineType': cuisineCtrl.text.trim(),
                 'phone': phoneCtrl.text.trim(),

@@ -43,7 +43,7 @@ class _CustomersViewState extends State<CustomersView> {
           ),
           Expanded(
             child: StreamScreenBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('Users').where('role', isEqualTo: 'customer').limit(500).snapshots(),
+              stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'customer').limit(500).snapshots(),
               onLoading: () => const ShimmerLoading(itemCount: 6),
               onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
               onSuccess: (context, snapshot) {
@@ -170,7 +170,7 @@ class _CustomersViewState extends State<CustomersView> {
         content: SizedBox(
           width: 350,
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('Orders').where('userId', isEqualTo: uid).orderBy('createdAt', descending: true).limit(20).snapshots(),
+            stream: FirebaseFirestore.instance.collection('orders').where('userId', isEqualTo: uid).orderBy('createdAt', descending: true).limit(20).snapshots(),
             builder: (context, orderSnap) {
               if (orderSnap.hasError) {
                 return Text('Error loading orders: ${orderSnap.error}', style: const TextStyle(color: Colors.red));
@@ -210,7 +210,7 @@ class _CustomersViewState extends State<CustomersView> {
 
   Future<void> _toggleCustomerStatus(String docId, bool active) async {
     try {
-      await FirebaseFirestore.instance.collection('Users').doc(docId).update({'isActive': active});
+      await FirebaseFirestore.instance.collection('users').doc(docId).update({'isActive': active});
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(active ? 'Account activated' : 'Account suspended'),

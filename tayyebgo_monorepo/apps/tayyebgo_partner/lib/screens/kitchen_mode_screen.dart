@@ -21,7 +21,7 @@ class _KitchenModeScreenState extends State<KitchenModeScreen> {
       title: 'Kitchen Mode',
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('Orders')
+            .collection('orders')
             .where('restaurantId', isEqualTo: widget.restaurantId)
             .where('status', whereIn: ['accepted', 'preparing'])
             .orderBy('status')

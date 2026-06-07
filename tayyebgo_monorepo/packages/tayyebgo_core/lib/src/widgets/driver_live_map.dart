@@ -30,7 +30,7 @@ class DriverLiveMap extends StatefulWidget {
 }
 
 class _DriverLiveMapState extends State<DriverLiveMap> {
-  final DriverLocationService _locationService = DriverLocationService();
+  final DriverLocationService _locationService = DriverLocationService.instance;
 
   @override
   void initState() {
@@ -54,13 +54,13 @@ class _DriverLiveMapState extends State<DriverLiveMap> {
         final drivers = driverSnap.hasData ? driverSnap.data!.docs : <QueryDocumentSnapshot>[];
         return StreamBuilder<QuerySnapshot>(
           stream: widget.showRestaurantMarkers
-              ? FirebaseFirestore.instance.collection('Restaurants').limit(500).snapshots()
+              ? FirebaseFirestore.instance.collection('restaurants').limit(500).snapshots()
               : null,
           builder: (context, restaurantSnap) {
             final restaurants = restaurantSnap.hasData ? restaurantSnap.data!.docs : <QueryDocumentSnapshot>[];
             return StreamBuilder<QuerySnapshot>(
               stream: widget.showOrderMarkers
-                  ? FirebaseFirestore.instance.collection('Orders').where('status', whereIn: [
+                  ? FirebaseFirestore.instance.collection('orders').where('status', whereIn: [
                       'ready', 'ready_for_driver', 'dispatched', 'picked_up',
                     ]).limit(500).snapshots()
                   : null,

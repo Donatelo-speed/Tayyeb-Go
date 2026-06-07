@@ -32,7 +32,7 @@ async function main() {
         uid = created.uid;
         console.log(`CREATED ${u.email}`);
       }
-      await db.collection('Users').doc(uid).set(
+      await db.collection('users').doc(uid).set(
         { role: u.role, displayName: u.displayName, email: u.email, isActive: true },
         { merge: true }
       );

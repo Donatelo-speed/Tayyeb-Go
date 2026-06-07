@@ -41,7 +41,7 @@ class EtaService {
     required String orderId,
     required int etaMinutes,
   }) async {
-    await _firestore.collection('Orders').doc(orderId).update({
+    await _firestore.collection('orders').doc(orderId).update({
       'etaMinutes': etaMinutes,
       'etaUpdatedAt': DateTime.now().toIso8601String(),
     });

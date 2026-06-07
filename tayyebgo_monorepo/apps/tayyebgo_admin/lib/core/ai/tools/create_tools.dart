@@ -30,7 +30,7 @@ class CreateStoreTool extends AgentTool {
     final ownerId = (args['ownerId'] as String? ?? '').trim();
 
     final db = FirebaseFirestore.instance;
-    final ref = await db.collection('Restaurants').add({
+    final ref = await db.collection('restaurants').add({
       'name': name,
       'businessType': businessType,
       'businessCategory': category,
@@ -78,7 +78,7 @@ class CreateCategoryTool extends AgentTool {
     }
     final db = FirebaseFirestore.instance;
     final ref = await db
-        .collection('Restaurants')
+        .collection('restaurants')
         .doc(storeId)
         .collection('categories')
         .add({
@@ -120,7 +120,7 @@ class CreatePromotionTool extends AgentTool {
     }
     final db = FirebaseFirestore.instance;
     final ref = await db
-        .collection('Restaurants')
+        .collection('restaurants')
         .doc(storeId)
         .collection('promotions')
         .add({

@@ -19,7 +19,7 @@ class _AutoDispatchListenerState extends State<AutoDispatchListener> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('dispatch_requests')
-          .where('status', isEqualTo: 'pending')
+          .where('status', whereIn: ['pending', 'reassigning'])
           .snapshots(),
       builder: (context, snap) {
         if (snap.hasData) {

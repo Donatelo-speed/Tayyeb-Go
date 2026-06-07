@@ -35,7 +35,7 @@ class EditStoreDesignTool extends AgentTool {
     if (updates.length == 1) {
       return ToolResult.fail(name, 'No design changes provided');
     }
-    await FirebaseFirestore.instance.collection('Restaurants').doc(storeId).update(updates);
+    await FirebaseFirestore.instance.collection('restaurants').doc(storeId).update(updates);
     return ToolResult.ok(name, {'updated': updates.keys.toList()},
         summary: 'Updated ${updates.length - 1} design field(s) on store $storeId.');
   }
@@ -79,7 +79,7 @@ class EditStoreSettingsTool extends AgentTool {
     }
     if (args['isActive'] is bool) updates['isActive'] = args['isActive'];
     if (updates.length == 1) return ToolResult.fail(name, 'No settings provided');
-    await FirebaseFirestore.instance.collection('Restaurants').doc(storeId).update(updates);
+    await FirebaseFirestore.instance.collection('restaurants').doc(storeId).update(updates);
     return ToolResult.ok(name, {'updated': updates.keys.toList()},
         summary: 'Updated ${updates.length - 1} setting(s) on store $storeId.');
   }
@@ -119,7 +119,7 @@ class EditDeliverySettingsTool extends AgentTool {
         updates['fallbackDelaySeconds'] = (args['fallbackDelaySeconds'] as num).toInt();
       }
     }
-    await FirebaseFirestore.instance.collection('Restaurants').doc(storeId).update(updates);
+    await FirebaseFirestore.instance.collection('restaurants').doc(storeId).update(updates);
     return ToolResult.ok(name, {'mode': mode},
         summary: 'Set delivery mode to $mode for store $storeId.');
   }
@@ -154,7 +154,7 @@ class EditPromotionTool extends AgentTool {
     if (args['isActive'] is bool) updates['isActive'] = args['isActive'];
     if (updates.length == 1) return ToolResult.fail(name, 'Nothing to update');
     await FirebaseFirestore.instance
-        .collection('Restaurants')
+        .collection('restaurants')
         .doc(storeId)
         .collection('promotions')
         .doc(promoId)
@@ -193,7 +193,7 @@ class EditCategoryTool extends AgentTool {
     if (args['isActive'] is bool) updates['isActive'] = args['isActive'];
     if (updates.length == 1) return ToolResult.fail(name, 'Nothing to update');
     await FirebaseFirestore.instance
-        .collection('Restaurants')
+        .collection('restaurants')
         .doc(storeId)
         .collection('categories')
         .doc(catId)

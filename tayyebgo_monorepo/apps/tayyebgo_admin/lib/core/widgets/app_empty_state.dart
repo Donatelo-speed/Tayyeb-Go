@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
-class AppEmptyState extends StatelessWidget {
+class AdminEmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
@@ -12,7 +12,7 @@ class AppEmptyState extends StatelessWidget {
   final double iconSize;
   final EdgeInsetsGeometry padding;
 
-  const AppEmptyState({
+  const AdminEmptyState({
     super.key,
     required this.icon,
     required this.title,

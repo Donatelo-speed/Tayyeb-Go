@@ -68,7 +68,7 @@ class _ProfileCard extends StatelessWidget {
     final name = auth.user?.displayName ?? 'Admin';
     final email = auth.user?.email ?? 'admin@tayyebgo.com';
     final initials = name.isNotEmpty ? name[0].toUpperCase() : 'A';
-    return AppCard(
+    return AdminCard(
       child: Row(
         children: [
           Container(
@@ -129,7 +129,7 @@ class _PreferencesCard extends StatelessWidget {
   const _PreferencesCard({required this.theme});
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -189,7 +189,7 @@ class _FeatureTogglesCard extends StatelessWidget {
       _Flag('loyalty_program', 'Loyalty program', 'Reward repeat customers', Icons.card_giftcard, false),
       _Flag('referral_system', 'Referral system', 'Customers earn for inviting friends', Icons.share, true),
     ];
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -256,7 +256,7 @@ class _AccountCard extends StatelessWidget {
   const _AccountCard({required this.auth});
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -293,7 +293,7 @@ class _AccountCard extends StatelessWidget {
 class _AboutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AdminCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

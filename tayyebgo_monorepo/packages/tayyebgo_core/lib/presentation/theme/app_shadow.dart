@@ -27,12 +27,4 @@ abstract class AppShadow {
           BoxShadow(color: Color(0x1F0F172A), blurRadius: 32, offset: Offset(0, 12)),
           BoxShadow(color: Color(0x0F0F172A), blurRadius: 8, offset: Offset(0, 4)),
         ];
-
-  static List<BoxShadow> popover(bool isDark) => isDark
-      ? const [
-          BoxShadow(color: Color(0xCC000000), blurRadius: 48, offset: Offset(0, 16)),
-        ]
-      : const [
-          BoxShadow(color: Color(0x240F172A), blurRadius: 48, offset: Offset(0, 16)),
-        ];
 }

@@ -72,7 +72,7 @@ class AdminStatsProvider extends ChangeNotifier {
     _activitySub?.cancel();
 
     _restaurantSub = FirebaseFirestore.instance
-        .collection('Restaurants')
+        .collection('restaurants')
         .snapshots()
         .listen((snap) {
       _stats = _stats.copyWith(restaurantCount: snap.docs.length);
@@ -80,7 +80,7 @@ class AdminStatsProvider extends ChangeNotifier {
     }, onError: _onError);
 
     _userSub = FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .snapshots()
         .listen((snap) {
       _stats = _stats.copyWith(
@@ -94,7 +94,7 @@ class AdminStatsProvider extends ChangeNotifier {
     }, onError: _onError);
 
     _orderSub = FirebaseFirestore.instance
-        .collection('Orders')
+        .collection('orders')
         .snapshots()
         .listen((snap) {
       final activeStatuses = ['placed', 'accepted', 'preparing', 'ready', 'readyForDriver'];

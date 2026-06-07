@@ -17,8 +17,8 @@ class RecommendOperationsTool extends AgentTool {
     final db = FirebaseFirestore.instance;
     final results = await Future.wait([
       db.collection('orders').where('status', whereIn: ['placed', 'accepted', 'preparing']).get(),
-      db.collection('Users').where('role', isEqualTo: 'driver').limit(200).get(),
-      db.collection('Restaurants').get(),
+      db.collection('users').where('role', isEqualTo: 'driver').limit(200).get(),
+      db.collection('restaurants').get(),
     ]);
     final activeOrders = results[0].size;
     final drivers = results[1].docs;
@@ -96,7 +96,7 @@ class RecommendDriverAllocationTool extends AgentTool {
     final db = FirebaseFirestore.instance;
     final results = await Future.wait([
       db.collection('orders').where('status', whereIn: ['placed', 'accepted', 'preparing']).get(),
-      db.collection('Users').where('role', isEqualTo: 'driver').limit(500).get(),
+      db.collection('users').where('role', isEqualTo: 'driver').limit(500).get(),
     ]);
     final orders = results[0].docs;
     final drivers = results[1].docs;
@@ -220,7 +220,7 @@ class RecommendRevenueTool extends AgentTool {
     final db = FirebaseFirestore.instance;
     final results = await Future.wait([
       db.collection('orders').where('status', whereIn: ['delivered', 'completed', 'cancelled']).limit(2000).get(),
-      db.collection('Restaurants').get(),
+      db.collection('restaurants').get(),
     ]);
     final orders = results[0].docs;
     final stores = results[1].docs;

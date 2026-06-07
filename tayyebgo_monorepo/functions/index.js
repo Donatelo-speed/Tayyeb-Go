@@ -35,7 +35,7 @@ exports.onNotificationCreated = functions.firestore
 
     try {
       // Look up the user's FCM token from their profile
-      const userSnap = await db.collection('Users').doc(recipientId).get();
+      const userSnap = await db.collection('users').doc(recipientId).get();
       if (!userSnap.exists) return;
 
       const userData = userSnap.data();
@@ -59,8 +59,99 @@ exports.onNotificationCreated = functions.firestore
       // If the token is invalid, clear it
       if (err.code === 'messaging/invalid-registration-token' ||
           err.code === 'messaging/registration-token-not-registered') {
-        await db.collection('Users').doc(recipientId).update({ fcmToken: null });
+        await db.collection('users').doc(recipientId).update({ fcmToken: null });
       }
+    }
+  });
+
+/**
+ * Firestore-triggered function: when a dispatch request is created with
+ * status 'pending', mark it 'scoring' and set needsAutoAssign so the
+ * Flutter dispatcher can pick it up asynchronously.
+ */
+exports.onDispatchCreated = functions.firestore
+  .onDocumentCreated('dispatch_requests/{dispatchId}', async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+    const data = snap.data();
+    if (data.status !== 'pending') return;
+
+    console.log(`Dispatch created: ${snap.id}, triggering auto-assign`);
+    await snap.ref.update({
+      status: 'scoring',
+      needsAutoAssign: true,
+      scoredAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+
+/**
+ * Firestore-triggered function: when a dispatch request is updated to
+ * 'accepted', update the associated order's driverId and status.
+ */
+exports.onDispatchAccepted = functions.firestore
+  .onDocumentUpdated('dispatch_requests/{dispatchId}', async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
+    if (!before || !after) return;
+    if (before.status === after.status) return;
+    if (after.status !== 'accepted') return;
+
+    const orderId = after.orderId;
+    const driverId = after.assignedDriverId;
+    if (!orderId || !driverId) return;
+
+    await db.collection('orders').doc(orderId).update({
+      driverId: driverId,
+      status: 'dispatched',
+      dispatchedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }).catch((err) => console.error(`Order update failed for ${orderId}:`, err.message));
+  });
+
+/**
+ * Scheduled function: check for dispatch requests in 'awaiting_acceptance'
+ * whose acceptanceDeadline has passed. Time them out and trigger reassignment.
+ * Runs every 30 seconds.
+ */
+exports.checkDispatchTimeouts = functions.scheduler
+  .onSchedule('*/30 * * * *', async () => {
+    const now = admin.firestore.Timestamp.now();
+    const cutoff = new Date(now.toDate().getTime() - 45000);
+
+    const timedOut = await db
+      .collection('dispatch_requests')
+      .where('status', '==', 'awaiting_acceptance')
+      .where('acceptanceDeadline', '<', cutoff)
+      .get();
+
+    let timedOutCount = 0;
+    for (const doc of timedOut.docs) {
+      const data = doc.data();
+      const previousDriverId = data.assignedDriverId;
+
+      await doc.ref.update({
+        status: 'timedOut',
+        timedOutAt: admin.firestore.FieldValue.serverTimestamp(),
+        previousDriverId: previousDriverId,
+      });
+
+      if (previousDriverId) {
+        await db.collection('users').doc(previousDriverId).update({
+          activeDeliveries: admin.firestore.FieldValue.increment(-1),
+          currentOrderId: admin.firestore.FieldValue.delete(),
+        }).catch(() => {});
+      }
+
+      await db.collection('dispatch_requests').doc(doc.id).update({
+        status: 'reassigning',
+        needsReassign: true,
+      });
+
+      timedOutCount++;
+    }
+
+    if (timedOutCount > 0) {
+      console.log(`Timed out ${timedOutCount} expired dispatch requests`);
     }
   });
 
@@ -85,7 +176,7 @@ exports.registerFcmToken = functions.https.onCall(async (request) => {
     );
   }
 
-  await db.collection('Users').doc(uid).update({ fcmToken: token });
+  await db.collection('users').doc(uid).update({ fcmToken: token });
   return { success: true };
 });
 
@@ -113,15 +204,12 @@ exports.cleanupNotifications = functions.scheduler
   });
 
 /**
- * Helper: check if the caller is a super admin.
- * Checks custom claims first, then falls back to Firestore for migration.
+ * Helper: check if the caller is a super admin using Firestore as source of truth.
  */
 async function isSuperAdmin(request) {
   if (!request.auth) return false;
-  const claims = request.auth.token;
-  if (claims && claims.role === 'superAdmin') return true;
   try {
-    const userDoc = await db.collection('Users').doc(request.auth.uid).get();
+    const userDoc = await db.collection('users').doc(request.auth.uid).get();
     if (!userDoc.exists) return false;
     return userDoc.data().role === 'superAdmin';
   } catch {
@@ -130,9 +218,9 @@ async function isSuperAdmin(request) {
 }
 
 /**
- * HTTP-callable function: set a user's role via Firebase custom claims.
+ * HTTP-callable function: set a user's role in Firestore.
  * Only super admins can call this.
- * Also updates the Firestore Users doc for backwards compatibility.
+ * Firestore is the single source of truth — no custom claims are set.
  */
 exports.setUserRole = functions.https.onCall(async (request) => {
   if (!(await isSuperAdmin(request))) {
@@ -159,11 +247,6 @@ exports.setUserRole = functions.https.onCall(async (request) => {
   }
 
   try {
-    const claims = { role };
-    if (restaurantId) claims.restaurantId = restaurantId;
-
-    await admin.auth().setCustomUserClaims(uid, claims);
-
     const updates = {
       role,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -173,7 +256,7 @@ exports.setUserRole = functions.https.onCall(async (request) => {
     } else if (role === 'customer' || role === 'driver') {
       updates.restaurantId = admin.firestore.FieldValue.delete();
     }
-    await db.collection('Users').doc(uid).update(updates);
+    await db.collection('users').doc(uid).update(updates);
 
     console.log(`Role set: ${uid} -> ${role}${restaurantId ? ` (restaurant: ${restaurantId})` : ''}`);
     return { success: true };
@@ -184,14 +267,14 @@ exports.setUserRole = functions.https.onCall(async (request) => {
 });
 
 /**
- * HTTP-callable function: get a user's custom claims (for debugging).
+ * HTTP-callable function: get a user's role from Firestore (for debugging).
  * Only super admins can call this.
  */
-exports.getUserClaims = functions.https.onCall(async (request) => {
+exports.getUserRole = functions.https.onCall(async (request) => {
   if (!(await isSuperAdmin(request))) {
     throw new functions.https.HttpsError(
       'permission-denied',
-      'Only super admins can read claims'
+      'Only super admins can read user roles'
     );
   }
 
@@ -201,11 +284,17 @@ exports.getUserClaims = functions.https.onCall(async (request) => {
   }
 
   try {
-    const user = await admin.auth().getUser(uid);
+    const doc = await db.collection('users').doc(uid).get();
+    if (!doc.exists) {
+      return { uid, role: null, message: 'User document not found' };
+    }
+    const data = doc.data();
     return {
-      claims: user.customClaims || {},
-      uid: user.uid,
-      email: user.email,
+      uid,
+      email: data.email || null,
+      role: data.role || null,
+      displayName: data.displayName || null,
+      isActive: data.isActive ?? true,
     };
   } catch (err) {
     throw new functions.https.HttpsError('internal', err.message);

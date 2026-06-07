@@ -66,11 +66,11 @@ class _OrderRatingState extends State<OrderRating> {
   Future<void> _submitRating() async {
     setState(() => _saving = true);
     try {
-      await FirebaseFirestore.instance.collection('Orders').doc(widget.orderId).update({
+      await FirebaseFirestore.instance.collection('orders').doc(widget.orderId).update({
         'customerRating': _rating,
         'ratedAt': FieldValue.serverTimestamp(),
       });
-      await FirebaseFirestore.instance.collection('Restaurants').doc(widget.restaurantId).update({
+      await FirebaseFirestore.instance.collection('restaurants').doc(widget.restaurantId).update({
         'totalRatings': FieldValue.increment(1),
         'sumRatings': FieldValue.increment(_rating),
       });

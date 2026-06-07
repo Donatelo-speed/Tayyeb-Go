@@ -10,7 +10,7 @@ class FinanceView extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return pageContainer(context, child: StreamScreenBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Orders').limit(500).snapshots(),
+        stream: FirebaseFirestore.instance.collection('orders').limit(500).snapshots(),
         onLoading: () => const ShimmerLoading(itemCount: 4),
         onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
         onSuccess: (context, ordersSnap) {
@@ -33,7 +33,7 @@ class FinanceView extends StatelessWidget {
             }
           }
           return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('Restaurants').orderBy('createdAt', descending: true).limit(500).snapshots(),
+            stream: FirebaseFirestore.instance.collection('restaurants').orderBy('createdAt', descending: true).limit(500).snapshots(),
             builder: (context, restSnap) {
               if (restSnap.hasError) {
                 return Center(child: Text('Error loading restaurants: ${restSnap.error}', style: const TextStyle(color: Colors.red)));

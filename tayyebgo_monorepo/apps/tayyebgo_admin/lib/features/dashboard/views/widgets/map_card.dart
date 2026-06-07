@@ -46,7 +46,7 @@ class LiveMapCard extends StatelessWidget {
                       .where((s) => s['latitude'] is num && s['longitude'] is num)
                       .toList();
                   if (stores.isEmpty) {
-                    return empty.AppEmptyState(
+                    return empty.AdminEmptyState(
                       icon: Icons.map_outlined,
                       title: 'No stores on the map',
                       subtitle: 'Stores with a latitude and longitude will appear here.',

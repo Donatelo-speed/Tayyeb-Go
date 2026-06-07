@@ -65,7 +65,7 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
   Widget _buildStoreApprovals() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .where('status', isEqualTo: 'pending')
           .limit(50)
           .snapshots(),
@@ -88,7 +88,7 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
   Widget _buildDriverApprovals() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .where('role', isEqualTo: 'driver')
           .where('status', isEqualTo: 'pending')
           .limit(50)

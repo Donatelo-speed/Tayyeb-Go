@@ -32,7 +32,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
 
   Future<void> _loadRestaurant() async {
     final doc = await FirebaseFirestore.instance
-        .collection('Restaurants')
+        .collection('restaurants')
         .doc(widget.restaurantId)
         .get();
     if (doc.exists && mounted) {
@@ -49,7 +49,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
     setState(() => _isSaving = true);
     try {
       await FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .doc(widget.restaurantId)
           .update({
         'name': _nameCtrl.text.trim(),
@@ -81,7 +81,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
       title: 'Store Customization',
       body: StreamScreenBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('Restaurants')
+            .collection('restaurants')
             .doc(widget.restaurantId)
             .snapshots(),
         onSuccess: (context, _) => ListView(

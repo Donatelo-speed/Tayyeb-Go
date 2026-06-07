@@ -6,7 +6,7 @@ class FirebasePromotionRepository implements IPromotionRepository {
   static final FirebasePromotionRepository instance = FirebasePromotionRepository._();
   FirebasePromotionRepository._();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  CollectionReference get _col => _firestore.collection('Promos');
+  CollectionReference get _col => _firestore.collection('promos');
 
   @override
   Stream<List<Promotion>> watchActive() => _col

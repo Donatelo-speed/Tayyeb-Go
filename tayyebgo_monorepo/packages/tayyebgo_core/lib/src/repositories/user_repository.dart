@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import 'package:uuid/uuid.dart';
 
 import '../../domain/enums/user_role.dart';
@@ -16,7 +16,7 @@ class UserRepository {
   final _uuid = const Uuid();
 
   CollectionReference<Map<String, dynamic>> get _users =>
-      _firestore.collection('Users');
+      _firestore.collection('users');
 
   DocumentReference<Map<String, dynamic>> _userRef(String uid) =>
       _users.doc(uid);

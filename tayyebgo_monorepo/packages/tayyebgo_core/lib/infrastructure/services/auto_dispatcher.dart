@@ -14,6 +14,8 @@ class AutoDispatcher implements IAutoDispatcher {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  static const int acceptanceTimeoutSeconds = 45;
+
   FirebaseDriverRepository get _driverRepo =>
       FirebaseDriverRepository.instance;
   DriverScorer get _scorer => DriverScorer.instance;
@@ -30,7 +32,7 @@ class AutoDispatcher implements IAutoDispatcher {
     if (data['status'] != 'pending') return;
 
     final storeId = data['storeId'] as String? ?? branchId;
-    final storeDoc = await _firestore.collection('Restaurants').doc(storeId).get();
+    final storeDoc = await _firestore.collection('restaurants').doc(storeId).get();
     final storeData = storeDoc.data() ?? {};
 
     final deliveryMode = DeliveryMode.fromString(
@@ -47,6 +49,7 @@ class AutoDispatcher implements IAutoDispatcher {
       (data['dropoffLon'] as num?)?.toDouble() ?? 0,
     );
 
+    await _appendStatusHistory(dispatchRequestId, 'pending', 'scoring');
     await _firestore
         .collection('dispatch_requests')
         .doc(dispatchRequestId)
@@ -148,9 +151,15 @@ class AutoDispatcher implements IAutoDispatcher {
     required List<Driver> drivers,
     required GeoLocation pickup,
     required GeoLocation dropoff,
+    String? excludeDriverId,
   }) async {
+    final available = excludeDriverId != null
+        ? drivers.where((d) => d.id != excludeDriverId).toList()
+        : drivers;
+    if (available.isEmpty) return false;
+
     final scores = await _scorer.scoreDrivers(
-      availableDrivers: drivers,
+      availableDrivers: available,
       pickupLocation: pickup,
       dropoffLocation: dropoff,
     );
@@ -175,18 +184,21 @@ class AutoDispatcher implements IAutoDispatcher {
         return false;
       }
       txn.update(snap.reference, {
-        'status': 'assigned',
+        'status': 'awaiting_acceptance',
         'assignedDriverId': best.driverId,
         'driverType': best.driverType,
         'assignedAt': FieldValue.serverTimestamp(),
+        'acceptanceDeadline':
+            FieldValue.serverTimestamp(),
+        'acceptanceTimeoutSeconds': acceptanceTimeoutSeconds,
         'score': best.score,
         'etaMinutes': best.etaMinutes,
         'distanceKm': best.distanceKm,
       });
-      _firestore.collection('Users').doc(best.driverId).update({
+      txn.update(_firestore.collection('users').doc(best.driverId), {
         'currentOrderId': dispatchRequestId,
         'activeDeliveries': FieldValue.increment(1),
-      }).catchError((_) {});
+      });
       return true;
     }).then((result) => result);
   }
@@ -215,6 +227,7 @@ class AutoDispatcher implements IAutoDispatcher {
   }
 
   Future<void> _markUnassigned(String dispatchRequestId) async {
+    await _appendStatusHistory(dispatchRequestId, null, 'unassigned');
     await _firestore
         .collection('dispatch_requests')
         .doc(dispatchRequestId)
@@ -234,6 +247,24 @@ class AutoDispatcher implements IAutoDispatcher {
     });
   }
 
+  Future<void> _appendStatusHistory(
+      String dispatchRequestId, String? from, String to) async {
+    try {
+      await _firestore
+          .collection('dispatch_requests')
+          .doc(dispatchRequestId)
+          .update({
+        'statusHistory': FieldValue.arrayUnion([
+          {
+            'from': from ?? '',
+            'to': to,
+            'timestamp': FieldValue.serverTimestamp(),
+          }
+        ]),
+      });
+    } catch (_) {}
+  }
+
   @override
   Stream<DispatchRequest> watchDispatchRequest(String orderId) =>
       _firestore
@@ -247,4 +278,124 @@ class AutoDispatcher implements IAutoDispatcher {
         final doc = snap.docs.first;
         return DispatchRequest.fromMap(doc.data(), doc.id);
       });
+
+  Future<void> reassignDriver({
+    required String dispatchRequestId,
+    required String branchId,
+    String? excludeDriverId,
+  }) async {
+    final doc = await _firestore
+        .collection('dispatch_requests')
+        .doc(dispatchRequestId)
+        .get();
+    if (!doc.exists) return;
+    final data = doc.data()!;
+    final status = data['status'] as String? ?? '';
+
+    final validStatuses = ['awaiting_acceptance', 'assigned', 'unassigned', 'scoring', 'timeout'];
+    if (!validStatuses.contains(status)) return;
+
+    final storeId = data['storeId'] as String? ?? branchId;
+    final pickup = GeoLocation(
+      (data['pickupLat'] as num?)?.toDouble() ?? 0,
+      (data['pickupLon'] as num?)?.toDouble() ?? 0,
+    );
+    final dropoff = GeoLocation(
+      (data['dropoffLat'] as num?)?.toDouble() ?? 0,
+      (data['dropoffLon'] as num?)?.toDouble() ?? 0,
+    );
+
+    final skippedDriverIds = List<String>.from(data['skippedDriverIds'] ?? []);
+    if (excludeDriverId != null && !skippedDriverIds.contains(excludeDriverId)) {
+      skippedDriverIds.add(excludeDriverId);
+    }
+
+    await _appendStatusHistory(dispatchRequestId, status, 'reassigning');
+    await _firestore
+        .collection('dispatch_requests')
+        .doc(dispatchRequestId)
+        .update({
+      'status': 'reassigning',
+      'skippedDriverIds': skippedDriverIds,
+      'reassignedAt': FieldValue.serverTimestamp(),
+    });
+
+    final storeDoc =
+        await _firestore.collection('restaurants').doc(storeId).get();
+    final storeData = storeDoc.data() ?? {};
+    final deliveryMode =
+        DeliveryMode.fromString(storeData['deliveryMode'] as String?);
+    final allowFallback =
+        storeData['allowPlatformFallback'] as bool? ?? true;
+
+    bool assigned = false;
+
+    if (deliveryMode.usesStoreDrivers) {
+      final drivers = await _driverRepo.watchOnlineByStore(storeId).first;
+      final filtered = drivers
+          .where((d) => !skippedDriverIds.contains(d.id))
+          .toList();
+      if (filtered.isNotEmpty && !_isOverloaded(filtered)) {
+        assigned = await _scoreAndAssign(
+          dispatchRequestId: dispatchRequestId,
+          drivers: filtered,
+          pickup: pickup,
+          dropoff: dropoff,
+          excludeDriverId: excludeDriverId,
+        );
+      }
+      if (!assigned && (deliveryMode == DeliveryMode.storeOnly || !allowFallback)) {
+        await _markUnassigned(dispatchRequestId);
+        return;
+      }
+    }
+
+    if (!assigned && (deliveryMode.usesPlatformDrivers ||
+        (deliveryMode == DeliveryMode.storeOnly && allowFallback))) {
+      final drivers = await _driverRepo.watchOnlinePlatformDrivers().first;
+      final filtered = drivers
+          .where((d) => !skippedDriverIds.contains(d.id))
+          .toList();
+      if (filtered.isNotEmpty && !_isOverloaded(filtered)) {
+        assigned = await _scoreAndAssign(
+          dispatchRequestId: dispatchRequestId,
+          drivers: filtered,
+          pickup: pickup,
+          dropoff: dropoff,
+          excludeDriverId: excludeDriverId,
+        );
+      }
+    }
+
+    if (!assigned) {
+      await _markUnassigned(dispatchRequestId);
+    }
+  }
+
+  Future<void> handleDriverOffline(String driverId) async {
+    final snapshot = await _firestore
+        .collection('dispatch_requests')
+        .where('assignedDriverId', isEqualTo: driverId)
+        .where('status', whereIn: ['awaiting_acceptance', 'assigned', 'accepted'])
+        .get();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final branchId = data['restaurantId'] as String? ?? '';
+      await _firestore.collection('dispatch_requests').doc(doc.id).update({
+        'status': 'unassigned',
+        'offlineAt': FieldValue.serverTimestamp(),
+        'offlineDriverId': driverId,
+      });
+      await _firestore.collection('users').doc(driverId).update({
+        'currentOrderId': FieldValue.delete(),
+        'activeDeliveries': FieldValue.increment(-1),
+      }).catchError((_) {});
+      unawaited(reassignDriver(
+        dispatchRequestId: doc.id,
+        branchId: branchId,
+        excludeDriverId: driverId,
+      ));
+    }
+  }
 }

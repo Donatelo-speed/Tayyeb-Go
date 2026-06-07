@@ -12,6 +12,7 @@ class AppScaffold extends StatelessWidget {
   final List<Widget>? actions;
   final Widget? drawer;
   final Widget? bottomNavigationBar;
+  final PreferredSizeWidget? bottom;
   final bool showCart;
   final bool showNotifications;
   final bool showAppBar;
@@ -23,6 +24,7 @@ class AppScaffold extends StatelessWidget {
     this.actions,
     this.drawer,
     this.bottomNavigationBar,
+    this.bottom,
     this.showCart = false,
     this.showNotifications = false,
     this.showAppBar = true,
@@ -34,6 +36,7 @@ class AppScaffold extends StatelessWidget {
       appBar: showAppBar
           ? AppBar(
               title: Text(title),
+              bottom: bottom,
               actions: [
                 if (actions != null) ...actions!,
                 if (showNotifications) _NotificationBadge(),

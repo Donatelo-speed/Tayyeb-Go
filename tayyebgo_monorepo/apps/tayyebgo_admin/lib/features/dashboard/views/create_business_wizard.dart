@@ -132,7 +132,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
         'commissionPercent': 15.0,
         'createdAt': FieldValue.serverTimestamp(),
       };
-      await FirebaseFirestore.instance.collection('Restaurants').add(data);
+      await FirebaseFirestore.instance.collection('restaurants').add(data);
       await FirebaseFirestore.instance.collection('activity_log').add({
         'type': 'business_created',
         'message': 'New ${_businessType?.name} created: ${_nameCtrl.text.trim()}',

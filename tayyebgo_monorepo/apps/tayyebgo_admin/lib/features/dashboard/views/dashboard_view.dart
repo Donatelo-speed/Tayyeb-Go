@@ -50,7 +50,7 @@ class DashboardView extends StatelessWidget {
                       return const ShimmerLoading(itemCount: 4, itemHeight: 120);
                     }
                     if (ordersSnap.hasError) {
-                      return empty.AppEmptyState(
+                      return empty.AdminEmptyState(
                         icon: Icons.error_outline,
                         title: 'Could not load orders',
                         subtitle: ordersSnap.error.toString(),

@@ -78,7 +78,7 @@ class AuthRepository {
         updatedAt: DateTime.now(),
       );
 
-      await _firestore.collection('Users').doc(firebaseUser.uid).set({
+      await _firestore.collection('users').doc(firebaseUser.uid).set({
         ...userModel.toFirestore(),
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
@@ -209,8 +209,8 @@ class AuthRepository {
         await _auth.currentUser?.updatePhotoURL(photoUrl);
       }
       if (phone != null) updates['phone'] = phone.trim();
-      await _firestore.collection('Users').doc(uid).update(updates);
-      final doc = await _firestore.collection('Users').doc(uid).get();
+      await _firestore.collection('users').doc(uid).update(updates);
+      final doc = await _firestore.collection('users').doc(uid).get();
       return Success(UserModel.fromFirestore(doc));
     } catch (e) {
       return Failure('Profile update failed. Please try again.', error: e);
@@ -218,7 +218,7 @@ class AuthRepository {
   }
 
   Future<UserModel> _fetchOrCreateUserDoc(fb.User firebaseUser) async {
-    final docRef = _firestore.collection('Users').doc(firebaseUser.uid);
+    final docRef = _firestore.collection('users').doc(firebaseUser.uid);
     final doc = await docRef.get();
     if (doc.exists) {
       return UserModel.fromFirestore(doc);

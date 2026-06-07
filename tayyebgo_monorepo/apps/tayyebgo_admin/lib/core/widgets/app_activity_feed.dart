@@ -90,7 +90,7 @@ class AppActivityFeed extends StatelessWidget {
   }
 
   Widget _buildEmpty(BuildContext context) {
-    return AppEmptyState(icon: Icons.bolt_rounded, title: 'No activity yet', subtitle: 'Live events will appear here as your platform runs.');
+    return AdminEmptyState(icon: Icons.bolt_rounded, title: 'No activity yet', subtitle: 'Live events will appear here as your platform runs.');
   }
 
   Color _activityColor(BuildContext context, String name) {

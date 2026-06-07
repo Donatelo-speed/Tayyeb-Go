@@ -139,7 +139,7 @@ class _CashierTerminalViewState extends State<CashierTerminalView> {
         stream: () {
           final restaurantId = context.read<PartnerRoleController>().restaurantId;
           var query = FirebaseFirestore.instance
-              .collection('Orders')
+              .collection('orders')
               .where('status', whereIn: ['placed', 'accepted', 'preparing'] as List<Object?>);
           if (restaurantId != null) {
             query = query.where('restaurantId', isEqualTo: restaurantId);

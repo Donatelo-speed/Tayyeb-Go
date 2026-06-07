@@ -79,7 +79,7 @@ class _StoresViewState extends State<StoresView> with SingleTickerProviderStateM
                   return const ShimmerLoading(itemCount: 4);
                 }
                 if (snap.hasError) {
-                  return empty.AppEmptyState(
+                  return empty.AdminEmptyState(
                     icon: Icons.error_outline,
                     title: 'Could not load stores',
                     subtitle: snap.error.toString(),
@@ -485,7 +485,7 @@ class _StoresViewState extends State<StoresView> with SingleTickerProviderStateM
 
   Future<void> _approveStore(BuildContext context, String id, String name) async {
     try {
-      await FirebaseFirestore.instance.collection('Restaurants').doc(id).update({'isActive': true, 'approvedAt': FieldValue.serverTimestamp()});
+      await FirebaseFirestore.instance.collection('restaurants').doc(id).update({'isActive': true, 'approvedAt': FieldValue.serverTimestamp()});
       await FirebaseFirestore.instance.collection('activity_log').add({
         'text': 'Store "$name" approved',
         'color': 'green',
@@ -506,7 +506,7 @@ class _StoresViewState extends State<StoresView> with SingleTickerProviderStateM
     );
     if (!confirmed) return;
     try {
-      await FirebaseFirestore.instance.collection('Restaurants').doc(id).update({'isActive': false, 'suspendedAt': FieldValue.serverTimestamp()});
+      await FirebaseFirestore.instance.collection('restaurants').doc(id).update({'isActive': false, 'suspendedAt': FieldValue.serverTimestamp()});
       await FirebaseFirestore.instance.collection('activity_log').add({
         'text': 'Store "$name" suspended',
         'color': 'orange',

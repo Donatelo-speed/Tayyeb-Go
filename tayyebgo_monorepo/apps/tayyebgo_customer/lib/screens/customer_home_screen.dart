@@ -364,7 +364,7 @@ class _LoyaltyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('Users')
+          .collection('users')
           .doc(customerId)
           .snapshots(),
       builder: (_, snap) {
@@ -461,7 +461,7 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
     return StreamBuilder<QuerySnapshot>(
       key: ValueKey('active_$_retryKey'),
       stream: FirebaseFirestore.instance
-          .collection('Orders')
+          .collection('orders')
           .where('customerId', isEqualTo: widget.customerId)
           .orderBy('createdAt', descending: true)
           .snapshots(),
@@ -599,7 +599,7 @@ class _NearbyRestaurantsSectionState
     return StreamBuilder<QuerySnapshot>(
       key: ValueKey('restaurants_${widget.verticalType.value}_$_retryKey'),
       stream: FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .where('isActive', isEqualTo: true)
           .where('verticalType',
               isEqualTo: widget.verticalType.value)
@@ -807,7 +807,7 @@ class _NearbyRestaurantsSectionState
     if (widget.customerId == null) return;
     if (currentlyFav) {
       await FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .doc(id)
           .update({
         'favoritedBy':
@@ -815,7 +815,7 @@ class _NearbyRestaurantsSectionState
       });
     } else {
       await FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .doc(id)
           .update({
         'favoritedBy':
@@ -849,7 +849,7 @@ class _FavoritesSectionState extends State<_FavoritesSection> {
     return StreamBuilder<QuerySnapshot>(
       key: ValueKey('fav_$_retryKey'),
       stream: FirebaseFirestore.instance
-          .collection('Restaurants')
+          .collection('restaurants')
           .where('isActive', isEqualTo: true)
           .where('favoritedBy',
               arrayContains: widget.customerId)
