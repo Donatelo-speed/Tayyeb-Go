@@ -92,6 +92,7 @@ class _PartnerAppState extends State<PartnerApp> {
       routes: [
         AppRouter.route('/splash', const PartnerSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
+        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
         AppRouter.route('/onboarding', const PartnerOnboardingScreen(), name: 'onboarding'),
         AppRouter.route('/dashboard', const AuthStateRedirector(child: PartnerGatekeeper()), name: 'dashboard'),
         AppRouter.route('/profile', const ProfileScreen(), name: 'profile'),

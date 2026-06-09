@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class PartnerSettingsScreen extends StatelessWidget {
@@ -7,6 +9,12 @@ class PartnerSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
+    final displayName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Store';
+    final email = user?.email.isNotEmpty == true ? user!.email : '';
+    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'S';
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -18,7 +26,7 @@ class PartnerSettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _profileHeader(context),
+          _profileHeader(context, initial, displayName, email),
           const SizedBox(height: 20),
           _section(context, 'Store', [
             _row(context, Icons.store_rounded, 'Store Details', () {}),
@@ -54,7 +62,10 @@ class PartnerSettingsScreen extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await context.read<AuthProvider>().logout();
+                if (context.mounted) context.go('/login');
+              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: context.errorColor),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -68,7 +79,7 @@ class PartnerSettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _profileHeader(BuildContext context) {
+  Widget _profileHeader(BuildContext context, String initial, String name, String email) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -78,14 +89,15 @@ class PartnerSettingsScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(width: 52, height: 52, decoration: BoxDecoration(color: context.warningColor, borderRadius: BorderRadius.circular(14)), child: Center(child: Text('S', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 22, color: context.backgroundColor)))),
+          Container(width: 52, height: 52, decoration: BoxDecoration(color: context.warningColor, borderRadius: BorderRadius.circular(14)), child: Center(child: Text(initial, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 22, color: context.backgroundColor)))),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Store Name', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
-                Text('owner@email.com', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                if (email.isNotEmpty)
+                  Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
               ],
             ),
           ),

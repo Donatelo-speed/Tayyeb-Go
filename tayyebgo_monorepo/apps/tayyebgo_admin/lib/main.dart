@@ -98,6 +98,7 @@ class _AdminAppState extends State<AdminApp> {
       routes: [
         AppRouter.route('/splash', const AdminSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
+        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
         AppRouter.route(
           '/forgot-password',
           const ForgotPasswordScreen(),

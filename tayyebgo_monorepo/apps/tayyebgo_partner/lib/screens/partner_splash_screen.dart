@@ -11,14 +11,16 @@ class PartnerSplashScreen extends StatefulWidget {
 }
 
 class _PartnerSplashScreenState extends State<PartnerSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
+  bool _ready = false;
+
+  void _onReady() {
+    if (_ready || !mounted) return;
+    setState(() => _ready = true);
     _navigate();
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
     if (auth.user != null) {
@@ -30,11 +32,14 @@ class _PartnerSplashScreenState extends State<PartnerSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const BrandedSplashView(
-      label: 'Partner',
-      tagline: 'Kitchen, menu, marketing, and dispatch in one place.',
-      icon: Icons.storefront_rounded,
-      accentColor: AppColors.partnerAccent,
-    );
+    if (_ready) {
+      return const BrandedSplashView(
+        label: 'Partner',
+        tagline: 'Kitchen, menu, marketing, and dispatch in one place.',
+        icon: Icons.storefront_rounded,
+        accentColor: AppColors.partnerAccent,
+      );
+    }
+    return AppLoadingScreen(onReady: _onReady);
   }
 }

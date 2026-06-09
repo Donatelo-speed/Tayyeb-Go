@@ -96,10 +96,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                             ],
                           ),
                         ),
-                        Container(
-                          width: 44, height: 44,
-                          decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor)),
-                          child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22),
+                        GestureDetector(
+                          onTap: () => context.push('/notifications'),
+                          child: Container(
+                            width: 44, height: 44,
+                            decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor)),
+                            child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22),
+                          ),
                         ),
                       ],
                     ),

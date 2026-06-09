@@ -11,14 +11,16 @@ class CustomerSplashScreen extends StatefulWidget {
 }
 
 class _CustomerSplashScreenState extends State<CustomerSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
+  bool _ready = false;
+
+  void _onReady() {
+    if (_ready || !mounted) return;
+    setState(() => _ready = true);
     _navigate();
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
     if (auth.user != null) {
@@ -30,11 +32,14 @@ class _CustomerSplashScreenState extends State<CustomerSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const BrandedSplashView(
-      label: 'Customer',
-      tagline: 'Food, errands, and essentials delivered with care.',
-      icon: Icons.delivery_dining_rounded,
-      accentColor: AppColors.customerAccent,
-    );
+    if (_ready) {
+      return const BrandedSplashView(
+        label: 'Customer',
+        tagline: 'Food, errands, and essentials delivered with care.',
+        icon: Icons.delivery_dining_rounded,
+        accentColor: AppColors.customerAccent,
+      );
+    }
+    return AppLoadingScreen(onReady: _onReady);
   }
 }

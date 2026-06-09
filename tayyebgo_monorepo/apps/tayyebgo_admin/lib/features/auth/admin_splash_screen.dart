@@ -11,14 +11,16 @@ class AdminSplashScreen extends StatefulWidget {
 }
 
 class _AdminSplashScreenState extends State<AdminSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
+  bool _ready = false;
+
+  void _onReady() {
+    if (_ready || !mounted) return;
+    setState(() => _ready = true);
     _navigate();
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
     if (auth.user != null) {
@@ -30,11 +32,14 @@ class _AdminSplashScreenState extends State<AdminSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const BrandedSplashView(
-      label: 'Admin',
-      tagline: 'Live operations, approvals, finance, and platform health.',
-      icon: Icons.admin_panel_settings_rounded,
-      accentColor: AppColors.adminAccent,
-    );
+    if (_ready) {
+      return const BrandedSplashView(
+        label: 'Admin',
+        tagline: 'Live operations, approvals, finance, and platform health.',
+        icon: Icons.admin_panel_settings_rounded,
+        accentColor: AppColors.adminAccent,
+      );
+    }
+    return AppLoadingScreen(onReady: _onReady);
   }
 }

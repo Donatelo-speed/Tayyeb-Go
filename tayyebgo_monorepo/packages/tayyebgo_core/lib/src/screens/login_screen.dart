@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_radius.dart';
@@ -133,6 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildDivider(),
                     const SizedBox(height: 24),
                     _buildSocialButtons(auth),
+                    const SizedBox(height: 24),
+                    _buildSignUpLink(),
                     if (auth.error != null) ...[
                       const SizedBox(height: 16),
                       _buildErrorBanner(auth.error!),
@@ -491,18 +494,23 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 50,
           child: OutlinedButton.icon(
             onPressed: auth.isLoading ? null : _handleGoogleSignIn,
-            icon: Container(
+            icon: Image.network(
+              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
               width: 20,
               height: 20,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF4285F4), Color(0xFF34A853), Color(0xFFFBBC05), Color(0xFFEA4335)],
-                  stops: [0.0, 0.33, 0.66, 1.0],
+              errorBuilder: (_, __, ___) => Container(
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF4285F4), Color(0xFF34A853), Color(0xFFFBBC05), Color(0xFFEA4335)],
+                    stops: [0.0, 0.33, 0.66, 1.0],
+                  ),
                 ),
-              ),
-              child: const Center(
-                child: Text('G', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+                child: const Center(
+                  child: Text('G', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+                ),
               ),
             ),
             label: Text('Continue with Google', style: AppTypography.bodyMedium.copyWith(
@@ -534,6 +542,24 @@ class _LoginScreenState extends State<LoginScreen> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.brButton),
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignUpLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Don't have an account? ", style: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textMuted,
+        )),
+        GestureDetector(
+          onTap: () => context.go('/signup'),
+          child: Text('Create Account', style: AppTypography.bodyMedium.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          )),
         ),
       ],
     );

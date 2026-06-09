@@ -11,14 +11,16 @@ class DriverSplashScreen extends StatefulWidget {
 }
 
 class _DriverSplashScreenState extends State<DriverSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
+  bool _ready = false;
+
+  void _onReady() {
+    if (_ready || !mounted) return;
+    setState(() => _ready = true);
     _navigate();
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
     if (auth.user != null) {
@@ -30,11 +32,14 @@ class _DriverSplashScreenState extends State<DriverSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const BrandedSplashView(
-      label: 'Driver',
-      tagline: 'Live routes, clear earnings, and safer deliveries.',
-      icon: Icons.route_rounded,
-      accentColor: AppColors.driverAccent,
-    );
+    if (_ready) {
+      return const BrandedSplashView(
+        label: 'Driver',
+        tagline: 'Live routes, clear earnings, and safer deliveries.',
+        icon: Icons.route_rounded,
+        accentColor: AppColors.driverAccent,
+      );
+    }
+    return AppLoadingScreen(onReady: _onReady);
   }
 }

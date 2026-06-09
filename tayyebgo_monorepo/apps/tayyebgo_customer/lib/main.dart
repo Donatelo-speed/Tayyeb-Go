@@ -10,6 +10,7 @@ import 'screens/anything_tracking_screen.dart';
 import 'screens/cart/cart_screen.dart';
 import 'screens/checkout/checkout_screen.dart';
 import 'screens/customer_home_screen.dart';
+import 'screens/customer_main_screen.dart';
 import 'screens/menu/restaurant_menu_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/tracking/order_tracking_screen.dart';
@@ -106,7 +107,8 @@ class _CustomerAppState extends State<CustomerApp> {
       routes: [
         AppRouter.route('/splash', const CustomerSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
-        AppRouter.route('/home', const AuthStateRedirector(child: CustomerHomeScreen()), name: 'home'),
+        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/home', const AuthStateRedirector(child: CustomerMainScreen()), name: 'home'),
         AppRouter.route('/checkout', const CheckoutScreen(), name: 'checkout'),
         AppRouter.route('/cart', const CartScreen(), name: 'cart'),
         AppRouter.route('/order-history', const OrderHistoryScreen(), name: 'orderHistory'),

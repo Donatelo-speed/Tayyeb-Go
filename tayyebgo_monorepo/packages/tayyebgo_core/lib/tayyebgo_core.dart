@@ -83,6 +83,8 @@ export 'src/widgets/triple_state_widget.dart';
 export 'src/widgets/app_animations.dart';
 export 'src/screens/access_denied_screen.dart';
 export 'src/screens/login_screen.dart';
+export 'src/screens/sign_up_screen.dart';
+export 'src/screens/app_loading_screen.dart';
 
 export 'src/screens/profile_screen.dart';
 export 'src/screens/settings_screen.dart';

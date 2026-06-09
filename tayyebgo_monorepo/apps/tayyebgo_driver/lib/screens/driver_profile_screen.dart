@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class DriverProfileScreen extends StatelessWidget {
@@ -8,6 +9,13 @@ class DriverProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
+    final displayName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Driver';
+    final email = user?.email.isNotEmpty == true ? user!.email : '';
+    final phone = user?.phone?.isNotEmpty == true ? user!.phone : '';
+    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'D';
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -30,13 +38,18 @@ class DriverProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Center(
-                    child: Text('D', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 36, color: context.textPrimaryColor)),
+                    child: Text(initial, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 36, color: context.textPrimaryColor)),
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text('Driver Name', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor)),
+                Text(displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor)),
                 const SizedBox(height: 4),
-                Text('driver@email.com', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                if (email.isNotEmpty)
+                  Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                if (phone.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(phone, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                ],
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -72,7 +85,10 @@ class DriverProfileScreen extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton(
-              onPressed: () => context.go('/login'),
+              onPressed: () async {
+                await context.read<AuthProvider>().logout();
+                if (context.mounted) context.go('/login');
+              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: context.errorColor),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
