@@ -9,7 +9,6 @@ import 'screens/anything_request_screen.dart';
 import 'screens/anything_tracking_screen.dart';
 import 'screens/cart/cart_screen.dart';
 import 'screens/checkout/checkout_screen.dart';
-import 'screens/customer_home_screen.dart';
 import 'screens/customer_main_screen.dart';
 import 'screens/menu/restaurant_menu_screen.dart';
 import 'screens/order_history_screen.dart';
