@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../business_type.dart';
@@ -37,7 +38,7 @@ class StoreHeader extends StatelessWidget {
         const SizedBox(width: 16),
         PopupMenuButton<BusinessStatus>(
           tooltip: 'Update status',
-          icon: Icon(Icons.more_vert, color: context.textSecondaryColor),
+          icon: Icon(Icons.more_vert, color: context.textMutedColor),
           onSelected: (s) async {
             try {
               await AdminFirestoreService.instance.updateStoreStatus(storeId, s);
@@ -53,7 +54,7 @@ class StoreHeader extends StatelessWidget {
               child: Row(children: [
                 Icon(statusIcon(s.iconKey), size: 16, color: color),
                 const SizedBox(width: 8),
-                Text('Set ${s.displayName}'),
+                Text('Set ${s.displayName}', style: GoogleFonts.inter(color: context.textPrimaryColor)),
               ]),
             );
           }).toList(),
@@ -61,39 +62,39 @@ class StoreHeader extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Flexible(child: Text(name, style: AppTypography.heading2)),
+              Flexible(child: Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor))),
               const SizedBox(width: 8),
               _StatusBadge(status: status),
             ]),
             const SizedBox(height: 4),
             Row(children: [
-              Icon(businessIcon(category.iconKey), size: 14, color: context.textSecondaryColor),
+              Icon(businessIcon(category.iconKey), size: 14, color: context.textMutedColor),
               const SizedBox(width: 4),
-              Text('${category.displayName} • ${businessType.name}', style: TextStyle(color: context.textSecondaryColor, fontSize: 12, fontWeight: FontWeight.w500)),
+              Text('${category.displayName} • ${businessType.name}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12, fontWeight: FontWeight.w500)),
             ]),
-            if (cuisine.isNotEmpty) Text(cuisine, style: TextStyle(color: context.textMutedColor, fontSize: 11)),
+            if (cuisine.isNotEmpty) Text(cuisine, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
             const SizedBox(height: 8),
             Wrap(spacing: 6, runSpacing: 6, children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (active ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
+                  color: (active ? context.successColor : context.errorColor).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text(active ? 'Active' : 'Inactive', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: active ? AppColors.success : AppColors.error)),
+                child: Text(active ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: active ? context.successColor : context.errorColor)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
-                child: Text('${commission.toStringAsFixed(0)}% Commission', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryColor)),
+                child: Text('${commission.toStringAsFixed(0)}% Commission', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryColor)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppColors.premium.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.workspace_premium, size: 12, color: AppColors.premium),
+                  Icon(Icons.workspace_premium, size: 12, color: context.warningColor),
                   const SizedBox(width: 3),
-                  Text(package.displayName, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.premium)),
+                  Text(package.displayName, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: context.warningColor)),
                 ]),
               ),
             ]),
@@ -126,7 +127,7 @@ class _StatusBadge extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           status.displayName.toUpperCase(),
-          style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: color, letterSpacing: 0.4),
+          style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.bold, color: color, letterSpacing: 0.4),
         ),
       ]),
     );

@@ -22,7 +22,7 @@ class PaymentSelectionSheet extends StatefulWidget {
 }
 
 class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
-  PaymentMethodType _selected = PaymentMethodType.shamCash;
+  PaymentMethodType _selected = PaymentMethodType.cashOnDelivery;
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +47,11 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
           const SizedBox(height: 20),
           Text('Payment Method', style: TayyebGoTheme.heading3),
           const SizedBox(height: 20),
-          _optionTile(PaymentMethodType.stripe, Icons.credit_card, 'Visa / Mastercard', 'Secure online payment via Stripe', comingSoon: true),
+          _optionTile(PaymentMethodType.cashOnDelivery, Icons.money, 'Cash on Delivery', 'Pay with cash when order arrives'),
           const SizedBox(height: 8),
-          _optionTile(PaymentMethodType.shamCash, Icons.money, 'Sham Cash', 'Pay with cash on delivery'),
+          _optionTile(PaymentMethodType.shamCash, Icons.account_balance_wallet, 'Sham Cash', 'Pay with ShamCash wallet'),
+          const SizedBox(height: 8),
+          _optionTile(PaymentMethodType.stripe, Icons.credit_card, 'Visa / Mastercard', 'Secure online payment via Stripe', comingSoon: true),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),

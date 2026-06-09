@@ -27,55 +27,12 @@ class AdminEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: padding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: (iconColor ?? context.primaryColor).withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: iconSize * 0.5, color: iconColor ?? context.primaryColor),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                style: TextStyle(fontSize: 13, color: context.textSecondaryColor),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: onAction,
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text(actionLabel!),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
-              ),
-            ],
-            if (customAction != null) ...[
-              const SizedBox(height: 20),
-              customAction!,
-            ],
-          ],
-        ),
-      ),
+    return TGEmptyState(
+      icon: icon,
+      title: title,
+      description: subtitle,
+      actionLabel: actionLabel,
+      onAction: onAction,
     );
   }
 }

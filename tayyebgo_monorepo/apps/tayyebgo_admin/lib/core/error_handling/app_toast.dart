@@ -18,13 +18,13 @@ class AppToast {
     this.duration = const Duration(seconds: 4),
   });
 
-  Color _bg(bool isDark) {
+  Color _bg(BuildContext context) {
     switch (kind) {
-      case AppToastKind.success: return isDark ? DarkAppColors.success : AppColors.success;
-      case AppToastKind.error: return isDark ? DarkAppColors.error : AppColors.error;
-      case AppToastKind.warning: return isDark ? DarkAppColors.warning : AppColors.warning;
-      case AppToastKind.info: return isDark ? DarkAppColors.primary : AppColors.primary;
-      case AppToastKind.neutral: return isDark ? DarkAppColors.surfaceAlt : const Color(0xFF1F2937);
+      case AppToastKind.success: return context.successColor;
+      case AppToastKind.error: return context.errorColor;
+      case AppToastKind.warning: return context.warningColor;
+      case AppToastKind.info: return context.primaryColor;
+      case AppToastKind.neutral: return context.surfaceAltColor;
     }
   }
 
@@ -41,7 +41,6 @@ class AppToast {
 
 extension AppToastExtension on BuildContext {
   void showToast(AppToast toast) {
-    final isDark = Theme.of(this).brightness == Brightness.dark;
     final messenger = ScaffoldMessenger.of(this);
     messenger.clearSnackBars();
     messenger.showSnackBar(
@@ -53,7 +52,10 @@ extension AppToastExtension on BuildContext {
             Expanded(
               child: Text(
                 toast.message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 14),
+                style: AppTypography.body.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             if (toast.actionLabel != null && toast.onAction != null)
@@ -64,13 +66,13 @@ extension AppToastExtension on BuildContext {
                 },
                 style: TextButton.styleFrom(foregroundColor: Colors.white),
                 child: Text(toast.actionLabel!.toUpperCase(),
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, letterSpacing: 0.4)),
+                    style: AppTypography.label.copyWith(color: Colors.white)),
               ),
           ],
         ),
-        backgroundColor: toast._bg(isDark),
+        backgroundColor: toast._bg(this),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
         elevation: 8,
         duration: toast.duration,
@@ -88,30 +90,16 @@ Future<bool> appConfirmAction(
   Color? confirmColor,
   bool destructive = false,
 }) async {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  final result = await showDialog<bool>(
+  bool? result;
+  await TGDialog.show(
     context: context,
-    builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: isDark ? DarkAppColors.surface : Colors.white,
-      title: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-      content: Text(message, style: const TextStyle(fontSize: 14)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: Text(cancelLabel, style: TextStyle(color: AppColors.textSecondary)),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: confirmColor ?? (destructive ? AppColors.error : AppColors.primary),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-          child: Text(confirmLabel),
-        ),
-      ],
-    ),
+    title: title,
+    content: Text(message, style: AppTypography.body.copyWith(color: context.textSecondaryColor)),
+    primaryActionLabel: confirmLabel,
+    onPrimaryAction: () { result = true; Navigator.of(context).pop(); },
+    secondaryActionLabel: cancelLabel,
+    onSecondaryAction: () { result = false; Navigator.of(context).pop(); },
+    isDestructive: destructive,
   );
-  return result ?? false;
+  return result == true;
 }

@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -15,28 +12,9 @@ class AuthStateRedirector extends StatefulWidget {
 }
 
 class _AuthStateRedirectorState extends State<AuthStateRedirector> {
-  StreamSubscription<fb.User?>? _authSubscription;
-
   @override
   void initState() {
     super.initState();
-    _authSubscription = fb.FirebaseAuth.instance.idTokenChanges().listen(
-      _onAuthChanged,
-    );
-  }
-
-  void _onAuthChanged(fb.User? firebaseUser) {
-    if (!mounted) return;
-    final auth = context.read<AuthProvider>();
-    if (firebaseUser == null && auth.isAuthenticated) {
-      auth.logout();
-    }
-  }
-
-  @override
-  void dispose() {
-    _authSubscription?.cancel();
-    super.dispose();
   }
 
   @override

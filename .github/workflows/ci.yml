@@ -127,3 +127,29 @@ jobs:
         with:
           name: web-${{ matrix.app }}
           path: tayyebgo_monorepo/apps/${{ matrix.app }}/build/web
+
+  deploy:
+    name: Deploy to Firebase
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-tayyebgo_customer
+          path: tayyebgo_monorepo/apps/tayyebgo_customer/build/web
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install -g firebase-tools
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - run: firebase deploy --only hosting
+        working-directory: tayyebgo_monorepo

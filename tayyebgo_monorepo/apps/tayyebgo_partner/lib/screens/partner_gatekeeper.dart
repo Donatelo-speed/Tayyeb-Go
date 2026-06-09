@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../providers/partner_role_controller.dart';
 import 'cashier_terminal_screen.dart';
 import 'owner_dashboard_screen.dart';
@@ -16,8 +17,9 @@ class PartnerGatekeeper extends StatelessWidget {
     } else if (userRole == 'owner') {
       return const OwnerDashboardScreen();
     } else {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: context.backgroundColor,
+        body: const Center(child: AppLoader()),
       );
     }
   }

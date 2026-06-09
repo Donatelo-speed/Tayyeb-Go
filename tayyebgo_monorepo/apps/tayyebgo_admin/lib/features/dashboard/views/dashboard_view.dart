@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
 import '../../../core/services/admin_firestore_service.dart';
-import '../../../core/widgets/app_empty_state.dart' as empty;
-import '../../../core/widgets/app_activity_feed.dart' as feed;
 import 'shared.dart';
 import 'widgets/charts.dart';
 import 'widgets/data_models.dart';
@@ -15,45 +14,39 @@ import 'widgets/quick_actions.dart';
 import 'widgets/ranking_cards.dart';
 import 'widgets/stats_card.dart';
 
+const _statOrange = LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFD97706)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statGreen = LinearGradient(colors: [Color(0xFF10B981), Color(0xFF059669)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statPurple = LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statBlue = LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF4F46E5)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+
 class DashboardView extends StatelessWidget {
   const DashboardView();
 
   @override
   Widget build(BuildContext context) {
     final stats = context.watch<AdminStatsProvider>();
-    return pageContainer(context, child: AppScaffold(
-      showAppBar: false,
-      title: 'Dashboard',
+    return pageContainer(context, child: Scaffold(
+        backgroundColor: context.backgroundColor,
       body: stats.loading
-          ? const ShimmerLoading(itemCount: 4, itemHeight: 120)
+          ? const TGSGroup(lines: 4)
           : stats.error != null
               ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline, size: 48, color: context.errorColor.withValues(alpha: 0.5)),
-                      const SizedBox(height: 8),
-                      Text('Could not load dashboard', style: TextStyle(color: context.textSecondaryColor)),
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: () => stats.refresh(),
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
-                      ),
-                    ],
+                  child: TGErrorWidget(
+                    message: stats.error!,
+                    onRetry: () => stats.refresh(),
                   ),
                 )
               : StreamBuilder<List<Map<String, dynamic>>>(
                   stream: AdminFirestoreService.instance.watchOrdersRaw(limit: 500),
                   builder: (context, ordersSnap) {
                     if (ordersSnap.connectionState == ConnectionState.waiting && !ordersSnap.hasData) {
-                      return const ShimmerLoading(itemCount: 4, itemHeight: 120);
+                      return const TGSGroup(lines: 4);
                     }
                     if (ordersSnap.hasError) {
-                      return empty.AdminEmptyState(
+                      return TGEmptyState(
                         icon: Icons.error_outline,
                         title: 'Could not load orders',
-                        subtitle: ordersSnap.error.toString(),
+                        description: ordersSnap.error.toString(),
                         actionLabel: 'Retry',
                         onAction: () => stats.refresh(),
                       );
@@ -126,7 +119,7 @@ class DashboardView extends StatelessWidget {
                                       return Column(children: [
                                         const DriverActivityChart(),
                                         const SizedBox(height: 24),
-                                        SizedBox(height: 300, child: feed.AppActivityFeed(limit: 6)),
+                                        SizedBox(height: 300, child: AppActivityFeed(limit: 6)),
                                       ]);
                                     }
                                     return Row(
@@ -134,7 +127,7 @@ class DashboardView extends StatelessWidget {
                                       children: [
                                         Expanded(flex: 2, child: const DriverActivityChart()),
                                         const SizedBox(width: 24),
-                                        Expanded(flex: 3, child: SizedBox(height: 300, child: feed.AppActivityFeed(limit: 6))),
+                                        Expanded(flex: 3, child: SizedBox(height: 300, child: AppActivityFeed(limit: 6))),
                                       ],
                                     );
                                   },
@@ -159,9 +152,9 @@ class DashboardView extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Command Center', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: context.textPrimaryColor)),
+            Text('Command Center', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor)),
             const SizedBox(height: 4),
-            Text('Your platform at a glance', style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
+            Text('Your platform at a glance', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           ],
         ),
       ],
@@ -180,14 +173,14 @@ class DashboardView extends StatelessWidget {
           crossAxisSpacing: 16,
           childAspectRatio: 1.6,
           children: [
-            StatCard(title: 'Active Orders', value: '${stats.stats.activeOrders}', icon: Icons.shopping_bag, gradient: AppGradients.statOrange, subtitle: 'In progress'),
-            StatCard(title: 'Delivered Today', value: '${t.delivered}', icon: Icons.check_circle, gradient: AppGradients.statGreen, subtitle: 'Completed'),
-            StatCard(title: 'Revenue Today', value: '\$${t.revenue.toStringAsFixed(0)}', icon: Icons.attach_money, gradient: AppGradients.statPurple, subtitle: 'Gross revenue'),
+            StatCard(title: 'Active Orders', value: '${stats.stats.activeOrders}', icon: Icons.shopping_bag_rounded, gradient: _statOrange, subtitle: 'In progress'),
+            StatCard(title: 'Delivered Today', value: '${t.delivered}', icon: Icons.check_circle_rounded, gradient: _statGreen, subtitle: 'Completed'),
+            StatCard(title: 'Revenue Today', value: '\$${t.revenue.toStringAsFixed(0)}', icon: Icons.attach_money_rounded, gradient: _statPurple, subtitle: 'Gross revenue'),
             DriverStatCard(driverCount: stats.stats.driverCount),
-            StatCard(title: 'Active Stores', value: '${stats.stats.restaurantCount}', icon: Icons.store, gradient: AppGradients.statBlue),
-            StatCard(title: 'Total Customers', value: '${stats.stats.userCount}', icon: Icons.people, gradient: AppGradients.statGreen),
-            StatCard(title: 'Cancelled', value: '${t.cancelled}', icon: Icons.cancel, gradient: AppGradients.statPurple, subtitle: '\$${t.cancelledRev.toStringAsFixed(0)} refunded'),
-            StatCard(title: 'Pending Payouts', value: '\$${stats.stats.pendingPayouts.toStringAsFixed(0)}', icon: Icons.account_balance_wallet, gradient: AppGradients.statOrange),
+            StatCard(title: 'Active Stores', value: '${stats.stats.restaurantCount}', icon: Icons.store_rounded, gradient: _statBlue),
+            StatCard(title: 'Total Customers', value: '${stats.stats.userCount}', icon: Icons.people_rounded, gradient: _statGreen),
+            StatCard(title: 'Cancelled', value: '${t.cancelled}', icon: Icons.cancel_rounded, gradient: _statPurple, subtitle: '\$${t.cancelledRev.toStringAsFixed(0)} refunded'),
+            StatCard(title: 'Pending Payouts', value: '\$${stats.stats.pendingPayouts.toStringAsFixed(0)}', icon: Icons.account_balance_wallet_rounded, gradient: _statOrange),
           ],
         );
       },

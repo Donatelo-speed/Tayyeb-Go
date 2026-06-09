@@ -1,0 +1,87 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-firebase:
+    name: Deploy to Firebase
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://tayyebgo.web.app
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+          cache: true
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cloud_functions/functions/package-lock.json
+      
+      - name: Get dependencies - Customer
+        working-directory: apps/tayyebgo_customer
+        run: flutter pub get
+      
+      - name: Build Customer App
+        working-directory: apps/tayyebgo_customer
+        run: flutter build web --release
+      
+      - name: Get dependencies - Driver
+        working-directory: apps/tayyebgo_driver
+        run: flutter pub get
+      
+      - name: Build Driver App
+        working-directory: apps/tayyebgo_driver
+        run: flutter build web --release
+      
+      - name: Get dependencies - Partner
+        working-directory: apps/tayyebgo_partner
+        run: flutter pub get
+      
+      - name: Build Partner App
+        working-directory: apps/tayyebgo_partner
+        run: flutter build web --release
+      
+      - name: Get dependencies - Admin
+        working-directory: apps/tayyebgo_admin
+        run: flutter pub get
+      
+      - name: Build Admin App
+        working-directory: apps/tayyebgo_admin
+        run: flutter build web --release
+      
+      - name: Install Cloud Functions dependencies
+        working-directory: cloud_functions/functions
+        run: npm ci
+      
+      - name: Build Cloud Functions
+        working-directory: cloud_functions/functions
+        run: npm run build
+      
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting,functions,firestore,storage
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      
+      - name: Rollback on failure
+        if: failure()
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting,functions,firestore,storage
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

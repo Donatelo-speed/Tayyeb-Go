@@ -6,7 +6,7 @@ class StaggerItem extends StatelessWidget {
   final Widget child;
   final Duration delay;
   final double offset;
-  const StaggerItem({super.key, required this.index, required this.child, this.delay = AppMotion.stagger, this.offset = 20});
+  const StaggerItem({super.key, required this.index, required this.child, this.delay = AppMotion.staggerDelay, this.offset = 20});
 
   @override
   Widget build(BuildContext context) {

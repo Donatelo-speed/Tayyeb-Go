@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../shared.dart';
+
+const _cyanGradient = LinearGradient(colors: [Color(0xFF06B6D4), Color(0xFF0891B2)], begin: Alignment.topLeft, end: Alignment.bottomRight);
 
 class DriverStatCard extends StatelessWidget {
   final int driverCount;
@@ -19,7 +20,7 @@ class DriverStatCard extends StatelessWidget {
           title: 'Online Drivers',
           value: '$online',
           icon: Icons.delivery_dining,
-          gradient: AppGradients.statCyan,
+          gradient: _cyanGradient,
           subtitle: 'Of $driverCount registered',
         );
       },

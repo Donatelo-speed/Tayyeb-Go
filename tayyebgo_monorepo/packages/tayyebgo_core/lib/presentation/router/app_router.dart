@@ -3,9 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../src/providers/auth_provider.dart';
 import '../../src/screens/access_denied_screen.dart';
-import '../../src/screens/notifications_screen.dart';
-import '../../src/screens/onboarding_screen.dart';
-import '../../src/screens/splash_screen.dart';
 import '../shared_widgets/slide_transition.dart';
 
 abstract class AppRouter {
@@ -25,8 +22,6 @@ abstract class AppRouter {
     required Listenable refreshListenable,
     required String? Function(BuildContext, GoRouterState) redirect,
     String initialLocation = '/login',
-    VoidCallback? onOnboardingComplete,
-    Widget Function()? notificationsBuilder,
   }) {
     return GoRouter(
       navigatorKey: routerKey,
@@ -34,28 +29,6 @@ abstract class AppRouter {
       refreshListenable: refreshListenable,
       redirect: redirect,
       routes: [
-        GoRoute(
-          path: '/splash',
-          name: 'splash',
-          pageBuilder: (_, state) => SlideTransitionPage(
-            key: state.pageKey,
-            page: const SplashScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
-          pageBuilder: (_, state) => SlideTransitionPage(
-            key: state.pageKey,
-            page: OnboardingScreen(
-              onComplete: () {
-                if (onOnboardingComplete != null) {
-                  onOnboardingComplete();
-                }
-              },
-            ),
-          ),
-        ),
         ...routes,
         GoRoute(
           path: '/access-denied',
@@ -76,14 +49,6 @@ abstract class AppRouter {
               ),
             );
           },
-        ),
-        GoRoute(
-          path: '/notifications',
-          name: 'notifications',
-          pageBuilder: (_, state) => SlideTransitionPage(
-            key: state.pageKey,
-            page: notificationsBuilder != null ? notificationsBuilder() : const NotificationsScreen(),
-          ),
         ),
       ],
       errorBuilder: (_, state) => _ErrorScreen(state.error),

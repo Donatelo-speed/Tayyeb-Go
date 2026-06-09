@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class DriverSafetyScreen extends StatelessWidget {
@@ -7,63 +8,82 @@ class DriverSafetyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: 'Safety',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Safety Hub', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            color: Colors.red.withOpacity(0.1),
-            child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.red,
-                child: Icon(Icons.sos, color: Colors.white),
-              ),
-              title: const Text('SOS Emergency', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-              subtitle: const Text('Alert support team immediately'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showSosDialog(context),
+          _SafetyCard(
+            icon: Icons.emergency_rounded,
+            iconColor: context.errorColor,
+            title: 'SOS Emergency',
+            subtitle: 'Alert support team immediately',
+            onTap: () => _showSosDialog(context),
+          ),
+          const SizedBox(height: 10),
+          _SafetyCard(
+            icon: Icons.report_problem_rounded,
+            iconColor: context.warningColor,
+            title: 'Report an Issue',
+            subtitle: 'Harassment, unsafe area, accident',
+            onTap: () => _showReportDialog(context),
+          ),
+          const SizedBox(height: 10),
+          _SafetyCard(
+            icon: Icons.verified_user_rounded,
+            iconColor: context.primaryColor,
+            title: 'Identity Verification',
+            subtitle: 'Verify your identity for safety',
+            onTap: () => context.go('/profile'),
+          ),
+          const SizedBox(height: 10),
+          _SafetyCard(
+            icon: Icons.phone_rounded,
+            iconColor: context.successColor,
+            title: 'Emergency Contact',
+            subtitle: 'Call support: 0XX-XXX-XXX',
+            onTap: () {},
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Safety Tips', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+                const SizedBox(height: 12),
+                _tip(context, 'Always verify customer identity before handoff'),
+                _tip(context, 'Keep your phone charged during deliveries'),
+                _tip(context, 'Share your live location with emergency contact'),
+                _tip(context, 'Trust your instincts — avoid unsafe areas'),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.orange,
-                child: Icon(Icons.warning, color: Colors.white),
-              ),
-              title: const Text('Report an Issue'),
-              subtitle: const Text('Harassment, unsafe area, accident'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showReportDialog(context),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.blue,
-                child: Icon(Icons.verified_user, color: Colors.white),
-              ),
-              title: const Text('Identity Verification'),
-              subtitle: const Text('Verify your identity for safety'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go('/profile'),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.green,
-                child: Icon(Icons.phone, color: Colors.white),
-              ),
-              title: const Text('Emergency Contact'),
-              subtitle: const Text('Call support: 0XX-XXX-XXX'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
-            ),
-          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tip(BuildContext context, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.check_circle_rounded, size: 16, color: context.successColor),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13))),
         ],
       ),
     );
@@ -72,20 +92,32 @@ class DriverSafetyScreen extends StatelessWidget {
   void _showSosDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('SOS Emergency'),
-        content: const Text('Your location and details will be sent to our support team immediately. Do you want to proceed?'),
+      builder: (_) => AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('SOS Emergency', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.errorColor)),
+        content: Text(
+          'Your location and details will be sent to our support team immediately. Do you want to proceed?',
+          style: GoogleFonts.inter(color: context.textMutedColor),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
+          ),
+          TextButton(
             onPressed: () {
-              Navigator.pop(ctx);
+              Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('SOS alert sent to support')),
+                SnackBar(
+                  content: Text('SOS alert sent to support', style: GoogleFonts.inter()),
+                  backgroundColor: context.errorColor,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Send SOS', style: TextStyle(color: Colors.white)),
+            child: Text('Send SOS', style: GoogleFonts.inter(color: context.errorColor, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -96,30 +128,102 @@ class DriverSafetyScreen extends StatelessWidget {
     final ctrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Report Issue'),
+      builder: (_) => AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Report Issue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: TextField(
           controller: ctrl,
           maxLines: 4,
-          decoration: const InputDecoration(
+          style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+          decoration: InputDecoration(
             hintText: 'Describe the issue...',
-            border: OutlineInputBorder(),
+            hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+            filled: true,
+            fillColor: context.backgroundColor,
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
+          ),
+          TextButton(
             onPressed: () {
-              Navigator.pop(ctx);
+              Navigator.pop(context);
               if (ctrl.text.trim().isNotEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Report submitted')),
+                  SnackBar(
+                    content: Text('Report submitted', style: GoogleFonts.inter()),
+                    backgroundColor: context.successColor,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
                 );
               }
             },
-            child: const Text('Submit'),
+            child: Text('Submit', style: GoogleFonts.inter(color: context.primaryColor, fontWeight: FontWeight.w700)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SafetyCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _SafetyCard({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 20),
+          ],
+        ),
       ),
     );
   }

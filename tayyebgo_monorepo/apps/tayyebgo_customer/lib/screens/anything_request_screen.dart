@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -35,7 +36,9 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
   }
 
   void _addItem() {
-    setState(() => _items.add(_RequestItem(controller: TextEditingController(), quantityCtrl: TextEditingController(text: '1'))));
+    setState(() => _items.add(_RequestItem(
+        controller: TextEditingController(),
+        quantityCtrl: TextEditingController(text: '1'))));
   }
 
   void _removeItem(int index) {
@@ -48,18 +51,12 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
 
   Future<void> _pickPhoto() async {
     final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024);
-    if (file != null) {
-      if (!mounted) return;
-      setState(() => _photoPath = file.path);
-    }
+    if (file != null && mounted) setState(() => _photoPath = file.path);
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_items.isEmpty) {
-      _showSnack('Add at least one item');
-      return;
-    }
+    if (_items.isEmpty) { _showSnack('Add at least one item'); return; }
 
     setState(() => _isSubmitting = true);
     final auth = context.read<AuthProvider>();
@@ -92,64 +89,58 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
 
   void _showSnack(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg, style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: 'Anything Delivery',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Anything Delivery', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
+            _darkField(
               controller: _storeCtrl,
-              decoration: InputDecoration(
-                labelText: 'Store Name',
-                hintText: 'e.g. Abu Ahmad Market',
-                prefixIcon: const Icon(Icons.store),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              validator: (v) => v?.trim().isEmpty == true ? 'Enter store name' : null,
+              label: 'Store Name',
+              hint: 'e.g. Abu Ahmad Market',
+              icon: Icons.store_rounded,
             ),
             const SizedBox(height: 16),
             ..._items.asMap().entries.map((entry) {
               final i = entry.key;
               final item = entry.value;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
                   children: [
                     Expanded(
                       flex: 3,
-                      child: TextFormField(
+                      child: _darkField(
                         controller: item.controller,
-                        decoration: InputDecoration(
-                          labelText: 'Item ${i + 1}',
-                          hintText: 'e.g. Pepsi',
-                          isDense: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                        label: 'Item ${i + 1}',
+                        hint: 'e.g. Pepsi',
                       ),
                     ),
                     const SizedBox(width: 8),
                     SizedBox(
-                      width: 60,
-                      child: TextFormField(
+                      width: 65,
+                      child: _darkField(
                         controller: item.quantityCtrl,
-                        decoration: InputDecoration(
-                          labelText: 'Qty',
-                          isDense: true,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        keyboardType: TextInputType.number,
+                        label: 'Qty',
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.remove_circle, color: Colors.red),
+                      icon: Icon(Icons.remove_circle_rounded, color: context.errorColor, size: 22),
                       onPressed: () => _removeItem(i),
                     ),
                   ],
@@ -158,91 +149,134 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
             }),
             TextButton.icon(
               onPressed: _addItem,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Item'),
+              icon: Icon(Icons.add_rounded, size: 18, color: context.primaryColor),
+              label: Text('Add Item', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.primaryColor)),
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            _darkField(
               controller: _budgetCtrl,
-              decoration: InputDecoration(
-                labelText: 'Budget (SYP)',
-                hintText: 'e.g. 50000',
-                prefixIcon: const Icon(Icons.monetization_on),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
+              label: 'Budget (SYP)',
+              hint: 'e.g. 50000',
+              icon: Icons.monetization_on_rounded,
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             if (_photoPath != null)
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(File(_photoPath!), height: 120, width: double.infinity, fit: BoxFit.cover),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.file(File(_photoPath!), height: 130, width: double.infinity, fit: BoxFit.cover),
                   ),
                   Positioned(
-                    top: 4, right: 4,
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white, shadows: [BoxShadow(blurRadius: 4)]),
-                      onPressed: () => setState(() => _photoPath = null),
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _photoPath = null),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close_rounded, color: Colors.white, size: 18),
+                      ),
                     ),
                   ),
                 ],
               )
             else
-              OutlinedButton.icon(
-                onPressed: _pickPhoto,
-                icon: const Icon(Icons.photo_camera),
-                label: const Text('Add Photo'),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton.icon(
+                  onPressed: _pickPhoto,
+                  icon: Icon(Icons.photo_camera_rounded, size: 18, color: context.primaryColor),
+                  label: Text('Add Photo', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.primaryColor)),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: context.borderColor),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
               ),
-            const SizedBox(height: 12),
-            TextFormField(
+            const SizedBox(height: 14),
+            _darkField(
               controller: _instructionsCtrl,
-              decoration: InputDecoration(
-                labelText: 'Instructions',
-                hintText: 'Any special notes for the driver...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
+              label: 'Instructions',
+              hint: 'Any special notes for the driver...',
               maxLines: 3,
             ),
-            const SizedBox(height: 12),
-            Text('Delivery Address', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            TextFormField(
+            const SizedBox(height: 16),
+            Text('Delivery Address', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+            const SizedBox(height: 10),
+            _darkField(
               controller: _addressCtrl,
-              decoration: InputDecoration(
-                labelText: 'Address',
-                hintText: 'e.g. Near Al Ahram Bakery, second building',
-                prefixIcon: const Icon(Icons.location_on),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              validator: (v) => v?.trim().isEmpty == true ? 'Enter delivery address' : null,
+              label: 'Address',
+              hint: 'e.g. Near Al Ahram Bakery, second building',
+              icon: Icons.location_on_outlined,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            const SizedBox(height: 10),
+            _darkField(
               controller: _landmarkCtrl,
-              decoration: InputDecoration(
-                labelText: 'Landmark (optional)',
-                hintText: 'e.g. Behind the mosque',
-                prefixIcon: const Icon(Icons.flag),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
+              label: 'Landmark (optional)',
+              hint: 'e.g. Behind the mosque',
+              icon: Icons.flag_outlined,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             SizedBox(
-              height: 50,
-              child: ElevatedButton.icon(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
                 onPressed: _isSubmitting ? null : _submit,
-                icon: _isSubmitting
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.send),
-                label: Text(_isSubmitting ? 'Submitting...' : 'Submit Request'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.primaryColor,
+                  foregroundColor: context.textPrimaryColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  elevation: 0,
+                ),
+                child: _isSubmitting
+                    ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: context.textPrimaryColor, strokeWidth: 2))
+                    : Text('Submit Request', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _darkField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    IconData? icon,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          style: GoogleFonts.inter(color: context.textPrimaryColor),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+            prefixIcon: icon != null ? Icon(icon, color: context.textMutedColor, size: 20) : null,
+            filled: true,
+            fillColor: context.surfaceColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          ),
+        ),
+      ],
     );
   }
 }

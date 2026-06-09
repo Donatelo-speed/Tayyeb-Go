@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/smart_address.dart';
+import '../di/app_locator.dart';
 
 class AddressProvider extends ChangeNotifier {
   List<SmartAddress> _addresses = [];
@@ -18,16 +18,8 @@ class AddressProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final snap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .orderBy('createdAt', descending: true)
-          .get();
-
-      _addresses = snap.docs
-          .map((d) => SmartAddress.fromFirestore(d))
-          .toList();
+      final data = await AppLocator.instance.addresses.getAddresses(userId);
+      _addresses = data.map((d) => SmartAddress.fromMap(d['id'] as String, d)).toList();
 
       if (_selectedAddress != null) {
         _selectedAddress = _addresses.firstWhere(
@@ -70,14 +62,10 @@ class AddressProvider extends ChangeNotifier {
       notifyListeners();
 
       if (isDefault) {
-        await _clearDefaultAddress(userId);
+        await AppLocator.instance.addresses.clearDefaultAddress(userId);
       }
 
-      final docRef = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .add({
+      final addressData = {
         'label': label,
         'fullAddress': fullAddress,
         if (city != null) 'city': city,
@@ -92,11 +80,12 @@ class AddressProvider extends ChangeNotifier {
         if (voiceNoteUrl != null) 'voiceNoteUrl': voiceNoteUrl,
         if (voiceDirections != null) 'voiceDirections': voiceDirections,
         'isDefault': isDefault,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      };
+
+      final docId = await AppLocator.instance.addresses.addAddress(userId, addressData);
 
       await loadAddresses(userId);
-      return docRef.id;
+      return docId;
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
@@ -108,15 +97,14 @@ class AddressProvider extends ChangeNotifier {
   Future<bool> updateAddress(String userId, SmartAddress address) async {
     try {
       if (address.isDefault) {
-        await _clearDefaultAddress(userId);
+        await AppLocator.instance.addresses.clearDefaultAddress(userId);
       }
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .doc(address.id)
-          .update(address.toFirestore());
+      await AppLocator.instance.addresses.updateAddress(
+        userId,
+        address.id,
+        address.toFirestore(),
+      );
 
       await loadAddresses(userId);
       return true;
@@ -129,12 +117,7 @@ class AddressProvider extends ChangeNotifier {
 
   Future<bool> deleteAddress(String userId, String addressId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .doc(addressId)
-          .delete();
+      await AppLocator.instance.addresses.deleteAddress(userId, addressId);
 
       _addresses.removeWhere((a) => a.id == addressId);
       if (_selectedAddress?.id == addressId) {
@@ -152,19 +135,6 @@ class AddressProvider extends ChangeNotifier {
   void selectAddress(SmartAddress address) {
     _selectedAddress = address;
     notifyListeners();
-  }
-
-  Future<void> _clearDefaultAddress(String userId) async {
-    final snap = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('addresses')
-        .where('isDefault', isEqualTo: true)
-        .get();
-
-    for (final doc in snap.docs) {
-      await doc.reference.update({'isDefault': false});
-    }
   }
 
   void clear() {

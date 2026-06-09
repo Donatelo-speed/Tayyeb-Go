@@ -2,10 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
 import 'features/auth/forgot_password_screen.dart';
+import 'features/auth/admin_splash_screen.dart';
 import 'features/dashboard/admin_dashboard_screen.dart';
 
 void main() async {
@@ -15,6 +17,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     AuthGateService.instance.init();
+    AppLocator.instance.init();
     runApp(const AdminApp());
   } catch (e, s) {
     if (kDebugMode) {
@@ -41,17 +44,24 @@ class _ErrorApp extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const Icon(Icons.error_outline, size: 64, color: Color(0xFFEF4444)),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Initialization Error',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF111827),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: const Color(0xFF6B7280),
+                  ),
                 ),
               ],
             ),
@@ -86,6 +96,7 @@ class _AdminAppState extends State<AdminApp> {
       refreshListenable: _authListenable,
       initialLocation: '/splash',
       routes: [
+        AppRouter.route('/splash', const AdminSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route(
           '/forgot-password',
@@ -99,6 +110,7 @@ class _AdminAppState extends State<AdminApp> {
         ),
         AppRouter.route('/profile', const AuthStateRedirector(child: AdminDashboardScreen()), name: 'profile'),
         AppRouter.route('/settings', const AuthStateRedirector(child: AdminDashboardScreen()), name: 'settings'),
+        AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
       ],
       redirect: _redirect,
     );
@@ -124,10 +136,14 @@ class _AdminAppState extends State<AdminApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Essential providers - initialized immediately
         ChangeNotifierProvider.value(value: _authProvider),
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en')),
-        ChangeNotifierProvider(create: (_) => AdminStatsProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        // Lazy-loaded providers - only created when accessed
+        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider(create: (_) => AdminStatsProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => UserProfileProvider(), lazy: true),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {

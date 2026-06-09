@@ -1,83 +1,84 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
+
+const _purple = Color(0xFF8B5CF6);
 
 class FinanceView extends StatelessWidget {
   const FinanceView();
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return pageContainer(context, child: StreamScreenBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('orders').limit(500).snapshots(),
-        onLoading: () => const ShimmerLoading(itemCount: 4),
-        onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-        onSuccess: (context, ordersSnap) {
-          int totalOrders = 0;
-          double grossRevenue = 0;
-          double totalRefunds = 0;
-          int refundCount = 0;
-          final Map<String, double> restaurantRevenue = {};
-          for (final doc in ordersSnap.docs) {
-            final d = doc.data() as Map<String, dynamic>;
-            final amt = (d['totalAmount'] as num?)?.toDouble() ?? 0;
-            final restId = d['restaurantId'] as String? ?? 'unknown';
-            final status = d['status'] as String? ?? '';
-            totalOrders++;
-            grossRevenue += amt;
-            restaurantRevenue[restId] = (restaurantRevenue[restId] ?? 0) + amt;
-            if (status == 'refunded') {
-              totalRefunds += (d['refundedAmount'] as num?)?.toDouble() ?? amt;
-              refundCount++;
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('orders').limit(500).snapshots(),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator(color: context.primaryColor));
             }
-          }
-          return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('restaurants').orderBy('createdAt', descending: true).limit(500).snapshots(),
-            builder: (context, restSnap) {
-              if (restSnap.hasError) {
-                return Center(child: Text('Error loading restaurants: ${restSnap.error}', style: const TextStyle(color: Colors.red)));
+            if (snap.hasError) {
+              return Center(child: Text('Error loading data', style: GoogleFonts.inter(color: context.textMutedColor)));
+            }
+            int totalOrders = 0;
+            double grossRevenue = 0;
+            double totalRefunds = 0;
+            int refundCount = 0;
+            final Map<String, double> restaurantRevenue = {};
+            for (final doc in snap.data?.docs ?? []) {
+              final d = doc.data() as Map<String, dynamic>;
+              final amt = (d['totalAmount'] as num?)?.toDouble() ?? 0;
+              final restId = d['restaurantId'] as String? ?? 'unknown';
+              final status = d['status'] as String? ?? '';
+              totalOrders++;
+              grossRevenue += amt;
+              restaurantRevenue[restId] = (restaurantRevenue[restId] ?? 0) + amt;
+              if (status == 'refunded') {
+                totalRefunds += (d['refundedAmount'] as num?)?.toDouble() ?? amt;
+                refundCount++;
               }
-              if (restSnap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              double totalCommission = 0;
-              double driverPayouts = 0;
-              double storePayouts = 0;
-              final restaurantData = <Map<String, dynamic>>[];
-              if (restSnap.hasData) {
-                for (final doc in restSnap.data!.docs) {
-                  final d = doc.data() as Map<String, dynamic>;
-                  final rate = (d['commissionPercent'] as num?)?.toDouble() ?? 15.0;
-                  final rev = restaurantRevenue[doc.id] ?? 0;
-                  final comm = rev * rate / 100;
-                  totalCommission += comm;
-                  storePayouts += rev - comm;
-                  restaurantData.add({
-                    'id': doc.id,
-                    'name': d['name'] ?? 'Unknown',
-                    'rate': rate,
-                    'revenue': rev,
-                    'commission': comm,
-                    'payout': rev - comm,
-                  });
+            }
+            return StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('restaurants').orderBy('createdAt', descending: true).limit(500).snapshots(),
+              builder: (context, restSnap) {
+                if (restSnap.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator(color: context.primaryColor));
                 }
-                driverPayouts = totalCommission * 0.6;
-              }
-              return _FinanceContent(
-                grossRevenue: grossRevenue,
-                totalCommission: totalCommission,
-                totalRefunds: totalRefunds,
-                refundCount: refundCount,
-                driverPayouts: driverPayouts,
-                storePayouts: storePayouts,
-                totalOrders: totalOrders,
-                restaurantData: restaurantData,
-                isDark: isDark,
-              );
-            },
-          );
-        },
+                double totalCommission = 0;
+                double driverPayouts = 0;
+                double storePayouts = 0;
+                final restaurantData = <Map<String, dynamic>>[];
+                if (restSnap.hasData) {
+                  for (final doc in restSnap.data!.docs) {
+                    final d = doc.data() as Map<String, dynamic>;
+                    final rate = (d['commissionPercent'] as num?)?.toDouble() ?? 15.0;
+                    final rev = restaurantRevenue[doc.id] ?? 0;
+                    final comm = rev * rate / 100;
+                    totalCommission += comm;
+                    storePayouts += rev - comm;
+                    restaurantData.add({'id': doc.id, 'name': d['name'] ?? 'Unknown', 'rate': rate, 'revenue': rev, 'commission': comm, 'payout': rev - comm});
+                  }
+                  driverPayouts = totalCommission * 0.6;
+                }
+                return _FinanceContent(
+                  grossRevenue: grossRevenue,
+                  totalCommission: totalCommission,
+                  totalRefunds: totalRefunds,
+                  refundCount: refundCount,
+                  driverPayouts: driverPayouts,
+                  storePayouts: storePayouts,
+                  totalOrders: totalOrders,
+                  restaurantData: restaurantData,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -87,233 +88,245 @@ class _FinanceContent extends StatelessWidget {
   final double grossRevenue, totalCommission, totalRefunds, driverPayouts, storePayouts;
   final int refundCount, totalOrders;
   final List<Map<String, dynamic>> restaurantData;
-  final bool isDark;
 
   const _FinanceContent({
-    required this.grossRevenue, required this.totalCommission, required this.totalRefunds,
-    required this.refundCount, required this.driverPayouts, required this.storePayouts,
-    required this.totalOrders, required this.restaurantData, required this.isDark,
+    required this.grossRevenue,
+    required this.totalCommission,
+    required this.totalRefunds,
+    required this.refundCount,
+    required this.driverPayouts,
+    required this.storePayouts,
+    required this.totalOrders,
+    required this.restaurantData,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      showAppBar: false,
-      title: 'Finance',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Finance', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Financial Overview', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: context.textPrimaryColor)),
-          const SizedBox(height: 6),
-          Text('Revenue, commissions, and payouts', style: TextStyle(color: context.textSecondaryColor, fontSize: 13)),
+          Text('Financial Overview', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor)),
+          const SizedBox(height: 4),
+          Text('Revenue, commissions, and payouts', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           const SizedBox(height: 24),
-          Wrap(spacing: 12, runSpacing: 12, children: [
-            StatCard(title: 'Gross Revenue', value: '\$${grossRevenue.toStringAsFixed(0)}', icon: Icons.attach_money, gradient: AppGradients.statBlue),
-            StatCard(title: 'Platform Commission', value: '\$${totalCommission.toStringAsFixed(0)}', icon: Icons.paid, gradient: AppGradients.statOrange),
-            StatCard(title: 'Refunds', value: '\$${totalRefunds.toStringAsFixed(0)}', icon: Icons.money_off, gradient: AppGradients.statPurple, subtitle: '$refundCount orders'),
-            StatCard(title: 'Driver Payouts', value: '\$${driverPayouts.toStringAsFixed(0)}', icon: Icons.delivery_dining, gradient: AppGradients.statCyan),
-            StatCard(title: 'Store Payouts', value: '\$${storePayouts.toStringAsFixed(0)}', icon: Icons.store, gradient: AppGradients.statGreen),
-          ]),
+          _statCard(context, 'Gross Revenue', '\$${grossRevenue.toStringAsFixed(0)}', Icons.attach_money_rounded, context.primaryColor),
+          const SizedBox(height: 10),
+          _statCard(context, 'Platform Commission', '\$${totalCommission.toStringAsFixed(0)}', Icons.paid_rounded, context.successColor),
+          const SizedBox(height: 10),
+          _statCard(context, 'Refunds', '\$${totalRefunds.toStringAsFixed(0)}', Icons.money_off_rounded, context.errorColor, subtitle: '$refundCount orders'),
+          const SizedBox(height: 10),
+          _statCard(context, 'Driver Payouts', '\$${driverPayouts.toStringAsFixed(0)}', Icons.delivery_dining_rounded, _purple),
+          const SizedBox(height: 10),
+          _statCard(context, 'Store Payouts', '\$${storePayouts.toStringAsFixed(0)}', Icons.store_rounded, context.warningColor),
           const SizedBox(height: 24),
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Expanded(child: _buildActionsCard(context)),
-            const SizedBox(width: 24),
-            Expanded(child: _buildSummaryCard(context)),
-          ]),
+          Text('Quick Actions', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+          const SizedBox(height: 12),
+          _actionButton(context, 'Export Revenue Report', Icons.download_rounded, context.primaryColor),
+          const SizedBox(height: 8),
+          _actionButton(context, 'Process Payouts', Icons.payments_rounded, context.successColor),
           const SizedBox(height: 24),
-          _buildPayoutsSection(context),
-          const SizedBox(height: 24),
-          _buildRestaurantBreakdown(context),
+          Text('Per-Restaurant Breakdown', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+          const SizedBox(height: 12),
+          ...restaurantData.map((rd) => _restaurantRow(context, rd)),
         ],
       ),
     );
   }
 
-  Widget _buildActionsCard(BuildContext context) {
+  Widget _statCard(BuildContext context, String title, String value, IconData icon, Color color, {String? subtitle}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? DarkAppColors.surface : Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider).withValues(alpha: 0.5)),
+        border: Border.all(color: context.borderColor),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Quick Actions', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-        const SizedBox(height: 16),
-        _actionButton(context, Icons.download, 'Export Revenue Report', AppColors.primary, _exportRevenue),
-        const SizedBox(height: 8),
-        _actionButton(context, Icons.paid, 'Process Payouts', AppColors.success, _processPayouts),
-        const SizedBox(height: 8),
-        _actionButton(context, Icons.assessment, 'Export Full Report', AppColors.premium, _exportReport),
-      ]),
-    );
-  }
-
-  Widget _buildSummaryCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? DarkAppColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider).withValues(alpha: 0.5)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Summary', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-        const SizedBox(height: 16),
-        _financeSummary('Net Revenue', '\$${(grossRevenue - totalRefunds).toStringAsFixed(0)}', AppColors.success),
-        const Divider(height: 20),
-        _financeSummary('Platform Net', '\$${(totalCommission - driverPayouts).toStringAsFixed(0)}', AppColors.primary),
-        const Divider(height: 20),
-        _financeSummary('Refund Rate', totalOrders > 0 ? '${((refundCount / totalOrders) * 100).toStringAsFixed(1)}%' : '0%', AppColors.error),
-        const Divider(height: 20),
-        _financeSummary('Avg Commission/Order', totalOrders > 0 ? '\$${(totalCommission / totalOrders).toStringAsFixed(2)}' : '\$0', AppColors.premium),
-      ]),
-    );
-  }
-
-  Widget _buildPayoutsSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? DarkAppColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider).withValues(alpha: 0.5)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text('Payout Management', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-          const Spacer(),
-          TextButton.icon(
-            onPressed: () => _processPayouts(context),
-            icon: const Icon(Icons.payments, size: 18),
-            label: const Text('Process All'),
-          ),
-        ]),
-        const SizedBox(height: 16),
-        _buildPayoutStat(context, 'Pending Payouts', '\$${(storePayouts).toStringAsFixed(0)}', 'Awaiting processing', AppColors.warning),
-        const SizedBox(height: 8),
-        _buildPayoutStat(context, 'Driver Payouts', '\$${driverPayouts.toStringAsFixed(0)}', '60% of commission', AppColors.primary),
-        const SizedBox(height: 8),
-        _buildPayoutStat(context, 'Net Revenue', '\$${(grossRevenue - totalRefunds - totalCommission).toStringAsFixed(0)}', 'After all costs', AppColors.success),
-      ]),
-    );
-  }
-
-  Widget _buildPayoutStat(BuildContext context, String label, String value, String subtitle, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withValues(alpha: 0.15)),
-      ),
-      child: Row(children: [
-        Container(
-          width: 8, height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label, style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
-            Text(subtitle, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-          ]),
-        ),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: color)),
-      ]),
-    );
-  }
-
-  Widget _buildRestaurantBreakdown(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? DarkAppColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider).withValues(alpha: 0.5)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Per-Restaurant Breakdown', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-        const SizedBox(height: 16),
-        ...restaurantData.map((rd) => Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isDark ? DarkAppColors.surfaceAlt : AppColors.background,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider).withValues(alpha: 0.3)),
-          ),
-          child: Row(children: [
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(rd['name'] as String, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-                Text('Commission: ${(rd['rate'] as double).toStringAsFixed(0)}%', style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
-              ]),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text('Rev: \$${(rd['revenue'] as double).toStringAsFixed(0)}', style: TextStyle(fontSize: 13, color: context.textPrimaryColor)),
-              Text('Fee: \$${(rd['commission'] as double).toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
-              Text('Payout: \$${(rd['payout'] as double).toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.success)),
-            ]),
-          ]),
-        )),
-      ]),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.inter(color: context.textSecondaryColor, fontSize: 13)),
+                if (subtitle != null) Text(subtitle, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
+              ],
+            ),
+          ),
+          Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: color)),
+        ],
+      ),
     );
   }
 
-  Widget _actionButton(BuildContext context, IconData icon, String label, Color color, void Function(BuildContext) onTap) {
+  Widget _actionButton(BuildContext context, String label, IconData icon, Color color) {
     return SizedBox(
       width: double.infinity,
+      height: 48,
       child: OutlinedButton.icon(
-        onPressed: () => onTap(context),
+        onPressed: () => _handleAction(context, label, color),
         icon: Icon(icon, size: 18, color: color),
-        label: Text(label, style: TextStyle(color: color)),
+        label: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: color)),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: color.withValues(alpha: 0.3)),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          backgroundColor: color.withValues(alpha: 0.03),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
   }
 
-  Widget _financeSummary(String label, String value, Color color) {
-    return Builder(
-      builder: (context) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(fontSize: 13, color: Theme.of(context).brightness == Brightness.dark ? DarkAppColors.textSecondary : AppColors.textSecondary)),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: color)),
-      ]),
-    );
-  }
-
-  void _exportRevenue(BuildContext context) {
-    _showExportSnackbar(context, 'Revenue');
-  }
-
-  void _processPayouts(BuildContext context) async {
-    try {
-      await FirebaseFirestore.instance.collection('activity_log').add({
-        'text': 'Payouts processed: \$${storePayouts.toStringAsFixed(0)} to stores, \$${driverPayouts.toStringAsFixed(0)} to drivers',
-        'color': 'green',
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      if (context.mounted) {
-        context.showSuccess('Payouts processed and logged');
-      }
-    } catch (e) {
-      if (context.mounted) context.showError('Failed to process payouts');
+  void _handleAction(BuildContext context, String label, Color color) {
+    if (label == 'Export Revenue Report') {
+      _exportRevenueReport(context);
+    } else if (label == 'Process Payouts') {
+      _processPayouts(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$label exported', style: GoogleFonts.inter()), backgroundColor: color, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      );
     }
   }
 
-  void _exportReport(BuildContext context) {
-    _showExportSnackbar(context, 'Full Financial Report');
+  void _exportRevenueReport(BuildContext context) {
+    final csv = StringBuffer();
+    csv.writeln('Restaurant,Revenue,Commission,Payout');
+    for (final rd in restaurantData) {
+      csv.writeln('${rd['name']},${(rd['revenue'] as double).toStringAsFixed(2)},${(rd['commission'] as double).toStringAsFixed(2)},${(rd['payout'] as double).toStringAsFixed(2)}');
+    }
+    csv.writeln('');
+    csv.writeln('Gross Revenue,,,\$$grossRevenue');
+    csv.writeln('Total Commission,,,\$$totalCommission');
+    csv.writeln('Driver Payouts,,,\$$driverPayouts');
+    csv.writeln('Store Payouts,,,\$$storePayouts');
+    csv.writeln('Refunds,,,\$$totalRefunds ($refundCount orders)');
+    Clipboard.setData(ClipboardData(text: csv.toString()));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Report copied to clipboard', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+    );
   }
 
-  void _showExportSnackbar(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('$label exported as CSV'),
-      backgroundColor: AppColors.success,
-      behavior: SnackBarBehavior.floating,
-    ));
+  void _processPayouts(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Process Payouts', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+        content: SizedBox(
+          width: 350,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _payoutSummaryRow(context, 'Store payouts', '\$${storePayouts.toStringAsFixed(0)}', context.primaryColor),
+              _payoutSummaryRow(context, 'Driver payouts', '\$${driverPayouts.toStringAsFixed(0)}', context.successColor),
+              Divider(color: context.borderColor),
+              _payoutSummaryRow(context, 'Total', '\$${(storePayouts + driverPayouts).toStringAsFixed(0)}', context.textPrimaryColor, bold: true),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor))),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final batch = FirebaseFirestore.instance.batch();
+                for (final rd in restaurantData) {
+                  if ((rd['payout'] as double) > 0) {
+                    final ref = FirebaseFirestore.instance.collection('payouts').doc();
+                    batch.set(ref, {
+                      'restaurantId': rd['id'],
+                      'restaurantName': rd['name'],
+                      'amount': rd['payout'],
+                      'commission': rd['commission'],
+                      'revenue': rd['revenue'],
+                      'status': 'pending',
+                      'createdAt': FieldValue.serverTimestamp(),
+                    });
+                  }
+                }
+                await batch.commit();
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${restaurantData.length} payouts recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                  );
+                }
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: Text('Confirm Payouts', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _payoutSummaryRow(BuildContext context, String label, String value, Color valueColor, {bool bold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Text(label, style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor)),
+          const Spacer(),
+          Text(value, style: GoogleFonts.inter(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w600, color: valueColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _restaurantRow(BuildContext context, Map<String, dynamic> rd) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(rd['name'] as String, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                Text('Commission: ${(rd['rate'] as double).toStringAsFixed(0)}%', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('Rev: \$${(rd['revenue'] as double).toStringAsFixed(0)}', style: GoogleFonts.inter(fontSize: 13, color: context.textPrimaryColor)),
+              Text('Fee: \$${(rd['commission'] as double).toStringAsFixed(0)}', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: context.primaryColor)),
+              Text('Payout: \$${(rd['payout'] as double).toStringAsFixed(0)}', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: context.successColor)),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

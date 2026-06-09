@@ -12,6 +12,8 @@ class PendingOperation {
   final String actorId;
   final DateTime createdAt;
   final int retryCount;
+  final String? dispatchId;
+  final String? driverId;
 
   const PendingOperation({
     required this.id,
@@ -23,9 +25,11 @@ class PendingOperation {
     required this.actorId,
     required this.createdAt,
     this.retryCount = 0,
+    this.dispatchId,
+    this.driverId,
   });
 
-  PendingOperation copyWith({int? retryCount}) => PendingOperation(
+  PendingOperation copyWith({int? retryCount, String? dispatchId, String? driverId}) => PendingOperation(
         id: id,
         type: type,
         orderId: orderId,
@@ -35,6 +39,8 @@ class PendingOperation {
         actorId: actorId,
         createdAt: createdAt,
         retryCount: retryCount ?? this.retryCount,
+        dispatchId: dispatchId ?? this.dispatchId,
+        driverId: driverId ?? this.driverId,
       );
 
   Map<String, dynamic> toJson() => {
@@ -50,6 +56,8 @@ class PendingOperation {
         'actorId': actorId,
         'createdAt': createdAt.toIso8601String(),
         'retryCount': retryCount,
+        if (dispatchId != null) 'dispatchId': dispatchId,
+        if (driverId != null) 'driverId': driverId,
       };
 
   factory PendingOperation.fromJson(Map<String, dynamic> m) =>
@@ -72,5 +80,7 @@ class PendingOperation {
             DateTime.tryParse(m['createdAt'] as String? ?? '') ??
                 DateTime.now(),
         retryCount: (m['retryCount'] as num?)?.toInt() ?? 0,
+        dispatchId: m['dispatchId'] as String?,
+        driverId: m['driverId'] as String?,
       );
 }

@@ -92,11 +92,9 @@ class _AppCommandBarState extends State<AppCommandBar> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 640),
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark ? DarkAppColors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 40, offset: const Offset(0, 16)),
-          ],
+          color: context.surfaceColor,
+          borderRadius: AppRadius.brDialog,
+          boxShadow: AppShadow.elevation4(context.isDark),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -105,7 +103,7 @@ class _AppCommandBarState extends State<AppCommandBar> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.search_rounded, size: 20),
+                  Icon(Icons.search_rounded, size: 20, color: context.textMutedColor),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
@@ -118,14 +116,14 @@ class _AppCommandBarState extends State<AppCommandBar> {
                         setState(() => _selectedIndex = 0);
                       },
                       onSubmitted: (_) => _select(_selectedIndex),
-                      style: const TextStyle(fontSize: 15),
+                      style: AppTypography.body.copyWith(color: context.textPrimaryColor),
                     ),
                   ),
                   _kbd('esc'),
                 ],
               ),
             ),
-            const Divider(height: 1),
+            Divider(height: 1, color: context.borderColor),
             Flexible(
               child: _buildResults(),
             ),
@@ -144,7 +142,7 @@ class _AppCommandBarState extends State<AppCommandBar> {
     if (!hasResults && !hasActions) {
       return Padding(
         padding: const EdgeInsets.all(24),
-        child: Center(child: Text('No results for "${_controller.text}"', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+        child: Center(child: Text('No results for "${_controller.text}"', style: AppTypography.body.copyWith(color: context.textMutedColor))),
       );
     }
     return SingleChildScrollView(
@@ -152,16 +150,16 @@ class _AppCommandBarState extends State<AppCommandBar> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (hasResults) ...[
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text('RESULTS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: AppColors.textMuted)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Text('RESULTS', style: AppTypography.label.copyWith(color: context.textMutedColor)),
             ),
             ..._results.asMap().entries.map((e) => _buildResultRow(e.key, e.value)),
           ],
           if (hasActions) ...[
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text('QUICK ACTIONS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: AppColors.textMuted)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Text('QUICK ACTIONS', style: AppTypography.label.copyWith(color: context.textMutedColor)),
             ),
             ..._actions.asMap().entries.map((e) {
               final i = _results.length + e.key;
@@ -189,9 +187,9 @@ class _AppCommandBarState extends State<AppCommandBar> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(r['title'] ?? '', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text(r['title'] ?? '', style: AppTypography.body.copyWith(color: context.textPrimaryColor)),
                   if ((r['subtitle'] as String?)?.isNotEmpty == true)
-                    Text(r['subtitle'], style: TextStyle(fontSize: 11, color: context.textMutedColor)),
+                    Text(r['subtitle'], style: AppTypography.bodySmall.copyWith(color: context.textMutedColor)),
                 ],
               ),
             ),
@@ -213,7 +211,7 @@ class _AppCommandBarState extends State<AppCommandBar> {
           children: [
             Icon(a.icon, size: 18, color: context.primaryColor),
             const SizedBox(width: 12),
-            Expanded(child: Text(a.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500))),
+            Expanded(child: Text(a.label, style: AppTypography.body.copyWith(color: context.textPrimaryColor))),
             _kbd('↵'),
           ],
         ),
@@ -226,10 +224,10 @@ class _AppCommandBarState extends State<AppCommandBar> {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: context.surfaceAltColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.brXs,
         border: Border.all(color: context.borderColor),
       ),
-      child: Text(k, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: context.textMutedColor)),
+      child: Text(k, style: AppTypography.labelSmall.copyWith(color: context.textMutedColor)),
     );
   }
 }
@@ -249,27 +247,27 @@ class AppCommandBarTrigger extends StatelessWidget {
     final isMac = Theme.of(context).platform == TargetPlatform.macOS;
     return InkWell(
       onTap: () => AppCommandBar.show(context),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.brSm,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: context.surfaceAltColor,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.brSm,
           border: Border.all(color: context.borderColor),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.search_rounded, size: 14, color: context.textMutedColor),
           const SizedBox(width: 6),
-          Text('Search', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+          Text('Search', style: AppTypography.caption.copyWith(color: context.textMutedColor)),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.brXs,
               border: Border.all(color: context.borderColor),
             ),
-            child: Text(isMac ? '⌘K' : 'Ctrl K', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: context.textMutedColor)),
+            child: Text(isMac ? '⌘K' : 'Ctrl K', style: AppTypography.labelSmall.copyWith(color: context.textMutedColor)),
           ),
         ]),
       ),

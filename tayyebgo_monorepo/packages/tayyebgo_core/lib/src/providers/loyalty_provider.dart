@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/loyalty_transaction.dart';
 import '../models/user_model.dart';
+import '../di/app_locator.dart';
 
 class LoyaltyProvider extends ChangeNotifier {
   List<LoyaltyTransaction> _transactions = [];
@@ -21,18 +21,13 @@ class LoyaltyProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final snap = await FirebaseFirestore.instance
-          .collection('loyalty_transactions')
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .get();
+      final data = await AppLocator.instance.loyalty.getTransactions(userId);
+      _transactions = data.map((d) => LoyaltyTransaction.fromMap(d['id'] as String, d)).toList();
 
-      _transactions = snap.docs
-          .map((d) => LoyaltyTransaction.fromFirestore(d))
-          .toList();
+      final streakData = await AppLocator.instance.loyalty.getStreakData(userId);
+      _currentStreak = streakData['currentStreak'] ?? 0;
+      _bestStreak = streakData['bestStreak'] ?? 0;
 
-      _computeStreaks(userId);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -42,41 +37,17 @@ class LoyaltyProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _computeStreaks(String userId) async {
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('loyalty_transactions')
-          .where('userId', isEqualTo: userId)
-          .where('type', isEqualTo: 'streak')
-          .orderBy('createdAt', descending: true)
-          .limit(1)
-          .get();
-
-      if (snap.docs.isNotEmpty) {
-        final d = snap.docs.first.data();
-        _currentStreak = (d['streakDay'] as num?)?.toInt() ?? 0;
-        _bestStreak = (d['bestStreak'] as num?)?.toInt() ?? _currentStreak;
-      }
-    } catch (_) {}
-  }
-
   Future<bool> awardOrderPoints(UserModel user, int points, String orderId) async {
     try {
-      await FirebaseFirestore.instance.collection('loyalty_transactions').add({
-        'userId': user.id,
-        'points': points,
-        'type': LoyaltyTransactionType.earned.firestoreValue,
-        'description': 'Points for order',
-        'orderId': orderId,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-        'loyaltyPoints': FieldValue.increment(points),
-      });
-
-      await loadTransactions(user.id);
-      return true;
+      final success = await AppLocator.instance.loyalty.awardPoints(
+        userId: user.id,
+        points: points,
+        type: LoyaltyTransactionType.earned.firestoreValue,
+        description: 'Points for order',
+        orderId: orderId,
+      );
+      if (success) await loadTransactions(user.id);
+      return success;
     } catch (e) {
       _error = e.toString();
       return false;
@@ -85,21 +56,12 @@ class LoyaltyProvider extends ChangeNotifier {
 
   Future<bool> awardReferralPoints(String userId, int points, String referralId) async {
     try {
-      await FirebaseFirestore.instance.collection('loyalty_transactions').add({
-        'userId': userId,
-        'points': points,
-        'type': LoyaltyTransactionType.referral.firestoreValue,
-        'description': 'Referral bonus',
-        'referralId': referralId,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'loyaltyPoints': FieldValue.increment(points),
-      });
-
-      await loadTransactions(userId);
-      return true;
+      return await AppLocator.instance.loyalty.awardPoints(
+        userId: userId,
+        points: points,
+        type: LoyaltyTransactionType.referral.firestoreValue,
+        description: 'Referral bonus',
+      );
     } catch (e) {
       return false;
     }
@@ -108,23 +70,18 @@ class LoyaltyProvider extends ChangeNotifier {
   Future<bool> awardStreakBonus(String userId, int streakDay) async {
     try {
       final points = streakDay * 10;
-      await FirebaseFirestore.instance.collection('loyalty_transactions').add({
-        'userId': userId,
-        'points': points,
-        'type': LoyaltyTransactionType.streak.firestoreValue,
-        'description': '$streakDay-day streak bonus',
-        'streakDay': streakDay,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'loyaltyPoints': FieldValue.increment(points),
-      });
-
-      _currentStreak = streakDay;
-      if (streakDay > _bestStreak) _bestStreak = streakDay;
-      notifyListeners();
-      return true;
+      final success = await AppLocator.instance.loyalty.awardPoints(
+        userId: userId,
+        points: points,
+        type: LoyaltyTransactionType.streak.firestoreValue,
+        description: '$streakDay-day streak bonus',
+      );
+      if (success) {
+        _currentStreak = streakDay;
+        if (streakDay > _bestStreak) _bestStreak = streakDay;
+        notifyListeners();
+      }
+      return success;
     } catch (e) {
       return false;
     }
@@ -132,25 +89,13 @@ class LoyaltyProvider extends ChangeNotifier {
 
   Future<bool> redeemPoints(String userId, int points, String description) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      final currentPoints = (userDoc.data()?['loyaltyPoints'] as num?)?.toInt() ?? 0;
-
-      if (currentPoints < points) return false;
-
-      await FirebaseFirestore.instance.collection('loyalty_transactions').add({
-        'userId': userId,
-        'points': -points,
-        'type': LoyaltyTransactionType.redeemed.firestoreValue,
-        'description': description,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'loyaltyPoints': FieldValue.increment(-points),
-      });
-
-      await loadTransactions(userId);
-      return true;
+      final success = await AppLocator.instance.loyalty.redeemPoints(
+        userId: userId,
+        points: points,
+        description: description,
+      );
+      if (success) await loadTransactions(userId);
+      return success;
     } catch (e) {
       _error = e.toString();
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
 
@@ -13,7 +14,7 @@ class NotificationsView extends StatefulWidget {
 class _NotificationsViewState extends State<NotificationsView> {
   final _titleCtrl = TextEditingController();
   final _bodyCtrl = TextEditingController();
-  String _audience = 'all_users';
+  String _audience = 'all';
   bool _sending = false;
 
   @override
@@ -25,94 +26,196 @@ class _NotificationsViewState extends State<NotificationsView> {
 
   @override
   Widget build(BuildContext context) {
-    return pageContainer(context, child: AppScaffold(
-      title: 'Notification Center',
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 900;
-          final compose = _buildComposer(context);
-          final history = _buildHistory(context);
-          if (isWide) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 380, child: SingleChildScrollView(child: Padding(padding: const EdgeInsets.all(20), child: compose))),
-                const VerticalDivider(width: 1),
-                Expanded(child: history),
-              ],
-            );
-          }
-          return ListView(
-            padding: const EdgeInsets.all(20),
-            children: [compose, const SizedBox(height: 24), SizedBox(height: 500, child: history)],
-          );
-        },
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Notifications', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildComposer(context),
+              const SizedBox(height: 24),
+              Text('Recent Notifications', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+              const SizedBox(height: 12),
+              _buildNotificationList(context),
+            ],
+          ),
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildComposer(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: cardDecoBordered(context),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.campaign_outlined, size: 18, color: context.primaryColor),
+              Icon(Icons.send_rounded, color: context.primaryColor, size: 18),
               const SizedBox(width: 8),
-              Text('Compose Campaign', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+              Text('Send Notification', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
             ],
-          ),
-          const SizedBox(height: 4),
-          Text('Send a push to users, drivers, or stores.', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
-          const SizedBox(height: 18),
-          DropdownButtonFormField<String>(
-            initialValue: _audience,
-            decoration: const InputDecoration(labelText: 'Audience', border: OutlineInputBorder()),
-            items: const [
-              DropdownMenuItem(value: 'all_users', child: Text('All Users')),
-              DropdownMenuItem(value: 'all_drivers', child: Text('All Drivers')),
-              DropdownMenuItem(value: 'all_owners', child: Text('All Store Owners')),
-              DropdownMenuItem(value: 'zone_customers', child: Text('Customers in Zone')),
-              DropdownMenuItem(value: 'new_users', child: Text('New Users (7d)')),
-            ],
-            onChanged: (v) => setState(() => _audience = v ?? 'all_users'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _titleCtrl,
-            decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder(), hintText: 'Free delivery today'),
+            style: GoogleFonts.inter(color: context.textPrimaryColor),
+            decoration: _inputDecoration(context, 'Title'),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           TextField(
             controller: _bodyCtrl,
-            maxLines: 4,
-            decoration: const InputDecoration(labelText: 'Message', border: OutlineInputBorder(), hintText: 'Order from any store and get free delivery.'),
+            style: GoogleFonts.inter(color: context.textPrimaryColor),
+            maxLines: 3,
+            decoration: _inputDecoration(context, 'Message'),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    _titleCtrl.text = 'New restaurant added';
-                    _bodyCtrl.text = 'Check out the latest addition to TayyebGo!';
-                  },
-                  icon: const Icon(Icons.auto_awesome, size: 16),
-                  label: const Text('Template'),
-                ),
-              ),
+              Text('Audience:', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
               const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _sending ? null : _send,
-                  icon: _sending ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.send, size: 16),
-                  label: Text(_sending ? 'Sending...' : 'Send'),
-                  style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: Colors.white),
-                ),
+              _chip('all', 'All', context),
+              const SizedBox(width: 6),
+              _chip('customers', 'Customers', context),
+              const SizedBox(width: 6),
+              _chip('drivers', 'Drivers', context),
+              const SizedBox(width: 6),
+              _chip('stores', 'Stores', context),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _sending ? null : _sendNotification,
+              icon: _sending
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.send_rounded, size: 16),
+              label: Text(_sending ? 'Sending...' : 'Send', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.primaryColor,
+                foregroundColor: context.textPrimaryColor,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String value, String label, BuildContext context) {
+    final selected = _audience == value;
+    return GestureDetector(
+      onTap: () => setState(() => _audience = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? context.primaryColor.withValues(alpha: 0.15) : context.surfaceAltColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: selected ? context.primaryColor : context.borderColor),
+        ),
+        child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? context.primaryColor : context.textMutedColor)),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(BuildContext context, String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+      filled: true,
+      fillColor: context.surfaceAltColor,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    );
+  }
+
+  Widget _buildNotificationList(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('notifications').orderBy('sentAt', descending: true).limit(50).snapshots(),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs ?? [];
+        if (docs.isEmpty) return Center(child: Text('No notifications sent yet', style: GoogleFonts.inter(color: context.textMutedColor)));
+        return Column(
+          children: docs.map((doc) => _notificationItem(context, doc)).toList(),
+        );
+      },
+    );
+  }
+
+  Widget _notificationItem(BuildContext context, QueryDocumentSnapshot doc) {
+    final d = doc.data() as Map<String, dynamic>;
+    final title = d['title'] as String? ?? '';
+    final body = d['body'] as String? ?? '';
+    final audience = d['audience'] as String? ?? 'all';
+    final recipientCount = d['recipientCount'] as int? ?? 0;
+    final sentAt = d['sentAt'] as Timestamp?;
+    final sentText = sentAt != null ? _formatTime(sentAt.toDate()) : '';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.notifications_outlined, color: context.primaryColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                    if (sentText.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      Text(sentText, style: GoogleFonts.inter(fontSize: 10, color: context.textMutedColor)),
+                    ],
+                  ],
+                ),
+                if (body.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(body, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor), maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                child: Text(audience, style: GoogleFonts.inter(fontSize: 10, color: context.primaryColor)),
+              ),
+              if (recipientCount > 0) ...[
+                const SizedBox(height: 2),
+                Text('$recipientCount recipients', style: GoogleFonts.inter(fontSize: 9, color: context.textMutedColor)),
+              ],
             ],
           ),
         ],
@@ -120,122 +223,62 @@ class _NotificationsViewState extends State<NotificationsView> {
     );
   }
 
-  Widget _buildHistory(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('notifications')
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .snapshots(),
-      builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 6, itemHeight: 70);
-        final docs = snap.data!.docs;
-        if (docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.notifications_off, size: 56, color: context.textMutedColor.withValues(alpha: 0.4)),
-                const SizedBox(height: 12),
-                Text('No notifications sent yet', style: TextStyle(color: context.textMutedColor, fontSize: 14)),
-              ],
-            ),
-          );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(20),
-          itemCount: docs.length,
-          itemBuilder: (_, i) {
-            final d = docs[i].data() as Map<String, dynamic>;
-            final title = d['title'] as String? ?? 'Untitled';
-            final body = d['body'] as String? ?? '';
-            final audience = d['audience'] as String? ?? 'unknown';
-            final ts = d['createdAt'];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(14),
-              decoration: cardDecoBordered(context),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                    child: Icon(_iconForAudience(audience), size: 18, color: context.primaryColor),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
-                        if (body.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(body, style: TextStyle(fontSize: 12, color: context.textSecondaryColor), maxLines: 2, overflow: TextOverflow.ellipsis),
-                        ],
-                        const SizedBox(height: 2),
-                        Text(_formatTimestamp(ts), style: TextStyle(fontSize: 10, color: context.textMutedColor)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(color: context.dividerColor.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(10)),
-                    child: Text(audience.replaceAll('_', ' '), style: TextStyle(fontSize: 10, color: context.textSecondaryColor)),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+  String _formatTime(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inMinutes < 1) return 'now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${dt.day}/${dt.month}';
   }
 
-  IconData _iconForAudience(String audience) {
-    switch (audience) {
-      case 'all_drivers': return Icons.delivery_dining;
-      case 'all_owners': return Icons.store;
-      case 'zone_customers': return Icons.location_on;
-      case 'new_users': return Icons.person_add;
-      default: return Icons.people;
-    }
-  }
-
-  String _formatTimestamp(dynamic ts) {
-    if (ts is Timestamp) {
-      final dt = ts.toDate();
-      final now = DateTime.now();
-      final diff = now.difference(dt);
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      if (diff.inDays < 7) return '${diff.inDays}d ago';
-      return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-    }
-    return '—';
-  }
-
-  Future<void> _send() async {
-    if (_titleCtrl.text.trim().isEmpty || _bodyCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title and body are required'), backgroundColor: AppColors.error));
+  Future<void> _sendNotification() async {
+    final title = _titleCtrl.text.trim();
+    final body = _bodyCtrl.text.trim();
+    if (title.isEmpty || body.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in title and message', style: GoogleFonts.inter()), backgroundColor: context.warningColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      );
       return;
     }
     setState(() => _sending = true);
     try {
+      final audienceFilter = _audience == 'all' ? null : _audience;
+      int recipientCount = 0;
+      if (audienceFilter != null) {
+        final roleMap = {'customers': 'customer', 'drivers': 'driver', 'stores': 'owner'};
+        final role = roleMap[audienceFilter];
+        if (role != null) {
+          final snap = await FirebaseFirestore.instance.collection('users').where('role', isEqualTo: role).where('isActive', isEqualTo: true).get();
+          recipientCount = snap.docs.length;
+        }
+      } else {
+        final snap = await FirebaseFirestore.instance.collection('users').where('isActive', isEqualTo: true).get();
+        recipientCount = snap.docs.length;
+      }
       await FirebaseFirestore.instance.collection('notifications').add({
-        'title': _titleCtrl.text.trim(),
-        'body': _bodyCtrl.text.trim(),
+        'title': title,
+        'body': body,
         'audience': _audience,
+        'sentAt': FieldValue.serverTimestamp(),
         'createdAt': FieldValue.serverTimestamp(),
-        'createdBy': 'admin',
+        'sentBy': 'admin',
+        'recipientCount': recipientCount,
         'status': 'sent',
       });
+      _titleCtrl.clear();
+      _bodyCtrl.clear();
       if (mounted) {
-        _titleCtrl.clear();
-        _bodyCtrl.clear();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notification queued'), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Notification sent to $recipientCount users', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        );
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.error));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        );
+      }
     } finally {
       if (mounted) setState(() => _sending = false);
     }

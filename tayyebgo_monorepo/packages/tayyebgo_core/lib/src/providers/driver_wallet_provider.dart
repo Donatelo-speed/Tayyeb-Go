@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/driver_wallet_model.dart';
+import '../di/app_locator.dart';
 
 class DriverWalletProvider extends ChangeNotifier {
   DriverWalletModel? _wallet;
@@ -18,28 +18,14 @@ class DriverWalletProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final doc = await FirebaseFirestore.instance
-          .collection('driver_wallets')
-          .doc(driverId)
-          .get();
-
-      if (doc.exists) {
-        _wallet = DriverWalletModel.fromFirestore(doc);
+      final data = await AppLocator.instance.driverWallet.getWallet(driverId);
+      if (data != null) {
+        _wallet = DriverWalletModel.fromMap(driverId, data);
       }
 
-      final txnSnap = await FirebaseFirestore.instance
-          .collection('driver_wallets')
-          .doc(driverId)
-          .collection('transactions')
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .get();
-
-      _transactions = txnSnap.docs.map((d) {
-        final data = d.data();
-        data['id'] = d.id;
-        return data;
-      }).toList();
+      _transactions = await AppLocator.instance.driverWallet
+          .watchTransactions(driverId)
+          .first;
 
       _isLoading = false;
       notifyListeners();
@@ -52,49 +38,14 @@ class DriverWalletProvider extends ChangeNotifier {
 
   Future<bool> addEarnings(String driverId, double amount, String orderId, String description) async {
     try {
-      final walletRef = FirebaseFirestore.instance.collection('driver_wallets').doc(driverId);
-
-      final existingTxns = await walletRef
-          .collection('transactions')
-          .where('orderId', isEqualTo: orderId)
-          .where('type', isEqualTo: 'earning')
-          .limit(1)
-          .get();
-      if (existingTxns.docs.isNotEmpty) return true;
-
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final doc = await transaction.get(walletRef);
-        if (!doc.exists) {
-          transaction.set(walletRef, {
-            'driverId': driverId,
-            'balance': amount,
-            'pendingPayout': 0,
-            'totalEarned': amount,
-            'totalWithdrawn': 0,
-            'totalDeliveries': 1,
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-        } else {
-          transaction.update(walletRef, {
-            'balance': FieldValue.increment(amount),
-            'totalEarned': FieldValue.increment(amount),
-            'totalDeliveries': FieldValue.increment(1),
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-        }
-
-        final txnRef = walletRef.collection('transactions').doc();
-        transaction.set(txnRef, {
-          'type': 'earning',
-          'amount': amount,
-          'orderId': orderId,
-          'description': description,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      });
-
-      await loadWallet(driverId);
-      return true;
+      final success = await AppLocator.instance.driverWallet.creditEarnings(
+        driverId: driverId,
+        orderId: orderId,
+        amount: amount,
+        description: description,
+      );
+      if (success) await loadWallet(driverId);
+      return success;
     } catch (e) {
       _error = e.toString();
       notifyListeners();
@@ -105,28 +56,12 @@ class DriverWalletProvider extends ChangeNotifier {
   Future<bool> requestPayout(String driverId, double amount) async {
     try {
       if (_wallet == null || _wallet!.balance < amount) return false;
-
-      final walletRef = FirebaseFirestore.instance.collection('driver_wallets').doc(driverId);
-
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        transaction.update(walletRef, {
-          'balance': FieldValue.increment(-amount),
-          'pendingPayout': FieldValue.increment(amount),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-
-        final txnRef = walletRef.collection('transactions').doc();
-        transaction.set(txnRef, {
-          'type': 'payout_request',
-          'amount': amount,
-          'status': 'pending',
-          'description': 'Payout request',
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      });
-
-      await loadWallet(driverId);
-      return true;
+      final success = await AppLocator.instance.driverWallet.requestPayout(
+        driverId: driverId,
+        amount: amount,
+      );
+      if (success) await loadWallet(driverId);
+      return success;
     } catch (e) {
       _error = e.toString();
       notifyListeners();
@@ -145,10 +80,7 @@ class DriverWalletProvider extends ChangeNotifier {
     if (_wallet == null) return;
     final newLevel = _calculateLevel(_wallet!.totalDeliveries, _wallet!.averageRating);
     if (newLevel != _wallet!.level) {
-      await FirebaseFirestore.instance
-          .collection('driver_wallets')
-          .doc(driverId)
-          .update({'level': newLevel.firestoreValue});
+      await AppLocator.instance.driverWallet.updateLevel(driverId, newLevel.firestoreValue);
       _wallet = _wallet!.copyWith(level: newLevel);
       notifyListeners();
     }

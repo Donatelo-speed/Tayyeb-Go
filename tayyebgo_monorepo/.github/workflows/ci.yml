@@ -1,0 +1,157 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  analyze:
+    name: Analyze Code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tayyebgo_customer, tayyebgo_driver, tayyebgo_partner, tayyebgo_admin]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: apps/${{ matrix.app }}
+        run: flutter pub get
+      
+      - name: Analyze code
+        working-directory: apps/${{ matrix.app }}
+        run: flutter analyze
+      
+      - name: Check formatting
+        working-directory: apps/${{ matrix.app }}
+        run: dart format --set-exit-if-changed .
+
+  test:
+    name: Test Apps
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tayyebgo_customer, tayyebgo_driver, tayyebgo_partner, tayyebgo_admin]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: apps/${{ matrix.app }}
+        run: flutter pub get
+      
+      - name: Run unit tests
+        working-directory: apps/${{ matrix.app }}
+        run: flutter test --coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: apps/${{ matrix.app }}/coverage/lcov.info
+          flags: ${{ matrix.app }}
+          name: codecov-${{ matrix.app }}
+
+  test-packages:
+    name: Test Packages
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [tayyebgo_core, tayyebgo_payment, tayyebgo_payout, tayyebgo_multi_tenant]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: packages/${{ matrix.package }}
+        run: flutter pub get
+      
+      - name: Run unit tests
+        working-directory: packages/${{ matrix.package }}
+        run: flutter test --coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: packages/${{ matrix.package }}/coverage/lcov.info
+          flags: ${{ matrix.package }}
+          name: codecov-${{ matrix.package }}
+
+  build:
+    name: Build Apps
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [tayyebgo_customer, tayyebgo_driver, tayyebgo_partner, tayyebgo_admin]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        working-directory: apps/${{ matrix.app }}
+        run: flutter pub get
+      
+      - name: Build web
+        working-directory: apps/${{ matrix.app }}
+        run: flutter build web --release
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app }}-web-build
+          path: apps/${{ matrix.app }}/build/web
+          retention-days: 7
+
+  cloud-functions-build:
+    name: Build Cloud Functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cloud_functions/functions/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: cloud_functions/functions
+        run: npm ci
+      
+      - name: Build TypeScript
+        working-directory: cloud_functions/functions
+        run: npm run build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-functions-build
+          path: cloud_functions/functions/lib
+          retention-days: 7

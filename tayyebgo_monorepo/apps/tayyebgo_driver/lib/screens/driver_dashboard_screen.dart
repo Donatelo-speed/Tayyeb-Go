@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
@@ -13,7 +14,6 @@ class DriverDashboardScreen extends StatefulWidget {
 class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     with WidgetsBindingObserver {
   bool _isOnline = false;
-  bool _isToggling = false;
 
   @override
   void initState() {
@@ -62,32 +62,356 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     final wallet = walletProv.wallet;
     final dispatchProv = context.watch<DispatchProvider>();
 
-    return AppScaffold(
-      title: 'Driver Dashboard',
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _OnlineToggle(
-            isOnline: _isOnline,
-            isToggling: _isToggling,
-            onToggle: _toggleOnline,
-          ),
-          const SizedBox(height: 16),
-          if (wallet != null) _WalletSummary(wallet: wallet),
-          const SizedBox(height: 16),
-          _QuickActions(),
-          const SizedBox(height: 16),
-          if (dispatchProv.assignedDispatches.isNotEmpty)
-            _AssignedDispatchCard(
-              dispatches: dispatchProv.assignedDispatches,
-              onAccept: (d) => _handleDispatchAction(d, 'accept'),
-              onReject: (d) => _handleDispatchAction(d, 'reject'),
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Driver', style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: context.textMutedColor,
+                          )),
+                          const SizedBox(height: 2),
+                          Text('Dashboard', style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w200,
+                            fontSize: 28,
+                          )),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: context.surfaceAltColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.settings_outlined, color: context.textMutedColor, size: 22),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          const SizedBox(height: 16),
-          _ActiveOrdersSection(),
-          const SizedBox(height: 16),
-          _EarningsTodayCard(wallet: wallet),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: GestureDetector(
+                  onTap: _toggleOnline,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: _isOnline
+                            ? [const Color(0xFF10B981), const Color(0xFF059669)]
+                            : [context.surfaceAltColor, context.surfaceColor],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: _isOnline
+                          ? [
+                              BoxShadow(
+                                color: const Color(0xFF10B981).withValues(alpha: 0.4),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Row(
+                      children: [
+                        if (_isOnline)
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: context.textMutedColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            _isOnline ? 'You are Online' : 'You are Offline',
+                            style: TextStyle(
+                              color: _isOnline ? Colors.white : context.textPrimaryColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          width: 52,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: _isOnline
+                                ? Colors.white.withValues(alpha: 0.2)
+                                : context.surfaceAltColor,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(3),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 400),
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: _isOnline ? Colors.white : context.textMutedColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  children: [
+                    Expanded(child: _earningsCard(
+                      label: 'Balance',
+                      value: 'SYP ${wallet?.balance.toStringAsFixed(0) ?? '0'}',
+                      icon: Icons.account_balance_wallet_rounded,
+                      color: const Color(0xFF10B981),
+                    )),
+                    const SizedBox(width: 12),
+                    Expanded(child: _earningsCard(
+                      label: 'Deliveries',
+                      value: '${wallet?.totalDeliveries ?? 0}',
+                      icon: Icons.delivery_dining_rounded,
+                      color: context.primaryColor,
+                    )),
+                  ],
+                ),
+              ),
+            ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  children: [
+                    Expanded(child: _quickAction(
+                      icon: Icons.list_alt_rounded,
+                      label: 'Requests',
+                      color: context.warningColor,
+                      onTap: () => context.go('/available-requests'),
+                    )),
+                    const SizedBox(width: 12),
+                    Expanded(child: _quickAction(
+                      icon: Icons.account_balance_wallet_rounded,
+                      label: 'Earnings',
+                      color: const Color(0xFF10B981),
+                      onTap: () => context.go('/earnings'),
+                    )),
+                    const SizedBox(width: 12),
+                    Expanded(child: _quickAction(
+                      icon: Icons.wallet_rounded,
+                      label: 'Wallet',
+                      color: const Color(0xFF8B5CF6),
+                      onTap: () => context.go('/wallet'),
+                    )),
+                  ],
+                ),
+              ),
+            ),
+
+            if (dispatchProv.assignedDispatches.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                  child: _AssignedDispatchCard(
+                    dispatches: dispatchProv.assignedDispatches,
+                    onAccept: (d) => _handleDispatchAction(d, 'accept'),
+                    onReject: (d) => _handleDispatchAction(d, 'reject'),
+                  ),
+                ),
+              ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: Text('Active Deliveries', style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                )),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: _ActiveOrdersSection(wallet: wallet),
+              ),
+            ),
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.trending_up_rounded, color: Color(0xFF10B981), size: 24),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Total Earnings', style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: context.textMutedColor,
+                            )),
+                            Text('SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 20,
+                                )),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => context.go('/earnings'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text('Details', style: GoogleFonts.inter(
+                            color: const Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _earningsCard({
+    required String label,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 18),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(value, style: GoogleFonts.inter(
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          )),
+          const SizedBox(height: 4),
+          Text(label, style: GoogleFonts.inter(
+            fontSize: 12,
+            color: context.textMutedColor,
+          )),
         ],
+      ),
+    );
+  }
+
+  Widget _quickAction({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 26),
+            const SizedBox(height: 8),
+            Text(label, style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            )),
+          ],
+        ),
       ),
     );
   }
@@ -105,7 +429,6 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
   }
 
   Future<void> _toggleOnline() async {
-    setState(() => _isToggling = true);
     final newState = !_isOnline;
     final userId = context.read<AuthProvider>().user?.id;
     if (userId != null) {
@@ -125,7 +448,6 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     if (!mounted) return;
     setState(() {
       _isOnline = newState;
-      _isToggling = false;
     });
   }
 }
@@ -145,52 +467,84 @@ class _AssignedDispatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: TayyebGoTheme.cardDecoration,
+      decoration: BoxDecoration(
+        color: context.warningColor.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.warningColor.withValues(alpha: 0.2)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.warningSoft,
+                  color: context.warningColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.delivery_dining, color: AppColors.warning, size: 20),
+                child: Icon(Icons.delivery_dining, color: context.warningColor, size: 18),
               ),
               const SizedBox(width: 12),
-              Text('New Delivery Requests',
-                  style: TayyebGoTheme.heading3),
+              Text('New Delivery Requests', style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              )),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           ...dispatches.take(3).map((d) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Order: ${(d['orderId'] as String? ?? '').substring(0, 6)}...',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text('Delivery fee included',
-                              style: TextStyle(color: TayyebGoTheme.textSecondary, fontSize: 12)),
-                        ],
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Order: ${(d['orderId'] as String? ?? '').substring(0, 6)}...',
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14),
+                            ),
+                            Text('Delivery fee included',
+                                style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                          ],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.check_circle, color: AppColors.success),
-                      onPressed: () => onAccept(d),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.cancel, color: AppColors.error),
-                      onPressed: () => onReject(d),
-                    ),
-                  ],
+                      GestureDetector(
+                        onTap: () => onAccept(d),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: context.successColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.check_circle, color: context.successColor, size: 20),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () => onReject(d),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: context.errorColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.cancel, color: context.errorColor, size: 20),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               )),
         ],
@@ -199,162 +553,10 @@ class _AssignedDispatchCard extends StatelessWidget {
   }
 }
 
-class _OnlineToggle extends StatelessWidget {
-  final bool isOnline;
-  final bool isToggling;
-  final VoidCallback onToggle;
-  const _OnlineToggle({
-    required this.isOnline,
-    required this.isToggling,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isOnline
-              ? [TayyebGoTheme.primaryColor, AppColors.success]
-              : [TayyebGoTheme.textMuted, TayyebGoTheme.textSecondary],
-        ),
-        borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
-      ),
-      child: Row(
-        children: [
-          Icon(isOnline ? Icons.circle : Icons.circle_outlined,
-              color: Colors.white, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              isOnline ? 'You are Online' : 'You are Offline',
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Switch(
-            value: isOnline,
-            onChanged: isToggling ? null : (_) => onToggle(),
-            activeColor: Colors.white,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _WalletSummary extends StatelessWidget {
-  final DriverWalletModel wallet;
-  const _WalletSummary({required this.wallet});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: TayyebGoTheme.cardDecoration,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _sumItem(Icons.account_balance_wallet, 'Balance', 'SYP ${wallet.balance.toStringAsFixed(0)}'),
-              _sumItem(Icons.trending_up, 'Today', 'SYP 0'),
-              _sumItem(Icons.emoji_events, 'Level', wallet.level.displayName),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _sumItem(Icons.delivery_dining, 'Deliveries', '${wallet.totalDeliveries}'),
-              _sumItem(Icons.star, 'Rating', wallet.averageRating.toStringAsFixed(1)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sumItem(IconData icon, String label, String value) {
-    return Column(
-      children: [
-        Icon(icon, color: TayyebGoTheme.primaryColor, size: 22),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        Text(label, style: TextStyle(fontSize: 11, color: TayyebGoTheme.textMuted)),
-      ],
-    );
-  }
-}
-
-class _QuickActions extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _actionCard(
-            context,
-            icon: Icons.list_alt,
-            label: 'Available\nRequests',
-            color: Colors.orange,
-            onTap: () => context.go('/available-requests'),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _actionCard(
-            context,
-            icon: Icons.account_balance_wallet,
-            label: 'Earnings',
-            color: TayyebGoTheme.primaryColor,
-            onTap: () => context.go('/earnings'),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _actionCard(
-            context,
-            icon: Icons.wallet,
-            label: 'Wallet',
-            color: Colors.purple,
-            onTap: () => context.go('/wallet'),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _actionCard(BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(label, textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _ActiveOrdersSection extends StatelessWidget {
+  final DriverWalletModel? wallet;
+  const _ActiveOrdersSection({this.wallet});
+
   @override
   Widget build(BuildContext context) {
     final userId = context.read<AuthProvider>().user?.id;
@@ -375,17 +577,42 @@ class _ActiveOrdersSection extends StatelessWidget {
             }
             final doc = snap.data!.docs.first;
             final d = doc.data() as Map<String, dynamic>;
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: TayyebGoTheme.cardDecoration,
-              child: ListTile(
-                leading: Icon(Icons.shopping_bag, color: TayyebGoTheme.primaryColor),
-                title: Text(
-                    'Anything: ${d['storeName'] as String? ?? 'Delivery'}'),
-                subtitle: Text('Status: ${d['status'] as String? ?? ''}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.go('/active-delivery/${doc.id}'),
+            return GestureDetector(
+              onTap: () => context.go('/active-delivery/${doc.id}'),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.surfaceColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: context.borderColor),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.shopping_bag_rounded, color: Color(0xFF10B981), size: 20),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Anything: ${d['storeName'] as String? ?? 'Delivery'}',
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+                          Text('Status: ${d['status'] as String? ?? ''}',
+                              style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                        Icon(Icons.chevron_right, color: context.textMutedColor, size: 20),
+                  ],
+                ),
               ),
             );
           },
@@ -398,23 +625,24 @@ class _ActiveOrdersSection extends StatelessWidget {
                 stream: FirebaseFirestore.instance
                     .collection('anything_requests')
                     .where('driverId', isEqualTo: userId)
-                    .where('status',
-                        whereIn: ['accepted', 'shopping', 'en_route'])
+                    .where('status', whereIn: ['accepted', 'shopping', 'en_route'])
                     .snapshots(),
                 builder: (ctx, snap) {
                   if (snap.hasError) return const SizedBox.shrink();
-                  if (snap.hasData &&
-                      snap.data!.docs.isEmpty &&
-                      foodDeliveries.isEmpty) {
+                  if (snap.hasData && snap.data!.docs.isEmpty && foodDeliveries.isEmpty) {
                     return Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: TayyebGoTheme.cardDecoration,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: context.surfaceColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: context.borderColor),
+                      ),
                       child: Row(
                         children: [
-                          Icon(Icons.inbox, color: TayyebGoTheme.textMuted, size: 32),
-                          const SizedBox(width: 16),
+                          Icon(Icons.inbox_rounded, color: context.textMutedColor, size: 28),
+                          const SizedBox(width: 14),
                           Text('No active deliveries',
-                              style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 16)),
+                              style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
                         ],
                       ),
                     );
@@ -426,16 +654,42 @@ class _ActiveOrdersSection extends StatelessWidget {
             return Column(
               children: foodDeliveries.map((d) {
                 final id = d['id'] as String;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: TayyebGoTheme.cardDecoration,
-                  child: ListTile(
-                    leading: Icon(Icons.delivery_dining, color: TayyebGoTheme.primaryColor),
-                    title: const Text('Food Delivery'),
-                    subtitle: Text('Status: ${d['status'] as String? ?? ''}'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.go('/active-delivery-food/$id'),
+                return GestureDetector(
+                  onTap: () => context.go('/active-delivery-food/$id'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.surfaceColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: context.borderColor),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.delivery_dining_rounded, color: Color(0xFF10B981), size: 20),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Food Delivery',
+                                  style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+                              Text('Status: ${d['status'] as String? ?? ''}',
+                                  style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                    Icon(Icons.chevron_right, color: context.textMutedColor, size: 20),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
@@ -443,47 +697,6 @@ class _ActiveOrdersSection extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class _EarningsTodayCard extends StatelessWidget {
-  final DriverWalletModel? wallet;
-  const _EarningsTodayCard({this.wallet});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: TayyebGoTheme.cardDecoration,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.successSoft,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.trending_up, color: AppColors.success, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total Earnings', style: TextStyle(fontWeight: FontWeight.bold, color: TayyebGoTheme.textPrimary)),
-                Text('SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}',
-                    style: TayyebGoTheme.heading2),
-              ],
-            ),
-          ),
-          TextButton.icon(
-            onPressed: () => context.go('/earnings'),
-            icon: const Icon(Icons.open_in_new, size: 18),
-            label: const Text('Details'),
-          ),
-        ],
-      ),
     );
   }
 }

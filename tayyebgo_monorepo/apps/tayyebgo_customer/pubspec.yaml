@@ -19,6 +19,7 @@ dependencies:
   go_router: ^17.2.3
   flutter_map: ^8.3.0
   latlong2: ^0.9.1
+  image_picker: ^1.1.2
   tayyebgo_core:
     path: ../../packages/tayyebgo_core
   tayyebgo_multi_tenant:

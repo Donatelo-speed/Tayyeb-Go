@@ -113,8 +113,15 @@ class DriverWalletModel {
 
   factory DriverWalletModel.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>? ?? {};
+    return DriverWalletModel._fromMap(doc.id, d);
+  }
+
+  factory DriverWalletModel.fromMap(String id, Map<String, dynamic> d) =>
+      DriverWalletModel._fromMap(id, d);
+
+  factory DriverWalletModel._fromMap(String id, Map<String, dynamic> d) {
     return DriverWalletModel(
-      driverId: doc.id,
+      driverId: id,
       balance: (d['balance'] as num?)?.toDouble() ?? 0,
       pendingPayout: (d['pendingPayout'] as num?)?.toDouble() ?? 0,
       totalEarned: (d['totalEarned'] as num?)?.toDouble() ?? 0,

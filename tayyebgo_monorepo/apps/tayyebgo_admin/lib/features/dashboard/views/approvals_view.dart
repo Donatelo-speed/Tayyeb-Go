@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
+
+const _purple = Color(0xFF8B5CF6);
 
 class ApprovalsView extends StatefulWidget {
   const ApprovalsView({super.key});
@@ -21,61 +24,55 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return pageContainer(context, child: AppScaffold(
-      title: 'Approval Center',
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              border: Border(bottom: BorderSide(color: context.dividerColor.withValues(alpha: 0.3))),
-            ),
-            child: TabBar(
-              controller: _tabCtrl,
-              isScrollable: true,
-              labelColor: context.primaryColor,
-              unselectedLabelColor: context.textSecondaryColor,
-              indicatorColor: context.primaryColor,
-              tabs: const [
-                Tab(icon: Icon(Icons.store, size: 18), text: 'Stores'),
-                Tab(icon: Icon(Icons.delivery_dining, size: 18), text: 'Drivers'),
-                Tab(icon: Icon(Icons.description, size: 18), text: 'Documents'),
-                Tab(icon: Icon(Icons.handshake, size: 18), text: 'Contracts'),
-                Tab(icon: Icon(Icons.subscriptions, size: 18), text: 'Subscriptions'),
-              ],
-            ),
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Approval Center', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          bottom: TabBar(
+            controller: _tabCtrl,
+            isScrollable: true,
+            labelColor: context.primaryColor,
+            unselectedLabelColor: context.textMutedColor,
+            indicatorColor: context.primaryColor,
+            tabs: const [
+              Tab(icon: Icon(Icons.store_rounded, size: 18), text: 'Stores'),
+              Tab(icon: Icon(Icons.delivery_dining_rounded, size: 18), text: 'Drivers'),
+              Tab(icon: Icon(Icons.description_rounded, size: 18), text: 'Documents'),
+              Tab(icon: Icon(Icons.handshake_rounded, size: 18), text: 'Contracts'),
+              Tab(icon: Icon(Icons.subscriptions_rounded, size: 18), text: 'Subscriptions'),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabCtrl,
-              children: [
-                _buildStoreApprovals(),
-                _buildDriverApprovals(),
-                _buildDocumentApprovals(),
-                _buildContractApprovals(),
-                _buildSubscriptionApprovals(),
-              ],
-            ),
-          ),
-        ],
+        ),
+        body: TabBarView(
+          controller: _tabCtrl,
+          children: [
+            _buildStoreApprovals(context),
+            _buildDriverApprovals(context),
+            _buildDocumentApprovals(context),
+            _buildContractApprovals(context),
+            _buildSubscriptionApprovals(context),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
-  Widget _buildStoreApprovals() {
+  Widget _buildStoreApprovals(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('restaurants')
-          .where('status', isEqualTo: 'pending')
-          .limit(50)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('restaurants').where('status', isEqualTo: 'pending').limit(100).orderBy('createdAt', descending: true).snapshots(),
       builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-        final docs = snap.data!.docs.where((d) {
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs.where((d) {
           final data = d.data() as Map<String, dynamic>;
           return data['status'] == 'pending' || data['isActive'] == false;
-        }).toList();
-        if (docs.isEmpty) return _emptyState('No pending store requests', 'New store applications appear here for review.');
+        }).toList() ?? [];
+        if (docs.isEmpty) return _emptyState(context, Icons.store_outlined, 'No pending store requests', 'New store applications appear here for review.');
         return ListView.builder(
           padding: const EdgeInsets.all(20),
           itemCount: docs.length,
@@ -85,18 +82,14 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
     );
   }
 
-  Widget _buildDriverApprovals() {
+  Widget _buildDriverApprovals(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'driver')
-          .where('status', isEqualTo: 'pending')
-          .limit(50)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'driver').where('status', isEqualTo: 'pending').limit(100).orderBy('createdAt', descending: true).snapshots(),
       builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-        final docs = snap.data!.docs;
-        if (docs.isEmpty) return _emptyState('No pending driver applications', 'New driver sign-ups appear here for review.');
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs ?? [];
+        if (docs.isEmpty) return _emptyState(context, Icons.delivery_dining_outlined, 'No pending drivers', 'New driver sign-ups appear here for review.');
         return ListView.builder(
           padding: const EdgeInsets.all(20),
           itemCount: docs.length,
@@ -106,17 +99,14 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
     );
   }
 
-  Widget _buildDocumentApprovals() {
+  Widget _buildDocumentApprovals(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('documents')
-          .where('status', isEqualTo: 'pending')
-          .limit(50)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('documents').where('status', isEqualTo: 'pending').limit(100).orderBy('createdAt', descending: true).snapshots(),
       builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-        final docs = snap.data!.docs;
-        if (docs.isEmpty) return _emptyState('No documents to review', 'Driver and store documents appear here for verification.');
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs ?? [];
+        if (docs.isEmpty) return _emptyState(context, Icons.description_outlined, 'No documents to review', 'Driver and store documents appear here for verification.');
         return ListView.builder(
           padding: const EdgeInsets.all(20),
           itemCount: docs.length,
@@ -126,17 +116,14 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
     );
   }
 
-  Widget _buildContractApprovals() {
+  Widget _buildContractApprovals(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('contracts')
-          .where('status', isEqualTo: 'pending_renewal')
-          .limit(50)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('contracts').where('status', isEqualTo: 'pending_renewal').limit(100).orderBy('createdAt', descending: true).snapshots(),
       builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-        final docs = snap.data!.docs;
-        if (docs.isEmpty) return _emptyState('No contracts pending renewal', 'Store contracts needing renewal appear here.');
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs ?? [];
+        if (docs.isEmpty) return _emptyState(context, Icons.handshake_outlined, 'No contracts pending', 'Store contracts needing renewal appear here.');
         return ListView.builder(
           padding: const EdgeInsets.all(20),
           itemCount: docs.length,
@@ -146,17 +133,14 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
     );
   }
 
-  Widget _buildSubscriptionApprovals() {
+  Widget _buildSubscriptionApprovals(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('subscriptions')
-          .where('status', isEqualTo: 'pending_renewal')
-          .limit(50)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('subscriptions').where('status', isEqualTo: 'pending_renewal').limit(50).snapshots(),
       builder: (context, snap) {
-        if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-        final docs = snap.data!.docs;
-        if (docs.isEmpty) return _emptyState('No subscriptions pending renewal', 'Subscription renewals appear here.');
+        if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+        if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+        final docs = snap.data?.docs ?? [];
+        if (docs.isEmpty) return _emptyState(context, Icons.subscriptions_outlined, 'No subscriptions pending', 'Subscription renewals appear here.');
         return ListView.builder(
           padding: const EdgeInsets.all(20),
           itemCount: docs.length,
@@ -175,11 +159,11 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       context: context,
       title: name,
       subtitle: '$cuisine · $phone',
-      icon: Icons.store,
+      icon: Icons.store_rounded,
       iconColor: context.primaryColor,
       meta: _formatTimestamp(d['createdAt']),
-      onApprove: () => _updateStatus('Restaurants', doc.id, {'status': 'active', 'isActive': true}),
-      onReject: () => _updateStatus('Restaurants', doc.id, {'status': 'rejected'}),
+      onApprove: () => _updateStatus('restaurants', doc.id, {'status': 'active', 'isActive': true}),
+      onReject: () => _updateStatus('restaurants', doc.id, {'status': 'rejected'}),
     );
   }
 
@@ -192,8 +176,8 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       context: context,
       title: name,
       subtitle: '$vehicle · $phone',
-      icon: Icons.delivery_dining,
-      iconColor: AppColors.info,
+      icon: Icons.delivery_dining_rounded,
+      iconColor: _purple,
       meta: _formatTimestamp(d['createdAt']),
       onApprove: () => _updateStatus('Users', doc.id, {'status': 'active', 'isVerified': true}),
       onReject: () => _updateStatus('Users', doc.id, {'status': 'rejected'}),
@@ -208,8 +192,8 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       context: context,
       title: name,
       subtitle: type,
-      icon: Icons.description,
-      iconColor: AppColors.warning,
+      icon: Icons.description_rounded,
+      iconColor: context.warningColor,
       meta: _formatTimestamp(d['createdAt']),
       onApprove: () => _updateStatus('documents', doc.id, {'status': 'approved', 'verifiedAt': FieldValue.serverTimestamp()}),
       onReject: () => _updateStatus('documents', doc.id, {'status': 'rejected'}),
@@ -224,8 +208,8 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       context: context,
       title: storeName,
       subtitle: 'Commission: ${commission.toStringAsFixed(0)}%',
-      icon: Icons.handshake,
-      iconColor: AppColors.success,
+      icon: Icons.handshake_rounded,
+      iconColor: context.successColor,
       meta: 'Expires: ${_formatTimestamp(d['expiresAt'])}',
       onApprove: () => _updateStatus('contracts', doc.id, {'status': 'active'}),
       onReject: () => _updateStatus('contracts', doc.id, {'status': 'cancelled'}),
@@ -240,8 +224,8 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       context: context,
       title: '$storeName — $plan',
       subtitle: 'Monthly subscription',
-      icon: Icons.subscriptions,
-      iconColor: AppColors.primary,
+      icon: Icons.subscriptions_rounded,
+      iconColor: context.primaryColor,
       meta: 'Renews: ${_formatTimestamp(d['renewsAt'])}',
       onApprove: () => _updateStatus('subscriptions', doc.id, {'status': 'active', 'renewsAt': FieldValue.serverTimestamp()}),
       onReject: () => _updateStatus('subscriptions', doc.id, {'status': 'expired'}),
@@ -261,7 +245,11 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: cardDecoBordered(context),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Row(
         children: [
           Container(
@@ -277,42 +265,45 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
+                Text(title, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
-                Text(subtitle, style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
+                Text(subtitle, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
                 const SizedBox(height: 2),
-                Text(meta, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
+                Text(meta, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
               ],
             ),
           ),
           const SizedBox(width: 8),
           IconButton(
             onPressed: onReject,
-            icon: Icon(Icons.close, color: AppColors.error.withValues(alpha: 0.8)),
+            icon: Icon(Icons.close_rounded, color: context.errorColor),
             tooltip: 'Reject',
           ),
           const SizedBox(width: 4),
-          ElevatedButton.icon(
+          ElevatedButton(
             onPressed: onApprove,
-            icon: const Icon(Icons.check, size: 16),
-            label: const Text('Approve'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.primaryColor,
+              foregroundColor: context.textPrimaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Approve', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
           ),
         ],
       ),
     );
   }
 
-  Widget _emptyState(String title, String subtitle) {
+  Widget _emptyState(BuildContext context, IconData icon, String title, String description) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inbox_outlined, size: 64, color: context.textMutedColor.withValues(alpha: 0.5)),
+          Icon(icon, size: 64, color: context.borderColor),
           const SizedBox(height: 12),
-          Text(title, style: TextStyle(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 6),
-          Text(subtitle, style: TextStyle(color: context.textMutedColor, fontSize: 13)),
+          Text(title, style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text(description, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
         ],
       ),
     );
@@ -331,13 +322,13 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       await FirebaseFirestore.instance.collection(collection).doc(id).update(updates);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Updated $collection'), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating),
+          SnackBar(content: Text('Updated $collection', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating),
+          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         );
       }
     }

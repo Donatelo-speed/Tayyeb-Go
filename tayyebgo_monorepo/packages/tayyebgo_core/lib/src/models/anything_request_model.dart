@@ -112,8 +112,15 @@ class AnythingRequestModel {
 
   factory AnythingRequestModel.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>? ?? {};
+    return AnythingRequestModel._fromMap(doc.id, d);
+  }
+
+  factory AnythingRequestModel.fromMap(String id, Map<String, dynamic> d) =>
+      AnythingRequestModel._fromMap(id, d);
+
+  factory AnythingRequestModel._fromMap(String id, Map<String, dynamic> d) {
     return AnythingRequestModel(
-      id: doc.id,
+      id: id,
       customerId: d['customerId'] as String? ?? '',
       customerName: d['customerName'] as String? ?? '',
       customerPhone: d['customerPhone'] as String?,

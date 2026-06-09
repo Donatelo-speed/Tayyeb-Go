@@ -15,7 +15,7 @@ class TayyebLogoPainter extends CustomPainter {
 
     final bgPaint = Paint()
       ..shader = const LinearGradient(
-        colors: [Color(0xFF6366F1), Color(0xFF1D4ED8)],
+        colors: [AppColors.primary, AppColors.accent],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Rect.fromCircle(center: center, radius: r))
@@ -221,16 +221,15 @@ class _BrandWordmarkState extends State<BrandWordmark>
           mainAxisSize: MainAxisSize.min,
           children: [
             ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF1D4ED8)],
-              ).createShader(bounds),
+              shaderCallback: (bounds) =>
+                  const LinearGradient(colors: [AppColors.primary, AppColors.accent]).createShader(bounds),
               child: Text(
                 'Tayyeb',
                 style: TextStyle(
                   fontSize: widget.fontSize,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
-                  letterSpacing: 2.5,
+                  letterSpacing: 0,
                   height: 1.1,
                 ),
               ),
@@ -239,13 +238,154 @@ class _BrandWordmarkState extends State<BrandWordmark>
               'GO',
               style: TextStyle(
                 fontSize: widget.fontSize * 1.05,
-                fontWeight: FontWeight.w200,
-                color: widget.textColor.withValues(alpha: 0.6),
-                letterSpacing: 10,
+                fontWeight: FontWeight.w300,
+                color: widget.textColor.withValues(alpha: 0.7),
+                letterSpacing: 0,
                 height: 1.0,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class BrandedSplashView extends StatefulWidget {
+  final String label;
+  final String tagline;
+  final IconData icon;
+  final Color accentColor;
+
+  const BrandedSplashView({
+    super.key,
+    required this.label,
+    required this.tagline,
+    required this.icon,
+    required this.accentColor,
+  });
+
+  @override
+  State<BrandedSplashView> createState() => _BrandedSplashViewState();
+}
+
+class _BrandedSplashViewState extends State<BrandedSplashView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 900),
+      vsync: this,
+    )..forward();
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark ? AppColors.background : LightAppColors.background;
+    final surface = isDark ? AppColors.surface : LightAppColors.surface;
+    final textPrimary = isDark ? AppColors.textPrimary : LightAppColors.textPrimary;
+    final textMuted = isDark ? AppColors.textMuted : LightAppColors.textMuted;
+    final border = isDark ? AppColors.border : LightAppColors.border;
+
+    return Scaffold(
+      backgroundColor: background,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              background,
+              isDark ? const Color(0xFF0F1713) : const Color(0xFFEAF3EF),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: FadeTransition(
+              opacity: _fade,
+              child: SlideTransition(
+                position: _slide,
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BrandLogo(
+                        markSize: 88,
+                        fontSize: 28,
+                        textColor: textPrimary,
+                        dark: isDark,
+                      ),
+                      const SizedBox(height: 28),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: surface,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: border),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(widget.icon, size: 18, color: widget.accentColor),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.label,
+                              style: TextStyle(
+                                color: textPrimary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        widget.tagline,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: textMuted,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      SizedBox(
+                        width: 132,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(999),
+                          child: LinearProgressIndicator(
+                            minHeight: 4,
+                            backgroundColor: border,
+                            valueColor: AlwaysStoppedAnimation<Color>(widget.accentColor),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

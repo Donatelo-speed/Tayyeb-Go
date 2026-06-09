@@ -1,74 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'app_colors.dart';
 
+const _kThemePref = 'tayyebgo_theme_mode';
+
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _mode = ThemeMode.light;
+  ThemeMode _mode = ThemeMode.system;
+  SharedPreferences? _prefs;
 
   ThemeMode get mode => _mode;
+  bool get isDark => _mode == ThemeMode.dark ||
+      (_mode == ThemeMode.system &&
+          WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark);
 
-  bool get isDark => _mode == ThemeMode.dark;
+  ThemeProvider() {
+    _loadSaved();
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
+      if (_mode == ThemeMode.system) notifyListeners();
+    };
+  }
+
+  Future<void> _loadSaved() async {
+    _prefs = await SharedPreferences.getInstance();
+    final saved = _prefs?.getString(_kThemePref);
+    if (saved != null) {
+      _mode = ThemeMode.values.firstWhere(
+        (e) => e.name == saved,
+        orElse: () => ThemeMode.system,
+      );
+      notifyListeners();
+    }
+  }
 
   void setMode(ThemeMode mode) {
     if (_mode != mode) {
       _mode = mode;
+      _prefs?.setString(_kThemePref, mode.name);
+      _updateSystemUI();
       notifyListeners();
     }
   }
 
   void toggle() {
-    _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners();
+    final next = isDark ? ThemeMode.light : ThemeMode.dark;
+    setMode(next);
+  }
+
+  void _updateSystemUI() {
+    final brightness = isDark ? Brightness.dark : Brightness.light;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: brightness,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: isDark ? AppColors.surface : LightAppColors.background,
+      systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+    ));
   }
 }
 
+/// Context extension for convenient dark/light color access
 extension ThemeColors on BuildContext {
-  Color get primaryColor => isDark ? DarkAppColors.primary : AppColors.primary;
-  Color get primarySoftColor => isDark ? DarkAppColors.primarySoft : AppColors.primarySoft;
-  Color get primaryAltColor => isDark ? DarkAppColors.primaryAlt : AppColors.primaryAlt;
-  Color get backgroundColor =>
-      isDark ? DarkAppColors.background : AppColors.background;
-  Color get surfaceColor =>
-      isDark ? DarkAppColors.surface : AppColors.surface;
-  Color get surfaceAltColor =>
-      isDark ? DarkAppColors.surfaceAlt : AppColors.surfaceAlt;
-  Color get surfaceHoverColor =>
-      isDark ? DarkAppColors.surfaceHover : AppColors.surfaceHover;
-  Color get textPrimaryColor =>
-      isDark ? DarkAppColors.textPrimary : AppColors.textPrimary;
-  Color get textSecondaryColor =>
-      isDark ? DarkAppColors.textSecondary : AppColors.textSecondary;
-  Color get textTertiaryColor =>
-      isDark ? DarkAppColors.textTertiary : AppColors.textTertiary;
-  Color get textMutedColor =>
-      isDark ? DarkAppColors.textMuted : AppColors.textMuted;
-  Color get textInverseColor =>
-      isDark ? DarkAppColors.textInverse : AppColors.textInverse;
-  Color get borderColor => isDark ? DarkAppColors.border : AppColors.border;
-  Color get borderStrongColor => isDark ? DarkAppColors.borderStrong : AppColors.borderStrong;
-  Color get dividerColor => isDark ? DarkAppColors.divider : AppColors.divider;
-  Color get errorColor => isDark ? DarkAppColors.error : AppColors.error;
-  Color get errorSoftColor => isDark ? DarkAppColors.errorSoft : AppColors.errorSoft;
-  Color get successColor =>
-      isDark ? DarkAppColors.success : AppColors.success;
-  Color get successSoftColor => isDark ? DarkAppColors.successSoft : AppColors.successSoft;
-  Color get warningColor =>
-      isDark ? DarkAppColors.warning : AppColors.warning;
-  Color get warningSoftColor => isDark ? DarkAppColors.warningSoft : AppColors.warningSoft;
-  Color get accentColor => isDark ? DarkAppColors.accent : AppColors.accent;
-  Color get premiumColor => isDark ? DarkAppColors.premium : AppColors.premium;
-  Color get premiumSoftColor => isDark ? DarkAppColors.premiumSoft : AppColors.premiumSoft;
-  Color get purpleColor => isDark ? DarkAppColors.purple : AppColors.purple;
-  Color get cyanColor => isDark ? DarkAppColors.cyan : AppColors.cyan;
-  Color get emeraldColor => isDark ? DarkAppColors.emerald : AppColors.emerald;
-  Color get amberColor => isDark ? DarkAppColors.amber : AppColors.amber;
-  Color get shadowColor => isDark ? DarkAppColors.shadow : AppColors.shadow;
-  Color get cardBackgroundColor => isDark ? DarkAppColors.cardBackground : AppColors.cardBackground;
-  Color get sidebarBgColor => isDark ? DarkAppColors.sidebarBg : AppColors.sidebarBg;
-  Color get sidebarTextColor => isDark ? DarkAppColors.sidebarText : AppColors.sidebarText;
-  Color get sidebarMutedColor => isDark ? DarkAppColors.sidebarMuted : AppColors.sidebarMuted;
-  Color get sidebarActiveColor => isDark ? DarkAppColors.sidebarActive : AppColors.sidebarActive;
-  Color get sidebarActiveBgColor => isDark ? DarkAppColors.sidebarActiveBg : AppColors.sidebarActiveBg;
-  Color get sidebarBorderColor => isDark ? DarkAppColors.sidebarBorder : AppColors.sidebarBorder;
-
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  // Primary
+  Color get primaryColor => isDark ? AppColors.primary : LightAppColors.primary;
+  Color get primarySoftColor => isDark ? AppColors.primarySoft : LightAppColors.primarySoft;
+  Color get primaryAltColor => isDark ? AppColors.primaryAlt : LightAppColors.primaryAlt;
+
+  // Background
+  Color get backgroundColor => isDark ? AppColors.background : LightAppColors.background;
+  Color get surfaceColor => isDark ? AppColors.surface : LightAppColors.surface;
+  Color get surfaceAltColor => isDark ? AppColors.surfaceAlt : LightAppColors.surfaceAlt;
+  Color get surfaceHoverColor => isDark ? AppColors.surfaceHover : LightAppColors.surfaceHover;
+  Color get cardBgColor => isDark ? AppColors.cardBackground : LightAppColors.cardBackground;
+
+  // Text
+  Color get textPrimaryColor => isDark ? AppColors.textPrimary : LightAppColors.textPrimary;
+  Color get textSecondaryColor => isDark ? AppColors.textSecondary : LightAppColors.textSecondary;
+  Color get textTertiaryColor => isDark ? AppColors.textTertiary : LightAppColors.textTertiary;
+  Color get textMutedColor => isDark ? AppColors.textMuted : LightAppColors.textMuted;
+  Color get textInverseColor => isDark ? AppColors.textInverse : LightAppColors.textInverse;
+
+  // Border
+  Color get borderColor => isDark ? AppColors.border : LightAppColors.border;
+  Color get borderStrongColor => isDark ? AppColors.borderStrong : LightAppColors.borderStrong;
+  Color get dividerColor => isDark ? AppColors.divider : LightAppColors.divider;
+
+  // Status
+  Color get errorColor => isDark ? AppColors.error : LightAppColors.error;
+  Color get errorSoftColor => isDark ? AppColors.errorSoft : LightAppColors.errorSoft;
+  Color get successColor => isDark ? AppColors.success : LightAppColors.success;
+  Color get successSoftColor => isDark ? AppColors.successSoft : LightAppColors.successSoft;
+  Color get warningColor => isDark ? AppColors.warning : LightAppColors.warning;
+  Color get warningSoftColor => isDark ? AppColors.warningSoft : LightAppColors.warningSoft;
+
+  // Accent
+  Color get accentColor => isDark ? AppColors.accent : LightAppColors.accent;
+  Color get premiumColor => isDark ? AppColors.premium : LightAppColors.premium;
+  Color get premiumSoftColor => isDark ? AppColors.premiumSoft : LightAppColors.premiumSoft;
+  Color get purpleColor => isDark ? AppColors.purple : LightAppColors.purple;
+  Color get cyanColor => isDark ? AppColors.cyan : LightAppColors.cyan;
+  Color get emeraldColor => isDark ? AppColors.emerald : LightAppColors.emerald;
+  Color get amberColor => isDark ? AppColors.amber : LightAppColors.amber;
+
+  // Shadow
+  Color get shadowColor => isDark ? AppColors.shadow : LightAppColors.shadow;
+
+  // Card
+  Color get cardBackgroundColor => isDark ? AppColors.cardBackground : LightAppColors.cardBackground;
+
+  // Sidebar
+  Color get sidebarBgColor => isDark ? AppColors.sidebarBg : LightAppColors.sidebarBg;
+  Color get sidebarTextColor => isDark ? AppColors.sidebarText : LightAppColors.sidebarText;
+  Color get sidebarMutedColor => isDark ? AppColors.sidebarMuted : LightAppColors.sidebarMuted;
+  Color get sidebarActiveColor => isDark ? AppColors.sidebarActive : LightAppColors.sidebarActive;
+  Color get sidebarActiveBgColor => isDark ? AppColors.sidebarActiveBg : LightAppColors.sidebarActiveBg;
+  Color get sidebarBorderColor => isDark ? AppColors.sidebarBorder : LightAppColors.sidebarBorder;
 }

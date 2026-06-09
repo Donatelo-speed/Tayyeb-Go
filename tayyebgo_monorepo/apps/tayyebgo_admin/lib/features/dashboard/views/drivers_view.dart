@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
+
+const _purple = Color(0xFF8B5CF6);
 
 class DriversView extends StatefulWidget {
   const DriversView();
@@ -22,237 +25,280 @@ class _DriversViewState extends State<DriversView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return pageContainer(context, child: AppScaffold(
-      showAppBar: false,
-      title: 'Drivers',
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Row(children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchCtrl,
-                  decoration: InputDecoration(
-                    hintText: 'Search drivers...',
-                    prefixIcon: Icon(Icons.search, color: context.textMutedColor),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(tooltip: 'Clear search', icon: Icon(Icons.clear, color: context.textMutedColor), onPressed: () { _searchCtrl.clear(); setState(() => _searchQuery = ''); })
-                        : null,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  onChanged: (v) => setState(() => _searchQuery = v),
-                ),
-              ),
-              const SizedBox(width: 8),
-              _filterChip(context, 'All', 'all', isDark),
-              const SizedBox(width: 4),
-              _filterChip(context, 'Platform', 'platform', isDark),
-              const SizedBox(width: 4),
-              _filterChip(context, 'Store', 'store', isDark),
-            ]),
-          ),
-          Expanded(
-            child: StreamScreenBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'driver').limit(500).snapshots(),
-              onLoading: () => const ShimmerLoading(itemCount: 4),
-              onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-              onSuccess: (context, snapshot) {
-                var docs = snapshot.docs;
-                if (_driverTypeFilter != 'all') {
-                  docs = docs.where((doc) {
-                    final d = doc.data() as Map<String, dynamic>;
-                    return (d['driverType'] as String? ?? 'platform') == _driverTypeFilter;
-                  }).toList();
-                }
-                if (_searchQuery.isNotEmpty) {
-                  final q = _searchQuery.toLowerCase();
-                  docs = docs.where((doc) {
-                    final d = doc.data() as Map<String, dynamic>;
-                    final name = (d['displayName'] as String? ?? '').toLowerCase();
-                    final email = (d['email'] as String? ?? '').toLowerCase();
-                    return name.contains(q) || email.contains(q);
-                  }).toList();
-                }
-                if (docs.isEmpty) {
-                  return Center(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.delivery_dining_outlined, size: 64, color: context.textMutedColor),
-                      const SizedBox(height: 16),
-                      Text('No drivers registered', style: TextStyle(color: context.textMutedColor, fontSize: 16)),
-                    ]),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: docs.length,
-                  itemBuilder: (_, i) {
-                    final d = docs[i].data() as Map<String, dynamic>;
-                    final id = docs[i].id;
-                    final displayName = d['displayName'] as String? ?? d['email'] as String? ?? 'Unknown';
-                    final email = d['email'] as String? ?? '';
-                    final isOnline = d['isActive'] == true;
-                    final driverType = d['driverType'] as String? ?? 'platform';
-                    final storeId = d['storeId'] as String? ?? '';
-                    final rating = (d['rating'] as num?)?.toDouble() ?? 0;
-                    final ordersCompleted = (d['ordersCompleted'] as num?)?.toInt() ?? 0;
-                    final earnings = (d['earnings'] as num?)?.toDouble() ?? 0;
-                    final isVerified = d['isVerified'] as bool? ?? false;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark ? DarkAppColors.surface : Colors.white,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                        border: Border.all(color: (isDark ? DarkAppColors.divider : AppColors.divider)),
-                        boxShadow: isDark ? [] : [
-                          BoxShadow(color: AppColors.shadow.withValues(alpha: 0.04), blurRadius: 18, offset: const Offset(0, 8)),
-                        ],
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Drivers', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      style: GoogleFonts.inter(color: context.textPrimaryColor),
+                      decoration: InputDecoration(
+                        hintText: 'Search drivers...',
+                        hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+                        prefixIcon: Icon(Icons.search_rounded, color: context.textMutedColor, size: 20),
+                        filled: true,
+                        fillColor: context.surfaceColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
+                      onChanged: (v) => setState(() => _searchQuery = v),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _filterChip(context, 'All', 'all'),
+                  const SizedBox(width: 4),
+                  _filterChip(context, 'Platform', 'platform'),
+                  const SizedBox(width: 4),
+                  _filterChip(context, 'Store', 'store'),
+                ],
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'driver').limit(500).snapshots(),
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator(color: context.primaryColor));
+                  }
+                  if (snap.hasError) {
+                    return Center(child: Text('Error loading drivers', style: GoogleFonts.inter(color: context.textMutedColor)));
+                  }
+                  var docs = snap.data?.docs ?? [];
+                  if (_driverTypeFilter != 'all') {
+                    docs = docs.where((doc) {
+                      final d = doc.data() as Map<String, dynamic>;
+                      return (d['driverType'] as String? ?? 'platform') == _driverTypeFilter;
+                    }).toList();
+                  }
+                  if (_searchQuery.isNotEmpty) {
+                    final q = _searchQuery.toLowerCase();
+                    docs = docs.where((doc) {
+                      final d = doc.data() as Map<String, dynamic>;
+                      final name = (d['displayName'] as String? ?? '').toLowerCase();
+                      final email = (d['email'] as String? ?? '').toLowerCase();
+                      return name.contains(q) || email.contains(q);
+                    }).toList();
+                  }
+                  if (docs.isEmpty) {
+                    return Center(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Row(children: [
-                            CircleAvatar(
-                              backgroundColor: context.primaryColor.withValues(alpha: 0.1),
-                              child: Icon(Icons.delivery_dining, color: context.primaryColor),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Text(displayName, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-                                    const SizedBox(width: 8),
-                                    _driverTypeBadge(driverType),
-                                    if (storeId.isNotEmpty && driverType == 'store') ...[
-                                      const SizedBox(width: 4),
-                                      Text('ID: ${storeId.substring(0, 6)}...', style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-                                    ],
-                                    if (isVerified) ...[
-                                      const SizedBox(width: 4),
-                                      Icon(Icons.verified, size: 14, color: Colors.blue),
-                                    ],
-                                  ]),
-                                  Text(email, style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
-                                ],
-                              ),
-                            ),
-                            if (rating > 0)
-                              Row(children: [
-                                Icon(Icons.star, size: 16, color: AppColors.warning),
-                                Text(rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-                                const SizedBox(width: 8),
-                              ]),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: (isOnline ? AppColors.success : context.textMutedColor).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                isOnline ? 'Active' : 'Inactive',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: isOnline ? AppColors.success : context.textMutedColor),
-                              ),
-                            ),
-                            PopupMenuButton<String>(
-                              onSelected: (v) {
-                                if (v == 'approve') _approveDriver(context, id, displayName);
-                                if (v == 'suspend') _suspendDriver(context, id, displayName);
-                                if (v == 'verify') _verifyDriver(context, id, isVerified);
-                                if (v == 'assign') _showAssignStoreDialog(context, id, displayName, driverType, storeId);
-                                if (v == 'reset') _resetDriverAccount(context, id, displayName);
-                              },
-                              itemBuilder: (_) => [
-                                const PopupMenuItem(value: 'approve', child: ListTile(leading: Icon(Icons.check_circle, size: 20, color: AppColors.success), title: Text('Approve'))),
-                                if (isOnline) const PopupMenuItem(value: 'suspend', child: ListTile(leading: Icon(Icons.pause_circle, size: 20, color: Colors.orange), title: Text('Suspend'))),
-                                const PopupMenuItem(value: 'verify', child: ListTile(leading: Icon(Icons.verified, size: 20, color: Colors.blue), title: Text('Verify/Unverify'))),
-                                if (driverType == 'store') const PopupMenuItem(value: 'assign', child: ListTile(leading: Icon(Icons.store, size: 20), title: Text('Assign Store'))),
-                                const PopupMenuItem(value: 'reset', child: ListTile(leading: Icon(Icons.refresh, size: 20), title: Text('Reset Stats'))),
-                              ],
-                            ),
-                          ]),
+                          Icon(Icons.delivery_dining_outlined, size: 64, color: context.borderColor),
                           const SizedBox(height: 12),
-                          Row(children: [
-                            _driverStat(context, Icons.shopping_bag, '$ordersCompleted', 'Orders', context.primaryColor),
-                            const SizedBox(width: 16),
-                            _driverStat(context, Icons.attach_money, '\$${earnings.toStringAsFixed(0)}', 'Earnings', AppColors.success),
-                            const SizedBox(width: 16),
-                            _driverStat(context, Icons.person_pin, driverType.replaceAll('_', ' ').toUpperCase(), 'Type', AppColors.premium),
-                          ]),
+                          Text('No drivers registered', style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     );
-                  },
-                );
-              },
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: docs.length,
+                    itemBuilder: (_, i) {
+                      final d = docs[i].data() as Map<String, dynamic>;
+                      final id = docs[i].id;
+                      final displayName = d['displayName'] as String? ?? d['email'] as String? ?? 'Unknown';
+                      final email = d['email'] as String? ?? '';
+                      final isOnline = d['isActive'] == true;
+                      final driverType = d['driverType'] as String? ?? 'platform';
+                      final storeId = d['storeId'] as String? ?? '';
+                      final rating = (d['rating'] as num?)?.toDouble() ?? 0;
+                      final ordersCompleted = (d['ordersCompleted'] as num?)?.toInt() ?? 0;
+                      final earnings = (d['earnings'] as num?)?.toDouble() ?? 0;
+                      final isVerified = d['isVerified'] as bool? ?? false;
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: context.surfaceColor,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: context.borderColor),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: context.primaryColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 16, color: context.primaryColor)),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(displayName, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                                          const SizedBox(width: 6),
+                                          _driverTypeBadge(context, driverType),
+                                          if (isVerified) ...[
+                                            const SizedBox(width: 4),
+                                            Icon(Icons.verified, size: 14, color: context.primaryColor),
+                                          ],
+                                        ],
+                                      ),
+                                      Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                                if (rating > 0)
+                                  Row(
+                                    children: [
+                                      Icon(Icons.star_rounded, size: 16, color: context.warningColor),
+                                      Text(rating.toStringAsFixed(1), style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
+                                    ],
+                                  ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: (isOnline ? context.successColor : context.textMutedColor).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(isOnline ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: isOnline ? context.successColor : context.textMutedColor)),
+                                ),
+                                PopupMenuButton<String>(
+                                  onSelected: (v) {
+                                    if (v == 'approve') _approveDriver(context, id, displayName);
+                                    if (v == 'suspend') _suspendDriver(context, id, displayName);
+                                    if (v == 'verify') _verifyDriver(context, id, isVerified);
+                                    if (v == 'assign') _showAssignStoreDialog(context, id, displayName, driverType, storeId);
+                                    if (v == 'reset') _resetDriverAccount(context, id, displayName);
+                                  },
+                                  icon: Icon(Icons.more_vert_rounded, color: context.textMutedColor, size: 20),
+                                  color: context.surfaceColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  itemBuilder: (_) => [
+                                    PopupMenuItem(value: 'approve', child: ListTile(leading: Icon(Icons.check_circle, size: 20, color: context.successColor), title: Text('Approve'))),
+                                    if (isOnline) PopupMenuItem(value: 'suspend', child: ListTile(leading: Icon(Icons.pause_circle, size: 20, color: context.warningColor), title: Text('Suspend'))),
+                                    PopupMenuItem(value: 'verify', child: ListTile(leading: Icon(Icons.verified, size: 20, color: context.primaryColor), title: Text('Verify/Unverify'))),
+                                    if (driverType == 'store') const PopupMenuItem(value: 'assign', child: ListTile(leading: Icon(Icons.store, size: 20), title: Text('Assign Store'))),
+                                    const PopupMenuItem(value: 'reset', child: ListTile(leading: Icon(Icons.refresh, size: 20), title: Text('Reset Stats'))),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                _driverStat(context, Icons.shopping_bag_rounded, '$ordersCompleted', 'Orders', context.primaryColor),
+                                const SizedBox(width: 16),
+                                _driverStat(context, Icons.attach_money_rounded, '\$${earnings.toStringAsFixed(0)}', 'Earnings', context.successColor),
+                                const SizedBox(width: 16),
+                                _driverStat(context, Icons.person_pin_rounded, driverType.replaceAll('_', ' ').toUpperCase(), 'Type', _purple),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _filterChip(BuildContext context, String label, String value, bool isDark) {
+  Widget _filterChip(BuildContext context, String label, String value) {
     final selected = _driverTypeFilter == value;
     return GestureDetector(
       onTap: () => setState(() => _driverTypeFilter = value),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? context.primaryColor : (isDark ? DarkAppColors.surface : AppColors.surface),
+          color: selected ? context.primaryColor : context.surfaceColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? context.primaryColor : (isDark ? DarkAppColors.divider : AppColors.divider)),
+          border: Border.all(color: selected ? context.primaryColor : context.borderColor),
         ),
-        child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? Colors.white : context.textSecondaryColor)),
+        child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? context.textPrimaryColor : context.textMutedColor)),
       ),
     );
   }
 
-  Widget _driverTypeBadge(String type) {
-    final c = type == 'platform' ? AppColors.success : AppColors.primary;
+  Widget _driverTypeBadge(BuildContext context, String type) {
+    final c = type == 'platform' ? context.successColor : context.primaryColor;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
-      child: Text(type.replaceAll('_', ' ').toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: c)),
+      child: Text(type.replaceAll('_', ' ').toUpperCase(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: c)),
     );
   }
 
   Widget _driverStat(BuildContext context, IconData icon, String value, String label, Color color) {
-    return Row(children: [
-      Icon(icon, size: 14, color: color),
-      const SizedBox(width: 4),
-      Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
-      const SizedBox(width: 4),
-      Text(label, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-    ]);
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: color)),
+        const SizedBox(width: 4),
+        Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+      ],
+    );
   }
 
   void _showAssignStoreDialog(BuildContext context, String driverId, String driverName, String driverType, String currentStoreId) {
     final storeCtrl = TextEditingController(text: currentStoreId);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? DarkAppColors.surface : null,
-        title: const Text('Assign Store'),
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Assign Store', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 350,
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Assign "$driverName" to a store:', style: TextStyle(color: context.textPrimaryColor)),
-            const SizedBox(height: 16),
-            TextField(
-              controller: storeCtrl,
-              decoration: const InputDecoration(labelText: 'Store ID', hintText: 'Enter store document ID'),
-            ),
-            const SizedBox(height: 8),
-            Text('Leave empty to unassign from current store', style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-          ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Assign "$driverName" to a store:', style: GoogleFonts.inter(color: context.textPrimaryColor)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: storeCtrl,
+                style: GoogleFonts.inter(color: context.textPrimaryColor),
+                decoration: InputDecoration(
+                  labelText: 'Store ID',
+                  hintText: 'Enter store document ID',
+                  labelStyle: GoogleFonts.inter(color: context.textMutedColor),
+                  hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text('Leave empty to unassign from current store', style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+            ],
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor))),
           ElevatedButton(
             onPressed: () async {
               final storeId = storeCtrl.text.trim();
@@ -269,7 +315,8 @@ class _DriversViewState extends State<DriversView> {
               }
               Navigator.pop(ctx);
             },
-            child: const Text('Save'),
+            style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: Text('Save', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -320,7 +367,7 @@ class _DriversViewState extends State<DriversView> {
       title: 'Reset Stats',
       message: 'Reset earnings and stats for "$name"? This cannot be undone.',
       confirmLabel: 'Reset',
-      confirmColor: Colors.orange,
+      confirmColor: context.warningColor,
     );
     if (!confirmed) return;
     try {

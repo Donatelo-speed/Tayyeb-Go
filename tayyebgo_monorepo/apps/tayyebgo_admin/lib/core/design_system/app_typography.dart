@@ -7,7 +7,7 @@ abstract class AppTypography {
     fontFamily: _family,
     fontSize: 32,
     height: 1.25,
-    letterSpacing: -0.5,
+    letterSpacing: 0,
     fontWeight: FontWeight.w700,
   );
 
@@ -15,7 +15,7 @@ abstract class AppTypography {
     fontFamily: _family,
     fontSize: 24,
     height: 1.33,
-    letterSpacing: -0.2,
+    letterSpacing: 0,
     fontWeight: FontWeight.w700,
   );
 
@@ -74,7 +74,7 @@ abstract class AppTypography {
     fontSize: 28,
     height: 1.14,
     fontWeight: FontWeight.w700,
-    letterSpacing: -0.3,
+    letterSpacing: 0,
   );
 
   static const numberLarge = TextStyle(
@@ -82,7 +82,7 @@ abstract class AppTypography {
     fontSize: 36,
     height: 1.1,
     fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
+    letterSpacing: 0,
   );
 
   static const code = TextStyle(
@@ -90,6 +90,36 @@ abstract class AppTypography {
     fontSize: 12,
     height: 1.4,
     fontWeight: FontWeight.w500,
+  );
+
+  static const displaySmall = TextStyle(
+    fontFamily: _family,
+    fontSize: 28,
+    height: 1.25,
+    letterSpacing: 0,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const labelSmall = TextStyle(
+    fontFamily: _family,
+    fontSize: 10,
+    height: 1.4,
+    letterSpacing: 0.5,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const bodySmall = TextStyle(
+    fontFamily: _family,
+    fontSize: 12,
+    height: 1.33,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const titleLarge = TextStyle(
+    fontFamily: _family,
+    fontSize: 20,
+    height: 1.4,
+    fontWeight: FontWeight.w600,
   );
 
   static TextTheme toTextTheme(Color textPrimary, Color textSecondary, Color textMuted) {

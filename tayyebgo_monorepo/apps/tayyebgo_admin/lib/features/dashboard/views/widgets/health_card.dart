@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
 import '../shared.dart';
@@ -21,7 +22,7 @@ class OperationsHealthCard extends StatelessWidget {
 
     final healthScore = _computeHealthScore();
     final healthLabel = healthScore >= 80 ? 'Healthy' : healthScore >= 50 ? 'Fair' : 'Critical';
-    final healthColor = healthScore >= 80 ? AppColors.success : healthScore >= 50 ? AppColors.warning : AppColors.error;
+    final healthColor = healthScore >= 80 ? context.successColor : healthScore >= 50 ? context.warningColor : context.errorColor;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -31,7 +32,7 @@ class OperationsHealthCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text('Operations Health', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+              Text('Operations Health', style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -39,7 +40,7 @@ class OperationsHealthCard extends StatelessWidget {
                   color: healthColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(healthLabel, style: TextStyle(color: healthColor, fontSize: 12, fontWeight: FontWeight.w600)),
+                child: Text(healthLabel, style: GoogleFonts.inter(color: healthColor, fontSize: 12, fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -48,7 +49,7 @@ class OperationsHealthCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: healthScore / 100,
-              backgroundColor: context.dividerColor.withValues(alpha: 0.3),
+              backgroundColor: context.borderColor.withValues(alpha: 0.3),
               color: healthColor,
               minHeight: 8,
             ),
@@ -67,18 +68,18 @@ class OperationsHealthCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.warning.withValues(alpha: 0.08),
+                color: context.warningColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.warning.withValues(alpha: 0.15)),
+                border: Border.all(color: context.warningColor.withValues(alpha: 0.15)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppColors.warning),
+                  Icon(Icons.info_outline, size: 16, color: context.warningColor),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       issues.join(' • '),
-                      style: TextStyle(fontSize: 12, color: AppColors.warning.withValues(alpha: 0.9)),
+                      style: GoogleFonts.inter(fontSize: 12, color: context.warningColor.withValues(alpha: 0.9)),
                     ),
                   ),
                 ],
@@ -110,8 +111,8 @@ class OperationsHealthCard extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: context.textMutedColor),
           const SizedBox(height: 4),
-          Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
-          Text(label, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
+          Text(value, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+          Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -9,72 +10,64 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    return AppScaffold(
-      title: 'Your Cart',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Your Cart', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        actions: [
+          if (!cart.isEmpty)
+            TextButton(
+              onPressed: () => cart.clearCart(),
+              child: Text('Clear', style: GoogleFonts.inter(color: context.errorColor, fontSize: 13, fontWeight: FontWeight.w600)),
+            ),
+        ],
+      ),
       body: cart.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.shopping_bag_outlined,
               title: 'Cart is empty',
-              subtitle:
-                  'Browse restaurants and add items to get started',
+              subtitle: 'Browse restaurants and add items',
+              actionText: 'Browse Restaurants',
+              onAction: () => context.go('/home'),
             )
           : Column(
               children: [
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(16),
                     itemCount: cart.lines.length + 1,
                     itemBuilder: (_, i) {
-                      if (i == cart.lines.length) {
-                        return _CartSummary(
-                            cart: cart);
-                      }
+                      if (i == cart.lines.length) return _CartSummary(cart: cart);
                       final line = cart.lines[i];
-                      return _CartItemRow(
-                          line: line, cart: cart);
+                      return _CartItemRow(line: line, cart: cart);
                     },
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        const BorderRadius.vertical(
-                            top: Radius.circular(24)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withValues(alpha: 0.05),
-                        blurRadius: 16,
-                        offset:
-                            const Offset(0, -4),
-                      ),
-                    ],
+                    color: context.surfaceColor,
+                    border: Border(top: BorderSide(color: context.borderColor, width: 0.5)),
                   ),
                   child: SafeArea(
                     child: SizedBox(
                       width: double.infinity,
+                      height: 52,
                       child: ElevatedButton(
-                        onPressed: () =>
-                            context.go('/checkout'),
-                        style:
-                            ElevatedButton.styleFrom(
-                          padding: const EdgeInsets
-                              .symmetric(vertical: 14),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                                    14),
-                          ),
+                        onPressed: () => context.go('/checkout'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
                         ),
                         child: Text(
-                            'Checkout — \$${cart.grandTotal.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight:
-                                    FontWeight.w600)),
+                          'Checkout — \$${cart.grandTotal.toStringAsFixed(2)}',
+                          style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+                        ),
                       ),
                     ),
                   ),
@@ -89,121 +82,106 @@ class _CartItemRow extends StatelessWidget {
   final CartLineItem line;
   final CartProvider cart;
 
-  const _CartItemRow(
-      {required this.line, required this.cart});
+  const _CartItemRow({required this.line, required this.cart});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border:
-            Border.all(color: const Color(0xFFF1F5F9)),
+    return Dismissible(
+      key: ValueKey(line.lineId),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => cart.removeLine(line.lineId),
+      background: Container(
+        alignment: Alignment.centerRight,
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: context.errorColor,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 24),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-              children: [
-                Text(line.product.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600)),
-                if (line.selectedModifiers.isNotEmpty)
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    line.selectedModifiers
-                        .expand((g) => g.selectedOptionIds
-                            .map((oid) {
-                          final opt = g.group.options
-                              .where((o) => o.id == oid)
-                              .firstOrNull;
-                          return opt?.name ?? oid;
-                        }))
-                        .join(', '),
-                    style: TayyebGoTheme.caption,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    line.product.name,
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor),
                   ),
-                if (line.customerNote != null &&
-                    line.customerNote!.isNotEmpty)
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 2),
-                    child: Text(
+                  if (line.selectedModifiers.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        line.selectedModifiers
+                            .expand((g) => g.selectedOptionIds.map((oid) {
+                              final opt = g.group.options.where((o) => o.id == oid).firstOrNull;
+                              return opt?.name ?? oid;
+                            }))
+                            .join(', '),
+                        style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  if (line.customerNote != null && line.customerNote!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
                         '"${line.customerNote}"',
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: TayyebGoTheme
-                                .textSecondary,
-                            fontStyle: FontStyle
-                                .italic)),
-                  ),
-                Text(
+                        style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11, fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  Text(
                     '\$${line.unitPrice.toStringAsFixed(2)} each',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: TayyebGoTheme
-                            .textSecondary)),
-              ],
+                    style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(10),
-              color: const Color(0xFFF8FAFC),
+            Container(
+              decoration: BoxDecoration(
+                color: context.backgroundColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _QtyBtn(
+                    icon: Icons.remove_rounded,
+                    onTap: () => cart.decrementLine(line.lineId),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      '${line.quantity}',
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimaryColor),
+                    ),
+                  ),
+                  _QtyBtn(
+                    icon: Icons.add_rounded,
+                    onTap: () => cart.incrementLine(line.lineId),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _QtyBtn(
-                  icon: Icons.remove_rounded,
-                  onPressed: () =>
-                      cart.decrementLine(line.lineId),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(
-                          horizontal: 12),
-                  child: Text('${line.quantity}',
-                      style: const TextStyle(
-                          fontWeight:
-                              FontWeight.w700,
-                          fontSize: 14)),
-                ),
-                _QtyBtn(
-                  icon: Icons.add_rounded,
-                  onPressed: () =>
-                      cart.incrementLine(line.lineId),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Text(
+              '\$${line.lineTotal.toStringAsFixed(2)}',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimaryColor),
             ),
-          ),
-          const SizedBox(width: 14),
-          SizedBox(
-            width: 68,
-            child: Text(
-                '\$${line.lineTotal.toStringAsFixed(2)}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14),
-                textAlign: TextAlign.right),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close_rounded,
-                size: 16),
-            onPressed: () =>
-                cart.removeLine(line.lineId),
-            color: TayyebGoTheme.textMuted,
-            constraints: const BoxConstraints(
-                minWidth: 28, minHeight: 28),
-            padding: EdgeInsets.zero,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -211,26 +189,22 @@ class _CartItemRow extends StatelessWidget {
 
 class _QtyBtn extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onPressed;
-  const _QtyBtn(
-      {required this.icon, required this.onPressed});
+  final VoidCallback onTap;
+
+  const _QtyBtn({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
-        width: 28,
-        height: 28,
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius:
-              BorderRadius.circular(8),
-          border: Border.all(
-              color: const Color(0xFFE2E8F0)),
+          color: context.surfaceAltColor,
+          shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 16,
-            color: TayyebGoTheme.textPrimary),
+        child: Icon(icon, size: 16, color: context.textPrimaryColor),
       ),
     );
   }
@@ -246,35 +220,24 @@ class _CartSummary extends StatelessWidget {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border:
-            Border.all(color: const Color(0xFFF1F5F9)),
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         children: [
-          _row(
-              'Subtotal (${cart.totalQuantity} items)',
-              '\$${cart.subtotal.toStringAsFixed(2)}'),
-          _row(
-              'Delivery Fee',
-              cart.deliveryFee == 0
-                  ? 'Free'
-                  : '\$${cart.deliveryFee.toStringAsFixed(2)}'),
-          _row('Tax',
-              '\$${cart.tax.toStringAsFixed(2)}'),
+          _row(context, 'Subtotal (${cart.totalQuantity} items)', '\$${cart.subtotal.toStringAsFixed(2)}'),
+          _row(context, 'Delivery Fee', cart.deliveryFee == 0 ? 'Free' : '\$${cart.deliveryFee.toStringAsFixed(2)}', valueColor: cart.deliveryFee == 0 ? context.successColor : null),
+          _row(context, 'Tax', '\$${cart.tax.toStringAsFixed(2)}'),
           if (cart.promoDiscount > 0) ...[
-            _row('Discount',
-                '-\$${cart.promoDiscount.toStringAsFixed(2)}',
-                valueColor:
-                    TayyebGoTheme.successColor),
-            _row('Coupon',
-                cart.appliedCoupon ?? ''),
+            _row(context, 'Discount', '-\$${cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
+            _row(context, 'Coupon', cart.appliedCoupon ?? ''),
           ],
-          const Divider(height: 22),
-          _row('Total',
-              '\$${cart.grandTotal.toStringAsFixed(2)}',
-              bold: true),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Divider(color: context.borderColor),
+          ),
+          _row(context, 'Total', '\$${cart.grandTotal.toStringAsFixed(2)}', bold: true),
           const SizedBox(height: 12),
           _CouponSection(cart: cart),
         ],
@@ -282,28 +245,30 @@ class _CartSummary extends StatelessWidget {
     );
   }
 
-  Widget _row(String label, String value,
-      {bool bold = false, Color? valueColor}) {
+  Widget _row(BuildContext context, String label, String value, {bool bold = false, Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label,
-                style: TextStyle(
-                    color:
-                        TayyebGoTheme.textSecondary,
-                    fontWeight: bold
-                        ? FontWeight.w600
-                        : FontWeight.w400)),
-            Text(value,
-                style: TextStyle(
-                    fontWeight: bold
-                        ? FontWeight.w700
-                        : FontWeight.w500,
-                    color: valueColor)),
-          ]),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+              color: bold ? context.textPrimaryColor : context.textMutedColor,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
+              color: valueColor ?? context.textPrimaryColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -313,12 +278,10 @@ class _CouponSection extends StatefulWidget {
   const _CouponSection({required this.cart});
 
   @override
-  State<_CouponSection> createState() =>
-      _CouponSectionState();
+  State<_CouponSection> createState() => _CouponSectionState();
 }
 
-class _CouponSectionState
-    extends State<_CouponSection> {
+class _CouponSectionState extends State<_CouponSection> {
   final _ctrl = TextEditingController();
   String? _error;
   bool _loading = false;
@@ -334,18 +297,13 @@ class _CouponSectionState
     if (widget.cart.appliedCoupon != null) {
       return Row(
         children: [
-          Icon(Icons.check_circle_rounded,
-              size: 16,
-              color:
-                  TayyebGoTheme.successColor),
+          Icon(Icons.check_circle_rounded, size: 16, color: context.successColor),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-                'Coupon "${widget.cart.appliedCoupon}" applied',
-                style: TextStyle(
-                    color: TayyebGoTheme
-                        .successColor,
-                    fontSize: 13)),
+              'Coupon "${widget.cart.appliedCoupon}" applied',
+              style: GoogleFonts.inter(color: context.successColor, fontSize: 13),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -353,63 +311,53 @@ class _CouponSectionState
               _ctrl.clear();
               _error = null;
             },
-            child: const Text('Remove',
-                style: TextStyle(fontSize: 12)),
+            child: Text('Remove', style: GoogleFonts.inter(color: context.errorColor, fontSize: 13)),
           ),
         ],
       );
     }
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _ctrl,
-                decoration: InputDecoration(
-                  hintText: 'Enter coupon code',
-                  isDense: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10),
-                  errorText: _error,
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(10),
-                  ),
-                ),
-                textCapitalization:
-                    TextCapitalization.characters,
+        Expanded(
+          child: Container(
+            height: 44,
+            decoration: BoxDecoration(
+              color: context.backgroundColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _error != null ? context.errorColor.withValues(alpha: 0.5) : context.borderColor,
               ),
             ),
-            const SizedBox(width: 8),
-            SizedBox(
-              height: 40,
-              child: ElevatedButton(
-                onPressed:
-                    _loading ? null : _apply,
-                style:
-                    ElevatedButton.styleFrom(
-                  shape:
-                      RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(
-                            10),
-                  ),
-                ),
-                child: _loading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child:
-                            CircularProgressIndicator(
-                                strokeWidth: 2),
-                      )
-                    : const Text('Apply'),
+            child: TextField(
+              controller: _ctrl,
+              style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Coupon code',
+                hintStyle: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13),
+                prefixIcon: Icon(Icons.local_offer_rounded, size: 18, color: context.textMutedColor),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                errorText: _error,
+                errorStyle: GoogleFonts.inter(fontSize: 11),
               ),
             ),
-          ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          height: 44,
+          child: ElevatedButton(
+            onPressed: _loading ? null : _apply,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.surfaceAltColor,
+              foregroundColor: context.textPrimaryColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              elevation: 0,
+            ),
+            child: _loading
+                ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: context.primaryColor))
+                : Text('Apply', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+          ),
         ),
       ],
     );
@@ -420,13 +368,10 @@ class _CouponSectionState
       _loading = true;
       _error = null;
     });
-    final err = await widget.cart
-        .applyCoupon(_ctrl.text);
-    if (mounted) {
-      setState(() {
-        _loading = false;
-        _error = err;
-      });
-    }
+    final err = await widget.cart.applyCoupon(_ctrl.text);
+    if (mounted) setState(() {
+      _loading = false;
+      _error = err;
+    });
   }
 }

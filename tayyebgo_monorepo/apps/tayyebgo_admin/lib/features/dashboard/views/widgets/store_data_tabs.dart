@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../../../../core/widgets/app_empty_state.dart' as empty;
@@ -15,7 +16,7 @@ class StoreOverviewTab extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: cardDecoBordered(context),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Store Overview', style: AppTypography.heading3),
+        Text('Store Overview', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
         const SizedBox(height: 16),
         _infoRow(context, 'Phone', store['phone'] as String? ?? '-'),
         _infoRow(context, 'Street', store['street'] as String? ?? '-'),
@@ -30,8 +31,8 @@ class StoreOverviewTab extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(children: [
-        SizedBox(width: 100, child: Text(label, style: TextStyle(fontSize: 13, color: context.textSecondaryColor))),
-        Expanded(child: Text(value, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: context.textPrimaryColor))),
+        SizedBox(width: 100, child: Text(label, style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor))),
+        Expanded(child: Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 13, color: context.textPrimaryColor))),
       ]),
     );
   }
@@ -64,9 +65,9 @@ class StoreProductsTab extends StatelessWidget {
           }
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Text('Products', style: AppTypography.heading3),
+              Text('Products', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
               const Spacer(),
-              Text('${docs.length} items', style: TextStyle(color: context.textMutedColor, fontSize: 12)),
+              Text('${docs.length} items', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
             ]),
             const SizedBox(height: 12),
             ...docs.map((pd) {
@@ -76,15 +77,15 @@ class StoreProductsTab extends StatelessWidget {
               return ListTile(
                 dense: true,
                 leading: Icon(Icons.shopping_bag_outlined, color: context.primaryColor, size: 20),
-                title: Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
-                subtitle: Text('\$${price.toStringAsFixed(2)}', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
+                title: Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
+                subtitle: Text('\$${price.toStringAsFixed(2)}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: (available ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
+                    color: (available ? context.successColor : context.errorColor).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(available ? 'In stock' : 'Out', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: available ? AppColors.success : AppColors.error)),
+                  child: Text(available ? 'In stock' : 'Out', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: available ? context.successColor : context.errorColor)),
                 ),
               );
             }),
@@ -119,15 +120,15 @@ class StoreCategoriesTab extends StatelessWidget {
             );
           }
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Menu Categories', style: AppTypography.heading3),
+            Text('Menu Categories', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
             const SizedBox(height: 12),
             Wrap(spacing: 8, runSpacing: 8, children: docs.map((cd) {
               final name = cd['name'] as String? ?? 'Unnamed';
               return Chip(
-                label: Text(name),
+                label: Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 12)),
                 backgroundColor: context.primaryColor.withValues(alpha: 0.08),
                 side: BorderSide(color: context.primaryColor.withValues(alpha: 0.2)),
-                labelStyle: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w500, fontSize: 12),
+                labelStyle: GoogleFonts.inter(color: context.primaryColor),
               );
             }).toList()),
           ]);
@@ -162,9 +163,9 @@ class StoreOrdersTab extends StatelessWidget {
           }
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Text('Recent Orders', style: AppTypography.heading3),
+              Text('Recent Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
               const Spacer(),
-              Text('${docs.length} total', style: TextStyle(color: context.textMutedColor, fontSize: 12)),
+              Text('${docs.length} total', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
             ]),
             const SizedBox(height: 12),
             ...docs.map((od) {
@@ -174,9 +175,9 @@ class StoreOrdersTab extends StatelessWidget {
               return ListTile(
                 dense: true,
                 leading: Icon(Icons.receipt_outlined, color: context.primaryColor, size: 20),
-                title: Text('Order #$orderNum', style: const TextStyle(fontWeight: FontWeight.w500)),
-                subtitle: Text(status.toUpperCase(), style: TextStyle(color: context.textSecondaryColor, fontSize: 11)),
-                trailing: Text('\$${total.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+                title: Text('Order #$orderNum', style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
+                subtitle: Text(status.toUpperCase(), style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
+                trailing: Text('\$${total.toStringAsFixed(2)}', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
               );
             }),
           ]);
@@ -210,7 +211,7 @@ class StoreDriversTab extends StatelessWidget {
             );
           }
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Assigned Drivers', style: AppTypography.heading3),
+            Text('Assigned Drivers', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
             const SizedBox(height: 12),
             ...docs.map((dd) {
               final name = dd['driverName'] as String? ?? 'Unknown';
@@ -218,14 +219,14 @@ class StoreDriversTab extends StatelessWidget {
               return ListTile(
                 dense: true,
                 leading: Icon(Icons.delivery_dining, color: context.primaryColor, size: 20),
-                title: Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
+                title: Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: (active ? AppColors.success : AppColors.error).withValues(alpha: 0.1),
+                    color: (active ? context.successColor : context.errorColor).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(active ? 'Active' : 'Inactive', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: active ? AppColors.success : AppColors.error)),
+                  child: Text(active ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: active ? context.successColor : context.errorColor)),
                 ),
               );
             }),
@@ -253,18 +254,18 @@ class StoreContractsTab extends StatelessWidget {
           }
           final docs = snap.data ?? const [];
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Contracts & Subscriptions', style: AppTypography.heading3),
+            Text('Contracts & Subscriptions', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
             const SizedBox(height: 12),
             if (docs.isEmpty)
-              Text('No contracts found for this store.', style: TextStyle(color: context.textMutedColor))
+              Text('No contracts found for this store.', style: GoogleFonts.inter(color: context.textMutedColor))
             else
               ...docs.map((cd) {
                 final status = cd['isActive'] as bool? ?? false;
                 return ListTile(
                   dense: true,
                   leading: Icon(Icons.description, color: context.primaryColor),
-                  title: Text('Contract ${status ? '(Active)' : '(Inactive)'}', style: AppTypography.bodyBold),
-                  trailing: Text(status ? 'Active' : 'Inactive', style: TextStyle(color: status ? AppColors.success : AppColors.error)),
+                  title: Text('Contract ${status ? '(Active)' : '(Inactive)'}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                  trailing: Text(status ? 'Active' : 'Inactive', style: GoogleFonts.inter(color: status ? context.successColor : context.errorColor)),
                 );
               }),
           ]);

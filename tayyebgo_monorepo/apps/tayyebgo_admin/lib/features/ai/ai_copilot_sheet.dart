@@ -5,7 +5,6 @@ import 'package:tayyebgo_admin/core/ai/ai_copilot.dart';
 import 'package:tayyebgo_admin/core/ai/store_redesigner.dart';
 import 'package:tayyebgo_admin/core/design_system/design_system.dart';
 import 'package:tayyebgo_admin/core/widgets/responsive_builder.dart';
-import 'package:tayyebgo_core/presentation/theme/app_colors.dart';
 import 'package:tayyebgo_core/presentation/theme/theme_provider.dart';
 
 class AiCopilotSheet extends StatefulWidget {
@@ -127,13 +126,13 @@ class _AiCopilotSheetState extends State<AiCopilotSheet> {
                 expand: false,
                 builder: (ctx, scroll) => Container(
                   decoration: BoxDecoration(
-                    color: isDark ? DarkAppColors.surface : AppColors.surface,
+                    color: context.surfaceColor,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(isMobile ? 24 : 32),
                     ),
                     border: Border(
                       top: BorderSide(
-                        color: isDark ? DarkAppColors.border : AppColors.border,
+                        color: context.borderColor,
                       ),
                     ),
                     boxShadow: [
@@ -205,13 +204,12 @@ class _SheetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
     final isActive = busy || status == AgentStatus.executing || status == AgentStatus.planning;
     final statusColor = isActive ? context.warningColor : context.successColor;
     return Container(
       padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.md),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: isDark ? DarkAppColors.divider : AppColors.divider)),
+        border: Border(bottom: BorderSide(color: context.borderColor)),
       ),
       child: Row(
         children: [
@@ -283,10 +281,9 @@ class _MessageBubble extends StatelessWidget {
     if (message.role == AgentMessageRole.system) return const SizedBox.shrink();
     final isUser = message.role == AgentMessageRole.user;
     final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
-    final isDark = context.isDark;
     final bubbleColor = isUser
         ? context.primaryColor
-        : (isDark ? DarkAppColors.surfaceAlt : AppColors.surfaceAlt);
+        : context.surfaceAltColor;
     final textColor = isUser ? Colors.white : context.textPrimaryColor;
     final radius = BorderRadius.only(
       topLeft: const Radius.circular(AppRadius.lg),
@@ -333,7 +330,6 @@ class _ToolCallChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
     final risk = call.risk;
     final riskColor = switch (risk) {
       ToolRisk.read => context.successColor,
@@ -353,8 +349,8 @@ class _ToolCallChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
       decoration: BoxDecoration(
-        color: isDark ? DarkAppColors.surface : AppColors.surface,
-        border: Border.all(color: isDark ? DarkAppColors.divider : AppColors.divider),
+        color: context.surfaceColor,
+        border: Border.all(color: context.borderColor),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -394,7 +390,6 @@ class _PlanBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
     final primary = context.primaryColor;
     return Semantics(
       liveRegion: true,
@@ -403,7 +398,7 @@ class _PlanBar extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: primary.withValues(alpha: 0.06),
-        border: Border(bottom: BorderSide(color: isDark ? DarkAppColors.divider : AppColors.divider)),
+        border: Border(bottom: BorderSide(color: context.borderColor)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,11 +515,10 @@ class _InputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: isDark ? DarkAppColors.divider : AppColors.divider)),
+        border: Border(top: BorderSide(color: context.borderColor)),
       ),
       child: SafeArea(
         top: false,
@@ -541,7 +535,7 @@ class _InputBar extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Ask Copilot — try "create a pharmacy called Al Shifa"',
                   filled: true,
-                  fillColor: isDark ? DarkAppColors.surfaceAlt : AppColors.surfaceAlt,
+                  fillColor: context.surfaceAltColor,
                   contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppRadius.lg),

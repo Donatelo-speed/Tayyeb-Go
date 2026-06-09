@@ -46,8 +46,15 @@ class LoyaltyTransaction {
 
   factory LoyaltyTransaction.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>? ?? {};
+    return LoyaltyTransaction._fromMap(doc.id, d);
+  }
+
+  factory LoyaltyTransaction.fromMap(String id, Map<String, dynamic> d) =>
+      LoyaltyTransaction._fromMap(id, d);
+
+  factory LoyaltyTransaction._fromMap(String id, Map<String, dynamic> d) {
     return LoyaltyTransaction(
-      id: doc.id,
+      id: id,
       userId: d['userId'] as String? ?? '',
       points: (d['points'] as num?)?.toInt() ?? 0,
       type: LoyaltyTransactionType.fromString(d['type'] as String?),

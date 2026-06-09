@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../shared.dart';
@@ -18,9 +19,9 @@ class RevenueTrendChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Revenue Trend', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          Text('Revenue Trend', style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
           const SizedBox(height: 4),
-          Text('Last 7 days', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
+          Text('Last 7 days', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
           const SizedBox(height: 16),
           SizedBox(
             height: 200,
@@ -32,7 +33,7 @@ class RevenueTrendChart extends StatelessWidget {
                     drawVerticalLine: false,
                     horizontalInterval: maxY > 0 ? maxY / 4 : 100,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: context.dividerColor.withValues(alpha: 0.3),
+                      color: context.borderColor.withValues(alpha: 0.3),
                       strokeWidth: 1,
                     ),
                   ),
@@ -43,7 +44,7 @@ class RevenueTrendChart extends StatelessWidget {
                         reservedSize: 40,
                         getTitlesWidget: (v, _) => Text(
                           isCurrency ? '\$${v.toInt()}' : '${v.toInt()}',
-                          style: TextStyle(fontSize: 10, color: context.textMutedColor),
+                          style: GoogleFonts.inter(fontSize: 10, color: context.textMutedColor),
                         ),
                       ),
                     ),
@@ -52,7 +53,7 @@ class RevenueTrendChart extends StatelessWidget {
                         showTitles: true,
                         getTitlesWidget: (v, _) => Text(
                           const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][v.toInt() % 7],
-                          style: TextStyle(fontSize: 10, color: context.textMutedColor),
+                          style: GoogleFonts.inter(fontSize: 10, color: context.textMutedColor),
                         ),
                       ),
                     ),
@@ -99,9 +100,9 @@ class OrdersTrendChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Orders Trend', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          Text('Orders Trend', style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
           const SizedBox(height: 4),
-          Text('Last 7 days', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
+          Text('Last 7 days', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
           const SizedBox(height: 16),
           SizedBox(
             height: 200,
@@ -116,7 +117,7 @@ class OrdersTrendChart extends StatelessWidget {
                         showTitles: true,
                         getTitlesWidget: (v, _) => Text(
                           const ['M','T','W','T','F','S','S'][v.toInt() % 7],
-                          style: TextStyle(fontSize: 10, color: context.textMutedColor),
+                          style: GoogleFonts.inter(fontSize: 10, color: context.textMutedColor),
                         ),
                       ),
                     ),
@@ -173,9 +174,9 @@ class DriverActivityChart extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Driver Activity', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+              Text('Driver Activity', style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
               const SizedBox(height: 4),
-              Text('Online vs Idle', style: TextStyle(color: context.textSecondaryColor, fontSize: 12)),
+              Text('Online vs Idle', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
               const SizedBox(height: 16),
               SizedBox(
                 height: 200,
@@ -187,30 +188,30 @@ class DriverActivityChart extends StatelessWidget {
                               PieChartSectionData(
                                 value: online,
                                 title: 'Online ${(online/total*100).toInt()}%',
-                                color: AppColors.success,
+                                color: context.successColor,
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                                titleStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                               PieChartSectionData(
                                 value: onDelivery,
                                 title: 'On Delivery ${(onDelivery/total*100).toInt()}%',
-                                color: AppColors.primary,
+                                color: context.primaryColor,
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                                titleStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                               PieChartSectionData(
                                 value: idle,
                                 title: 'Idle ${(idle/total*100).toInt()}%',
-                                color: AppColors.warning,
+                                color: context.warningColor,
                                 radius: 50,
-                                titleStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                                titleStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                             ],
                             sectionsSpace: 2,
                             centerSpaceRadius: 30,
                           ),
                         )
-                      : Center(child: Text('No driver data', style: TextStyle(color: context.textMutedColor))),
+                      : Center(child: Text('No driver data', style: GoogleFonts.inter(color: context.textMutedColor))),
                 ),
               ),
             ],

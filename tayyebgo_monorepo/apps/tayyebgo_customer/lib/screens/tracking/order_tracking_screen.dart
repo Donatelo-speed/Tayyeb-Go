@@ -1,13 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
-/// Order Tracking Timeline — real-time status progression display.
-///
-/// Listens to Firestore for the order document and renders a vertical
-/// step indicator showing: Order Placed → Confirmed → Being Prepared
-/// → Out for Delivery → Delivered.
 class OrderTrackingScreen extends StatelessWidget {
   final String orderId;
 
@@ -15,19 +14,31 @@ class OrderTrackingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: 'Order Status',
-      body: StreamScreenBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('orders')
-            .doc(orderId)
-            .snapshots(),
-        onLoading: () => const ShimmerLoading(itemCount: 3),
-        onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-        onSuccess: (context, snap) {
-          if (!snap.exists) return const Center(child: Text('Order not found'));
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      body: StreamBuilder<Map<String, dynamic>?>(
+        stream: context.read<CustomerHomeProvider>().watchOrderRaw(orderId),
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 48, color: context.errorColor),
+                  const SizedBox(height: 12),
+                  Text('Failed to load order', style: GoogleFonts.inter(color: context.textMutedColor)),
+                ],
+              ),
+            );
+          }
+          if (snap.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(color: context.primaryColor));
+          }
+          final d = snap.data;
+          if (d == null || !snap.hasData) {
+            return Center(child: Text('Order not found', style: GoogleFonts.inter(color: context.textMutedColor)));
+          }
 
-          final d = snap.data() as Map<String, dynamic>;
           final currentStatusString = d['status'] as String? ?? 'placed';
           final currentStatus = OrderStatus.values.firstWhere(
             (s) => s.value == currentStatusString,
@@ -36,202 +47,98 @@ class OrderTrackingScreen extends StatelessWidget {
           final driverId = d['driverId'] as String?;
           final dropLat = (d['dropoffLatitude'] as num?)?.toDouble();
           final dropLng = (d['dropoffLongitude'] as num?)?.toDouble();
-
           final cancellable = currentStatus == OrderStatus.placed || currentStatus == OrderStatus.accepted;
           final isDelivered = currentStatus == OrderStatus.delivered;
           final rated = d['customerRating'] != null;
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
+          return Column(
             children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: TayyebGoTheme.elevatedCard,
-                child: Column(
-                  children: [
-                    Icon(
-                      _statusIcon(currentStatus),
-                      size: 56,
-                      color: _statusIconColor(currentStatus),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _statusTitle(currentStatus),
-                      style: TayyebGoTheme.heading2,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Order #${orderId.length > 8 ? orderId.substring(0, 8) : orderId}',
-                      style: TayyebGoTheme.caption,
-                    ),
-                    if (cancellable) ...[
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.cancel_outlined, size: 18),
-                          label: const Text('Cancel Order'),
-                          style: OutlinedButton.styleFrom(foregroundColor: TayyebGoTheme.errorColor, side: BorderSide(color: TayyebGoTheme.errorColor)),
-                          onPressed: () => _confirmCancel(context, d),
-                        ),
-                      ),
-                    ],
-                  ],
+              Expanded(
+                flex: 7,
+                child: Container(
+                  color: context.surfaceColor,
+                  child: _LiveMapSection(
+                    orderId: orderId,
+                    driverId: driverId,
+                    dropLat: dropLat,
+                    dropLng: dropLng,
+                    currentStatus: currentStatus,
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // Live ETA — shown when dispatched
-              if (currentStatusString == 'dispatched' && driverId != null && dropLat != null && dropLng != null)
-                _EtaCard(driverId: driverId, destination: GeoLocation(dropLat, dropLng)),
-
-              // Timeline steps
-              ...List.generate(6, (i) {
-                final step = OrderStateMachine.buildTimeline(currentStatus, i);
-                return IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+              Expanded(
+                flex: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    border: Border(top: BorderSide(color: context.borderColor, width: 0.5)),
+                  ),
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                     children: [
-                      SizedBox(
-                        width: 40,
-                        child: Column(
-                          children: [
-                            if (i > 0)
-                              Expanded(
-                                child: Container(
-                                  width: 2,
-                                  color: step.isCompleted || (step.isCurrent && !step.isPending)
-                                      ? TayyebGoTheme.successColor
-                                      : TayyebGoTheme.dividerColor,
-                                ),
-                              )
-                            else
-                              const Expanded(child: SizedBox()),
-                            Container(
-                              width: step.isCurrent ? 16 : 12,
-                              height: step.isCurrent ? 16 : 12,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: step.isCompleted
-                                    ? TayyebGoTheme.successColor
-                                    : step.isCurrent
-                                        ? TayyebGoTheme.primaryColor
-                                        : TayyebGoTheme.textMuted.withValues(alpha: 0.3),
-                                border: step.isCurrent
-                                    ? Border.all(
-                                        color: TayyebGoTheme.primaryColor.withValues(alpha: 0.3),
-                                        width: 4)
-                                    : null,
-                              ),
-                            ),
-                            if (i < 5)
-                              Expanded(
-                                child: Container(
-                                  width: 2,
-                                  color: step.isCompleted
-                                      ? TayyebGoTheme.successColor
-                                      : TayyebGoTheme.dividerColor,
-                                ),
-                              )
-                            else
-                              const Expanded(child: SizedBox()),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
+                      Center(
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: step.isCurrent
-                                ? TayyebGoTheme.primaryColor.withValues(alpha: 0.05)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  step.label,
-                                  style: TextStyle(
-                                    fontWeight: step.isCurrent ? FontWeight.w600 : FontWeight.w400,
-                                    color: step.isCompleted || step.isCurrent
-                                        ? TayyebGoTheme.textPrimary
-                                        : TayyebGoTheme.textMuted,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              if (step.isCompleted)
-                                Icon(Icons.check_circle,
-                                    color: TayyebGoTheme.successColor, size: 18),
-                              if (step.isCurrent)
-                                SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: TayyebGoTheme.primaryColor,
-                                  ),
-                                ),
-                            ],
-                          ),
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2)),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: _statusIconColor(context, currentStatus).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(_statusIcon(currentStatus), size: 24, color: _statusIconColor(context, currentStatus)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_statusTitle(currentStatus), style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
+                                Text('Order #${orderId.length > 8 ? orderId.substring(0, 8) : orderId}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      if (currentStatusString == 'dispatched' && driverId != null && dropLat != null && dropLng != null)
+                        _EtaCard(driverId: driverId, destination: GeoLocation(dropLat, dropLng)),
+                      if (driverId != null) _DriverContactCard(driverId: driverId),
+                      _buildTimeline(context, currentStatus),
+                      const SizedBox(height: 12),
+                      _buildOrderDetails(context, d),
+                      if (isDelivered && !rated) ...[
+                        const SizedBox(height: 12),
+                        OrderRating(orderId: orderId, restaurantId: d['restaurantId'] as String? ?? ''),
+                      ],
+                      if (cancellable) ...[
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed: () => _confirmCancel(context, d),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: context.errorColor,
+                              side: BorderSide(color: context.errorColor.withValues(alpha: 0.3)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: Text('Cancel Order', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
                     ],
                   ),
-                );
-              }),
-
-              const SizedBox(height: 24),
-
-              // Order details card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: TayyebGoTheme.cardDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Order Details', style: TayyebGoTheme.heading3),
-                    const SizedBox(height: 12),
-                    _detailRow('Customer',
-                        d['customerName'] as String? ?? 'Guest'),
-                    _detailRow('Phone',
-                        d['customerPhone'] as String? ?? '—'),
-                    _detailRow('Type',
-                        d['fulfillmentType'] as String? ?? 'delivery'),
-                    _detailRow('Total',
-                        '\$${(d['totalAmount'] as num?)?.toDouble() ?? 0.0}'),
-                    if (d['deliveryAddress'] is Map)
-                      _detailRow(
-                        'Address',
-                        (d['deliveryAddress'] as Map)['fullAddress'] as String? ??
-                            '—',
-                      ),
-                  ],
                 ),
               ),
-              if (isDelivered && !rated) ...[
-                const SizedBox(height: 16),
-                OrderRating(orderId: orderId, restaurantId: d['restaurantId'] as String? ?? ''),
-              ],
-              if (isDelivered && rated) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: TayyebGoTheme.cardDecoration,
-                  child: Row(children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(5, (i) => Icon(i < (d['customerRating'] as int? ?? 0) ? Icons.star : Icons.star_border, color: Colors.amber, size: 20)),
-                    ),
-                    const SizedBox(width: 12),
-                    Text('Your rating', style: TextStyle(color: TayyebGoTheme.textSecondary)),
-                  ]),
-                ),
-              ],
             ],
           );
         },
@@ -239,18 +146,137 @@ class OrderTrackingScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildTimeline(BuildContext context, OrderStatus currentStatus) {
+    return Column(
+      children: List.generate(6, (i) {
+        final step = OrderStateMachine.buildTimeline(currentStatus, i);
+        final isActive = step.isCompleted || step.isCurrent;
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                width: 36,
+                child: Column(
+                  children: [
+                    if (i > 0)
+                      Expanded(
+                        child: Container(width: 2, color: step.isCompleted ? context.successColor : context.borderColor),
+                      )
+                    else
+                      const Expanded(child: SizedBox()),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: step.isCurrent ? 14 : 10,
+                      height: step.isCurrent ? 14 : 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: step.isCompleted
+                            ? context.successColor
+                            : step.isCurrent
+                                ? context.primaryColor
+                                : context.borderColor,
+                        border: step.isCurrent
+                            ? Border.all(color: context.primaryColor.withValues(alpha: 0.3), width: 3)
+                            : null,
+                      ),
+                    ),
+                    if (i < 5)
+                      Expanded(
+                        child: Container(width: 2, color: step.isCompleted ? context.successColor : context.borderColor),
+                      )
+                    else
+                      const Expanded(child: SizedBox()),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: step.isCurrent ? context.primaryColor.withValues(alpha: 0.08) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          step.label,
+                          style: GoogleFonts.inter(
+                            fontWeight: step.isCurrent ? FontWeight.w600 : FontWeight.w400,
+                            fontSize: 13,
+                            color: isActive ? context.textPrimaryColor : context.textMutedColor,
+                          ),
+                        ),
+                      ),
+                      if (step.isCompleted)
+                        Icon(Icons.check_circle, color: context.successColor, size: 16),
+                      if (step.isCurrent)
+                        SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: context.primaryColor)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildOrderDetails(BuildContext context, Map<String, dynamic> d) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Order Details', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+          const SizedBox(height: 8),
+          _detailRow(context, 'Type', d['fulfillmentType'] as String? ?? 'delivery'),
+          _detailRow(context, 'Total', '\$${(d['totalAmount'] as num?)?.toDouble() ?? 0.0}'),
+          if (d['deliveryAddress'] is Map)
+            _detailRow(context, 'Address', (d['deliveryAddress'] as Map)['fullAddress'] as String? ?? '—'),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(BuildContext context, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 70, child: Text(label, style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor))),
+          Expanded(child: Text(value, style: GoogleFonts.inter(fontSize: 13, color: context.textPrimaryColor, fontWeight: FontWeight.w500))),
+        ],
+      ),
+    );
+  }
+
   void _confirmCancel(BuildContext context, Map<String, dynamic> d) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cancel Order'),
-        content: const Text('Are you sure you want to cancel this order?'),
+      builder: (_) => AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Cancel Order', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+        content: Text('Are you sure you want to cancel this order?', style: GoogleFonts.inter(color: context.textMutedColor)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Keep Order')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: TayyebGoTheme.errorColor),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Keep Order', style: GoogleFonts.inter(color: context.textMutedColor)),
+          ),
+          TextButton(
             onPressed: () async {
-              Navigator.pop(ctx);
+              Navigator.pop(context);
               try {
                 await OrderStateMachine.transition(
                   orderId: orderId,
@@ -259,39 +285,29 @@ class OrderTrackingScreen extends StatelessWidget {
                   note: 'Cancelled by customer',
                 );
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order cancelled'), backgroundColor: Colors.green));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Order cancelled', style: GoogleFonts.inter()),
+                      backgroundColor: context.successColor,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  );
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to cancel order. Please try again.'), backgroundColor: Colors.red));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to cancel', style: GoogleFonts.inter()),
+                      backgroundColor: context.errorColor,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  );
                 }
               }
             },
-            child: const Text('Cancel Order', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _detailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(label,
-                style: TextStyle(
-                    color: TayyebGoTheme.textSecondary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500)),
-          ),
-          Expanded(
-            child: Text(value,
-                style:
-                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text('Cancel Order', style: GoogleFonts.inter(color: context.errorColor, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -302,35 +318,35 @@ class OrderTrackingScreen extends StatelessWidget {
     switch (status) {
       case OrderStatus.placed:
       case OrderStatus.pending:
-        return Icons.receipt_long;
+        return Icons.receipt_long_rounded;
       case OrderStatus.accepted:
-        return Icons.check_circle_outline;
+        return Icons.check_circle_outline_rounded;
       case OrderStatus.preparing:
-        return Icons.restaurant;
+        return Icons.restaurant_rounded;
       case OrderStatus.ready:
       case OrderStatus.readyForDriver:
-        return Icons.delivery_dining;
+        return Icons.delivery_dining_rounded;
       case OrderStatus.dispatched:
       case OrderStatus.pickedUp:
-        return Icons.pedal_bike;
+        return Icons.pedal_bike_rounded;
       case OrderStatus.delivered:
       case OrderStatus.refunded:
-        return Icons.verified;
+        return Icons.verified_rounded;
       case OrderStatus.cancelled:
-        return Icons.cancel;
+        return Icons.cancel_rounded;
     }
   }
 
-  Color _statusIconColor(OrderStatus status) {
+  Color _statusIconColor(BuildContext context, OrderStatus status) {
     switch (status) {
       case OrderStatus.delivered:
-        return TayyebGoTheme.successColor;
+        return context.successColor;
       case OrderStatus.cancelled:
-        return TayyebGoTheme.errorColor;
+        return context.errorColor;
       case OrderStatus.placed:
-        return Colors.orange;
+        return context.warningColor;
       default:
-        return TayyebGoTheme.primaryColor;
+        return context.primaryColor;
     }
   }
 
@@ -372,45 +388,373 @@ class _EtaCard extends StatelessWidget {
       builder: (context, snap) {
         final eta = snap.data;
         return Container(
-          margin: const EdgeInsets.only(bottom: 24),
-          padding: const EdgeInsets.all(16),
-          decoration: TayyebGoTheme.elevatedCard,
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: context.backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.primaryColor.withValues(alpha: 0.15)),
+          ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: TayyebGoTheme.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: context.primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.delivery_dining, color: TayyebGoTheme.primaryColor, size: 28),
+                child: Icon(Icons.delivery_dining_rounded, color: context.primaryColor, size: 24),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Estimated Arrival',
-                        style: TextStyle(fontSize: 12, color: TayyebGoTheme.textSecondary)),
-                    const SizedBox(height: 4),
+                    Text('Estimated Arrival', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                    const SizedBox(height: 2),
                     if (eta == null || eta < 0)
-                      const Text('Calculating...',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+                      Text('Calculating...', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor))
                     else ...[
-                      Text('$eta min',
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text(eta <= 2 ? 'Almost there!' : 'Driver is on the way',
-                          style: TextStyle(fontSize: 12, color: TayyebGoTheme.textSecondary)),
+                      Text(
+                        '$eta min',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 22, color: context.textPrimaryColor),
+                      ),
+                      Text(
+                        eta <= 2 ? 'Almost there!' : 'Driver is on the way',
+                        style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+                      ),
                     ],
                   ],
                 ),
               ),
-              if (eta != null && eta > 0)
-                Text('$eta', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w300, color: TayyebGoTheme.primaryColor)),
             ],
           ),
         );
       },
     );
+  }
+}
+
+class _DriverContactCard extends StatelessWidget {
+  final String driverId;
+
+  const _DriverContactCard({required this.driverId});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(driverId).snapshots(),
+      builder: (context, snap) {
+        if (!snap.hasData || !snap.data!.exists) {
+          return const SizedBox.shrink();
+        }
+
+        final driverData = snap.data!.data() as Map<String, dynamic>?;
+        final driverName = driverData?['displayName'] as String? ?? 'Driver';
+        final driverPhone = driverData?['phoneNumber'] as String?;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: context.backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: context.borderColor),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: context.primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.person_rounded, color: context.primaryColor, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Your Driver', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                        const SizedBox(height: 2),
+                        Text(driverName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: driverPhone != null ? () => _launchCall(driverPhone) : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: context.successColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: driverPhone != null ? context.successColor : context.borderColor),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.call_rounded, color: driverPhone != null ? context.successColor : context.textMutedColor, size: 20),
+                            const SizedBox(width: 8),
+                            Text('Call', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: driverPhone != null ? context.successColor : context.textMutedColor)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: driverPhone != null ? () => _launchMessage(driverPhone) : null,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: context.primaryColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: driverPhone != null ? context.primaryColor : context.borderColor),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.message_rounded, color: driverPhone != null ? context.primaryColor : context.textMutedColor, size: 20),
+                            const SizedBox(width: 8),
+                            Text('Message', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: driverPhone != null ? context.primaryColor : context.textMutedColor)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _launchCall(String phone) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  Future<void> _launchMessage(String phone) async {
+    final uri = Uri(scheme: 'sms', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+}
+
+class _LiveMapSection extends StatelessWidget {
+  final String orderId;
+  final String? driverId;
+  final double? dropLat;
+  final double? dropLng;
+  final OrderStatus currentStatus;
+
+  const _LiveMapSection({
+    required this.orderId,
+    required this.driverId,
+    required this.dropLat,
+    required this.dropLng,
+    required this.currentStatus,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // If no driver assigned or no destination, show placeholder
+    if (driverId == null || dropLat == null || dropLng == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_statusIcon(currentStatus), size: 48, color: _statusIconColor(context, currentStatus)),
+            const SizedBox(height: 12),
+            Text('Order #${orderId.length > 8 ? orderId.substring(0, 8) : orderId}',
+                style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+            const SizedBox(height: 8),
+            Text(
+              currentStatus == OrderStatus.placed || currentStatus == OrderStatus.accepted
+                  ? 'Waiting for driver assignment...'
+                  : 'Driver will be assigned soon',
+              style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show live map when driver is assigned
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('driver_locations').doc(driverId).snapshots(),
+      builder: (context, snap) {
+        if (snap.hasError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.map_outlined, size: 48, color: context.textMutedColor),
+                const SizedBox(height: 12),
+                Text('Map unavailable', style: GoogleFonts.inter(color: context.textMutedColor)),
+              ],
+            ),
+          );
+        }
+
+        if (!snap.hasData || !snap.data!.exists) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.location_searching_rounded, size: 48, color: context.primaryColor),
+                const SizedBox(height: 12),
+                Text('Locating driver...', style: GoogleFonts.inter(color: context.textMutedColor)),
+                const SizedBox(height: 16),
+                SizedBox(width: 32, height: 32, child: CircularProgressIndicator(strokeWidth: 2, color: context.primaryColor)),
+              ],
+            ),
+          );
+        }
+
+        final driverData = snap.data!.data() as Map<String, dynamic>?;
+        final driverLat = (driverData?['latitude'] as num?)?.toDouble();
+        final driverLng = (driverData?['longitude'] as num?)?.toDouble();
+
+        if (driverLat == null || driverLng == null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.location_searching_rounded, size: 48, color: context.primaryColor),
+                const SizedBox(height: 12),
+                Text('Waiting for driver location...', style: GoogleFonts.inter(color: context.textMutedColor)),
+                const SizedBox(height: 16),
+                SizedBox(width: 32, height: 32, child: CircularProgressIndicator(strokeWidth: 2, color: context.primaryColor)),
+              ],
+            ),
+          );
+        }
+
+        return FlutterMap(
+          options: MapOptions(
+            initialCenter: LatLng((driverLat + (dropLat ?? driverLat)) / 2, (driverLng + (dropLng ?? driverLng)) / 2),
+            initialZoom: 13.0,
+            interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.tayyebgo.customer',
+            ),
+            MarkerLayer(
+              markers: [
+                // Driver marker
+                Marker(
+                  point: LatLng(driverLat, driverLng),
+                  width: 40,
+                  height: 40,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.primaryColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.primaryColor.withValues(alpha: 0.4),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.directions_bike_rounded, color: Colors.white, size: 20),
+                  ),
+                ),
+                // Destination marker
+                if (dropLat != null && dropLng != null)
+                Marker(
+                  point: LatLng(dropLat!, dropLng!),
+                  width: 40,
+                  height: 40,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.successColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.successColor.withValues(alpha: 0.4),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.location_on_rounded, color: Colors.white, size: 20),
+                  ),
+                ),
+              ],
+            ),
+            PolylineLayer(
+              polylines: [
+                if (dropLat != null && dropLng != null)
+                Polyline(
+                  points: [
+                    LatLng(driverLat, driverLng),
+                    LatLng(dropLat!, dropLng!),
+                  ],
+                  strokeWidth: 3.0,
+                  color: context.primaryColor,
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  IconData _statusIcon(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.placed:
+      case OrderStatus.pending:
+        return Icons.receipt_long_rounded;
+      case OrderStatus.accepted:
+        return Icons.check_circle_outline_rounded;
+      case OrderStatus.preparing:
+        return Icons.restaurant_rounded;
+      case OrderStatus.ready:
+      case OrderStatus.readyForDriver:
+        return Icons.delivery_dining_rounded;
+      case OrderStatus.dispatched:
+      case OrderStatus.pickedUp:
+        return Icons.pedal_bike_rounded;
+      case OrderStatus.delivered:
+      case OrderStatus.refunded:
+        return Icons.verified_rounded;
+      case OrderStatus.cancelled:
+        return Icons.cancel_rounded;
+    }
+  }
+
+  Color _statusIconColor(BuildContext context, OrderStatus status) {
+    switch (status) {
+      case OrderStatus.delivered:
+        return context.successColor;
+      case OrderStatus.cancelled:
+        return context.errorColor;
+      case OrderStatus.placed:
+        return context.warningColor;
+      default:
+        return context.primaryColor;
+    }
   }
 }

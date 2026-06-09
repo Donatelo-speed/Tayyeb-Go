@@ -1,65 +1,131 @@
 import 'package:flutter/material.dart';
 import '../presentation/theme/app_colors.dart';
+import 'app_button.dart';
 
-class AppErrorWidget extends StatelessWidget {
+/// TGErrorWidget — Error display with shake animation
+class TGErrorWidget extends StatefulWidget {
+  final String? title;
   final String message;
   final VoidCallback? onRetry;
+  final IconData? icon;
 
-  const AppErrorWidget({super.key, required this.message, this.onRetry});
+  const TGErrorWidget({
+    super.key,
+    this.title,
+    required this.message,
+    this.onRetry,
+    this.icon,
+  });
+
+  @override
+  State<TGErrorWidget> createState() => _TGErrorWidgetState();
+}
+
+class _TGErrorWidgetState extends State<TGErrorWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _shakeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: _ShakeCurve()),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child:
-                  Icon(Icons.error_outline, size: 40, color: AppColors.error),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Something went wrong',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              message,
-              style:
-                  const TextStyle(color: AppColors.textSecondary, fontSize: 12),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (onRetry != null) ...[
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Try Again'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+        child: AnimatedBuilder(
+          animation: _shakeAnimation,
+          builder: (context, child) {
+            final shake = (_shakeAnimation.value * 8 - 4);
+            return Transform.translate(
+              offset: Offset(shake, 0),
+              child: child,
+            );
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppColors.glowError,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  widget.icon ?? Icons.error_outline_rounded,
+                  size: 32,
+                  color: AppColors.error,
                 ),
               ),
+              const SizedBox(height: 20),
+              if (widget.title != null) ...[
+                Text(
+                  widget.title!,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+              ],
+              Text(
+                widget.message,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (widget.onRetry != null) ...[
+                const SizedBox(height: 24),
+                TGB.primary(
+                  label: 'Try Again',
+                  onPressed: widget.onRetry,
+                  isExpanded: false,
+                  width: 160,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 }
+
+class _ShakeCurve extends Curve {
+  @override
+  double transformInternal(double t) {
+    if (t < 0.2) return t * 5 * 0.3;
+    if (t < 0.4) return 0.3 - (t - 0.2) * 5 * 0.3;
+    if (t < 0.6) return (t - 0.4) * 5 * 0.15;
+    if (t < 0.8) return 0.15 - (t - 0.6) * 5 * 0.15;
+    return 0;
+  }
+}
+
+// Backward compatibility alias
+typedef AppErrorWidget = TGErrorWidget;

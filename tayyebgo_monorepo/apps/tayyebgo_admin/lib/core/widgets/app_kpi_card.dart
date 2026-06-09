@@ -40,7 +40,7 @@ class AppKpiCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderRadius: AppRadius.brCard,
               boxShadow: [
                 BoxShadow(
                   color: gradient.first.withValues(alpha: 0.2),
@@ -65,21 +65,16 @@ class AppKpiCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               value,
-              style: TextStyle(
+              style: AppTypography.displaySmall.copyWith(
                 color: flat ? context.textPrimaryColor : Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
               ),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
+            style: AppTypography.body.copyWith(
               color: flat ? context.textSecondaryColor : Colors.white.withValues(alpha: 0.8),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
             ),
           ),
           if (subtitle != null || trend != null) ...[
@@ -89,19 +84,17 @@ class AppKpiCard extends StatelessWidget {
                 Icon(
                   trendUp ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
                   color: flat
-                      ? (trendUp ? AppColors.success : AppColors.error)
+                      ? (trendUp ? context.successColor : context.errorColor)
                       : Colors.white.withValues(alpha: 0.9),
                   size: 12,
                 ),
                 const SizedBox(width: 2),
                 Text(
                   trend!,
-                  style: TextStyle(
+                  style: AppTypography.labelSmall.copyWith(
                     color: flat
-                        ? (trendUp ? AppColors.success : AppColors.error)
+                        ? (trendUp ? context.successColor : context.errorColor)
                         : Colors.white.withValues(alpha: 0.9),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -110,9 +103,8 @@ class AppKpiCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     subtitle!,
-                    style: TextStyle(
+                    style: AppTypography.bodySmall.copyWith(
                       color: flat ? context.textMutedColor : Colors.white.withValues(alpha: 0.6),
-                      fontSize: 11,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -128,7 +120,7 @@ class AppKpiCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: AppRadius.brCard,
         child: card,
       ),
     );
@@ -140,7 +132,7 @@ class AppKpiCard extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: gradient.first.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.brSm,
         ),
         child: Icon(icon, color: gradient.first, size: 20),
       );
@@ -149,7 +141,7 @@ class AppKpiCard extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brSm,
       ),
       child: Icon(icon, color: Colors.white, size: 20),
     );

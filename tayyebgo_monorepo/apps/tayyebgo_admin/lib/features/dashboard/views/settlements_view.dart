@@ -1,48 +1,60 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
+
+const _purple = Color(0xFF8B5CF6);
 
 class SettlementsView extends StatelessWidget {
   const SettlementsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return pageContainer(context, child: AppScaffold(
-      title: 'Driver Settlements',
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where('role', isEqualTo: 'driver')
-            .where('status', isEqualTo: 'active')
-            .limit(100)
-            .snapshots(),
-        builder: (context, snap) {
-          if (!snap.hasData) return const ShimmerLoading(itemCount: 4, itemHeight: 100);
-          final drivers = snap.data!.docs;
-          if (drivers.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.account_balance_wallet_outlined, size: 64, color: context.textMutedColor.withValues(alpha: 0.5)),
-                  const SizedBox(height: 12),
-                  Text('No active drivers', style: TextStyle(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
-                ],
-              ),
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Driver Settlements', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'driver').where('isActive', isEqualTo: true).limit(200).snapshots(),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator(color: context.primaryColor));
+            }
+            if (snap.hasError) {
+              return Center(child: Text('Error loading drivers', style: GoogleFonts.inter(color: context.textMutedColor)));
+            }
+            final drivers = snap.data?.docs ?? [];
+            if (drivers.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.account_balance_wallet_outlined, size: 64, color: context.borderColor),
+                    const SizedBox(height: 12),
+                    Text('No active drivers', style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              );
+            }
+            return ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                _buildSummary(context, drivers),
+                const SizedBox(height: 20),
+                ...drivers.map((d) => _driverRow(context, d)),
+              ],
             );
-          }
-          return ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              _buildSummary(context, drivers),
-              const SizedBox(height: 20),
-              ...drivers.map((d) => _driverRow(context, d)),
-            ],
-          );
-        },
+          },
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildSummary(BuildContext context, List<QueryDocumentSnapshot> drivers) {
@@ -62,10 +74,10 @@ class SettlementsView extends StatelessWidget {
           crossAxisSpacing: 12,
           childAspectRatio: 2.4,
           children: [
-            _summaryCard(context, Icons.people, 'Total Drivers', '$total', AppColors.primary),
-            _summaryCard(context, Icons.circle, 'Online Now', '$active', AppColors.success),
-            _summaryCard(context, Icons.payments, 'Cash Pool', '—', AppColors.warning, subtitle: 'Tap driver to view'),
-            _summaryCard(context, Icons.receipt_long, 'Open Invoices', '—', AppColors.info, subtitle: 'Tap driver to view'),
+            _summaryCard(context, Icons.people_rounded, 'Total Drivers', '$total', context.primaryColor),
+            _summaryCard(context, Icons.circle_rounded, 'Online Now', '$active', context.successColor),
+            _summaryCard(context, Icons.payments_rounded, 'Cash Pool', '—', context.warningColor, subtitle: 'Tap driver to view'),
+            _summaryCard(context, Icons.receipt_long_rounded, 'Open Invoices', '—', _purple, subtitle: 'Tap driver to view'),
           ],
         );
       },
@@ -75,7 +87,11 @@ class SettlementsView extends StatelessWidget {
   Widget _summaryCard(BuildContext context, IconData icon, String label, String value, Color color, {String? subtitle}) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: cardDecoBordered(context),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Row(
         children: [
           Container(
@@ -89,9 +105,9 @@ class SettlementsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: context.textPrimaryColor)),
-                Text(label, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-                if (subtitle != null) Text(subtitle, style: TextStyle(fontSize: 10, color: context.textMutedColor)),
+                Text(value, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: color)),
+                Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+                if (subtitle != null) Text(subtitle, style: GoogleFonts.inter(fontSize: 10, color: context.textMutedColor)),
               ],
             ),
           ),
@@ -108,13 +124,23 @@ class SettlementsView extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
-      decoration: cardDecoBordered(context),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: context.primaryColor.withValues(alpha: 0.1),
-            child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w700)),
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: context.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 16, color: context.primaryColor)),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -123,23 +149,24 @@ class SettlementsView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                    Text(name, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
                     const SizedBox(width: 6),
                     Container(
-                      width: 8, height: 8,
-                      decoration: BoxDecoration(color: isOnline ? AppColors.success : context.textMutedColor, shape: BoxShape.circle),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(color: isOnline ? context.successColor : context.textMutedColor, shape: BoxShape.circle),
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(phone, style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+                Text(phone, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
               ],
             ),
           ),
           TextButton.icon(
             onPressed: () => _showSettlement(context, d, doc.id),
-            icon: const Icon(Icons.receipt_long, size: 16),
-            label: const Text('Settle'),
+            icon: Icon(Icons.receipt_long_rounded, size: 16, color: context.primaryColor),
+            label: Text('Settle', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.primaryColor)),
           ),
         ],
       ),
@@ -164,7 +191,8 @@ class SettlementsView extends StatelessWidget {
               .where('driverId', isEqualTo: driverId)
               .where('status', isEqualTo: 'delivered')
               .where('paymentMethod', isEqualTo: 'cash')
-              .limit(200)
+              .limit(500)
+              .orderBy('deliveredAt', descending: true)
               .snapshots(),
           builder: (context, snap) {
             double collected = 0;
@@ -186,23 +214,29 @@ class SettlementsView extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               children: [
                 Center(
-                  child: Container(width: 36, height: 4, decoration: BoxDecoration(color: context.dividerColor, borderRadius: BorderRadius.circular(2))),
+                  child: Container(width: 36, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2))),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: context.primaryColor.withValues(alpha: 0.1),
-                      child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w700, fontSize: 18)),
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: context.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Center(
+                        child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: context.primaryColor)),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
-                          Text('Cash settlement', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+                          Text(name, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+                          Text('Cash settlement', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
                         ],
                       ),
                     ),
@@ -212,32 +246,36 @@ class SettlementsView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.7)]),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(colors: [context.primaryColor, context.primaryColor]),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Cash Collected', style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 12)),
+                      Text('Cash Collected', style: GoogleFonts.inter(color: context.textPrimaryColor.withValues(alpha: 0.85), fontSize: 12)),
                       const SizedBox(height: 4),
-                      Text('${collected.toStringAsFixed(0)} SYP', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+                      Text('${collected.toStringAsFixed(0)} SYP', style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 28, fontWeight: FontWeight.w800)),
                       const SizedBox(height: 4),
-                      Text('$count cash orders', style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 12)),
+                      Text('$count cash orders', style: GoogleFonts.inter(color: context.textPrimaryColor.withValues(alpha: 0.85), fontSize: 12)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
                 _settlementRow(context, 'Platform share (15%)', '${platformShare.toStringAsFixed(0)} SYP', context.textPrimaryColor),
                 _settlementRow(context, 'Driver share (85%)', '${driverShare.toStringAsFixed(0)} SYP', context.textPrimaryColor),
-                const Divider(height: 24),
-                _settlementRow(context, 'Owes platform', '${platformShare.toStringAsFixed(0)} SYP', AppColors.error, bold: true),
+                Divider(height: 24, color: context.borderColor),
+                _settlementRow(context, 'Owes platform', '${platformShare.toStringAsFixed(0)} SYP', context.errorColor, bold: true),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Close'),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: context.borderColor),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Text('Close', style: GoogleFonts.inter(color: context.textMutedColor)),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -256,12 +294,14 @@ class SettlementsView extends StatelessWidget {
                           });
                           if (context.mounted) {
                             Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Settlement recorded'), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Settlement recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                            );
                           }
                         },
-                        icon: const Icon(Icons.check, size: 16),
-                        label: const Text('Mark Paid'),
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, foregroundColor: Colors.white),
+                        icon: const Icon(Icons.check_rounded, size: 16),
+                        label: Text('Mark Paid', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                        style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                       ),
                     ),
                   ],
@@ -279,8 +319,8 @@ class SettlementsView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: TextStyle(fontSize: 13, color: context.textSecondaryColor))),
-          Text(value, style: TextStyle(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w600, color: valueColor)),
+          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor))),
+          Text(value, style: GoogleFonts.inter(fontSize: bold ? 16 : 14, fontWeight: bold ? FontWeight.w800 : FontWeight.w600, color: valueColor)),
         ],
       ),
     );

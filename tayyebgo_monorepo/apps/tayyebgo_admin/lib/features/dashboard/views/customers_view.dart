@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
 
@@ -21,33 +22,51 @@ class _CustomersViewState extends State<CustomersView> {
 
   @override
   Widget build(BuildContext context) {
-    return pageContainer(context, child: AppScaffold(
-      showAppBar: false,
-      title: 'Customers',
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Customers', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
         body: Column(children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: TextField(
-              controller: _searchCtrl,
-              decoration: InputDecoration(
-                hintText: 'Search customers by name or email...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(tooltip: 'Clear search', icon: const Icon(Icons.clear), onPressed: () { _searchCtrl.clear(); setState(() => _searchQuery = ''); })
-                    : null,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: context.borderColor),
               ),
-              onChanged: (v) => setState(() => _searchQuery = v),
+              child: TextField(
+                controller: _searchCtrl,
+                style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+                onChanged: (v) => setState(() => _searchQuery = v),
+                decoration: InputDecoration(
+                  hintText: 'Search by name or email...',
+                  hintStyle: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13),
+                  prefixIcon: Icon(Icons.search_rounded, size: 20, color: context.textMutedColor),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
             ),
           ),
           Expanded(
-            child: StreamScreenBuilder<QuerySnapshot>(
+            child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'customer').limit(500).snapshots(),
-              onLoading: () => const ShimmerLoading(itemCount: 6),
-              onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-              onSuccess: (context, snapshot) {
-                var docs = snapshot.docs;
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator(color: context.primaryColor));
+                }
+                if (snap.hasError) {
+                  return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+                }
+                var docs = snap.data?.docs ?? [];
                 if (_searchQuery.isNotEmpty) {
                   final q = _searchQuery.toLowerCase();
                   docs = docs.where((doc) {
@@ -59,11 +78,23 @@ class _CustomersViewState extends State<CustomersView> {
                 }
                 if (docs.isEmpty) {
                   return Center(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.people_outlined, size: 64, color: AppColors.textMuted),
-                      const SizedBox(height: 16),
-                      Text('No customers yet', style: TextStyle(color: AppColors.textMuted, fontSize: 16)),
-                    ]),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: context.surfaceColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: context.borderColor),
+                          ),
+                          child: Icon(Icons.people_outlined, size: 36, color: context.textMutedColor),
+                        ),
+                        const SizedBox(height: 16),
+                        Text('No customers yet', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
                   );
                 }
                 return ListView.builder(
@@ -78,69 +109,15 @@ class _CustomersViewState extends State<CustomersView> {
                     final isActive = d['isActive'] as bool? ?? true;
                     final ordersCount = (d['ordersCount'] as num?)?.toInt() ?? 0;
                     final totalSpending = (d['totalSpending'] as num?)?.toDouble() ?? 0;
-                    final avgRating = (d['avgRating'] as num?)?.toDouble() ?? 0;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(16),
-                      decoration: TayyebGoTheme.cardDecoration,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                              child: Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
-                                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(displayName, style: AppTypography.bodyBold),
-                                  Row(children: [
-                                    Text(email, style: AppTypography.caption),
-                                    if (phone != '-') ...[
-                                      const SizedBox(width: 8),
-                                      Text(phone, style: AppTypography.caption),
-                                    ],
-                                  ]),
-                                ],
-                              ),
-                            ),
-                            if (!isActive)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                                child: Text('Suspended', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.error)),
-                              ),
-                            PopupMenuButton<String>(
-                              onSelected: (v) {
-                                if (v == 'view') _showCustomerDetails(context, id, d);
-                                if (v == 'suspend') _toggleCustomerStatus(id, !isActive);
-                                if (v == 'contact') _showContactCustomer(context, displayName);
-                              },
-                              itemBuilder: (_) => [
-                                const PopupMenuItem(value: 'view', child: ListTile(leading: Icon(Icons.visibility, size: 20), title: Text('View Profile'))),
-                                PopupMenuItem(value: 'suspend', child: ListTile(
-                                  leading: Icon(isActive ? Icons.block : Icons.check_circle, size: 20, color: isActive ? Colors.orange : AppColors.success),
-                                  title: Text(isActive ? 'Suspend' : 'Activate'),
-                                )),
-                                const PopupMenuItem(value: 'contact', child: ListTile(leading: Icon(Icons.message, size: 20), title: Text('Contact'))),
-                              ],
-                            ),
-                          ]),
-                          const SizedBox(height: 12),
-                          Row(children: [
-                            _customerStat(Icons.shopping_bag, '$ordersCount', 'Orders', Colors.blue),
-                            const SizedBox(width: 24),
-                            _customerStat(Icons.attach_money, '\$${totalSpending.toStringAsFixed(0)}', 'Spent', Colors.green),
-                            const SizedBox(width: 24),
-                            _customerStat(Icons.star, avgRating > 0 ? avgRating.toStringAsFixed(1) : '-', 'Rating', Colors.amber),
-                          ]),
-                        ],
-                      ),
+                    return _CustomerCard(
+                      id: id,
+                      displayName: displayName,
+                      email: email,
+                      phone: phone,
+                      isActive: isActive,
+                      ordersCount: ordersCount,
+                      totalSpending: totalSpending,
+                      data: d,
                     );
                   },
                 );
@@ -151,109 +128,166 @@ class _CustomersViewState extends State<CustomersView> {
       ),
     );
   }
+}
 
-  Widget _customerStat(IconData icon, String value, String label, Color color) {
-    return Row(children: [
-      Icon(icon, size: 14, color: color),
-      const SizedBox(width: 4),
-      Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: color)),
-      const SizedBox(width: 4),
-      Text(label, style: AppTypography.small),
-    ]);
+class _CustomerCard extends StatelessWidget {
+  final String id;
+  final String displayName;
+  final String email;
+  final String phone;
+  final bool isActive;
+  final int ordersCount;
+  final double totalSpending;
+  final Map<String, dynamic> data;
+
+  const _CustomerCard({
+    required this.id,
+    required this.displayName,
+    required this.email,
+    required this.phone,
+    required this.isActive,
+    required this.ordersCount,
+    required this.totalSpending,
+    required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: context.primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.primaryColor)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                    const SizedBox(height: 2),
+                    Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                  ],
+                ),
+              ),
+              if (!isActive)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                  child: Text('Suspended', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: context.errorColor)),
+                ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert_rounded, size: 18, color: context.textMutedColor),
+                onSelected: (v) {
+                  if (v == 'view') _showCustomerDetails(context, id, data);
+                  if (v == 'suspend') _toggleCustomerStatus(id, !isActive, context);
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'view', child: Text('View Profile', style: GoogleFonts.inter(fontSize: 13))),
+                  PopupMenuItem(value: 'suspend', child: Text(isActive ? 'Suspend' : 'Activate', style: GoogleFonts.inter(fontSize: 13, color: isActive ? context.errorColor : context.successColor))),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _stat(context, Icons.shopping_bag_rounded, '$ordersCount', 'Orders', context.primaryColor),
+              const SizedBox(width: 20),
+              _stat(context, Icons.attach_money_rounded, '\$${totalSpending.toStringAsFixed(0)}', 'Spent', context.successColor),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat(BuildContext context, IconData icon, String value, String label, Color color) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: color)),
+        const SizedBox(width: 4),
+        Text(label, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
+      ],
+    );
   }
 
   void _showCustomerDetails(BuildContext context, String uid, Map<String, dynamic> d) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(d['displayName'] as String? ?? 'Customer'),
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(d['displayName'] as String? ?? 'Customer', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 350,
           child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('orders').where('userId', isEqualTo: uid).orderBy('createdAt', descending: true).limit(20).snapshots(),
             builder: (context, orderSnap) {
-              if (orderSnap.hasError) {
-                return Text('Error loading orders: ${orderSnap.error}', style: const TextStyle(color: Colors.red));
-              }
+              if (orderSnap.hasError) return Text('Error loading orders', style: GoogleFonts.inter(color: context.errorColor, fontSize: 13));
               int refundCount = 0;
               if (orderSnap.hasData) {
                 refundCount = orderSnap.data!.docs.where((doc) => (doc.data() as Map<String, dynamic>)['status'] == 'refunded').length;
               }
-              return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Email: ${d['email'] as String? ?? 'N/A'}', style: AppTypography.body),
-                Text('Phone: ${d['phone'] as String? ?? 'N/A'}', style: AppTypography.body),
-                const Divider(),
-                Text('Orders: ${orderSnap.hasData ? orderSnap.data!.docs.length : 0}', style: AppTypography.bodyBold),
-                Text('Refunds: $refundCount', style: AppTypography.body),
-                Text('Total Spent: \$${((d['totalSpending'] as num?)?.toDouble() ?? 0).toStringAsFixed(0)}', style: AppTypography.bodyBold),
-                if (orderSnap.hasData && orderSnap.data!.docs.isNotEmpty) ...[
-                  const Divider(),
-                  Text('Recent Orders', style: AppTypography.heading3),
-                  const SizedBox(height: 8),
-                  ...orderSnap.data!.docs.take(5).map((doc) {
-                    final od = doc.data() as Map<String, dynamic>;
-                    return ListTile(
-                      dense: true,
-                      title: Text(od['restaurantName'] as String? ?? 'Store'),
-                      trailing: Text('\$${((od['totalAmount'] as num?)?.toDouble() ?? 0).toStringAsFixed(0)}'),
-                    );
-                  }),
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Email: ${d['email'] ?? 'N/A'}', style: GoogleFonts.inter(color: context.textSecondaryColor, fontSize: 13)),
+                  Text('Phone: ${d['phone'] ?? 'N/A'}', style: GoogleFonts.inter(color: context.textSecondaryColor, fontSize: 13)),
+                  Divider(color: context.borderColor),
+                  Text('Orders: ${orderSnap.data?.docs.length ?? 0}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                  Text('Refunds: $refundCount', style: GoogleFonts.inter(color: context.textSecondaryColor, fontSize: 13)),
+                  Text('Total Spent: \$${((d['totalSpending'] as num?)?.toDouble() ?? 0).toStringAsFixed(0)}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
                 ],
-              ]);
+              );
             },
           ),
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close'))],
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Close', style: GoogleFonts.inter(color: context.primaryColor)))],
       ),
     );
   }
 
-  Future<void> _toggleCustomerStatus(String docId, bool active) async {
+  Future<void> _toggleCustomerStatus(String docId, bool active, BuildContext context) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(docId).update({'isActive': active});
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(active ? 'Account activated' : 'Account suspended'),
-          backgroundColor: active ? AppColors.success : Colors.orange,
-        ));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(active ? 'Account activated' : 'Account suspended', style: GoogleFonts.inter()),
+            backgroundColor: active ? context.successColor : context.warningColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
       }
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Update failed'),
-          backgroundColor: AppColors.error,
-        ));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Update failed', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        );
       }
     }
-  }
-
-  void _showContactCustomer(BuildContext context, String name) {
-    final ctrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Contact $name'),
-        content: TextField(
-          controller: ctrl,
-          maxLines: 4,
-          decoration: const InputDecoration(labelText: 'Message', border: OutlineInputBorder()),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Message sent (simulated)'),
-                  backgroundColor: AppColors.success,
-                ));
-              }
-            },
-            child: const Text('Send'),
-          ),
-        ],
-      ),
-    );
   }
 }

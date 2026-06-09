@@ -48,8 +48,15 @@ class SmartAddress {
 
   factory SmartAddress.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>? ?? {};
+    return SmartAddress._fromMap(doc.id, d);
+  }
+
+  factory SmartAddress.fromMap(String id, Map<String, dynamic> d) =>
+      SmartAddress._fromMap(id, d);
+
+  factory SmartAddress._fromMap(String id, Map<String, dynamic> d) {
     return SmartAddress(
-      id: doc.id,
+      id: id,
       label: d['label'] as String? ?? 'Address',
       fullAddress: d['fullAddress'] as String? ?? '',
       city: d['city'] as String?,

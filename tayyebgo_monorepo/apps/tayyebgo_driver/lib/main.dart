@@ -2,20 +2,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'screens/active_delivery_screen.dart';
 import 'screens/available_requests_screen.dart';
-import 'screens/driver_dashboard_screen.dart';
 import 'screens/driver_earnings_screen.dart';
-import 'screens/driver_safety_screen.dart';
 import 'screens/driver_wallet_screen.dart';
+import 'screens/driver_safety_screen.dart';
+import 'screens/driver_onboarding_screen.dart';
+import 'screens/driver_profile_screen.dart';
+import 'screens/driver_dashboard_screen.dart';
+import 'screens/driver_splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     AuthGateService.instance.init();
+    AppLocator.instance.init();
     runApp(const DriverApp());
   } catch (e, s) {
     if (kDebugMode) {
@@ -40,13 +45,12 @@ class _ErrorApp extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
                 const SizedBox(height: 16),
-                const Text('Initialization Error',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text('Initialization Error', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 20, color: Theme.of(context).colorScheme.onSurface)),
                 const SizedBox(height: 8),
                 Text(message, textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey)),
+                    style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
               ],
             ),
           ),
@@ -65,12 +69,14 @@ class DriverApp extends StatefulWidget {
 class _DriverAppState extends State<DriverApp> {
   late final AuthListenable _authListenable;
   late final GoRouter _router;
+  late final ThemeProvider _themeProvider;
 
   @override
   void initState() {
     super.initState();
     _authListenable = AuthListenable();
     _router = _buildRouter();
+    _themeProvider = ThemeProvider();
   }
 
   GoRouter _buildRouter() {
@@ -78,7 +84,9 @@ class _DriverAppState extends State<DriverApp> {
       refreshListenable: _authListenable,
       initialLocation: '/splash',
       routes: [
+        AppRouter.route('/splash', const DriverSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
+        AppRouter.route('/onboarding', const DriverOnboardingScreen(), name: 'onboarding'),
         AppRouter.route('/dashboard', const AuthStateRedirector(child: DriverDashboardScreen()), name: 'dashboard'),
         AppRouter.route('/available-requests', const AvailableRequestsScreen(), name: 'availableRequests'),
         AppRouter.route('/earnings', const DriverEarningsScreen(), name: 'earnings'),
@@ -101,8 +109,9 @@ class _DriverAppState extends State<DriverApp> {
             ),
           ),
         ),
-        AppRouter.route('/profile', const ProfileScreen(), name: 'profile'),
+        AppRouter.route('/profile', const DriverProfileScreen(), name: 'profile'),
         AppRouter.route('/settings', const SettingsScreen(), name: 'settings'),
+        AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
       ],
       redirect: _redirect,
     );
@@ -119,6 +128,7 @@ class _DriverAppState extends State<DriverApp> {
   @override
   void dispose() {
     _authListenable.dispose();
+    _themeProvider.dispose();
     super.dispose();
   }
 
@@ -126,36 +136,29 @@ class _DriverAppState extends State<DriverApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Essential providers - initialized immediately
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en')),
-        ChangeNotifierProvider(create: (_) => AnythingProvider()),
-        ChangeNotifierProvider(create: (_) => DriverWalletProvider()),
-        ChangeNotifierProvider(create: (_) => DispatchProvider()),
+        ChangeNotifierProvider.value(value: _themeProvider),
+        // Lazy-loaded providers - only created when accessed
+        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider(create: (_) => AnythingProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => DriverWalletProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => DispatchProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => UserProfileProvider(), lazy: true),
       ],
       child: _DispatchLifecycle(
         child: ErrorBoundary(
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'TayyebGo - Driver',
-            theme: _buildTheme(),
+            theme: TayyebGoTheme.lightTheme(context),
+            darkTheme: TayyebGoTheme.darkTheme(context),
+            themeMode: _themeProvider.mode,
             routerConfig: _router,
           ),
         ),
       ),
-    );
-  }
-
-  ThemeData _buildTheme() {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: TayyebGoTheme.primaryColor,
-        primary: TayyebGoTheme.primaryColor,
-      ),
-      scaffoldBackgroundColor: TayyebGoTheme.backgroundColor,
-      appBarTheme: TayyebGoTheme.appBarTheme,
-      inputDecorationTheme: TayyebGoTheme.inputDecoration,
-      elevatedButtonTheme: TayyebGoTheme.elevatedButton,
     );
   }
 }

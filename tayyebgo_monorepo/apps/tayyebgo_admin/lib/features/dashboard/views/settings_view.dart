@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tayyebgo_admin/core/design_system/design_system.dart' as ds;
 import 'package:tayyebgo_admin/core/services/admin_firestore_service.dart';
-import 'package:tayyebgo_admin/core/widgets/widgets.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'shared.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView();
@@ -13,49 +13,30 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final theme = context.watch<ThemeProvider>();
-    return ResponsiveContent(
-      padding: EdgeInsets.zero,
-      child: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: ds.AppSpacing.lg,
-          vertical: ds.AppSpacing.lg,
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        body: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Text('Settings', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor)),
+            const SizedBox(height: 4),
+            Text('Manage your account, preferences, and platform features.', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
+            const SizedBox(height: 24),
+            _ProfileCard(auth: auth),
+            const SizedBox(height: 16),
+            _PreferencesCard(theme: theme),
+            const SizedBox(height: 16),
+            _FeatureTogglesCard(),
+            const SizedBox(height: 16),
+            _AccountCard(auth: auth),
+            const SizedBox(height: 16),
+            _AboutCard(),
+            const SizedBox(height: 32),
+          ],
         ),
-        children: [
-          _SectionHeader(
-            title: 'Settings',
-            subtitle: 'Manage your account, preferences, and platform features.',
-          ),
-          const SizedBox(height: ds.AppSpacing.lg),
-          _ProfileCard(auth: auth),
-          const SizedBox(height: ds.AppSpacing.md),
-          _PreferencesCard(theme: theme),
-          const SizedBox(height: ds.AppSpacing.md),
-          _FeatureTogglesCard(),
-          const SizedBox(height: ds.AppSpacing.md),
-          _AccountCard(auth: auth),
-          const SizedBox(height: ds.AppSpacing.md),
-          _AboutCard(),
-          const SizedBox(height: ds.AppSpacing.xl),
-        ],
       ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  const _SectionHeader({required this.title, required this.subtitle});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 4),
-        Text(subtitle,
-            style: ds.AppTypography.caption.copyWith(color: context.textSecondaryColor)),
-      ],
     );
   }
 }
@@ -68,55 +49,50 @@ class _ProfileCard extends StatelessWidget {
     final name = auth.user?.displayName ?? 'Admin';
     final email = auth.user?.email ?? 'admin@tayyebgo.com';
     final initials = name.isNotEmpty ? name[0].toUpperCase() : 'A';
-    return AdminCard(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.7)],
-              ),
-              borderRadius: BorderRadius.circular(ds.AppRadius.lg),
+              color: context.primaryColor,
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
-              child: Text(initials,
-                  style: ds.AppTypography.number.copyWith(color: Colors.white, fontSize: 24)),
+              child: Text(initials, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: context.textPrimaryColor)),
             ),
           ),
-          const SizedBox(width: ds.AppSpacing.md),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: Theme.of(context).textTheme.titleLarge),
+                Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: context.textPrimaryColor)),
                 const SizedBox(height: 2),
-                Text(email,
-                    style: ds.AppTypography.caption
-                        .copyWith(color: context.textSecondaryColor)),
+                Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
                 const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: context.primaryColor.withValues(alpha: 0.12),
+                    color: context.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(auth.user?.role.displayName ?? 'Super Admin',
-                      style: ds.AppTypography.label.copyWith(color: context.primaryColor)),
+                  child: Text(auth.user?.role.displayName ?? 'Super Admin', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.primaryColor)),
                 ),
               ],
             ),
           ),
-          Semantics(
-            label: 'Edit profile',
-            button: true,
-            child: IconButton(
-              tooltip: 'Edit profile',
-              icon: Icon(Icons.edit_outlined, color: context.primaryColor),
-              onPressed: () => context.go('/dashboard?tab=14'),
-            ),
+          IconButton(
+            tooltip: 'Edit profile',
+            icon: Icon(Icons.edit_outlined, color: context.primaryColor),
+            onPressed: () => context.go('/dashboard?tab=14'),
           ),
         ],
       ),
@@ -129,12 +105,24 @@ class _PreferencesCard extends StatelessWidget {
   const _PreferencesCard({required this.theme});
   @override
   Widget build(BuildContext context) {
-    return AdminCard(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardTitle(icon: Icons.tune, title: 'Preferences'),
-          const SizedBox(height: ds.AppSpacing.sm),
+          Row(
+            children: [
+              Icon(Icons.tune_rounded, size: 18, color: context.primaryColor),
+              const SizedBox(width: 8),
+              Text('Preferences', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+            ],
+          ),
+          const SizedBox(height: 12),
           _SettingRow(
             icon: Icons.dark_mode_rounded,
             title: 'Dark mode',
@@ -142,9 +130,10 @@ class _PreferencesCard extends StatelessWidget {
             trailing: Switch(
               value: theme.isDark,
               onChanged: (_) => theme.toggle(),
+              activeColor: context.primaryColor,
             ),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: context.borderColor),
           _SettingRow(
             icon: Icons.notifications_outlined,
             title: 'Push notifications',
@@ -160,14 +149,15 @@ class _PreferencesCard extends StatelessWidget {
                   context.showInfo('Admin alerts muted on this device');
                 }
               },
+              activeColor: context.primaryColor,
             ),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: context.borderColor),
           _SettingRow(
-            icon: Icons.language,
+            icon: Icons.language_rounded,
             title: 'Language',
             subtitle: AdminFirestoreService.instance.getLocalFlag('language', defaultValue: 'English (US)'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: Icon(Icons.chevron_right, color: context.textMutedColor),
             onTap: () => _showLanguagePicker(context),
           ),
         ],
@@ -180,25 +170,41 @@ class _FeatureTogglesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final flags = const [
-      _Flag('free_delivery', 'Free delivery', 'Allow stores to offer free delivery', Icons.local_shipping, true),
-      _Flag('scheduled_orders', 'Scheduled orders', 'Customers schedule orders for later', Icons.schedule, true),
-      _Flag('group_orders', 'Group orders', 'Multiple people ordering together', Icons.groups, false),
-      _Flag('driver_subscriptions', 'Driver subscriptions', 'Drivers pay a monthly fee', Icons.subscriptions, false),
-      _Flag('cash_on_delivery', 'Cash on delivery', 'Accept cash payments', Icons.payments, true),
-      _Flag('tipping', 'Tipping', 'Customers can tip drivers', Icons.volunteer_activism, true),
-      _Flag('loyalty_program', 'Loyalty program', 'Reward repeat customers', Icons.card_giftcard, false),
-      _Flag('referral_system', 'Referral system', 'Customers earn for inviting friends', Icons.share, true),
+      _Flag('free_delivery', 'Free delivery', 'Allow stores to offer free delivery', Icons.local_shipping_rounded, true),
+      _Flag('scheduled_orders', 'Scheduled orders', 'Customers schedule orders for later', Icons.schedule_rounded, true),
+      _Flag('group_orders', 'Group orders', 'Multiple people ordering together', Icons.groups_rounded, false),
+      _Flag('driver_subscriptions', 'Driver subscriptions', 'Drivers pay a monthly fee', Icons.subscriptions_rounded, false),
+      _Flag('cash_on_delivery', 'Cash on delivery', 'Accept cash payments', Icons.payments_rounded, true),
+      _Flag('tipping', 'Tipping', 'Customers can tip drivers', Icons.volunteer_activism_rounded, true),
+      _Flag('loyalty_program', 'Loyalty program', 'Reward repeat customers', Icons.card_giftcard_rounded, false),
+      _Flag('referral_system', 'Referral system', 'Customers earn for inviting friends', Icons.share_rounded, true),
     ];
-    return AdminCard(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardTitle(
-            icon: Icons.toggle_on,
-            title: 'Feature toggles',
-            subtitle: 'Control which features are available in customer, driver, and partner apps.',
+          Row(
+            children: [
+              Icon(Icons.toggle_on_rounded, size: 18, color: context.primaryColor),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Feature toggles', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+                    Text('Control features across all apps', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: ds.AppSpacing.sm),
+          const SizedBox(height: 12),
           StreamBuilder<Map<String, dynamic>?>(
             stream: AdminFirestoreService.instance.watchFeatureFlags(),
             builder: (ctx, snap) {
@@ -206,7 +212,7 @@ class _FeatureTogglesCard extends StatelessWidget {
               return Column(
                 children: [
                   for (var i = 0; i < flags.length; i++) ...[
-                    if (i > 0) const Divider(height: 1),
+                    if (i > 0) Divider(height: 1, color: context.borderColor),
                     _FeatureToggleRow(
                       flag: flags[i],
                       value: data[flags[i].key] as bool? ?? flags[i].defaultValue,
@@ -246,6 +252,7 @@ class _FeatureToggleRow extends StatelessWidget {
         onChanged: (v) async {
           await AdminFirestoreService.instance.updateFeatureFlag(flag.key, v);
         },
+        activeColor: context.primaryColor,
       ),
     );
   }
@@ -256,22 +263,34 @@ class _AccountCard extends StatelessWidget {
   const _AccountCard({required this.auth});
   @override
   Widget build(BuildContext context) {
-    return AdminCard(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardTitle(icon: Icons.account_circle_outlined, title: 'Account'),
-          const SizedBox(height: ds.AppSpacing.sm),
+          Row(
+            children: [
+              Icon(Icons.account_circle_outlined, size: 18, color: context.primaryColor),
+              const SizedBox(width: 8),
+              Text('Account', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+            ],
+          ),
+          const SizedBox(height: 12),
           _SettingRow(
-            icon: Icons.lock_outline,
+            icon: Icons.lock_outline_rounded,
             title: 'Change password',
             subtitle: 'Send a password-reset email to your account',
-            trailing: const Icon(Icons.chevron_right),
+            trailing: Icon(Icons.chevron_right, color: context.textMutedColor),
             onTap: () => _sendPasswordReset(context, auth),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: context.borderColor),
           _SettingRow(
-            icon: Icons.logout,
+            icon: Icons.logout_rounded,
             title: 'Sign out',
             subtitle: 'End your current session',
             iconColor: context.errorColor,
@@ -280,8 +299,7 @@ class _AccountCard extends StatelessWidget {
                 await auth.logout();
                 if (context.mounted) context.go('/login');
               },
-              style: TextButton.styleFrom(foregroundColor: context.errorColor),
-              child: const Text('Sign out'),
+              child: Text('Sign out', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.errorColor)),
             ),
           ),
         ],
@@ -293,73 +311,47 @@ class _AccountCard extends StatelessWidget {
 class _AboutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AdminCard(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CardTitle(icon: Icons.info_outline, title: 'About'),
-          const SizedBox(height: ds.AppSpacing.sm),
+          Row(
+            children: [
+              Icon(Icons.info_outline_rounded, size: 18, color: context.primaryColor),
+              const SizedBox(width: 8),
+              Text('About', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+            ],
+          ),
+          const SizedBox(height: 12),
           _SettingRow(
-            icon: Icons.tag,
+            icon: Icons.tag_rounded,
             title: 'Version',
             subtitle: 'TayyebGo Admin v2.0.0',
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: context.borderColor),
           _SettingRow(
             icon: Icons.description_outlined,
             title: 'Terms of service',
             subtitle: 'Read the platform terms',
-            trailing: const Icon(Icons.chevron_right),
+            trailing: Icon(Icons.chevron_right, color: context.textMutedColor),
             onTap: () => _showPolicyPage(context, 'Terms of service', _kTermsOfService),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: context.borderColor),
           _SettingRow(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy policy',
             subtitle: 'How we handle your data',
-            trailing: const Icon(Icons.chevron_right),
+            trailing: Icon(Icons.chevron_right, color: context.textMutedColor),
             onTap: () => _showPolicyPage(context, 'Privacy policy', _kPrivacyPolicy),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CardTitle extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  const _CardTitle({required this.icon, required this.title, this.subtitle});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: context.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(ds.AppRadius.md),
-          ),
-          child: Icon(icon, color: context.primaryColor, size: 18),
-        ),
-        const SizedBox(width: ds.AppSpacing.sm),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(subtitle!,
-                    style: ds.AppTypography.caption.copyWith(color: context.textSecondaryColor)),
-              ],
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -386,22 +378,20 @@ class _SettingRow extends StatelessWidget {
       label: '$title — $subtitle',
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(ds.AppRadius.md),
+        borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: iconColor ?? context.textSecondaryColor),
+              Icon(icon, size: 20, color: iconColor ?? context.textMutedColor),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
-                        style: ds.AppTypography.bodyBold.copyWith(color: context.textPrimaryColor)),
+                    Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
                     const SizedBox(height: 2),
-                    Text(subtitle,
-                        style: ds.AppTypography.caption.copyWith(color: context.textMutedColor)),
+                    Text(subtitle, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
                   ],
                 ),
               ),
@@ -425,27 +415,24 @@ void _showLanguagePicker(BuildContext context) {
   showDialog<void>(
     context: context,
     builder: (ctx) {
-      return SimpleDialog(
-        title: const Text('Choose language'),
-        children: [
-          for (final l in languages)
-            SimpleDialogOption(
-              onPressed: () {
-                AdminFirestoreService.instance.setLocalFlag('language', l.$1);
-                AdminFirestoreService.instance.setLocalFlag('language_code', l.$2);
-                Navigator.pop(ctx);
-                context.showSuccess('Language set to ${l.$1}');
-                (context as Element).markNeedsBuild();
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.language, size: 18, color: context.primaryColor),
-                  const SizedBox(width: 12),
-                  Text(l.$1),
-                ],
-              ),
-            ),
-        ],
+      return AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Choose language', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: languages.map((l) => ListTile(
+            leading: Icon(Icons.language_rounded, color: context.primaryColor),
+            title: Text(l.$1, style: GoogleFonts.inter(color: context.textPrimaryColor)),
+            onTap: () {
+              AdminFirestoreService.instance.setLocalFlag('language', l.$1);
+              AdminFirestoreService.instance.setLocalFlag('language_code', l.$2);
+              Navigator.pop(ctx);
+              context.showSuccess('Language set to ${l.$1}');
+              (context as Element).markNeedsBuild();
+            },
+          )).toList(),
+        ),
       );
     },
   );
@@ -479,6 +466,7 @@ void _showPolicyPage(BuildContext context, String title, String body) {
     context: context,
     builder: (ctx) {
       return Dialog(
+        backgroundColor: context.surfaceColor,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: ConstrainedBox(
@@ -494,11 +482,11 @@ void _showPolicyPage(BuildContext context, String title, String body) {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                      child: Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
                     ),
                     IconButton(
                       tooltip: 'Close',
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close, color: context.textMutedColor),
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ],
@@ -507,7 +495,7 @@ void _showPolicyPage(BuildContext context, String title, String body) {
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
-                  child: Text(body, style: const TextStyle(fontSize: 13.5, height: 1.55)),
+                  child: Text(body, style: GoogleFonts.inter(fontSize: 13.5, height: 1.55, color: context.textSecondaryColor)),
                 ),
               ),
             ],

@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
@@ -10,28 +10,33 @@ class AnythingTrackingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: 'Anything Request',
-      body: StreamScreenBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('anything_requests')
-            .doc(requestId)
-            .snapshots(),
-        onLoading: () => const ShimmerLoading(itemCount: 4),
-        onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-        onSuccess: (context, snap) {
-          if (!snap.exists) return const Center(child: Text('Request not found'));
-
-          final d = snap.data() as Map<String, dynamic>;
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Anything Request', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: StreamBuilder<Map<String, dynamic>>(
+        stream: context.read<AnythingProvider>().streamRequest(requestId),
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return Center(child: Text('Failed to load request', style: GoogleFonts.inter(color: context.textMutedColor)));
+          }
+          if (snap.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(color: context.primaryColor));
+          }
+          final d = snap.data;
+          if (d == null || !snap.hasData) {
+            return Center(child: Text('Request not found', style: GoogleFonts.inter(color: context.textMutedColor)));
+          }
           final status = AnythingRequestStatus.fromString(d['status'] as String?);
           final driverName = d['driverName'] as String?;
           final driverLat = (d['driverLatitude'] as num?)?.toDouble();
           final driverLng = (d['driverLongitude'] as num?)?.toDouble();
           final storeName = d['storeName'] as String? ?? 'Store';
-          final items = (d['items'] as List<dynamic>?)
-                  ?.map((i) => i as Map<String, dynamic>)
-                  .toList() ??
-              [];
+          final items = (d['items'] as List<dynamic>?)?.map((i) => i as Map<String, dynamic>).toList() ?? [];
           final instructions = d['instructions'] as String? ?? '';
           final budget = (d['budget'] as num?)?.toDouble() ?? 0;
           final isCancellable = status == AnythingRequestStatus.pending;
@@ -41,187 +46,273 @@ class AnythingTrackingScreen extends StatelessWidget {
             children: [
               _StatusBanner(status: status, isCancellable: isCancellable, requestId: requestId),
               const SizedBox(height: 16),
-              _buildInfoCard(context, storeName, items, instructions, budget),
+              _InfoCard(storeName: storeName, items: items, instructions: instructions, budget: budget),
               if (driverName != null) ...[
                 const SizedBox(height: 12),
-                _buildDriverCard(context, driverName, driverLat, driverLng),
+                _DriverCard(driverName: driverName, hasLocation: driverLat != null && driverLng != null),
               ],
               if (driverLat != null && driverLng != null) ...[
                 const SizedBox(height: 12),
-                _buildMapCard(driverLat, driverLng),
+                _MapCard(lat: driverLat, lng: driverLng),
               ],
-              const SizedBox(height: 12),
-              _buildTimeline(status),
+              const SizedBox(height: 16),
+              _Timeline(status: status),
             ],
           );
         },
       ),
     );
   }
+}
 
-  Widget _StatusBanner({
-    required AnythingRequestStatus status,
-    required bool isCancellable,
-    required String requestId,
-  }) {
+class _StatusBanner extends StatelessWidget {
+  final AnythingRequestStatus status;
+  final bool isCancellable;
+  final String requestId;
+
+  const _StatusBanner({required this.status, required this.isCancellable, required this.requestId});
+
+  @override
+  Widget build(BuildContext context) {
     final (icon, color, text) = switch (status) {
-      AnythingRequestStatus.pending => (Icons.hourglass_empty, Colors.orange, 'Looking for a driver'),
-      AnythingRequestStatus.accepted => (Icons.check_circle, Colors.blue, 'Driver accepted'),
-      AnythingRequestStatus.shopping => (Icons.shopping_cart, Colors.amber, 'Driver is shopping'),
-      AnythingRequestStatus.enRoute => (Icons.delivery_dining, TayyebGoTheme.primaryColor, 'On the way'),
-      AnythingRequestStatus.delivered => (Icons.check_circle, Colors.green, 'Delivered'),
-      AnythingRequestStatus.cancelled => (Icons.cancel, Colors.red, 'Cancelled'),
+      AnythingRequestStatus.pending => (Icons.hourglass_empty_rounded, context.warningColor, 'Looking for a driver'),
+      AnythingRequestStatus.accepted => (Icons.check_circle_rounded, context.primaryColor, 'Driver accepted'),
+      AnythingRequestStatus.shopping => (Icons.shopping_cart_rounded, const Color(0xFF8B5CF6), 'Driver is shopping'),
+      AnythingRequestStatus.enRoute => (Icons.delivery_dining_rounded, context.primaryColor, 'On the way'),
+      AnythingRequestStatus.delivered => (Icons.check_circle_rounded, context.successColor, 'Delivered'),
+      AnythingRequestStatus.cancelled => (Icons.cancel_rounded, context.errorColor, 'Cancelled'),
     };
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(width: 12),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color))),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 26),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(text, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: color)),
+          ),
           if (isCancellable)
-            Builder(builder: (ctx) => TextButton(
+            TextButton(
               onPressed: () {
-                ctx.read<AnythingProvider>().cancelRequest(requestId);
-                ctx.go('/home');
+                context.read<AnythingProvider>().cancelRequest(requestId);
+                context.go('/home');
               },
-              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
-            )),
+              child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.errorColor)),
+            ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildInfoCard(BuildContext context, String storeName, List<Map<String, dynamic>> items, String instructions, double budget) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.store, size: 20),
-                const SizedBox(width: 8),
-                Text(storeName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const Divider(),
-            ...items.map((i) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Text('${i['quantity']}x ${i['name']}'),
-            )),
-            if (instructions.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text('Note: $instructions', style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
-            ],
-            const SizedBox(height: 8),
-            Text('Budget: SYP ${budget.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w600)),
-          ],
-        ),
+class _InfoCard extends StatelessWidget {
+  final String storeName;
+  final List<Map<String, dynamic>> items;
+  final String instructions;
+  final double budget;
+
+  const _InfoCard({required this.storeName, required this.items, required this.instructions, required this.budget});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
       ),
-    );
-  }
-
-  Widget _buildDriverCard(BuildContext context, String driverName, double? lat, double? lng) {
-    return Card(
-      child: ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.person)),
-        title: Text('Driver: $driverName'),
-        subtitle: lat != null && lng != null ? Text('Live location available') : null,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(icon: const Icon(Icons.message), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.phone), onPressed: () {}),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMapCard(double lat, double lng) {
-    return Card(
-      child: SizedBox(
-        height: 200,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              const Icon(Icons.map, size: 48, color: Colors.grey),
-              const SizedBox(height: 8),
-              Text('Driver location: $lat, $lng'),
-              const Text('(Live map placeholder)'),
+              Icon(Icons.store_rounded, size: 20, color: context.primaryColor),
+              const SizedBox(width: 8),
+              Text(storeName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
             ],
           ),
+          Divider(height: 24, color: context.borderColor),
+          ...items.map((i) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3),
+            child: Text('${i['quantity']}x ${i['name']}', style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14)),
+          )),
+          if (instructions.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text('Note: $instructions', style: GoogleFonts.inter(fontStyle: FontStyle.italic, color: context.textMutedColor, fontSize: 13)),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.monetization_on_rounded, size: 16, color: context.primaryColor),
+              const SizedBox(width: 6),
+              Text('Budget: SYP ${budget.toStringAsFixed(0)}', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DriverCard extends StatelessWidget {
+  final String driverName;
+  final bool hasLocation;
+
+  const _DriverCard({required this.driverName, required this.hasLocation});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: context.primaryColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(driverName.isNotEmpty ? driverName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 18, color: context.textPrimaryColor)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(driverName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                if (hasLocation)
+                  Text('Live location available', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.message_rounded, color: context.primaryColor, size: 20),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.phone_rounded, color: context.primaryColor, size: 20),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MapCard extends StatelessWidget {
+  final double lat;
+  final double lng;
+
+  const _MapCard({required this.lat, required this.lng});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: SizedBox(
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.map_rounded, size: 48, color: context.surfaceAltColor),
+            const SizedBox(height: 10),
+            Text('Driver location: $lat, $lng', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+            const SizedBox(height: 4),
+            Text('(Live map placeholder)', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildTimeline(AnythingRequestStatus status) {
+class _Timeline extends StatelessWidget {
+  final AnythingRequestStatus status;
+
+  const _Timeline({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
     final steps = [
-      (status: AnythingRequestStatus.pending, icon: Icons.hourglass_empty, label: 'Request Sent'),
-      (status: AnythingRequestStatus.accepted, icon: Icons.check_circle, label: 'Driver Accepted'),
-      (status: AnythingRequestStatus.shopping, icon: Icons.shopping_cart, label: 'Shopping'),
-      (status: AnythingRequestStatus.enRoute, icon: Icons.delivery_dining, label: 'On the Way'),
-      (status: AnythingRequestStatus.delivered, icon: Icons.check_circle, label: 'Delivered'),
+      (status: AnythingRequestStatus.pending, icon: Icons.hourglass_empty_rounded, label: 'Request Sent'),
+      (status: AnythingRequestStatus.accepted, icon: Icons.check_circle_rounded, label: 'Driver Accepted'),
+      (status: AnythingRequestStatus.shopping, icon: Icons.shopping_cart_rounded, label: 'Shopping'),
+      (status: AnythingRequestStatus.enRoute, icon: Icons.delivery_dining_rounded, label: 'On the Way'),
+      (status: AnythingRequestStatus.delivered, icon: Icons.check_circle_rounded, label: 'Delivered'),
     ];
-
     final currentIndex = steps.indexWhere((s) => s.status == status);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Progress', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 12),
-            ...steps.asMap().entries.map((entry) {
-              final i = entry.key;
-              final step = entry.value;
-              final isComplete = i <= currentIndex;
-              final isCurrent = i == currentIndex;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    Icon(
-                      step.icon,
-                      size: 20,
-                      color: isComplete ? TayyebGoTheme.primaryColor : Colors.grey,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      step.label,
-                      style: TextStyle(
-                        fontWeight: isCurrent ? FontWeight.bold : null,
-                        color: isComplete ? TayyebGoTheme.primaryColor : Colors.grey,
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Progress', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+          const SizedBox(height: 14),
+          ...steps.asMap().entries.map((entry) {
+            final i = entry.key;
+            final step = entry.value;
+            final isComplete = i <= currentIndex;
+            final isCurrent = i == currentIndex;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Icon(step.icon, size: 20, color: isComplete ? context.primaryColor : context.textMutedColor),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(step.label, style: GoogleFonts.inter(
+                      fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w400,
+                      color: isComplete ? context.primaryColor : context.textMutedColor,
+                    )),
+                  ),
+                  if (isCurrent)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: context.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                      child: Text('Current', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10, color: context.primaryColor)),
                     ),
-                    if (isCurrent)
-                      Container(
-                        margin: const EdgeInsets.only(left: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: TayyebGoTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text('Current', style: TextStyle(color: Colors.white, fontSize: 11)),
-                      ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        ),
+                ],
+              ),
+            );
+          }),
+        ],
       ),
     );
   }

@@ -56,7 +56,6 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   String? _verificationId;
-  String? _profileImageUrl;
   int _otpCountdown = 0;
   Timer? _otpTimer;
   StreamSubscription<fb.User?>? _authSubscription;
@@ -67,7 +66,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
-  String? get profileImageUrl => _profileImageUrl;
   int get otpCountdown => _otpCountdown;
   bool get isOtpActive => _otpCountdown > 0;
   bool get onboardingComplete => _onboardingComplete;
@@ -350,6 +348,12 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> loginWithApple() async {
+    _error = 'Apple sign-in coming soon';
+    notifyListeners();
+    return false;
+  }
+
   Future<void> resetPassword(String email) async {
     _isLoading = true;
     _error = null;
@@ -459,59 +463,6 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
-  Future<String?> pickAndUploadProfileImage() async {
-    try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 85,
-      );
-      if (picked == null) return null;
-      final userId = fb.FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return null;
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('profile_images')
-          .child('$userId.jpg');
-      await ref.putData(await picked.readAsBytes());
-      final url = await ref.getDownloadURL();
-      _profileImageUrl = url;
-      notifyListeners();
-      return url;
-    } catch (e) {
-      _error = 'Failed to upload profile image. Please try again.';
-      notifyListeners();
-      return null;
-    }
-  }
-
-  Future<List<String>> addAddress(String address) async {
-    if (_user == null) return [];
-    final userId = fb.FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return [];
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      final doc = await docRef.get();
-      final existing = List<String>.from(
-        (doc.data()?['addresses'] as List<dynamic>?) ?? [],
-      );
-      existing.add(address);
-      await docRef.update({
-        'addresses': existing,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      _user = _user!.copyWith(address: address);
-      notifyListeners();
-      return existing;
-    } catch (e) {
-      _error = 'Failed to save address. Please try again.';
-      notifyListeners();
-      return [];
-    }
-  }
-
   Widget getDashboardForRole() {
     if (_user == null) {
       return const _LoginRedirect();
@@ -532,7 +483,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _user = null;
     _error = null;
-    _profileImageUrl = null;
     _otpTimer?.cancel();
     _otpCountdown = 0;
     _isLoading = false;
@@ -551,18 +501,17 @@ class AuthProvider extends ChangeNotifier {
     String? phone,
     String? address,
     String? photoUrl,
-    String? preferredLocale,
   }) async {
     if (_user == null) return;
-    final updates = <String, dynamic>{
-      if (displayName != null) 'displayName': displayName,
-      if (phone != null) 'phone': phone,
-      if (address != null) 'address': address,
-      if (photoUrl != null) 'photoUrl': photoUrl,
-      if (preferredLocale != null) 'preferredLocale': preferredLocale,
-      'updatedAt': FieldValue.serverTimestamp(),
-    };
+    _isLoading = true;
+    notifyListeners();
     try {
+      final updates = <String, dynamic>{
+        if (displayName != null) 'displayName': displayName,
+        if (phone != null) 'phone': phone,
+        if (address != null) 'address': address,
+        if (photoUrl != null) 'photoUrl': photoUrl,
+      };
       await FirebaseFirestore.instance
           .collection('users')
           .doc(_user!.id)
@@ -572,12 +521,46 @@ class AuthProvider extends ChangeNotifier {
         phone: phone,
         address: address,
         photoUrl: photoUrl,
-        preferredLocale: preferredLocale,
       );
-      notifyListeners();
     } catch (e) {
       _error = _friendlyAuthError(e);
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<String?> pickAndUploadProfileImage() async {
+    if (_user == null) return null;
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      if (picked == null) {
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('${_user!.id}.jpg');
+      await ref.putData(await picked.readAsBytes());
+      final url = await ref.getDownloadURL();
+      _user = _user!.copyWith(photoUrl: url);
+      _isLoading = false;
       notifyListeners();
+      return url;
+    } catch (e) {
+      _error = 'Failed to upload profile image.';
+      _isLoading = false;
+      notifyListeners();
+      return null;
     }
   }
 

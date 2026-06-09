@@ -67,8 +67,12 @@ class _SideNavState extends State<SideNav> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [AppColors.primary, AppColors.accent]),
-              borderRadius: BorderRadius.circular(8),
+              gradient: LinearGradient(
+                colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: AppRadius.brSm,
             ),
             child: const Center(child: Icon(Icons.bolt_rounded, color: Colors.white, size: 20)),
           ),
@@ -79,8 +83,18 @@ class _SideNavState extends State<SideNav> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('TayyebGo', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
-                  Text('Admin Console', style: TextStyle(color: context.sidebarMutedColor, fontSize: 10, fontWeight: FontWeight.w500, letterSpacing: 0.4)),
+                  Text(
+                    'TayyebGo',
+                    style: AppTypography.bodyBold.copyWith(
+                      color: context.sidebarTextColor,
+                    ),
+                  ),
+                  Text(
+                    'Admin Console',
+                    style: AppTypography.label.copyWith(
+                      color: context.sidebarMutedColor,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -116,12 +130,12 @@ class _SideNavState extends State<SideNav> {
           if (!widget.collapsed)
             InkWell(
               onTap: () => setState(() => _moreExpanded = !_moreExpanded),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.brSm,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 child: Row(
                   children: [
-                    Text('MORE', style: TextStyle(color: context.sidebarMutedColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.8)),
+                    Text('MORE', style: AppTypography.label.copyWith(color: context.sidebarMutedColor)),
                     const Spacer(),
                     Icon(showMore ? Icons.expand_less_rounded : Icons.expand_more_rounded, color: context.sidebarMutedColor, size: 16),
                   ],
@@ -137,7 +151,7 @@ class _SideNavState extends State<SideNav> {
   Widget _navLabel(String text) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-      child: Text(text, style: TextStyle(color: context.sidebarMutedColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.8)),
+      child: Text(text, style: AppTypography.label.copyWith(color: context.sidebarMutedColor)),
     );
   }
 
@@ -153,12 +167,12 @@ class _SideNavState extends State<SideNav> {
             widget.onTap(i);
             if (widget.onCloseDrawer != null) widget.onCloseDrawer!();
           },
-          borderRadius: BorderRadius.circular(AppRadius.sm),
+          borderRadius: AppRadius.brSm,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: widget.collapsed ? 12 : 12, vertical: 10),
             decoration: BoxDecoration(
               color: selected ? context.sidebarActiveBgColor : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppRadius.sm),
+              borderRadius: AppRadius.brSm,
             ),
             child: Row(
               children: [
@@ -172,31 +186,19 @@ class _SideNavState extends State<SideNav> {
                   Expanded(
                     child: Text(
                       t.label,
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: AppTypography.body.copyWith(
                         fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                         color: selected ? context.sidebarTextColor : context.sidebarMutedColor,
                       ),
                     ),
                   ),
-                  if (hasBadge) _badge(t.badge ?? '!'),
+                  if (hasBadge) TGBadge.count(count: int.tryParse(t.badge ?? '0') ?? 0),
                 ],
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _badge(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        color: AppColors.error,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
     );
   }
 
@@ -208,12 +210,12 @@ class _SideNavState extends State<SideNav> {
           if (widget.onToggle != null)
             InkWell(
               onTap: widget.onToggle,
-              borderRadius: BorderRadius.circular(AppRadius.sm),
+              borderRadius: AppRadius.brSm,
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.04),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  color: context.sidebarMutedColor.withValues(alpha: 0.04),
+                  borderRadius: AppRadius.brSm,
                 ),
                 child: Row(
                   mainAxisAlignment: widget.collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
@@ -221,7 +223,7 @@ class _SideNavState extends State<SideNav> {
                     Icon(widget.collapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded, color: context.sidebarMutedColor, size: 18),
                     if (!widget.collapsed) ...[
                       const SizedBox(width: 8),
-                      Text('Collapse', style: TextStyle(color: context.sidebarMutedColor, fontSize: 12, fontWeight: FontWeight.w500)),
+                      Text('Collapse', style: AppTypography.caption.copyWith(color: context.sidebarMutedColor)),
                     ],
                   ],
                 ),
@@ -244,23 +246,19 @@ class _UserFooter extends StatelessWidget {
     final initial = name.characters.first.toUpperCase();
     return InkWell(
       onTap: () => context.go('/dashboard?tab=14'),
-      borderRadius: BorderRadius.circular(AppRadius.sm),
+      borderRadius: AppRadius.brSm,
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(AppRadius.sm),
+          color: context.sidebarMutedColor.withValues(alpha: 0.04),
+          borderRadius: AppRadius.brSm,
         ),
         child: Row(
           children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: context.primaryColor,
-                shape: BoxShape.circle,
-              ),
-              child: Center(child: Text(initial, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700))),
+            TGAvatar(
+              initials: initial,
+              size: TGAvatarSize.sm,
+              backgroundColor: context.primaryColor,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -268,8 +266,8 @@ class _UserFooter extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(name, style: TextStyle(color: context.sidebarTextColor, fontSize: 12, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                  Text(auth.user?.email ?? 'admin', style: TextStyle(color: context.sidebarMutedColor, fontSize: 10), overflow: TextOverflow.ellipsis),
+                  Text(name, style: AppTypography.caption.copyWith(color: context.sidebarTextColor, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                  Text(auth.user?.email ?? 'admin', style: AppTypography.label.copyWith(color: context.sidebarMutedColor), overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),

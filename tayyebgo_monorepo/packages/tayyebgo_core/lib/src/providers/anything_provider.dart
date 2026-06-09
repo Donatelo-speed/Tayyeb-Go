@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/anything_request_model.dart';
 import '../models/user_model.dart';
-import 'auth_provider.dart';
+import '../di/app_locator.dart';
 
 class AnythingProvider extends ChangeNotifier {
   List<AnythingRequestModel> _myRequests = [];
@@ -32,30 +31,24 @@ class AnythingProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final doc = await FirebaseFirestore.instance.collection('anything_requests').add({
-        'customerId': user.id,
-        'customerName': user.displayName,
-        'customerPhone': user.phone,
-        'storeName': storeName,
-        'items': items,
-        'budget': budget,
-        if (photoUrl != null) 'photoUrl': photoUrl,
-        'instructions': instructions,
-        'status': AnythingRequestStatus.pending.firestoreValue,
-        'dropoffLatitude': dropoffLatitude,
-        'dropoffLongitude': dropoffLongitude,
-        'dropoffAddress': dropoffAddress,
-        'paymentMethod': paymentMethod,
-        'deliveryFee': 0,
-        'totalCost': 0,
-        'isPaid': false,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      final docId = await AppLocator.instance.anything.createRequest(
+        customerId: user.id,
+        customerName: user.displayName,
+        customerPhone: user.phone ?? '',
+        storeName: storeName,
+        items: items,
+        budget: budget,
+        photoUrl: photoUrl,
+        instructions: instructions,
+        dropoffLatitude: dropoffLatitude,
+        dropoffLongitude: dropoffLongitude,
+        dropoffAddress: dropoffAddress,
+        paymentMethod: paymentMethod,
+      );
 
       _isLoading = false;
       notifyListeners();
-      return doc.id;
+      return docId;
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
@@ -69,15 +62,8 @@ class AnythingProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final snap = await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .where('customerId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
-
-      _myRequests = snap.docs
-          .map((d) => AnythingRequestModel.fromFirestore(d))
-          .toList();
+      final data = await AppLocator.instance.anything.getRequestsForCustomer(userId);
+      _myRequests = data.map((d) => AnythingRequestModel.fromMap(d['id'] as String, d)).toList();
 
       _isLoading = false;
       notifyListeners();
@@ -94,16 +80,8 @@ class AnythingProvider extends ChangeNotifier {
       _lastDriverId = excludeDriverId;
       notifyListeners();
 
-      final snap = await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .where('status', isEqualTo: AnythingRequestStatus.pending.firestoreValue)
-          .orderBy('createdAt', descending: true)
-          .get();
-
-      _availableRequests = snap.docs
-          .map((d) => AnythingRequestModel.fromFirestore(d))
-          .where((r) => r.driverId == null)
-          .toList();
+      final data = await AppLocator.instance.anything.getAvailableRequests();
+      _availableRequests = data.map((d) => AnythingRequestModel.fromMap(d['id'] as String, d)).toList();
 
       _isLoading = false;
       notifyListeners();
@@ -116,19 +94,9 @@ class AnythingProvider extends ChangeNotifier {
 
   Future<bool> acceptRequest(String requestId, String driverId, String driverName) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .doc(requestId)
-          .update({
-        'status': AnythingRequestStatus.accepted.firestoreValue,
-        'driverId': driverId,
-        'driverName': driverName,
-        'acceptedAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      await loadAvailableRequests(_lastDriverId);
-      return true;
+      final success = await AppLocator.instance.anything.acceptRequest(requestId, driverId, driverName);
+      if (success) await loadAvailableRequests(_lastDriverId);
+      return success;
     } catch (e) {
       _error = e.toString();
       notifyListeners();
@@ -138,18 +106,7 @@ class AnythingProvider extends ChangeNotifier {
 
   Future<bool> updateStatus(String requestId, AnythingRequestStatus status) async {
     try {
-      final data = <String, dynamic>{
-        'status': status.firestoreValue,
-        'updatedAt': FieldValue.serverTimestamp(),
-      };
-      if (status == AnythingRequestStatus.delivered) {
-        data['deliveredAt'] = FieldValue.serverTimestamp();
-      }
-      await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .doc(requestId)
-          .update(data);
-      return true;
+      return await AppLocator.instance.anything.updateStatus(requestId, status.firestoreValue);
     } catch (e) {
       _error = e.toString();
       return false;
@@ -158,15 +115,7 @@ class AnythingProvider extends ChangeNotifier {
 
   Future<bool> updateDriverLocation(String requestId, double lat, double lng) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .doc(requestId)
-          .update({
-        'driverLatitude': lat,
-        'driverLongitude': lng,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      return true;
+      return await AppLocator.instance.anything.updateDriverLocation(requestId, lat, lng);
     } catch (e) {
       return false;
     }
@@ -174,16 +123,12 @@ class AnythingProvider extends ChangeNotifier {
 
   Future<bool> cancelRequest(String requestId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('anything_requests')
-          .doc(requestId)
-          .update({
-        'status': AnythingRequestStatus.cancelled.firestoreValue,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      final uid = AuthProvider.instance?.user?.id;
-      if (uid != null) await loadMyRequests(uid);
-      return true;
+      final success = await AppLocator.instance.anything.cancelRequest(requestId);
+      if (success) {
+        final uid = _lastDriverId;
+        if (uid != null) await loadMyRequests(uid);
+      }
+      return success;
     } catch (e) {
       _error = e.toString();
       notifyListeners();
@@ -191,11 +136,8 @@ class AnythingProvider extends ChangeNotifier {
     }
   }
 
-  Stream<DocumentSnapshot> streamRequest(String requestId) {
-    return FirebaseFirestore.instance
-        .collection('anything_requests')
-        .doc(requestId)
-        .snapshots();
+  Stream<Map<String, dynamic>> streamRequest(String requestId) {
+    return AppLocator.instance.anything.watchRequest(requestId);
   }
 
   void clear() {

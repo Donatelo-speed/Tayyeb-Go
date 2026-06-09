@@ -23,6 +23,9 @@ class AppShell extends StatelessWidget {
   final int selectedIndex;
   final Widget child;
   final String title;
+  final String? primaryActionRoute;
+  final IconData primaryActionIcon;
+  final String primaryActionTooltip;
 
   const AppShell({
     super.key,
@@ -30,6 +33,9 @@ class AppShell extends StatelessWidget {
     required this.selectedIndex,
     required this.child,
     required this.title,
+    this.primaryActionRoute,
+    this.primaryActionIcon = Icons.add_rounded,
+    this.primaryActionTooltip = 'Create',
   });
 
   @override
@@ -56,18 +62,13 @@ class AppShell extends StatelessWidget {
         ],
       ),
       body: child,
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: _CustomBottomNav(
         selectedIndex: selectedIndex,
-        onDestinationSelected: (i) => context.go(items[i].route),
-        destinations: [
-          for (final item in items)
-            NavigationDestination(
-              icon: Icon(item.icon, size: 22, color: AppColors.textMuted),
-              selectedIcon:
-                  Icon(item.activeIcon, size: 22, color: AppColors.primary),
-              label: item.label,
-            ),
-        ],
+        items: items,
+        primaryActionRoute: primaryActionRoute,
+        primaryActionIcon: primaryActionIcon,
+        primaryActionTooltip: primaryActionTooltip,
+        onTap: (i) => context.go(items[i].route),
       ),
     );
   }
@@ -361,6 +362,134 @@ class _ProfileMenu extends StatelessWidget {
           child: Text('Sign Out', style: TextStyle(color: Colors.red)),
         ),
       ],
+    );
+  }
+}
+
+class _CustomBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final List<AppShellItem> items;
+  final String? primaryActionRoute;
+  final IconData primaryActionIcon;
+  final String primaryActionTooltip;
+  final ValueChanged<int> onTap;
+
+  const _CustomBottomNav({
+    required this.selectedIndex,
+    required this.items,
+    required this.primaryActionRoute,
+    required this.primaryActionIcon,
+    required this.primaryActionTooltip,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const fabSize = 56.0;
+    const navHeight = 80.0;
+    final hasPrimaryAction = primaryActionRoute != null;
+    final visibleItems = items.length > 5 ? items.take(5).toList() : items;
+
+    return SizedBox(
+      height: navHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            height: navHeight,
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+            ),
+            child: Row(
+              children: [
+                for (var i = 0; i < visibleItems.length; i++) ...[
+                  _buildNavItem(i),
+                  if (hasPrimaryAction && i == 1)
+                    const SizedBox(width: fabSize + 16),
+                ],
+              ],
+            ),
+          ),
+          if (hasPrimaryAction)
+            Positioned(
+              top: -8,
+              child: Tooltip(
+                message: primaryActionTooltip,
+                child: GestureDetector(
+                  onTap: () => context.go(primaryActionRoute!),
+                  child: Container(
+                    width: fabSize,
+                    height: fabSize,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primary, AppColors.accent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      primaryActionIcon,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index) {
+    if (index >= items.length) return const Expanded(child: SizedBox.shrink());
+    final item = items[index];
+    final isSelected = index == selectedIndex;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(index),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                isSelected ? item.activeIcon : item.icon,
+                size: 22,
+                color: isSelected ? AppColors.primary : AppColors.textMuted,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected ? AppColors.primary : AppColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

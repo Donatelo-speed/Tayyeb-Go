@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
@@ -24,13 +25,13 @@ class LiveMapCard extends StatelessWidget {
             children: [
               Icon(Icons.public_rounded, size: 20, color: context.primaryColor),
               const SizedBox(width: 10),
-              Text('Live Map', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+              Text('Live Map', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
               const Spacer(),
               LiveMapLegend(),
             ],
           ),
           const SizedBox(height: 4),
-          Text('Active stores plotted by location. Click a pin to view details.', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+          Text('Active stores plotted by location. Click a pin to view details.', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
@@ -40,7 +41,7 @@ class LiveMapCard extends StatelessWidget {
                 stream: AdminFirestoreService.instance.watchStoresRaw(limit: 200),
                 builder: (c, snap) {
                   if (snap.connectionState == ConnectionState.waiting && !snap.hasData) {
-                    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                    return Center(child: CircularProgressIndicator(strokeWidth: 2, color: context.primaryColor));
                   }
                   final stores = (snap.data ?? const <Map<String, dynamic>>[])
                       .where((s) => s['latitude'] is num && s['longitude'] is num)
@@ -67,9 +68,9 @@ class LiveMapLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(spacing: 14, children: [
-      _legendDot(context, AppColors.success, 'Open'),
-      _legendDot(context, AppColors.warning, 'Busy'),
-      _legendDot(context, AppColors.error, 'Closed'),
+      _legendDot(context, context.successColor, 'Open'),
+      _legendDot(context, context.warningColor, 'Busy'),
+      _legendDot(context, context.errorColor, 'Closed'),
     ]);
   }
 
@@ -77,7 +78,7 @@ class LiveMapLegend extends StatelessWidget {
     return Row(mainAxisSize: MainAxisSize.min, children: [
       Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
       const SizedBox(width: 6),
-      Text(label, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
+      Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
     ]);
   }
 }
@@ -126,7 +127,7 @@ class _MapViewState extends State<_MapView> {
                       height: 36,
                       child: GestureDetector(
                         onTap: () => setState(() => _selectedIndex = i),
-                        child: Icon(Icons.location_on, color: _pinColor(_stores[i]), size: 32),
+                        child: Icon(Icons.location_on, color: _pinColor(context, _stores[i]), size: 32),
                       ),
                     ),
                 ],
@@ -148,12 +149,12 @@ class _MapViewState extends State<_MapView> {
     );
   }
 
-  Color _pinColor(Map<String, dynamic> s) {
+  Color _pinColor(BuildContext context, Map<String, dynamic> s) {
     final active = s['isActive'] as bool? ?? true;
-    if (!active) return AppColors.error;
+    if (!active) return context.errorColor;
     final orders = (s['openOrders'] as int?) ?? 0;
-    if (orders > 10) return AppColors.warning;
-    return AppColors.success;
+    if (orders > 10) return context.warningColor;
+    return context.successColor;
   }
 }
 
@@ -168,7 +169,7 @@ class _MapInfoBubble extends StatelessWidget {
     final city = (store['city'] as String?) ?? '—';
     final openOrders = (store['openOrders'] as int?) ?? 0;
     return Material(
-      color: Colors.white.withValues(alpha: 0.97),
+      color: context.surfaceColor.withValues(alpha: 0.97),
       borderRadius: BorderRadius.circular(12),
       elevation: 4,
       child: Padding(
@@ -189,19 +190,19 @@ class _MapInfoBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
+                  Text(name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 2),
-                  Text('$city  •  $openOrders open orders', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+                  Text('$city  •  $openOrders open orders', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
                 ],
               ),
             ),
             TextButton(
               onPressed: () => context.go('/dashboard?tab=3'),
-              child: const Text('Open'),
+              child: Text('Open', style: GoogleFonts.inter(color: context.primaryColor)),
             ),
             IconButton(
               tooltip: 'Close',
-              icon: const Icon(Icons.close, size: 18),
+              icon: Icon(Icons.close, size: 18, color: context.textMutedColor),
               onPressed: onClose,
             ),
           ],

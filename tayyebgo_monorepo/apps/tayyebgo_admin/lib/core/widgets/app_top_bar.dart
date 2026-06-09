@@ -33,13 +33,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBarCommandShortcut(
       child: Container(
         height: 64,
         decoration: BoxDecoration(
-          color: isDark ? DarkAppColors.surface : Colors.white,
-          border: Border(bottom: BorderSide(color: isDark ? DarkAppColors.border : AppColors.border)),
+          color: context.surfaceColor,
+          border: Border(bottom: BorderSide(color: context.borderColor)),
         ),
         child: SafeArea(
           bottom: false,
@@ -73,18 +72,15 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                         child: Text(
                           title,
                           key: ValueKey(title),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                          style: AppTypography.titleLarge.copyWith(
                             color: context.textPrimaryColor,
-                            letterSpacing: -0.2,
                           ),
                         ),
                       ),
                       if (breadcrumb != null)
                         Text(
                           breadcrumb!,
-                          style: TextStyle(fontSize: 11, color: context.textMutedColor),
+                          style: AppTypography.labelSmall.copyWith(color: context.textMutedColor),
                         ),
                     ],
                   ),
@@ -135,18 +131,13 @@ class _AssistButton extends StatelessWidget {
   const _AssistButton();
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
+    return TGB(
+      label: 'Assist',
       onPressed: () => AdminHelper.show(context),
-      icon: const Icon(Icons.auto_awesome_rounded, size: 16),
-      label: const Text('Assist'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: context.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-      ),
+      icon: Icons.auto_awesome_rounded,
+      variant: TGBVariant.primary,
+      isExpanded: false,
+      height: 36,
     );
   }
 }
@@ -171,7 +162,7 @@ class _NotificationBell extends StatelessWidget {
     return _IconAction(
       icon: Icons.notifications_outlined,
       tooltip: 'Notifications',
-      onPressed: () => context.push('/notifications'),
+      onPressed: () => context.go('/dashboard?tab=9'),
     );
   }
 }
@@ -184,21 +175,11 @@ class _ProfileAvatar extends StatelessWidget {
     final initial = (auth.user?.displayName ?? auth.user?.email ?? 'A').characters.first.toUpperCase();
     return InkWell(
       onTap: () => context.go('/dashboard?tab=14'),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.7)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: Text(initial, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-        ),
+      borderRadius: AppRadius.brAvatar,
+      child: TGAvatar(
+        initials: initial,
+        size: TGAvatarSize.sm,
+        backgroundColor: context.primaryColor,
       ),
     );
   }

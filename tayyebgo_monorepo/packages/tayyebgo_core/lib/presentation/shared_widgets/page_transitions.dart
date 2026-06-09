@@ -1,122 +1,155 @@
 import 'package:flutter/material.dart';
 
-class SmoothPageTransition extends StatelessWidget {
-  final Animation<double> animation;
-  final Animation<double> secondaryAnimation;
-  final Widget child;
+/// Modern page transitions matching the TayyebGo design system
 
-  const SmoothPageTransition({
-    super.key,
-    required this.animation,
-    required this.secondaryAnimation,
-    required this.child,
-  });
-
+/// Slide from right (most common forward navigation)
+class SlideRightRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, _) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
+  final RouteSettings settings;
+
+  SlideRightRoute({required this.page, String? name})
+      : settings = RouteSettings(name: name),
+        super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final tween = Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOutCubic));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 350),
         );
-        return FadeTransition(
-          opacity: curved,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.04, 0.0),
-              end: Offset.zero,
-            ).animate(curved),
-            child: child,
-          ),
+}
+
+/// Slide from bottom (modals, sheets, cart)
+class SlideUpRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
+  @override
+  final RouteSettings settings;
+
+  SlideUpRoute({required this.page, String? name})
+      : settings = RouteSettings(name: name),
+        super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final tween = Tween(begin: const Offset(0.0, 0.3), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOutCubic));
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 400),
         );
-      },
-    );
-  }
 }
 
-class ZoomFadeTransition extends StatelessWidget {
-  final Animation<double> animation;
-  final Animation<double> secondaryAnimation;
-  final Widget child;
-
-  const ZoomFadeTransition({
-    super.key,
-    required this.animation,
-    required this.secondaryAnimation,
-    required this.child,
-  });
-
+/// Fade transition (subtle, for overlays)
+class FadeRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
   @override
-  Widget build(BuildContext context) {
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-    );
-    return FadeTransition(
-      opacity: curved,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
-        child: child,
-      ),
-    );
-  }
+  final RouteSettings settings;
+
+  FadeRoute({required this.page, String? name})
+      : settings = RouteSettings(name: name),
+        super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 250),
+        );
 }
 
-class ScaleFadeTransition extends StatelessWidget {
-  final Animation<double> animation;
-  final Animation<double> secondaryAnimation;
-  final Widget child;
-
-  const ScaleFadeTransition({
-    super.key,
-    required this.animation,
-    required this.secondaryAnimation,
-    required this.child,
-  });
-
+/// Scale + Fade (dialogs, featured cards)
+class ScaleFadeRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
   @override
-  Widget build(BuildContext context) {
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-    );
-    return FadeTransition(
-      opacity: curved,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0.94, end: 1.0).animate(curved),
-        child: child,
-      ),
-    );
-  }
+  final RouteSettings settings;
+
+  ScaleFadeRoute({required this.page, String? name})
+      : settings = RouteSettings(name: name),
+        super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ScaleTransition(
+              scale: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
 }
 
-PageTransitionsTheme get smoothPageTransitions => const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: _ZoomPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.windows: _ZoomPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: _ZoomPageTransitionsBuilder(),
-      },
-    );
-
-class _ZoomPageTransitionsBuilder extends PageTransitionsBuilder {
-  const _ZoomPageTransitionsBuilder();
-
+/// Shared axis transition (same-level navigation, like tab switching)
+class SharedAxisRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
+  final SharedAxisTransitionType type;
   @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return ZoomFadeTransition(
-      animation: animation,
-      secondaryAnimation: secondaryAnimation,
-      child: child,
-    );
-  }
+  final RouteSettings settings;
+
+  SharedAxisRoute({
+    required this.page,
+    this.type = SharedAxisTransitionType.horizontal,
+    String? name,
+  })  : settings = RouteSettings(name: name),
+        super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            );
+            final secondCurved = CurvedAnimation(
+              parent: secondaryAnimation,
+              curve: Curves.easeOutCubic,
+            );
+
+            Offset getOffset(Animation<double> a, bool isForward) {
+              final value = a.value;
+              switch (type) {
+                case SharedAxisTransitionType.horizontal:
+                  return Offset(isForward ? 30.0 * (1 - value) : -30.0 * value, 0);
+                case SharedAxisTransitionType.vertical:
+                  return Offset(0, isForward ? 30.0 * (1 - value) : -30.0 * value);
+              }
+            }
+
+            return AnimatedBuilder(
+              animation: Listenable.merge([curved, secondCurved]),
+              builder: (context, _) {
+                final forwardOffset = getOffset(curved, true);
+                final backOffset = getOffset(secondCurved, false);
+                return Stack(
+                  children: [
+                    if (backOffset != Offset.zero)
+                      Transform.translate(
+                        offset: backOffset,
+                        child: Opacity(
+                          opacity: 1 - secondCurved.value,
+                          child: child,
+                        ),
+                      ),
+                    Transform.translate(
+                      offset: forwardOffset,
+                      child: Opacity(
+                        opacity: curved.value,
+                        child: child,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 350),
+          reverseTransitionDuration: const Duration(milliseconds: 350),
+        );
 }
+
+enum SharedAxisTransitionType { horizontal, vertical }

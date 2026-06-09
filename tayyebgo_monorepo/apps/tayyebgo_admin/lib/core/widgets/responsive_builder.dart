@@ -46,11 +46,11 @@ class ResponsiveBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, c) {
-        final layout = AppBreakpoints.isMobile(c.maxWidth)
+        final layout = AppBreakpoints.isMobileWidth(c.maxWidth)
             ? AppLayout.mobile
-            : AppBreakpoints.isTablet(c.maxWidth)
+            : AppBreakpoints.isTabletWidth(c.maxWidth)
                 ? AppLayout.tablet
-                : AppBreakpoints.isWide(c.maxWidth)
+                : AppBreakpoints.isWideWidth(c.maxWidth)
                     ? AppLayout.wide
                     : AppLayout.desktop;
         return builder(context, layout);

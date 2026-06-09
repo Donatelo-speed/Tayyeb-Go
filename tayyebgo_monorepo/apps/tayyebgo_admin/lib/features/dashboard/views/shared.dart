@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../core/widgets/app_top_bar.dart' as top_bar_impl;
 import '../../../core/widgets/responsive_builder.dart' as resp_impl;
 import '../../../core/widgets/tab_item.dart' as tab_impl;
 import '../../../core/widgets/app_kpi_card.dart' as kpi_impl;
 import '../../../core/widgets/app_card.dart' as card_impl;
-import '../../../core/widgets/app_empty_state.dart' as empty_impl;
 import '../../../core/widgets/app_activity_feed.dart' as feed_impl;
 import '../../../core/widgets/stagger_item.dart' as stagger_impl;
 import '../../../core/widgets/side_nav.dart' as nav_impl;
@@ -146,10 +146,10 @@ class EmptyState extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => empty_impl.AdminEmptyState(
+  Widget build(BuildContext context) => TGEmptyState(
         icon: icon,
         title: title,
-        subtitle: subtitle,
+        description: subtitle,
         actionLabel: actionLabel,
         onAction: onAction,
       );

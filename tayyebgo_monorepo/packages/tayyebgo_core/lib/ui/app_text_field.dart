@@ -1,106 +1,217 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../presentation/theme/app_colors.dart';
+import '../presentation/theme/app_radius.dart';
+import '../presentation/theme/app_motion.dart';
 
-class AppTextField extends StatelessWidget {
-  final TextEditingController? controller;
-  final String label;
+/// TGF = TayyebGoField — Floating label text input
+class TGF extends StatefulWidget {
+  final String? label;
   final String? hint;
-  final IconData? prefixIcon;
-  final Widget? suffixIcon;
-  final bool obscure;
+  final TextEditingController? controller;
   final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-  final int maxLines;
+  final bool obscureText;
   final bool readOnly;
+  final int maxLines;
+  final int? maxLength;
+  final IconData? prefixIcon;
+  final Widget? suffix;
+  final String? errorText;
+  final String? helperText;
+  final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
+  final FocusNode? focusNode;
+  final List<TextInputFormatter>? inputFormatters;
   final TextCapitalization textCapitalization;
-  final TextInputAction? textInputAction;
-  final void Function(String)? onFieldSubmitted;
-  final AutovalidateMode? autovalidateMode;
 
-  const AppTextField({
+  const TGF({
     super.key,
-    this.controller,
-    required this.label,
+    this.label,
     this.hint,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.obscure = false,
+    this.controller,
     this.keyboardType,
-    this.validator,
-    this.maxLines = 1,
+    this.obscureText = false,
     this.readOnly = false,
+    this.maxLines = 1,
+    this.maxLength,
+    this.prefixIcon,
+    this.suffix,
+    this.errorText,
+    this.helperText,
+    this.onChanged,
     this.onTap,
+    this.focusNode,
+    this.inputFormatters,
     this.textCapitalization = TextCapitalization.none,
-    this.textInputAction,
-    this.onFieldSubmitted,
-    this.autovalidateMode,
   });
 
   @override
+  State<TGF> createState() => _TGFState();
+}
+
+class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
+  late FocusNode _focusNode;
+  late AnimationController _animController;
+  late Animation<double> _glowAnimation;
+  bool _isFocused = false;
+  bool _obscureVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _obscureVisible = !widget.obscureText;
+    _animController = AnimationController(
+      vsync: this,
+      duration: AppMotion.fast,
+    );
+    _glowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+    );
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    if (widget.focusNode == null) _focusNode.dispose();
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() => _isFocused = _focusNode.hasFocus);
+    if (_isFocused) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      validator: validator,
-      maxLines: maxLines,
-      readOnly: readOnly,
-      onTap: onTap,
-      textCapitalization: textCapitalization,
-      textInputAction: textInputAction,
-      onFieldSubmitted: onFieldSubmitted,
-      autovalidateMode: autovalidateMode,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, size: 20, color: AppColors.textMuted)
-            : null,
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: const Color(0xFFF8F6F3),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              BorderSide(color: AppColors.divider.withValues(alpha: 0.5)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              BorderSide(color: AppColors.divider.withValues(alpha: 0.5)),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-        ),
-        labelStyle: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
-        floatingLabelStyle: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.primary,
-        ),
-        hintStyle: TextStyle(
-          fontSize: 14,
-          color: AppColors.textMuted,
-        ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasError = widget.errorText != null;
+
+    return AnimatedBuilder(
+      animation: _glowAnimation,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: AppRadius.brInput,
+            boxShadow: _isFocused
+                ? [
+                    BoxShadow(
+                      color: (hasError ? AppColors.glowError : AppColors.glowPrimary)
+                          .withValues(alpha: _glowAnimation.value * 0.5),
+                      blurRadius: 16,
+                      spreadRadius: -4,
+                    ),
+                  ]
+                : [],
+          ),
+          child: child,
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt,
+              borderRadius: AppRadius.brInput,
+              border: Border.all(
+                color: hasError
+                    ? AppColors.error
+                    : _isFocused
+                        ? AppColors.primary
+                        : (isDark ? AppColors.border : AppColors.border),
+                width: _isFocused ? 1.5 : 1,
+              ),
+            ),
+            child: TextField(
+              controller: widget.controller,
+              focusNode: _focusNode,
+              keyboardType: widget.keyboardType,
+              obscureText: widget.obscureText && !_obscureVisible,
+              readOnly: widget.readOnly,
+              maxLines: widget.maxLines,
+              maxLength: widget.maxLength,
+              onChanged: widget.onChanged,
+              onTap: widget.onTap,
+              inputFormatters: widget.inputFormatters,
+              textCapitalization: widget.textCapitalization,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+              ),
+              decoration: InputDecoration(
+                labelText: widget.label,
+                hintText: widget.hint,
+                counterText: '',
+                prefixIcon: widget.prefixIcon != null
+                    ? Icon(
+                        widget.prefixIcon,
+                        size: 20,
+                        color: _isFocused
+                            ? AppColors.primary
+                            : (isDark ? AppColors.textMuted : AppColors.textMuted),
+                      )
+                    : null,
+                suffixIcon: widget.obscureText
+                    ? IconButton(
+                        icon: Icon(
+                          _obscureVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          size: 20,
+                          color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                        ),
+                        onPressed: () => setState(() => _obscureVisible = !_obscureVisible),
+                      )
+                    : widget.suffix,
+                labelStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: _isFocused
+                      ? AppColors.primary
+                      : (isDark ? AppColors.textMuted : AppColors.textMuted),
+                ),
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+            ),
+          ),
+          if (hasError) ...[
+            const SizedBox(height: 6),
+            Text(
+              widget.errorText!,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+          if (!hasError && widget.helperText != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              widget.helperText!,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.textMuted : AppColors.textMuted,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
 }
+
+// Backward compatibility alias
+typedef AppTextField = TGF;

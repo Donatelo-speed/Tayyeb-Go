@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
@@ -20,6 +21,11 @@ class RestaurantMenuScreen extends StatefulWidget {
 }
 
 class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
+  String _searchQuery = '';
+  final _searchCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
+  String? _selectedCategory;
+
   @override
   void initState() {
     super.initState();
@@ -35,59 +41,242 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   }
 
   @override
+  void dispose() {
+    _searchCtrl.dispose();
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: widget.restaurantName,
-      showCart: true,
-      body: StreamScreenBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('menu_items')
-            .where('restaurantId', isEqualTo: widget.restaurantId)
-            .where('isAvailable', isEqualTo: true)
-            .snapshots(),
-        onLoading: () => const ShimmerLoading(itemCount: 6),
-        onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-        onSuccess: (ctx, snap) {
-          if (snap.docs.isEmpty) {
-            return const EmptyState(
-              icon: Icons.restaurant_menu_outlined,
-              title: 'Menu not available',
-              subtitle: 'This restaurant has no items listed yet',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text(widget.restaurantName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        actions: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.shopping_cart_outlined, color: context.textMutedColor),
+                onPressed: () => context.go('/cart'),
+              ),
+              Consumer<CartProvider>(
+                builder: (_, cart, __) {
+                  if (cart.isEmpty) return const SizedBox.shrink();
+                  return Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(color: context.primaryColor, shape: BoxShape.circle),
+                      child: Text('${cart.totalQuantity}', style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: context.read<CustomerHomeProvider>().watchMenuItems(widget.restaurantId),
+        builder: (ctx, snap) {
+          if (snap.hasError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 48, color: context.errorColor),
+                  const SizedBox(height: 12),
+                  Text('Failed to load menu', style: GoogleFonts.inter(color: context.textMutedColor)),
+                ],
+              ),
             );
           }
-          final items = snap.docs.map((doc) {
-            final d = doc.data() as Map<String, dynamic>;
-            return Product.fromJson({...d, 'firestoreId': doc.id});
-          }).toList();
+          if (snap.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(color: context.primaryColor));
+          }
+          final docs = snap.data ?? [];
+          if (docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: context.surfaceColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: context.borderColor),
+                    ),
+                    child: Icon(Icons.restaurant_menu_outlined, size: 36, color: context.textMutedColor),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Menu not available', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                ],
+              ),
+            );
+          }
+
+          final items = docs.map((d) => Product.fromJson({...d, 'firestoreId': d['id']})).toList();
           final categories = <String, List<Product>>{};
           for (final item in items) {
             categories.putIfAbsent(item.category, () => []);
             categories[item.category]!.add(item);
           }
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: categories.entries.map((entry) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text(
-                      entry.key.isEmpty ? 'Menu Items' : entry.key,
-                      style: TayyebGoTheme.heading3,
+          final catNames = categories.keys.toList();
+
+          final filteredItems = _searchQuery.isEmpty
+              ? items
+              : items.where((i) => i.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Container(
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: TextField(
+                    controller: _searchCtrl,
+                    style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                    decoration: InputDecoration(
+                      hintText: 'Search menu...',
+                      hintStyle: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14),
+                      prefixIcon: Icon(Icons.search_rounded, size: 20, color: context.textMutedColor),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.close_rounded, size: 18, color: context.textMutedColor),
+                              onPressed: () { _searchCtrl.clear(); setState(() => _searchQuery = ''); },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                   ),
-                  ...entry.value.map((item) => _MenuItemCard(
-                        product: item,
-                        restaurantId: widget.restaurantId,
-                        commissionPercent: widget.commissionPercent,
-                      )),
-                ],
-              );
-            }).toList(),
+                ),
+              ),
+              if (_searchQuery.isEmpty && catNames.length > 1)
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: catNames.length,
+                    itemBuilder: (_, i) {
+                      final cat = catNames[i];
+                      final isSelected = _selectedCategory == cat;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedCategory = isSelected ? null : cat),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isSelected ? context.primaryColor : context.surfaceColor,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected ? context.primaryColor : context.borderColor,
+                            ),
+                          ),
+                          child: Text(
+                            cat.isEmpty ? 'All' : cat,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : context.textMutedColor,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: _searchQuery.isNotEmpty
+                    ? _buildItemList(context, filteredItems)
+                    : _buildCategorizedList(context, categories, catNames),
+              ),
+            ],
           );
         },
       ),
+    );
+  }
+
+  Widget _buildItemList(BuildContext context, List<Product> items) {
+    if (items.isEmpty) {
+      return Center(child: Text('No items found', style: GoogleFonts.inter(color: context.textMutedColor)));
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: items.length,
+      itemBuilder: (_, i) => _MenuItemCard(
+        product: items[i],
+        restaurantId: widget.restaurantId,
+        commissionPercent: widget.commissionPercent,
+      ),
+    );
+  }
+
+  Widget _buildCategorizedList(BuildContext context, Map<String, List<Product>> categories, List<String> catNames) {
+    final displayCats = _selectedCategory != null
+        ? catNames.where((c) => c == _selectedCategory).toList()
+        : catNames;
+    return ListView.builder(
+      controller: _scrollCtrl,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: displayCats.length,
+      itemBuilder: (_, i) {
+        final cat = displayCats[i];
+        final catItems = categories[cat]!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 3,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: context.primaryColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    cat.isEmpty ? 'Other Items' : cat,
+                    style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w700, color: context.textPrimaryColor),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${catItems.length}',
+                    style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor),
+                  ),
+                ],
+              ),
+            ),
+            ...catItems.map((item) => _MenuItemCard(
+              product: item,
+              restaurantId: widget.restaurantId,
+              commissionPercent: widget.commissionPercent,
+            )),
+          ],
+        );
+      },
     );
   }
 }
@@ -105,38 +294,61 @@ class _MenuItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: TayyebGoTheme.cardDecoration,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
-        onTap: () => _showItemDetail(context),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    if (product.description != null && product.description!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(product.description!, style: TayyebGoTheme.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
+    return GestureDetector(
+      onTap: () => _showItemDetail(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor),
+                  ),
+                  if (product.description != null && product.description!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        product.description!,
+                        style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    const SizedBox(height: 6),
-                    Text('\$${product.price.toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold, color: TayyebGoTheme.primaryColor)),
-                  ],
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.primaryColor),
+                  ),
+                ],
+              ),
+            ),
+            if (product.imageUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  product.imageUrl!,
+                  width: 72,
+                  height: 72,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 72,
+                    height: 72,
+                    color: context.surfaceAltColor,
+                    child: Icon(Icons.restaurant, color: context.textMutedColor),
+                  ),
                 ),
               ),
-              if (product.imageUrl != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(product.imageUrl!, width: 64, height: 64, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
-                ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -146,9 +358,7 @@ class _MenuItemCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => _ItemDetailSheet(
         product: product,
         restaurantId: restaurantId,
@@ -183,9 +393,7 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
     super.initState();
     for (final group in widget.product.modifierGroups ?? []) {
       final defaults = group.options.where((o) => o.isDefault).map((o) => o.id).toList();
-      if (defaults.isNotEmpty) {
-        _selectedOptions[group.id] = defaults;
-      }
+      if (defaults.isNotEmpty) _selectedOptions[group.id] = defaults;
     }
   }
 
@@ -207,101 +415,177 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 24, right: 24, top: 24,
+    return Container(
+      margin: const EdgeInsets.only(top: 80),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40, height: 4,
-              decoration: BoxDecoration(
-                color: TayyebGoTheme.textMuted.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.borderColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(widget.product.name, style: TayyebGoTheme.heading2),
-          if (widget.product.description != null && widget.product.description!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(widget.product.description!, style: TayyebGoTheme.body),
-            ),
-          const SizedBox(height: 16),
-          Text('\$${widget.product.price.toStringAsFixed(2)}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: TayyebGoTheme.primaryColor)),
-          const SizedBox(height: 20),
-          if (widget.product.modifierGroups != null && widget.product.modifierGroups!.isNotEmpty)
-            ...widget.product.modifierGroups!.map((group) => _ModifierGroupSelector(
+              const SizedBox(height: 20),
+              Text(
+                widget.product.name,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 22, color: context.textPrimaryColor),
+              ),
+              if (widget.product.description != null && widget.product.description!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(widget.product.description!, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
+                ),
+              const SizedBox(height: 12),
+              Text(
+                '\$${widget.product.price.toStringAsFixed(2)}',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 24, color: context.primaryColor),
+              ),
+              const SizedBox(height: 20),
+              if (widget.product.modifierGroups != null && widget.product.modifierGroups!.isNotEmpty)
+                ...widget.product.modifierGroups!.map((group) => _ModifierGroupSelector(
                   group: group,
                   selected: _selectedOptions[group.id] ?? [],
                   onChanged: (ids) => setState(() => _selectedOptions[group.id] = ids),
                 )),
-          const SizedBox(height: 12),
-          TextField(
-            decoration: const InputDecoration(hintText: 'Add a note...', contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10), isDense: true),
-            maxLines: 2,
-            onChanged: (v) => _note = v,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
+              const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: TayyebGoTheme.dividerColor),
-                  borderRadius: BorderRadius.circular(8),
+                  color: context.backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: context.borderColor),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove, size: 18),
-                      onPressed: _quantity > 1 ? () => setState(() => _quantity--) : null,
-                    ),
-                    Text('$_quantity', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    IconButton(
-                      icon: const Icon(Icons.add, size: 18),
-                      onPressed: () => setState(() => _quantity++),
-                    ),
-                  ],
+                child: TextField(
+                  maxLines: 2,
+                  style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+                  onChanged: (v) => _note = v,
+                  decoration: InputDecoration(
+                    hintText: 'Add a note...',
+                    hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(14),
+                  ),
                 ),
               ),
-              const Spacer(),
-              Text('\$${_lineTotal.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: context.backgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: context.borderColor),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _QtyBtn(
+                          icon: Icons.remove_rounded,
+                          onTap: _quantity > 1 ? () => setState(() => _quantity--) : null,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            '$_quantity',
+                            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor),
+                          ),
+                        ),
+                        _QtyBtn(
+                          icon: Icons.add_rounded,
+                          onTap: () => setState(() => _quantity++),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '\$${_lineTotal.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: context.textPrimaryColor),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final selectedMods = (widget.product.modifierGroups ?? []).map((g) {
+                      return SelectedModifierGroup(
+                        groupId: g.id,
+                        groupName: g.name,
+                        selectedOptionIds: _selectedOptions[g.id] ?? [],
+                        group: g,
+                      );
+                    }).toList();
+                    cart.addLine(
+                      widget.product,
+                      quantity: _quantity,
+                      modifiers: selectedMods,
+                      customerNote: _note.isEmpty ? null : _note,
+                    );
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: context.primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Add to Cart — \$${_lineTotal.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                final selectedMods = (widget.product.modifierGroups ?? []).map((g) {
-                  return SelectedModifierGroup(
-                    groupId: g.id,
-                    groupName: g.name,
-                    selectedOptionIds: _selectedOptions[g.id] ?? [],
-                    group: g,
-                  );
-                }).toList();
-                cart.addLine(
-                  widget.product,
-                  quantity: _quantity,
-                  modifiers: selectedMods,
-                  customerNote: _note.isEmpty ? null : _note,
-                );
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (context.mounted) Navigator.pop(context);
-                });
-              },
-              child: Text('Add to Cart — \$${_lineTotal.toStringAsFixed(2)}'),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QtyBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const _QtyBtn({required this.icon, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: onTap != null ? context.surfaceAltColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: onTap != null ? context.textPrimaryColor : context.textMutedColor,
+        ),
       ),
     );
   }
@@ -321,42 +605,81 @@ class _ModifierGroupSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(group.required ? '${group.name} *' : group.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
+          Row(
+            children: [
+              Text(
+                group.name,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor),
+              ),
+              if (group.required) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: context.errorColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text('Required', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: context.errorColor)),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
           ...group.options.map((opt) {
             final isSelected = selected.contains(opt.id);
             final disabled = !isSelected && selected.length >= group.maxSelections;
-            return InkWell(
-              onTap: disabled ? null : () {
-                if (isSelected) {
-                  onChanged(List.from(selected)..remove(opt.id));
-                } else {
-                  if (group.maxSelections == 1) {
-                    onChanged([opt.id]);
-                  } else {
-                    onChanged(List.from(selected)..add(opt.id));
-                  }
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+            return GestureDetector(
+              onTap: disabled
+                  ? null
+                  : () {
+                      if (isSelected) {
+                        onChanged(List.from(selected)..remove(opt.id));
+                      } else {
+                        if (group.maxSelections == 1) {
+                          onChanged([opt.id]);
+                        } else {
+                          onChanged(List.from(selected)..add(opt.id));
+                        }
+                      }
+                    },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? context.primaryColor.withValues(alpha: 0.1) : context.backgroundColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isSelected ? context.primaryColor.withValues(alpha: 0.3) : context.borderColor,
+                  ),
+                ),
                 child: Row(
                   children: [
                     Icon(
                       group.maxSelections == 1
-                          ? (isSelected ? Icons.radio_button_checked : Icons.radio_button_off)
-                          : (isSelected ? Icons.check_box : Icons.check_box_outline_blank),
+                          ? (isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded)
+                          : (isSelected ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded),
                       size: 20,
-                      color: isSelected ? TayyebGoTheme.primaryColor : TayyebGoTheme.textMuted,
+                      color: isSelected ? context.primaryColor : context.textMutedColor,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(opt.name, style: TextStyle(color: disabled ? TayyebGoTheme.textMuted : TayyebGoTheme.textPrimary))),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        opt.name,
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: disabled ? context.textMutedColor : context.textPrimaryColor,
+                        ),
+                      ),
+                    ),
                     if (opt.priceAdjustment > 0)
-                      Text('+\$${opt.priceAdjustment.toStringAsFixed(2)}', style: TextStyle(fontSize: 12, color: TayyebGoTheme.primaryColor)),
+                      Text(
+                        '+\$${opt.priceAdjustment.toStringAsFixed(2)}',
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryColor),
+                      ),
                   ],
                 ),
               ),

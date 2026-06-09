@@ -7,6 +7,7 @@ import '../constants/app_constants.dart';
 import '../models/product.dart';
 import '../models/modifier.dart';
 import '../models/cart_line_item.dart';
+import '../di/app_locator.dart';
 
 const _uuid = Uuid();
 
@@ -177,13 +178,8 @@ class CartProvider extends ChangeNotifier {
   Future<String?> applyCoupon(String code) async {
     if (code.trim().isEmpty) return 'Enter a coupon code';
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('promos')
-          .where('code', isEqualTo: code.trim().toUpperCase())
-          .where('active', isEqualTo: true)
-          .get();
-      if (snapshot.docs.isEmpty) return 'Invalid or expired coupon';
-      final promo = snapshot.docs.first.data();
+      final promo = await AppLocator.instance.promotionLookup.validateCoupon(code);
+      if (promo == null) return 'Invalid or expired coupon';
       final type = promo['type'] as String? ?? 'percentage';
       final value = (promo['value'] as num?)?.toDouble() ?? 0;
       final minOrder = (promo['minOrder'] as num?)?.toDouble() ?? 0;

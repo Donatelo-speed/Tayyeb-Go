@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
-import 'app_empty_state.dart';
 
 class AppActivityFeed extends StatelessWidget {
   final int limit;
@@ -22,31 +21,26 @@ class AppActivityFeed extends StatelessWidget {
         }
         final activities = snapshot.data!.docs;
         if (activities.isEmpty) return _buildEmpty(context);
-        return Container(
+        return TGC.outlined(
           padding: padding,
-          decoration: BoxDecoration(
-            color: context.cardBackgroundColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: context.borderColor),
-          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
-                const Icon(Icons.bolt_rounded, size: 18, color: AppColors.primary),
+                Icon(Icons.bolt_rounded, size: 18, color: context.primaryColor),
                 const SizedBox(width: 6),
-                Text('Live Activity', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+                Text('Live Activity', style: AppTypography.bodyBold.copyWith(color: context.textPrimaryColor)),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    color: context.successColor.withValues(alpha: 0.12),
+                    borderRadius: AppRadius.brChip,
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Container(width: 6, height: 6, decoration: const BoxDecoration(color: AppColors.success, shape: BoxShape.circle)),
+                    TGDot(color: context.successColor, size: 6),
                     const SizedBox(width: 4),
-                    const Text('LIVE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.success, letterSpacing: 0.5)),
+                    Text('LIVE', style: AppTypography.labelSmall.copyWith(color: context.successColor)),
                   ]),
                 ),
               ]),
@@ -54,7 +48,7 @@ class AppActivityFeed extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: activities.length,
-                  separatorBuilder: (_, __) => const Divider(height: 16),
+                  separatorBuilder: (_, __) => Divider(height: 16, color: context.borderColor),
                   itemBuilder: (_, i) {
                     final d = activities[i].data() as Map<String, dynamic>;
                     return Row(
@@ -71,9 +65,9 @@ class AppActivityFeed extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(d['text'] as String? ?? '', style: TextStyle(fontSize: 13, color: context.textPrimaryColor)),
+                              Text(d['text'] as String? ?? '', style: AppTypography.body.copyWith(color: context.textPrimaryColor)),
                               const SizedBox(height: 2),
-                              Text(_timeAgo(d['timestamp']), style: TextStyle(fontSize: 11, color: context.textMutedColor)),
+                              Text(_timeAgo(d['timestamp']), style: AppTypography.bodySmall.copyWith(color: context.textMutedColor)),
                             ],
                           ),
                         ),
@@ -90,17 +84,21 @@ class AppActivityFeed extends StatelessWidget {
   }
 
   Widget _buildEmpty(BuildContext context) {
-    return AdminEmptyState(icon: Icons.bolt_rounded, title: 'No activity yet', subtitle: 'Live events will appear here as your platform runs.');
+    return TGEmptyState(
+      icon: Icons.bolt_rounded,
+      title: 'No activity yet',
+      description: 'Live events will appear here as your platform runs.',
+    );
   }
 
   Color _activityColor(BuildContext context, String name) {
     switch (name) {
       case 'blue': return context.primaryColor;
-      case 'green': return AppColors.success;
-      case 'orange': return AppColors.warning;
-      case 'cyan': return AppColors.cyan;
-      case 'purple': return AppColors.purple;
-      case 'red': return AppColors.error;
+      case 'green': return context.successColor;
+      case 'orange': return context.warningColor;
+      case 'cyan': return const Color(0xFF06B6D4);
+      case 'purple': return const Color(0xFF8B5CF6);
+      case 'red': return context.errorColor;
       default: return context.textMutedColor;
     }
   }

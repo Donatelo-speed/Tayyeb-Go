@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/async_screen_builder.dart';
-import '../widgets/shimmer_loading.dart';
-import '../widgets/error_retry_widget.dart';
-import '../theme/tayyebgo_theme.dart';
+import '../providers/notifications_provider.dart';
+import '../../presentation/theme/theme_provider.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -15,53 +13,86 @@ class NotificationsScreen extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final userId = auth.user?.id;
     return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Notifications', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: userId == null
-          ? const Center(child: Text('Not logged in'))
-          : StreamScreenBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('notifications')
-                  .where('userId', isEqualTo: userId)
-                  .orderBy('createdAt', descending: true)
-                  .limit(100)
-                  .snapshots(),
-              onLoading: () => const ShimmerLoading(itemCount: 5),
-              onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-              onSuccess: (context, snap) {
-                if (snap.docs.isEmpty) {
+          ? Center(child: Text('Not logged in', style: GoogleFonts.inter(color: context.textMutedColor)))
+          : StreamBuilder<List<Map<String, dynamic>>>(
+              stream: context.read<NotificationsProvider>().watchNotifications(userId),
+              builder: (context, snap) {
+                if (snap.hasError) {
                   return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.notifications_none, size: 64, color: TayyebGoTheme.textMuted),
+                        Icon(Icons.error_outline_rounded, size: 48, color: context.errorColor),
+                        const SizedBox(height: 12),
+                        Text('Failed to load', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
+                      ],
+                    ),
+                  );
+                }
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator(color: context.primaryColor));
+                }
+                final docs = snap.data ?? [];
+                if (docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: context.surfaceColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: context.borderColor),
+                          ),
+                          child: Icon(Icons.notifications_none_rounded, size: 36, color: context.textMutedColor),
+                        ),
                         const SizedBox(height: 16),
-                        Text('No notifications yet', style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 16)),
+                        Text('No notifications yet', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text('We\'ll let you know when something happens', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
                       ],
                     ),
                   );
                 }
                 return RefreshIndicator(
+                  color: context.primaryColor,
+                  backgroundColor: context.surfaceColor,
                   onRefresh: () async {},
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: snap.docs.length,
+                    itemCount: docs.length,
                     itemBuilder: (_, i) {
-                      final d = snap.docs[i].data() as Map<String, dynamic>;
+                      final d = docs[i];
                       final read = d['read'] as bool? ?? false;
                       final title = d['title'] as String? ?? '';
                       final body = d['body'] as String? ?? '';
                       final time = d['createdAt'] as String? ?? '';
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: TayyebGoTheme.cardDecoration,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(TayyebGoTheme.radiusMd),
-                          onTap: () {
-                            if (!read) {
-                              FirebaseFirestore.instance.collection('notifications').doc(snap.docs[i].id).update({'read': true});
-                            }
-                          },
+                      return GestureDetector(
+                        onTap: () {
+                          if (!read) {
+                            context.read<NotificationsProvider>().markAsRead(d['id'] as String);
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: read ? context.surfaceColor : context.surfaceColor.withValues(alpha: 1.2),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: read ? context.borderColor : context.primaryColor.withValues(alpha: 0.15),
+                            ),
+                          ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -71,7 +102,7 @@ class NotificationsScreen extends StatelessWidget {
                                 margin: const EdgeInsets.only(top: 6),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: read ? Colors.transparent : TayyebGoTheme.primaryColor,
+                                  color: read ? Colors.transparent : context.primaryColor,
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -79,12 +110,22 @@ class NotificationsScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(title, style: TextStyle(fontWeight: read ? FontWeight.w400 : FontWeight.w600)),
+                                    Text(
+                                      title,
+                                      style: GoogleFonts.inter(
+                                        fontWeight: read ? FontWeight.w500 : FontWeight.w700,
+                                        fontSize: 14,
+                                        color: read ? context.textMutedColor : context.textPrimaryColor,
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
-                                    Text(body, style: TextStyle(color: TayyebGoTheme.textSecondary, fontSize: 13)),
+                                    Text(
+                                      body,
+                                      style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13),
+                                    ),
                                     if (time.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text(_timeAgo(time), style: TextStyle(color: TayyebGoTheme.textMuted, fontSize: 11)),
+                                      const SizedBox(height: 6),
+                                      Text(_timeAgo(time), style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11, fontWeight: FontWeight.w500)),
                                     ],
                                   ],
                                 ),

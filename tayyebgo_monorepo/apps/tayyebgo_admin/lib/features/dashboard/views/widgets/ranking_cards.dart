@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../../../../core/widgets/app_empty_state.dart' as empty;
@@ -18,11 +19,11 @@ class TopStoresCard extends StatelessWidget {
             children: [
               Icon(Icons.emoji_events, size: 18, color: context.primaryColor),
               const SizedBox(width: 8),
-              Text('Top Stores This Month', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+              Text('Top Stores This Month', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
             ],
           ),
           const SizedBox(height: 4),
-          Text('Ranked by revenue', style: TextStyle(color: context.textMutedColor, fontSize: 12)),
+          Text('Ranked by revenue', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
           const SizedBox(height: 16),
           StreamBuilder<List<Map<String, dynamic>>>(
             stream: AdminFirestoreService.instance.watchStoresRaw(filter: const StoreFilter(isActive: true), limit: 50),
@@ -79,11 +80,11 @@ class TopDriversCard extends StatelessWidget {
             children: [
               Icon(Icons.local_shipping, size: 18, color: context.primaryColor),
               const SizedBox(width: 8),
-              Text('Top Drivers This Month', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+              Text('Top Drivers This Month', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
             ],
           ),
           const SizedBox(height: 4),
-          Text('Ranked by deliveries', style: TextStyle(color: context.textMutedColor, fontSize: 12)),
+          Text('Ranked by deliveries', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
           const SizedBox(height: 16),
           StreamBuilder<List<Map<String, dynamic>>>(
             stream: AdminFirestoreService.instance.watchDriversRaw(filter: const DriverFilter(status: 'active'), limit: 50),
@@ -137,16 +138,16 @@ Widget rankingRow(BuildContext context, {required int rank, required String name
           width: 28, height: 28,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: rank <= 3 ? AppColors.warning.withValues(alpha: 0.15) : context.dividerColor.withValues(alpha: 0.5),
+            color: rank <= 3 ? context.warningColor.withValues(alpha: 0.15) : context.borderColor.withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
-          child: Text('$rank', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: rank <= 3 ? AppColors.warning : context.textMutedColor)),
+          child: Text('$rank', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w800, color: rank <= 3 ? context.warningColor : context.textMutedColor)),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
+          child: Text(name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
         ),
-        Text(value, style: TextStyle(fontSize: 12, color: context.textSecondaryColor)),
+        Text(value, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
       ],
     ),
   );

@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_profile_provider.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/shared_widgets/ui_feedback.dart';
 
@@ -44,22 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen>
   Future<void> _loadPrefs() async {
     final user = context.read<AuthProvider>().user;
     if (user == null) return;
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.id)
-          .get();
-      final data = doc.data();
-      if (data != null && data['notifications'] is Map) {
-        final n = data['notifications'] as Map;
-        _pushEnabled = n['push'] as bool? ?? true;
-        _smsEnabled = n['sms'] as bool? ?? true;
-        _emailEnabled = n['email'] as bool? ?? true;
-      }
-      if (data != null) {
-        _auditLogEnabled = data['auditLogEnabled'] as bool? ?? true;
-      }
-    } catch (_) {}
+    final prefs = await context.read<UserProfileProvider>().loadNotificationPrefs(user.id);
+    _pushEnabled = prefs['push'] as bool;
+    _smsEnabled = prefs['sms'] as bool;
+    _emailEnabled = prefs['email'] as bool;
+    _auditLogEnabled = prefs['auditLogEnabled'] as bool;
     if (mounted) setState(() => _loadingPrefs = false);
   }
 
@@ -67,22 +56,19 @@ class _SettingsScreenState extends State<SettingsScreen>
     setState(() => _savingPrefs = true);
     final user = context.read<AuthProvider>().user;
     if (user == null) return;
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.id)
-          .update({
-        'notifications.push': _pushEnabled,
-        'notifications.sms': _smsEnabled,
-        'notifications.email': _emailEnabled,
-        'auditLogEnabled': _auditLogEnabled,
-      });
+    final success = await context.read<UserProfileProvider>().saveNotificationPrefs(
+      userId: user.id,
+      push: _pushEnabled,
+      sms: _smsEnabled,
+      email: _emailEnabled,
+      auditLogEnabled: _auditLogEnabled,
+    );
+    if (success) {
       if (mounted) context.showSuccess('Preferences saved');
-    } catch (_) {
+    } else {
       if (mounted) context.showError('Failed to save preferences');
-    } finally {
-      if (mounted) setState(() => _savingPrefs = false);
     }
+    if (mounted) setState(() => _savingPrefs = false);
   }
 
   Future<void> _exportData() async {
@@ -221,7 +207,13 @@ class _SettingsScreenState extends State<SettingsScreen>
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               onChanged: (v) {
                 setState(() => _locale = v!);
-                context.read<AuthProvider>().updateProfile(preferredLocale: v);
+                final user = context.read<AuthProvider>().user;
+                if (user != null) {
+                  context.read<UserProfileProvider>().updateProfile(
+                    userId: user.id,
+                    preferredLocale: v,
+                  );
+                }
               },
             ),
             const Divider(height: 1, indent: 16, endIndent: 16),
@@ -234,7 +226,13 @@ class _SettingsScreenState extends State<SettingsScreen>
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               onChanged: (v) {
                 setState(() => _locale = v!);
-                context.read<AuthProvider>().updateProfile(preferredLocale: v);
+                final user = context.read<AuthProvider>().user;
+                if (user != null) {
+                  context.read<UserProfileProvider>().updateProfile(
+                    userId: user.id,
+                    preferredLocale: v,
+                  );
+                }
               },
             ),
           ]),
@@ -433,27 +431,22 @@ class _SettingsScreenState extends State<SettingsScreen>
             title: const Text('Clear Activity Log', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
             subtitle: const Text('Remove all historical activity records', style: TextStyle(fontSize: 12)),
             trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
-            onTap: () async {
-              final confirmed = await context.confirmAction(
-                title: 'Clear Activity Log',
-                message: 'This will permanently delete all activity log entries. This action cannot be undone.',
-                confirmLabel: 'Clear All',
-                confirmColor: AppColors.error,
-              );
-              if (confirmed && mounted) {
-                try {
-                  final batch = FirebaseFirestore.instance.batch();
-                  final snap = await FirebaseFirestore.instance.collection('activity_log').limit(500).get();
-                  for (final doc in snap.docs) {
-                    batch.delete(doc.reference);
+              onTap: () async {
+                final confirmed = await context.confirmAction(
+                  title: 'Clear Activity Log',
+                  message: 'This will permanently delete all activity log entries. This action cannot be undone.',
+                  confirmLabel: 'Clear All',
+                  confirmColor: AppColors.error,
+                );
+                if (confirmed && mounted) {
+                  final success = await context.read<UserProfileProvider>().clearActivityLog();
+                  if (success) {
+                    if (mounted) context.showSuccess('Activity log cleared');
+                  } else {
+                    if (mounted) context.showError('Failed to clear activity log');
                   }
-                  await batch.commit();
-                  if (mounted) context.showSuccess('Activity log cleared');
-                } catch (_) {
-                  if (mounted) context.showError('Failed to clear activity log');
                 }
-              }
-            },
+              },
           ),
         ),
         const SizedBox(height: 24),

@@ -1,78 +1,91 @@
 import 'package:flutter/material.dart';
 import '../presentation/theme/app_colors.dart';
+import 'app_button.dart';
 
-class AppEmptyState extends StatelessWidget {
+/// TGEmptyState — Animated empty state placeholder
+class TGEmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String? subtitle;
+  final String? description;
   final String? actionLabel;
   final VoidCallback? onAction;
-  final Widget? customAction;
 
-  const AppEmptyState({
+  const TGEmptyState({
     super.key,
     required this.icon,
     required this.title,
-    this.subtitle,
+    this.description,
     this.actionLabel,
     this.onAction,
-    this.customAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.06),
-                shape: BoxShape.circle,
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.5, end: 1.0),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Opacity(
+                    opacity: (value * 2 - 1).clamp(0.0, 1.0),
+                    child: child,
+                  ),
+                );
+              },
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 36,
+                  color: AppColors.primary.withValues(alpha: 0.6),
+                ),
               ),
-              child:
-                  Icon(icon, size: 40, color: AppColors.textMuted),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               title,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+              ),
               textAlign: TextAlign.center,
             ),
-            if (subtitle != null) ...[
+            if (description != null) ...[
               const SizedBox(height: 8),
               Text(
-                subtitle!,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textSecondary),
+                description!,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+                  height: 1.5,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
+              const SizedBox(height: 24),
+              TGB.primary(
+                label: actionLabel!,
                 onPressed: onAction,
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text(actionLabel!),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
+                isExpanded: false,
+                width: 200,
               ),
-            ],
-            if (customAction != null) ...[
-              const SizedBox(height: 20),
-              customAction!,
             ],
           ],
         ),
@@ -80,3 +93,6 @@ class AppEmptyState extends StatelessWidget {
     );
   }
 }
+
+// Backward compatibility alias
+typedef AppEmptyState = TGEmptyState;

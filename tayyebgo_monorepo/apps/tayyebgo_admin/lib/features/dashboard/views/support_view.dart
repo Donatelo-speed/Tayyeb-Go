@@ -1,264 +1,212 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
 
-
-
-class SupportView extends StatefulWidget {
-  const SupportView();
-  @override
-  State<SupportView> createState() => _SupportViewState();
-}
-
-class _SupportViewState extends State<SupportView> {
-  String _statusFilter = 'all';
+class SupportView extends StatelessWidget {
+  const SupportView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return pageContainer(context, child: AppScaffold(
-      showAppBar: false,
-      title: 'Support Center',
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Row(children: [
-              _filterChip('All', 'all'),
-              const SizedBox(width: 4),
-              _filterChip('Open', 'open'),
-              const SizedBox(width: 4),
-              _filterChip('Pending', 'pending'),
-              const SizedBox(width: 4),
-              _filterChip('Resolved', 'resolved'),
-              const Spacer(),
-              Text('${_statusFilter == 'all' ? '' : _statusFilter} Tickets', style: AppTypography.bodyBold),
-            ]),
-          ),
-          Expanded(
-            child: StreamScreenBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('support_tickets').orderBy('createdAt', descending: true).limit(100).snapshots(),
-              onLoading: () => const ShimmerLoading(itemCount: 5),
-              onError: (msg, retry) => ErrorRetryWidget(message: msg, onRetry: retry),
-              onSuccess: (context, snap) {
-                var docs = snap.docs.toList();
-                if (_statusFilter != 'all') {
-                  docs = docs.where((doc) {
-                    final d = doc.data() as Map<String, dynamic>;
-                    return (d['status'] as String? ?? 'open') == _statusFilter;
-                  }).toList();
-                }
-                if (docs.isEmpty) {
-                  return Center(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.support_agent_outlined, size: 64, color: AppColors.textMuted),
-                      const SizedBox(height: 16),
-                      Text('No support tickets', style: TextStyle(color: AppColors.textMuted, fontSize: 16)),
-                    ]),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: docs.length,
-                  itemBuilder: (_, i) {
-                    final d = docs[i].data() as Map<String, dynamic>;
-                    final userName = d['userName'] as String? ?? 'Unknown';
-                    final userRole = d['userRole'] as String? ?? 'customer';
-                    final subject = d['subject'] as String? ?? 'No subject';
-                    final message = d['message'] as String? ?? '';
-                    final status = d['status'] as String? ?? 'open';
-                    final priority = d['priority'] as String? ?? 'normal';
-                    final createdAt = d['createdAt'] as Timestamp?;
-                    final category = d['category'] as String? ?? 'general';
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: TayyebGoTheme.cardDecoration,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            CircleAvatar(
-                              radius: 18,
-                              backgroundColor: _roleColor(userRole).withValues(alpha: 0.1),
-                              child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : '?', style: TextStyle(color: _roleColor(userRole), fontWeight: FontWeight.bold)),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(subject, style: AppTypography.bodyBold),
-                                Row(children: [
-                                  Text(userName, style: AppTypography.small),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.textMuted.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(userRole[0].toUpperCase() + userRole.substring(1), style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  _priorityBadge(priority),
-                                ]),
-                              ]),
-                            ),
-                            _statusBadge(status),
-                            PopupMenuButton<String>(
-                              onSelected: (v) {
-                                if (v == 'open') _updateTicketStatus(context, docs[i].id, 'open');
-                                if (v == 'pending') _updateTicketStatus(context, docs[i].id, 'pending');
-                                if (v == 'resolved') _updateTicketStatus(context, docs[i].id, 'resolved');
-                                if (v == 'reply') _showReplyDialog(context, docs[i].id, userName, subject);
-                              },
-                              itemBuilder: (_) => [
-                                const PopupMenuItem(value: 'open', child: ListTile(leading: Icon(Icons.check_circle, size: 20, color: Colors.blue), title: Text('Mark Open'))),
-                                const PopupMenuItem(value: 'pending', child: ListTile(leading: Icon(Icons.schedule, size: 20, color: Colors.orange), title: Text('Mark Pending'))),
-                                const PopupMenuItem(value: 'resolved', child: ListTile(leading: Icon(Icons.check_circle, size: 20, color: AppColors.success), title: Text('Mark Resolved'))),
-                                const PopupMenuItem(value: 'reply', child: ListTile(leading: Icon(Icons.reply, size: 20), title: Text('Reply'))),
-                              ],
-                            ),
-                          ]),
-                          if (message.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(message, style: AppTypography.body),
-                            ),
-                          ],
-                          const SizedBox(height: 8),
-                          Row(children: [
-                            Icon(Icons.category, size: 12, color: AppColors.textMuted),
-                            const SizedBox(width: 4),
-                            Text(category[0].toUpperCase() + category.substring(1), style: AppTypography.small),
-                            const Spacer(),
-                            if (createdAt != null) ...[
-                              Icon(Icons.access_time, size: 12, color: AppColors.textMuted),
-                              const SizedBox(width: 4),
-                              Text(_formatDate(createdAt.toDate()), style: AppTypography.small),
-                            ],
-                          ]),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ]),
+    return pageContainer(
+      context,
+      child: Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          title: Text('Support Tickets', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('support_tickets').orderBy('createdAt', descending: true).limit(200).snapshots(),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+            if (snap.hasError) return Center(child: Text('Error loading', style: GoogleFonts.inter(color: context.textMutedColor)));
+            final docs = snap.data?.docs ?? [];
+            if (docs.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.support_agent_rounded, size: 64, color: context.borderColor),
+                    const SizedBox(height: 12),
+                    Text('No tickets yet', style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 16, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 4),
+                    Text('Customer support tickets appear here', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                  ],
+                ),
+              );
+            }
+            return _buildStats(context, docs);
+          },
+        ),
       ),
     );
   }
 
-  Widget _filterChip(String label, String value) {
-    final selected = _statusFilter == value;
-    return GestureDetector(
-      onTap: () => setState(() => _statusFilter = value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? AppColors.primary : AppColors.divider),
-        ),
-        child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? Colors.white : AppColors.textSecondary)),
-      ),
-    );
-  }
-
-  Color _roleColor(String role) {
-    switch (role) {
-      case 'driver': return Colors.cyan;
-      case 'customer': return Colors.blue;
-      case 'restaurantOwner': return Colors.orange;
-      default: return Colors.grey;
+  Widget _buildStats(BuildContext context, List<QueryDocumentSnapshot> docs) {
+    int open = 0, inProgress = 0, resolved = 0;
+    for (final doc in docs) {
+      final d = doc.data() as Map<String, dynamic>;
+      final s = d['status'] as String? ?? 'open';
+      if (s == 'open') open++;
+      else if (s == 'in_progress') inProgress++;
+      else resolved++;
     }
-  }
-
-  Widget _priorityBadge(String priority) {
-    Color c;
-    switch (priority) {
-      case 'high': c = Colors.red; break;
-      case 'normal': c = Colors.blue; break;
-      case 'low': c = AppColors.textMuted; break;
-      default: c = AppColors.textMuted;
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
-      child: Text(priority[0].toUpperCase() + priority.substring(1), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: c)),
-    );
-  }
-
-  Widget _statusBadge(String status) {
-    Color c;
-    switch (status) {
-      case 'open': c = Colors.blue; break;
-      case 'pending': c = Colors.orange; break;
-      case 'resolved': c = AppColors.success; break;
-      default: c = AppColors.textMuted;
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-      child: Text(status[0].toUpperCase() + status.substring(1), style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: c)),
-    );
-  }
-
-  Future<void> _updateTicketStatus(BuildContext context, String docId, String status) async {
-    try {
-      await FirebaseFirestore.instance.collection('support_tickets').doc(docId).update({
-        'status': status,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      if (context.mounted) context.showSuccess('Ticket marked as $status');
-    } catch (e) {
-      if (context.mounted) context.showError('Failed to update ticket status');
-    }
-  }
-
-  void _showReplyDialog(BuildContext context, String ticketId, String userName, String subject) {
-    final ctrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Reply to $userName'),
-        content: SizedBox(
-          width: 400,
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Re: $subject', style: AppTypography.caption),
-            const SizedBox(height: 12),
-            TextField(controller: ctrl, maxLines: 5, decoration: const InputDecoration(labelText: 'Reply', border: OutlineInputBorder())),
-          ]),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () async {
-              if (ctrl.text.trim().isNotEmpty) {
-                try {
-                  await FirebaseFirestore.instance.collection('support_tickets').doc(ticketId).update({
-                    'status': 'pending',
-                    'updatedAt': FieldValue.serverTimestamp(),
-                  });
-                  if (ctx.mounted) ctx.showSuccess('Reply sent');
-                  Navigator.pop(ctx);
-                } catch (e) {
-                  if (ctx.mounted) ctx.showError('Failed to send reply');
-                }
-              }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final crossCount = constraints.maxWidth < 500 ? 1 : constraints.maxWidth < 900 ? 2 : 3;
+              return GridView.count(
+                crossAxisCount: crossCount,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 2.5,
+                children: [
+                  _statCard(context, Icons.circle_outlined, 'Open', '$open', context.primaryColor),
+                  _statCard(context, Icons.autorenew_rounded, 'In Progress', '$inProgress', context.warningColor),
+                  _statCard(context, Icons.check_circle_outline, 'Resolved', '$resolved', context.successColor),
+                ],
+              );
             },
-            child: const Text('Send Reply'),
+          ),
+          const SizedBox(height: 20),
+          Text('All Tickets', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          const SizedBox(height: 12),
+          ...docs.map((doc) => _ticketCard(context, doc)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(BuildContext context, IconData icon, String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(value, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: color)),
+              Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+            ],
           ),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime dt) => '${dt.month}/${dt.day} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+  Widget _ticketCard(BuildContext context, QueryDocumentSnapshot doc) {
+    final d = doc.data() as Map<String, dynamic>;
+    final subject = d['subject'] as String? ?? 'No subject';
+    final body = d['body'] as String? ?? d['message'] as String? ?? '';
+    final status = d['status'] as String? ?? 'open';
+    final userName = d['userName'] as String? ?? d['email'] as String? ?? 'User';
+    final createdAt = d['createdAt'];
+    Color statusColor;
+    IconData statusIcon;
+    switch (status) {
+      case 'open':
+        statusColor = context.primaryColor;
+        statusIcon = Icons.circle_outlined;
+        break;
+      case 'in_progress':
+        statusColor = context.warningColor;
+        statusIcon = Icons.autorenew_rounded;
+        break;
+      default:
+        statusColor = context.successColor;
+        statusIcon = Icons.check_circle_outline;
+    }
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(subject, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(statusIcon, size: 12, color: statusColor),
+                    const SizedBox(width: 4),
+                    Text(status.replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: statusColor)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (body.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(body, style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor), maxLines: 2, overflow: TextOverflow.ellipsis),
+          ],
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.person_outline, size: 14, color: context.textMutedColor),
+              const SizedBox(width: 4),
+              Text(userName, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
+              const SizedBox(width: 12),
+              if (createdAt is Timestamp)
+                Text(_formatDate(createdAt), style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+              const Spacer(),
+              if (status == 'open')
+                _actionButton(context, doc.id, 'in_progress', 'In Progress', context.warningColor),
+              if (status == 'in_progress')
+                _actionButton(context, doc.id, 'resolved', 'Resolve', context.successColor),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton(BuildContext context, String id, String newStatus, String label, Color color) {
+    return TextButton(
+      onPressed: () async {
+        await FirebaseFirestore.instance.collection('support_tickets').doc(id).update({'status': newStatus});
+      },
+      child: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: color)),
+    );
+  }
+
+  String _formatDate(Timestamp ts) {
+    final dt = ts.toDate();
+    return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+  }
 }

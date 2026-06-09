@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../shared.dart';
@@ -22,18 +23,18 @@ class StoreAnalyticsTab extends StatelessWidget {
         final avgOrder = orders.isEmpty ? 0.0 : totalRevenue / orders.length;
         return Column(children: [
           Row(children: [
-            Expanded(child: _AnalyticsStatTile(context, 'Total Revenue', '\$${totalRevenue.toStringAsFixed(0)}', Icons.attach_money, AppColors.success)),
+            Expanded(child: _AnalyticsStatTile(context, 'Total Revenue', '\$${totalRevenue.toStringAsFixed(0)}', Icons.attach_money, context.successColor)),
             const SizedBox(width: 12),
             Expanded(child: _AnalyticsStatTile(context, 'Total Orders', '${orders.length}', Icons.receipt_long, context.primaryColor)),
           ]),
           const SizedBox(height: 12),
           Row(children: [
-            Expanded(child: _AnalyticsStatTile(context, 'Completed', '$completed', Icons.check_circle, AppColors.success)),
+            Expanded(child: _AnalyticsStatTile(context, 'Completed', '$completed', Icons.check_circle, context.successColor)),
             const SizedBox(width: 12),
-            Expanded(child: _AnalyticsStatTile(context, 'Cancelled', '$cancelled', Icons.cancel, AppColors.error)),
+            Expanded(child: _AnalyticsStatTile(context, 'Cancelled', '$cancelled', Icons.cancel, context.errorColor)),
           ]),
           const SizedBox(height: 12),
-          SizedBox(width: double.infinity, child: _AnalyticsStatTile(context, 'Average Order Value', '\$${avgOrder.toStringAsFixed(2)}', Icons.trending_up, AppColors.warning)),
+          SizedBox(width: double.infinity, child: _AnalyticsStatTile(context, 'Average Order Value', '\$${avgOrder.toStringAsFixed(2)}', Icons.trending_up, context.warningColor)),
         ]);
       },
     );
@@ -52,8 +53,8 @@ Widget _AnalyticsStatTile(BuildContext context, String label, String value, Icon
       ),
       const SizedBox(width: 12),
       Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        Text(label, style: TextStyle(fontSize: 11, color: context.textMutedColor)),
-        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+        Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+        Text(value, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
       ]),
     ]),
   );

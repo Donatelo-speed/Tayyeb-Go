@@ -3,6 +3,9 @@ enum PendingOperationType {
   rejectOrder,
   createOrder,
   updateOrder,
+  acceptDispatch,
+  rejectDispatch,
+  updateDispatchStatus,
 }
 
 extension PendingOperationTypeX on PendingOperationType {

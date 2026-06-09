@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
@@ -24,36 +25,63 @@ class _AvailableRequestsScreenState extends State<AvailableRequestsScreen> {
     final anything = context.watch<AnythingProvider>();
     final dispatch = context.watch<DispatchProvider>();
 
-    return AppScaffold(
-      title: 'Available Requests',
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Available Requests', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: anything.isLoading
-          ? const ShimmerLoading(itemCount: 3)
-          : (anything.availableRequests.isEmpty &&
-                  dispatch.assignedDispatches.isEmpty)
-              ? const Center(child: Text('No requests available'))
-              : ListView(
-                  padding: const EdgeInsets.all(12),
-                  children: [
-                    if (dispatch.assignedDispatches.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text('New Food Deliveries',
-                            style: Theme.of(context).textTheme.titleMedium),
+          ? Center(child: CircularProgressIndicator(color: context.successColor))
+          : (anything.availableRequests.isEmpty && dispatch.assignedDispatches.isEmpty)
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: context.surfaceColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: context.borderColor),
+                        ),
+                        child: Icon(Icons.inbox_rounded, size: 36, color: context.textMutedColor),
                       ),
-                      ...dispatch.assignedDispatches.map((d) =>
-                          _DispatchRequestCard(dispatch: d)),
+                      const SizedBox(height: 16),
+                      Text('No requests available', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 4),
+                      Text('Check back later for new delivery requests', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
                     ],
-                    if (anything.availableRequests.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8, bottom: 8),
-                        child: Text('Personal Shopping Requests',
-                            style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                      ...anything.availableRequests.map((r) =>
-                          _AnythingRequestCard(request: r)),
+                  ),
+                )
+              : RefreshIndicator(
+                  color: context.successColor,
+                  backgroundColor: context.surfaceColor,
+                  onRefresh: () async {
+                    final user = AuthProvider.instance?.user;
+                    if (user != null) {
+                      await context.read<AnythingProvider>().loadAvailableRequests(user.id);
+                    }
+                  },
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      if (dispatch.assignedDispatches.isNotEmpty) ...[
+                        Text('Food Deliveries', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: context.textMutedColor, letterSpacing: 0.3)),
+                        const SizedBox(height: 10),
+                        ...dispatch.assignedDispatches.map((d) => _DispatchRequestCard(dispatch: d)),
+                      ],
+                      if (anything.availableRequests.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Text('Anything Requests', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: context.textMutedColor, letterSpacing: 0.3)),
+                        const SizedBox(height: 10),
+                        ...anything.availableRequests.map((r) => _AnythingRequestCard(request: r)),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
     );
   }
@@ -66,80 +94,102 @@ class _DispatchRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final id = dispatch['id'] as String;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.delivery_dining, color: Colors.orange.shade700),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('Food Delivery Order',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.warningColor.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.warningColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.receipt, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text('Order: ${(dispatch['orderId'] as String? ?? '').substring(0, 8)}...'),
-              ],
-            ),
-            if (dispatch['dropoffLat'] != null) ...[
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  const Text('Delivery with GPS coordinates'),
-                ],
+                child: Icon(Icons.delivery_dining_rounded, color: context.warningColor, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text('Food Delivery', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: context.warningColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('NEW', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: context.warningColor)),
               ),
             ],
-            const SizedBox(height: 12),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.receipt_rounded, size: 16, color: context.textMutedColor),
+              const SizedBox(width: 6),
+              Text('Order: ${(dispatch['orderId'] as String? ?? '').substring(0, 8)}...', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+            ],
+          ),
+          if (dispatch['dropoffLat'] != null) ...[
+            const SizedBox(height: 4),
             Row(
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
+                Icon(Icons.location_on_rounded, size: 16, color: context.textMutedColor),
+                const SizedBox(width: 6),
+                Text('GPS delivery', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+              ],
+            ),
+          ],
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 44,
+                  child: ElevatedButton(
                     onPressed: () async {
                       final prov = context.read<DispatchProvider>();
                       await prov.acceptDispatch(id);
-                      if (context.mounted) {
-                        context.go('/active-delivery-food/$id');
-                      }
+                      if (context.mounted) context.go('/active-delivery-food/$id');
                     },
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Accept'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: context.successColor,
                       foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
                     ),
+                    child: Text('Accept', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SizedBox(
+                  height: 44,
+                  child: OutlinedButton(
                     onPressed: () async {
                       final prov = context.read<DispatchProvider>();
                       await prov.rejectDispatch(id);
                     },
-                    icon: const Icon(Icons.cancel),
-                    label: const Text('Reject'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
+                      foregroundColor: context.textMutedColor,
+                      side: BorderSide(color: context.borderColor),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    child: Text('Reject', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -151,78 +201,77 @@ class _AnythingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.shopping_bag,
-                    color: TayyebGoTheme.primaryColor),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(request.storeName,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.successColor.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.successColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ...request.items.map((item) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text('${item.quantity}x ${item.name}'),
-                )),
-            if (request.instructions.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text('Note: ${request.instructions}',
-                  style: const TextStyle(
-                      fontStyle: FontStyle.italic, color: Colors.grey)),
-            ],
-            const Divider(),
-            Row(
-              children: [
-                const Icon(Icons.monetization_on,
-                    size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text('Budget: SYP ${request.budget.toStringAsFixed(0)}'),
-                const Spacer(),
-                const Icon(Icons.location_on,
-                    size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(request.dropoffAddress,
-                      overflow: TextOverflow.ellipsis),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  final user = context.read<AuthProvider>().user;
-                  if (user == null) return;
-                  final success = await context
-                      .read<AnythingProvider>()
-                      .acceptRequest(
-                          request.id, user.id, user.displayName);
-                  if (success && context.mounted) {
-                    context.go('/active-delivery/${request.id}');
-                  }
-                },
-                icon: const Icon(Icons.check_circle),
-                label: const Text('Accept Request'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: TayyebGoTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                ),
+                child: Icon(Icons.shopping_bag_rounded, color: context.successColor, size: 20),
               ),
-            ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(request.storeName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...request.items.map((item) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text('${item.quantity}x ${item.name}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+          )),
+          if (request.instructions.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text('Note: ${request.instructions}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12, fontStyle: FontStyle.italic)),
           ],
-        ),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: Divider(color: context.borderColor)),
+          Row(
+            children: [
+              Icon(Icons.monetization_on_rounded, size: 16, color: context.textMutedColor),
+              const SizedBox(width: 4),
+              Text('Budget: SYP ${request.budget.toStringAsFixed(0)}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+              const Spacer(),
+              Icon(Icons.location_on_rounded, size: 16, color: context.textMutedColor),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(request.dropoffAddress, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () async {
+                final user = context.read<AuthProvider>().user;
+                if (user == null) return;
+                final success = await context.read<AnythingProvider>().acceptRequest(request.id, user.id, user.displayName);
+                if (success && context.mounted) context.go('/active-delivery/${request.id}');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.successColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+              child: Text('Accept Request', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+            ),
+          ),
+        ],
       ),
     );
   }

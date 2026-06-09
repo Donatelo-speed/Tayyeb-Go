@@ -1,13 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_profile_provider.dart';
 import '../../presentation/theme/app_colors.dart';
-import '../../presentation/theme/app_gradients.dart';
-import '../../presentation/shared_widgets/ui_feedback.dart';
+import '../../ui/cached_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -50,51 +48,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, maxWidth: 512, maxHeight: 512);
-    if (picked == null || !mounted) return;
-    setState(() => _uploadingPhoto = true);
     final auth = context.read<AuthProvider>();
     final userId = auth.user?.id;
     if (userId == null) return;
-    try {
-      final ref = FirebaseStorage.instance.ref().child('profile_pics/$userId.jpg');
-      if (kIsWeb) {
-        final bytes = await picked.readAsBytes();
-        await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
-      } else {
-        await ref.putFile(File(picked.path));
-      }
-      final url = await ref.getDownloadURL();
+    setState(() => _uploadingPhoto = true);
+    final url = await context.read<UserProfileProvider>().pickAndUploadProfileImage(userId);
+    if (url != null) {
       await auth.updateProfile(photoUrl: url);
       if (mounted) {
-        context.showSuccess('Profile photo updated');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile photo updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        );
       }
-    } catch (_) {
-      if (mounted) {
-        context.showError('Failed to upload photo. Please try again.');
-      }
-    } finally {
-      if (mounted) setState(() => _uploadingPhoto = false);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload photo', style: GoogleFonts.inter()), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      );
     }
+    if (mounted) setState(() => _uploadingPhoto = false);
   }
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    try {
-      await context.read<AuthProvider>().updateProfile(
-            displayName: _nameCtrl.text.trim(),
-            phone: _phoneCtrl.text.trim(),
-            address: _addressCtrl.text.trim(),
-          );
-      if (!mounted) return;
-      setState(() => _edited = false);
-      context.showSuccess('Profile updated');
-    } catch (_) {
-      if (mounted) context.showError('Failed to save profile');
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
+    final user = context.read<AuthProvider>().user;
+    if (user == null) return;
+    await context.read<UserProfileProvider>().updateProfile(
+      userId: user.id,
+      displayName: _nameCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      address: _addressCtrl.text.trim(),
+    );
+    if (!mounted) return;
+    setState(() => _edited = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Profile updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+    );
+    if (mounted) setState(() => _saving = false);
   }
 
   @override
@@ -103,16 +92,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = auth.user;
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
-        body: const Center(child: Text('Please log in to view your profile')),
+        backgroundColor: AppColors.background,
+        appBar: AppBar(title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600)), backgroundColor: AppColors.background, elevation: 0, surfaceTintColor: Colors.transparent),
+        body: Center(child: Text('Please log in', style: GoogleFonts.inter(color: AppColors.textMuted))),
       );
     }
     final isAdmin = auth.isSuperAdmin;
+
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+        backgroundColor: AppColors.background,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         actions: [
@@ -120,80 +111,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
               onPressed: _saving ? null : _save,
               child: _saving
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text('Save', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                  : Text('Save', style: GoogleFonts.inter(color: AppColors.primary, fontWeight: FontWeight.w600)),
             ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
+          const SizedBox(height: 8),
           _buildAvatarSection(user, isAdmin),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           if (isAdmin) ...[
-            _buildAdminActivityCard(user),
-            const SizedBox(height: 24),
+            _buildAdminCard(),
+            const SizedBox(height: 20),
           ],
-          _buildSectionHeader('Personal Information'),
+          _buildSection('Personal Information'),
           const SizedBox(height: 12),
-          _buildField('Display Name', Icons.person_outline, _nameCtrl, TextCapitalization.words),
-          const SizedBox(height: 14),
-          _buildField('Phone', Icons.phone_outlined, _phoneCtrl, null, keyboardType: TextInputType.phone),
-          const SizedBox(height: 14),
+          _buildField('Display Name', Icons.person_outline_rounded, _nameCtrl, TextCapitalization.words),
+          const SizedBox(height: 12),
+          _buildField('Phone', Icons.phone_rounded, _phoneCtrl, null, keyboardType: TextInputType.phone),
+          const SizedBox(height: 12),
           _buildField('Default Address', Icons.location_on_outlined, _addressCtrl, TextCapitalization.sentences, maxLines: 2),
-          const SizedBox(height: 24),
-          _buildSectionHeader('Account Info'),
+          const SizedBox(height: 28),
+          _buildSection('Account'),
           const SizedBox(height: 12),
-          _buildInfoRow(Icons.email_outlined, 'Email', user.email),
-          const Divider(height: 1, indent: 16),
-          _buildInfoRow(Icons.badge_outlined, 'Role', user.role.displayName,
-              valueColor: isAdmin ? AppColors.primary : null,
-              trailing: isAdmin
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        gradient: AppGradients.primaryToAccent,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'ADMIN',
-                        style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.8),
-                      ),
-                    )
-                  : null),
-          if (user.createdAt != null) ...[
-            const Divider(height: 1, indent: 16),
-            _buildInfoRow(Icons.calendar_today_outlined, 'Member Since',
-                '${user.createdAt!.year}-${user.createdAt!.month.toString().padLeft(2, '0')}-${user.createdAt!.day.toString().padLeft(2, '0')}'),
-          ],
+          _buildInfoRow(Icons.mail_outline_rounded, 'Email', user.email),
+          _buildInfoRow(Icons.badge_outlined, 'Role', user.role.displayName, valueColor: isAdmin ? AppColors.primary : null),
+          if (user.createdAt != null)
+            _buildInfoRow(Icons.calendar_today_outlined, 'Member Since', '${user.createdAt!.year}-${user.createdAt!.month.toString().padLeft(2, '0')}-${user.createdAt!.day.toString().padLeft(2, '0')}'),
+          const SizedBox(height: 28),
+          _buildSection('Settings'),
+          const SizedBox(height: 12),
+          _buildSettingsRow(Icons.notifications_outlined, 'Notifications'),
+          _buildSettingsRow(Icons.language_rounded, 'Language'),
+          _buildSettingsRow(Icons.help_outline_rounded, 'Help & Support'),
+          _buildSettingsRow(Icons.info_outline_rounded, 'About'),
+          const SizedBox(height: 20),
+          _buildLogoutButton(),
           const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: (_edited && !_saving) ? _save : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                elevation: 0,
-              ),
-              child: Text(_edited ? 'Save Changes' : 'No Changes'),
-            ),
-          ),
-          if (_edited)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Center(
-                child: Text(
-                  'You have unsaved changes',
-                  style: TextStyle(fontSize: 12, color: AppColors.warning, fontWeight: FontWeight.w500),
-                ),
-              ),
-            ),
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -206,41 +162,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Stack(
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: isAdmin
-                    ? Border.all(color: AppColors.accent, width: 2.5)
-                    : null,
+                gradient: isAdmin ? const LinearGradient(colors: [AppColors.primary, Color(0xFF818CF8)]) : null,
               ),
-              child: CircleAvatar(
-                radius: 48,
-                backgroundColor: AppColors.primaryLight,
-                backgroundImage: user.photoUrl != null
-                    ? NetworkImage(user.photoUrl!) as ImageProvider
-                    : null,
-                child: user.photoUrl == null
-                    ? Text(
-                        (user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : '?'),
-                        style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColors.primary),
-                      )
-                    : null,
+              padding: isAdmin ? const EdgeInsets.all(3) : null,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.surface,
+                ),
+                padding: const EdgeInsets.all(3),
+                child: ClipOval(
+                  child: user.photoUrl != null
+                      ? CachedImage(
+                          imageUrl: user.photoUrl!,
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Text(
+                            (user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : '?'),
+                            style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w200, color: AppColors.textPrimary),
+                          ),
+                        ),
+                ),
               ),
             ),
             Positioned(
-              bottom: 0,
-              right: 0,
+              bottom: 4,
+              right: 4,
               child: Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _uploadingPhoto ? AppColors.textMuted : AppColors.primary,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2.5),
+                  border: Border.all(color: AppColors.background, width: 2.5),
+                  boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8)],
                 ),
                 child: _uploadingPhoto
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                    ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.camera_alt_rounded, size: 14, color: Colors.white),
               ),
             ),
           ],
@@ -249,17 +214,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAdminActivityCard(user) {
+  Widget _buildAdminCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryLight, Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
@@ -267,28 +228,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.shield_outlined, color: AppColors.primary, size: 24),
+            child: const Icon(Icons.shield_rounded, color: AppColors.primary, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Admin Access', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.textPrimary)),
+                Text('Admin Access', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.textPrimary)),
                 const SizedBox(height: 2),
-                Text(
-                  'Full platform management privileges',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                ),
+                Text('Full platform management', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.success.withValues(alpha: 0.08),
+              color: AppColors.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -296,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Container(width: 6, height: 6, decoration: const BoxDecoration(color: AppColors.success, shape: BoxShape.circle)),
                 const SizedBox(width: 4),
-                Text('Active', style: TextStyle(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.w600)),
+                Text('Active', style: GoogleFonts.inter(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -305,15 +263,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSection(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
-        letterSpacing: 0.3,
-      ),
+      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textMuted, letterSpacing: 0.3),
     );
   }
 
@@ -321,19 +274,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
       ),
       child: TextField(
         controller: ctrl,
         keyboardType: keyboardType,
         textCapitalization: cap ?? TextCapitalization.none,
         maxLines: maxLines,
-        style: const TextStyle(fontSize: 15),
+        style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-          prefixIcon: Icon(icon, size: 20, color: AppColors.textSecondary),
+          labelStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+          prefixIcon: Icon(icon, size: 20, color: AppColors.textMuted),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
@@ -341,29 +294,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, {Color? valueColor, Widget? trailing}) {
+  Widget _buildInfoRow(IconData icon, String label, String value, {Color? valueColor}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border(bottom: BorderSide(color: AppColors.divider.withValues(alpha: 0.3))),
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.textSecondary),
+          Icon(icon, size: 18, color: AppColors.textMuted),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
-          ),
-          if (trailing != null)
-            trailing
-          else
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: valueColor ?? AppColors.textPrimary,
-              ),
-            ),
+          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted))),
+          Text(value, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: valueColor ?? AppColors.textPrimary)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsRow(IconData icon, String label) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 2),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Icon(icon, size: 20, color: AppColors.textMuted),
+        title: Text(label, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary)),
+        trailing: Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.textMuted),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        onTap: () {},
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: OutlinedButton(
+        onPressed: () async {
+          await context.read<AuthProvider>().logout();
+          if (context.mounted) context.go('/login');
+        },
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.error,
+          side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Text('Sign Out', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import '../../../../core/services/admin_firestore_service.dart';
 import '../business_type.dart';
@@ -52,7 +53,7 @@ class _TemplatePicker extends StatelessWidget {
         Row(children: [
           Icon(Icons.dashboard_customize_outlined, size: 20, color: context.primaryColor),
           const SizedBox(width: 10),
-          Text('Storefront Template', style: AppTypography.heading3),
+          Text('Storefront Template', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -60,12 +61,12 @@ class _TemplatePicker extends StatelessWidget {
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(businessIcon(current.iconKey), size: 14, color: context.primaryColor),
               const SizedBox(width: 4),
-              Text('Current: ${current.name}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryColor)),
+              Text('Current: ${current.name}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryColor)),
             ]),
           ),
         ]),
         const SizedBox(height: 8),
-        Text('Choose how this store appears to customers in the app', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+        Text('Choose how this store appears to customers in the app', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
         const SizedBox(height: 16),
         LayoutBuilder(builder: (ctx, c) {
           final perRow = c.maxWidth > 800 ? 3 : c.maxWidth > 500 ? 2 : 1;
@@ -87,7 +88,7 @@ class _TemplatePicker extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: selected ? context.primaryColor.withValues(alpha: 0.05) : context.surfaceColor,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: selected ? context.primaryColor : context.dividerColor, width: selected ? 1.5 : 1),
+                  border: Border.all(color: selected ? context.primaryColor : context.borderColor, width: selected ? 1.5 : 1),
                 ),
                 child: Row(children: [
                   Container(
@@ -97,8 +98,8 @@ class _TemplatePicker extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                    Text(t.name, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
-                    Text(t.description, style: TextStyle(fontSize: 11, color: context.textMutedColor), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(t.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+                    Text(t.description, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ])),
                   if (selected) Icon(Icons.check_circle, color: context.primaryColor, size: 18),
                 ]),
@@ -131,22 +132,22 @@ class _DesignSection extends StatelessWidget {
         Row(children: [
           Icon(icon, size: 20, color: context.primaryColor),
           const SizedBox(width: 10),
-          Text(title, style: AppTypography.heading3),
+          Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
           const Spacer(),
           if (hasExisting)
             Container(
               width: 48, height: 48,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: context.dividerColor.withValues(alpha: 0.3))),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor.withValues(alpha: 0.3))),
               child: ClipRRect(borderRadius: BorderRadius.circular(7), child: Image.network(existingUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
             ),
         ]),
         const SizedBox(height: 8),
-        Text(subtitle, style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+        Text(subtitle, style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
         const SizedBox(height: 12),
         OutlinedButton.icon(
           onPressed: () => showImageUploadDialog(context, title, store, storeId, field),
           icon: const Icon(Icons.upload, size: 16),
-          label: Text(hasExisting ? 'Replace' : 'Upload'),
+          label: Text(hasExisting ? 'Replace' : 'Upload', style: GoogleFonts.inter()),
           style: OutlinedButton.styleFrom(foregroundColor: context.primaryColor),
         ),
       ]),
@@ -169,19 +170,19 @@ class _BrandColors extends StatelessWidget {
         Row(children: [
           Icon(Icons.palette_outlined, size: 20, color: context.primaryColor),
           const SizedBox(width: 10),
-          Text('Brand Colors', style: AppTypography.heading3),
+          Text('Brand Colors', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
         ]),
         const SizedBox(height: 12),
-        Text('Primary brand color used across store presence', style: TextStyle(fontSize: 12, color: context.textMutedColor)),
+        Text('Primary brand color used across store presence', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
         const SizedBox(height: 12),
         Row(children: [
-          Container(width: 40, height: 40, decoration: BoxDecoration(color: Color(int.parse(primary.replaceFirst('#', '0xFF'))), borderRadius: BorderRadius.circular(8), border: Border.all(color: context.dividerColor))),
+          Container(width: 40, height: 40, decoration: BoxDecoration(color: Color(int.parse(primary.replaceFirst('#', '0xFF'))), borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor))),
           const SizedBox(width: 12),
-          Text(primary, style: TextStyle(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
+          Text(primary, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
           const Spacer(),
           OutlinedButton(
             onPressed: () => pickBrandColor(context, store, storeId),
-            child: const Text('Change'),
+            child: Text('Change', style: GoogleFonts.inter()),
           ),
         ]),
       ]),
@@ -204,19 +205,19 @@ class _FeaturedProductsSection extends StatelessWidget {
         Row(children: [
           Icon(Icons.star_outlined, size: 20, color: context.primaryColor),
           const SizedBox(width: 10),
-          Text('Featured Products', style: AppTypography.heading3),
+          Text('Featured Products', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
           const Spacer(),
           TextButton.icon(
             onPressed: () => pickFeaturedProducts(context, store, storeId, featured),
             icon: const Icon(Icons.add, size: 16),
-            label: const Text('Add'),
+            label: Text('Add', style: GoogleFonts.inter(color: context.primaryColor)),
           ),
         ]),
         const SizedBox(height: 12),
         if (featured.isEmpty)
-          Text('No featured products selected. Choose products to highlight on the store page.', style: TextStyle(fontSize: 12, color: context.textMutedColor))
+          Text('No featured products selected. Choose products to highlight on the store page.', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor))
         else
-          ...featured.map((p) => ListTile(dense: true, title: Text(p.toString()), trailing: IconButton(icon: const Icon(Icons.close, size: 16), onPressed: () => {}))),
+          ...featured.map((p) => ListTile(dense: true, title: Text(p.toString(), style: GoogleFonts.inter(color: context.textPrimaryColor)), trailing: IconButton(icon: Icon(Icons.close, size: 16, color: context.textMutedColor), onPressed: () => {}))),
       ]),
     );
   }

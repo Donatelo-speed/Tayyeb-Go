@@ -159,9 +159,9 @@ IconData statusIcon(String key) {
 
 Color statusColor(String key, BuildContext context) {
   switch (key) {
-    case 'success': return AppColors.success;
-    case 'warning': return AppColors.warning;
-    case 'error': return AppColors.error;
+    case 'success': return context.successColor;
+    case 'warning': return context.warningColor;
+    case 'error': return context.errorColor;
     default: return context.textMutedColor;
   }
 }

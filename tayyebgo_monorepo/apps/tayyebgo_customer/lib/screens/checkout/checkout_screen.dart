@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -18,6 +19,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   FulfillmentType _fulfillment = FulfillmentType.delivery;
   _CheckoutStep _step = _CheckoutStep.form;
   String _errorMessage = '';
+  PaymentMethodType? _selectedPaymentMethod;
 
   @override
   void dispose() {
@@ -35,26 +37,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) context.go('/cart');
       });
-      return const AppScaffold(title: 'Checkout', body: SizedBox.shrink());
+      return Scaffold(backgroundColor: context.backgroundColor, body: const SizedBox.shrink());
     }
 
-    return AppScaffold(
-      title: 'Checkout',
-      showCart: _step == _CheckoutStep.form,
-      body: _buildBody(cart, auth),
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      appBar: AppBar(
+        title: Text('Checkout', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: _buildBody(context, cart, auth),
     );
   }
 
-  Widget _buildBody(CartProvider cart, AuthProvider auth) {
+  Widget _buildBody(BuildContext context, CartProvider cart, AuthProvider auth) {
     switch (_step) {
       case _CheckoutStep.processing:
-        return _ProcessingState();
+        return const _ProcessingState();
       case _CheckoutStep.error:
         return _ErrorState(
           message: _errorMessage,
-          onRetry: () {
-            setState(() => _step = _CheckoutStep.form);
-          },
+          onRetry: () => setState(() => _step = _CheckoutStep.form),
         );
       case _CheckoutStep.done:
         return const SizedBox.shrink();
@@ -72,7 +77,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _placeOrder(BuildContext context, CartProvider cart, AuthProvider auth) async {
     if (_addressCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a delivery address')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a delivery address', style: GoogleFonts.inter()),
+          backgroundColor: context.errorColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
       return;
     }
 
@@ -83,19 +95,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     try {
       final totalInCents = (cart.grandTotal * 100).round();
-
       final result = await showModalBottomSheet<PaymentMethodType>(
         context: context,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        backgroundColor: Colors.transparent,
         builder: (_) => PaymentSelectionSheet(
           totalAmount: Money(totalInCents),
           deliveryFee: Money((cart.deliveryFee * 100).round()),
-          onSelected: (_) {},
+          onSelected: (method) => setState(() => _selectedPaymentMethod = method),
         ),
       );
+      _selectedPaymentMethod = result;
 
-      if (result == null || !context.mounted) {
+      if (_selectedPaymentMethod == null || !context.mounted) {
         setState(() => _step = _CheckoutStep.form);
         return;
       }
@@ -109,40 +121,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         restaurantName: cart.restaurantName ?? '',
         items: cart.lines.map((l) => l.toJson()).toList(),
         totalAmountInCents: totalInCents,
-        paymentMethodType: result.name,
+        paymentMethodType: _selectedPaymentMethod!.name,
         commissionPercent: cart.commissionPercent ?? 15.0,
         fulfillmentType: _fulfillment.name,
         deliveryAddress: {'fullAddress': _addressCtrl.text.trim()},
       );
 
-      if (result == PaymentMethodType.shamCash) {
+      if (_selectedPaymentMethod == PaymentMethodType.shamCash) {
         final shamCash = ShamCashService();
         final intentResult = await shamCash.createPaymentIntent(PaymentIntentRequest(
           orderId: orderId,
           amount: Money(totalInCents),
-          method: result,
+          method: _selectedPaymentMethod!,
           commissionPercent: cart.commissionPercent ?? 15.0,
         ));
-        if (!intentResult.success) {
-          throw Exception(intentResult.errorMessage ?? 'Sham Cash record failed');
-        }
-      } else if (result == PaymentMethodType.stripe) {
+        if (!intentResult.success) throw Exception(intentResult.errorMessage ?? 'Sham Cash record failed');
+      } else if (_selectedPaymentMethod == PaymentMethodType.stripe) {
         final stripe = StripeCheckoutService();
         final intentResult = await stripe.createPaymentIntent(PaymentIntentRequest(
           orderId: orderId,
           amount: Money(totalInCents),
-          method: result,
+          method: _selectedPaymentMethod!,
           commissionPercent: cart.commissionPercent ?? 15.0,
         ));
-        if (!intentResult.success) {
-          throw Exception(intentResult.errorMessage ?? 'Stripe payment failed');
-        }
+        if (!intentResult.success) throw Exception(intentResult.errorMessage ?? 'Stripe payment failed');
         if (intentResult.checkoutUrl != null && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Redirect to payment: ${intentResult.checkoutUrl}'),
+              content: Text('Redirect to payment: ${intentResult.checkoutUrl}', style: GoogleFonts.inter()),
               duration: const Duration(seconds: 5),
-              action: SnackBarAction(label: 'Open', onPressed: () {}),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
           );
         }
@@ -163,10 +172,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 }
-
-// =============================================================================
-// Checkout Form State
-// =============================================================================
 
 class _CheckoutForm extends StatelessWidget {
   final TextEditingController addressCtrl;
@@ -190,189 +195,218 @@ class _CheckoutForm extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Delivery Details', style: TayyebGoTheme.heading3),
+        _buildSection(context, 'Delivery Details'),
         const SizedBox(height: 12),
-        TextField(
-          controller: addressCtrl,
-          decoration: const InputDecoration(labelText: 'Delivery Address', hintText: 'Street, building, apartment'),
-          maxLines: 2,
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: instructionsCtrl,
-          decoration: const InputDecoration(labelText: 'Special Instructions (optional)', hintText: 'Leave at door, ring bell, etc.'),
-          maxLines: 2,
-        ),
+        _buildField(context, 'Delivery Address', Icons.location_on_outlined, addressCtrl, maxLines: 2, hint: 'Street, building, apartment'),
+        const SizedBox(height: 12),
+        _buildField(context, 'Special Instructions', Icons.edit_note_rounded, instructionsCtrl, maxLines: 2, hint: 'Leave at door, ring bell, etc.'),
         const SizedBox(height: 24),
-        Text('Fulfillment Type', style: TayyebGoTheme.heading3),
-        const SizedBox(height: 8),
+        _buildSection(context, 'Fulfillment'),
+        const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _fulfillmentTile(FulfillmentType.delivery, Icons.delivery_dining, 'Delivery', fulfillment == FulfillmentType.delivery, onFulfillmentChanged)),
+            Expanded(child: _fulfillmentTile(context, FulfillmentType.delivery, Icons.delivery_dining_rounded, 'Delivery')),
             const SizedBox(width: 12),
-            Expanded(child: _fulfillmentTile(FulfillmentType.pickup, Icons.store, 'Pickup', fulfillment == FulfillmentType.pickup, onFulfillmentChanged)),
+            Expanded(child: _fulfillmentTile(context, FulfillmentType.pickup, Icons.store_rounded, 'Pickup')),
           ],
         ),
         const SizedBox(height: 24),
-        Text('Order Summary', style: TayyebGoTheme.heading3),
+        _buildSection(context, 'Order Summary'),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: TayyebGoTheme.cardDecoration,
-          child: Column(children: [
-            _summaryRow('Items (${cart.totalQuantity})', '\$${cart.subtotal.toStringAsFixed(2)}'),
-            _summaryRow('Delivery Fee', fulfillment == FulfillmentType.pickup ? 'Free' : '\$${cart.deliveryFee.toStringAsFixed(2)}'),
-            _summaryRow('Tax', '\$${cart.tax.toStringAsFixed(2)}'),
-            if (cart.promoDiscount > 0) _summaryRow('Discount', '-\$${cart.promoDiscount.toStringAsFixed(2)}'),
-            const Divider(height: 20),
-            _summaryRow('Total', '\$${cart.grandTotal.toStringAsFixed(2)}', bold: true),
-          ]),
-        ),
+        _buildSummaryCard(context, cart),
+        const SizedBox(height: 16),
+        _buildTipSection(context),
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
+          height: 54,
           child: ElevatedButton(
             onPressed: onPlaceOrder,
-            child: Text('Place Order — \$${cart.grandTotal.toStringAsFixed(2)}'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              elevation: 0,
+            ),
+            child: Text(
+              'Place Order — \$${cart.grandTotal.toStringAsFixed(2)}',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
       ],
     );
   }
 
-  Widget _fulfillmentTile(FulfillmentType type, IconData icon, String label, bool selected, ValueChanged<FulfillmentType> onChanged) {
-    return InkWell(
-      onTap: () => onChanged(type),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+  Widget _buildSection(BuildContext context, String title) {
+    return Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMutedColor, letterSpacing: 0.3));
+  }
+
+  Widget _buildField(BuildContext context, String label, IconData icon, TextEditingController ctrl, {int maxLines = 1, String? hint}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: TextField(
+        controller: ctrl,
+        maxLines: maxLines,
+        style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13),
+          prefixIcon: Icon(icon, size: 20, color: context.textMutedColor),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+      ),
+    );
+  }
+
+  Widget _fulfillmentTile(BuildContext context, FulfillmentType type, IconData icon, String label) {
+    final selected = fulfillment == type;
+    return GestureDetector(
+      onTap: () => onFulfillmentChanged(type),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.dividerColor, width: selected ? 2 : 1),
-          color: selected ? TayyebGoTheme.primaryColor.withValues(alpha: 0.05) : TayyebGoTheme.surfaceColor,
+          color: selected ? context.primaryColor.withValues(alpha: 0.1) : context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? context.primaryColor : context.borderColor,
+            width: selected ? 1.5 : 1,
+          ),
         ),
         child: Column(
           children: [
-            Icon(icon, color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.textMuted, size: 28),
+            Icon(icon, color: selected ? context.primaryColor : context.textMutedColor, size: 28),
             const SizedBox(height: 8),
-            Text(label, style: TextStyle(fontWeight: FontWeight.w600, color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.textPrimary)),
+            Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: selected ? context.primaryColor : context.textMutedColor)),
           ],
         ),
       ),
     );
   }
 
-  Widget _summaryRow(String label, String value, {bool bold = false}) {
+  Widget _buildSummaryCard(BuildContext context, CartProvider cart) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        children: [
+          _summaryRow(context, 'Items (${cart.totalQuantity})', '\$${cart.subtotal.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Delivery Fee', fulfillment == FulfillmentType.pickup ? 'Free' : '\$${cart.deliveryFee.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Tax', '\$${cart.tax.toStringAsFixed(2)}'),
+          if (cart.promoDiscount > 0)
+            _summaryRow(context, 'Discount', '-\$${cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Divider(color: context.borderColor),
+          ),
+          _summaryRow(context, 'Total', '\$${cart.grandTotal.toStringAsFixed(2)}', bold: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Tip for driver', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _tipButton(context, 'No Tip'),
+              const SizedBox(width: 8),
+              _tipButton(context, '5%'),
+              const SizedBox(width: 8),
+              _tipButton(context, '10%'),
+              const SizedBox(width: 8),
+              _tipButton(context, '15%'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tipButton(BuildContext context, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: context.backgroundColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Center(
+          child: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textMutedColor)),
+        ),
+      ),
+    );
+  }
+
+  Widget _summaryRow(BuildContext context, String label, String value, {bool bold = false, Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(color: bold ? TayyebGoTheme.textPrimary : TayyebGoTheme.textSecondary, fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
-        Text(value, style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.w500)),
-      ]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: GoogleFonts.inter(fontSize: 13, color: bold ? context.textPrimaryColor : context.textMutedColor, fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: bold ? FontWeight.w700 : FontWeight.w600, color: valueColor ?? context.textPrimaryColor)),
+        ],
+      ),
     );
   }
 }
 
-// =============================================================================
-// Processing State
-// =============================================================================
-
 class _ProcessingState extends StatelessWidget {
+  const _ProcessingState();
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            Container(
               width: 80,
               height: 80,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: TayyebGoTheme.primaryColor,
+              decoration: BoxDecoration(
+                color: context.primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
+              child: Icon(Icons.receipt_long_rounded, size: 40, color: context.primaryColor),
             ),
-            const SizedBox(height: 24),
-            Text('Processing your order', style: theme.textTheme.headlineMedium),
+            const SizedBox(height: 28),
+            Text('Processing your order', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor)),
             const SizedBox(height: 8),
-            Text(
-              'Please wait while we confirm your order...',
-              style: TextStyle(color: TayyebGoTheme.textSecondary),
-              textAlign: TextAlign.center,
-            ),
+            Text('Please wait while we confirm your order...', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14), textAlign: TextAlign.center),
             const SizedBox(height: 32),
-            _PulseDots(),
+            SizedBox(width: 48, height: 48, child: CircularProgressIndicator(strokeWidth: 3, color: context.primaryColor)),
           ],
         ),
       ),
     );
   }
 }
-
-class _PulseDots extends StatefulWidget {
-  @override
-  State<_PulseDots> createState() => _PulseDotsState();
-}
-
-class _PulseDotsState extends State<_PulseDots> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(3, (i) {
-            final delay = i * 0.2;
-            final anim = TweenSequence([
-              TweenSequenceItem(tween: ConstantTween<double>(0.3), weight: delay),
-              TweenSequenceItem(tween: Tween(begin: 0.3, end: 1.0), weight: 0.3),
-              TweenSequenceItem(tween: ConstantTween<double>(1.0), weight: 0.2),
-              TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.3), weight: 0.3),
-              TweenSequenceItem(tween: ConstantTween<double>(0.3), weight: 1.0 - delay - 0.8),
-            ]).evaluate(AlwaysStoppedAnimation(_controller.value));
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Opacity(
-                opacity: anim,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: TayyebGoTheme.primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            );
-          }),
-        );
-      },
-    );
-  }
-}
-
-// =============================================================================
-// Error State
-// =============================================================================
 
 class _ErrorState extends StatelessWidget {
   final String message;
@@ -389,37 +423,47 @@ class _ErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: TayyebGoTheme.errorColor.withValues(alpha: 0.1),
+                color: context.errorColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.error_outline, size: 48, color: TayyebGoTheme.errorColor),
-            ),
-            const SizedBox(height: 20),
-            Text('Order Failed',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: TayyebGoTheme.textPrimary)),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: TextStyle(color: TayyebGoTheme.textSecondary, fontSize: 13),
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+              child: Icon(Icons.error_outline_rounded, size: 40, color: context.errorColor),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh, size: 18),
-              label: const Text('Try Again'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+            Text('Order Failed', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor)),
+            const SizedBox(height: 8),
+            Text(message, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14), textAlign: TextAlign.center, maxLines: 3, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: Text('Try Again', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
               ),
             ),
             const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => GoRouter.of(context).go('/cart'),
-              child: const Text('Back to Cart'),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton(
+                onPressed: () => context.go('/cart'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: context.textMutedColor,
+                  side: BorderSide(color: context.borderColor),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text('Back to Cart', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              ),
             ),
           ],
         ),
