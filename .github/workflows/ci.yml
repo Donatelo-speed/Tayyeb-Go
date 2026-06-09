@@ -128,10 +128,11 @@ jobs:
       - run: flutter build web --release --dart-define=appEnv=production
         working-directory: tayyebgo_monorepo/apps/${{ matrix.app }}
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: web-${{ matrix.app }}
           path: tayyebgo_monorepo/apps/${{ matrix.app }}/build/web
+          if-no-files-found: error
 
   deploy:
     name: Deploy to Firebase
