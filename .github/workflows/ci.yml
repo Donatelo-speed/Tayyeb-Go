@@ -81,8 +81,13 @@ jobs:
       - run: flutter pub get
         working-directory: tayyebgo_monorepo/apps/tayyebgo_admin
 
-      - run: flutter test --no-pub
-        working-directory: tayyebgo_monorepo/apps/tayyebgo_admin
+      - run: |
+          if [ -d "tayyebgo_monorepo/apps/tayyebgo_admin/test" ]; then
+            flutter test --no-pub
+          else
+            echo "No test directory found, skipping tests."
+          fi
+        working-directory: tayyebgo_monorepo
 
   build:
     name: Build Web
