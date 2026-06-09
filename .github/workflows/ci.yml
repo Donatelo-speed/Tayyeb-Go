@@ -156,5 +156,5 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-      - run: firebase deploy --only hosting
+      - run: firebase deploy --only hosting --project tayyebgo
         working-directory: tayyebgo_monorepo
