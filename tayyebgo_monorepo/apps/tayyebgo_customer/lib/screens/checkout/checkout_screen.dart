@@ -160,7 +160,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (context.mounted) {
         await cart.clearCart();
         setState(() => _step = _CheckoutStep.done);
-        if (context.mounted) context.go('/tracking/$orderId');
+
+        // Show success animation overlay, then navigate
+        if (context.mounted) {
+          late OverlayEntry entry;
+          entry = OverlayEntry(
+            builder: (_) => OrderSuccessAnimation(
+              orderId: orderId,
+              onDismiss: () {
+                entry.remove();
+                if (context.mounted) context.go('/tracking/$orderId');
+              },
+            ),
+          );
+          Overlay.of(context).insert(entry);
+        }
       }
     } catch (e) {
       if (context.mounted) {

@@ -25,6 +25,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
   final _searchCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
   String? _selectedCategory;
+  final GlobalKey _cartIconKey = GlobalKey();
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             alignment: Alignment.center,
             children: [
               IconButton(
+                key: _cartIconKey,
                 icon: Icon(Icons.shopping_cart_outlined, color: context.textMutedColor),
                 onPressed: () => context.go('/cart'),
               ),
@@ -226,6 +228,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
         product: items[i],
         restaurantId: widget.restaurantId,
         commissionPercent: widget.commissionPercent,
+        cartIconKey: _cartIconKey,
       ),
     );
   }
@@ -273,6 +276,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               product: item,
               restaurantId: widget.restaurantId,
               commissionPercent: widget.commissionPercent,
+              cartIconKey: _cartIconKey,
             )),
           ],
         );
@@ -285,11 +289,13 @@ class _MenuItemCard extends StatelessWidget {
   final Product product;
   final String restaurantId;
   final double commissionPercent;
+  final GlobalKey? cartIconKey;
 
   const _MenuItemCard({
     required this.product,
     required this.restaurantId,
     required this.commissionPercent,
+    this.cartIconKey,
   });
 
   @override
@@ -363,6 +369,7 @@ class _MenuItemCard extends StatelessWidget {
         product: product,
         restaurantId: restaurantId,
         commissionPercent: commissionPercent,
+        cartIconKey: cartIconKey,
       ),
     );
   }
@@ -372,11 +379,13 @@ class _ItemDetailSheet extends StatefulWidget {
   final Product product;
   final String restaurantId;
   final double commissionPercent;
+  final GlobalKey? cartIconKey;
 
   const _ItemDetailSheet({
     required this.product,
     required this.restaurantId,
     required this.commissionPercent,
+    this.cartIconKey,
   });
 
   @override
@@ -541,6 +550,26 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
                       modifiers: selectedMods,
                       customerNote: _note.isEmpty ? null : _note,
                     );
+
+                    // Fly-to-cart animation
+                    final cartKey = widget.cartIconKey;
+                    if (cartKey != null && cartKey.currentContext != null) {
+                      final cartBox = cartKey.currentContext!.findRenderObject() as RenderBox?;
+                      if (cartBox != null) {
+                        final cartPos = cartBox.localToGlobal(cartBox.size.center(Offset.zero));
+                        final overlay = Overlay.of(context);
+                        late OverlayEntry entry;
+                        entry = OverlayEntry(
+                          builder: (_) => _FlyToCartOverlay(
+                            start: Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height - 100),
+                            end: cartPos,
+                            onComplete: () => entry.remove(),
+                          ),
+                        );
+                        overlay.insert(entry);
+                      }
+                    }
+
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -560,6 +589,97 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Overlay that animates a small circular dot from [start] to [end].
+class _FlyToCartOverlay extends StatefulWidget {
+  final Offset start;
+  final Offset end;
+  final VoidCallback onComplete;
+
+  const _FlyToCartOverlay({
+    required this.start,
+    required this.end,
+    required this.onComplete,
+  });
+
+  @override
+  State<_FlyToCartOverlay> createState() => _FlyToCartOverlayState();
+}
+
+class _FlyToCartOverlayState extends State<_FlyToCartOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<Offset> _posAnim;
+  late final Animation<double> _scaleAnim;
+  late final Animation<double> _opacityAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+
+    _posAnim = Tween<Offset>(begin: widget.start, end: widget.end).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+
+    _scaleAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.3), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.3, end: 0.2), weight: 70),
+    ]).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+
+    _opacityAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.6, 1.0)),
+    );
+
+    _ctrl.addStatusListener((status) {
+      if (status == AnimationStatus.completed) widget.onComplete();
+    });
+
+    _ctrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) {
+        final pos = _posAnim.value;
+        return Positioned(
+          left: pos.dx - 16,
+          top: pos.dy - 16,
+          child: Opacity(
+            opacity: _opacityAnim.value,
+            child: Transform.scale(
+              scale: _scaleAnim.value,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.shopping_cart_rounded, color: Colors.white, size: 16),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -112,6 +112,8 @@ export 'presentation/shared_widgets/slide_transition.dart';
 export 'presentation/shared_widgets/brand_logo.dart';
 export 'presentation/shared_widgets/animated_widgets.dart';
 export 'presentation/shared_widgets/page_transitions.dart';
+export 'presentation/shared_widgets/fly_to_cart_animation.dart';
+export 'presentation/shared_widgets/order_success_animation.dart';
 export 'presentation/shared_widgets/skill_card.dart';
 export 'presentation/shared_widgets/skill_execution_view.dart';
 export 'presentation/shared_widgets/destructive_action_overlay.dart';
