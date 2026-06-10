@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import '../../domain/enums/order_status.dart';
 import 'delivery_earnings_service.dart';
 import 'push_notification_service.dart';
-import 'notification_templates.dart';
 
 class OrderStateMachine {
   static const _canonicalPipeline = {
@@ -150,14 +149,6 @@ class OrderStateMachine {
         status: newStatus.value,
         restaurantName: restaurantName ?? 'Restaurant',
       );
-      final template = NotificationTemplates.forStatus(newStatus.value, restaurantName ?? 'Restaurant');
-      try {
-        await FirebaseFirestore.instance.collection('notifications').add({
-          ...template.toMap(orderId),
-          'userId': customerId,
-          'read': false,
-        });
-      } catch (_) {}
     }
   }
 

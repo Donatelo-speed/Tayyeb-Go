@@ -274,19 +274,32 @@ class _BrandedSplashViewState extends State<BrandedSplashView>
   late final AnimationController _controller;
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
+  late final Animation<double> _logoScale;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     )..forward();
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _fade = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 0.6, curve: Curves.easeOut),
+    );
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.08),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 0.6, curve: Curves.easeOutCubic),
+    ));
+    _logoScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0, 0.7, curve: Curves.elasticOut),
+      ),
+    );
   }
 
   @override
@@ -328,11 +341,14 @@ class _BrandedSplashViewState extends State<BrandedSplashView>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      BrandLogo(
-                        markSize: 88,
-                        fontSize: 28,
-                        textColor: textPrimary,
-                        dark: isDark,
+                      ScaleTransition(
+                        scale: _logoScale,
+                        child: BrandLogo(
+                          markSize: 88,
+                          fontSize: 28,
+                          textColor: textPrimary,
+                          dark: isDark,
+                        ),
                       ),
                       const SizedBox(height: 28),
                       Container(

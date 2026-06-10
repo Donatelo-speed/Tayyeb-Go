@@ -87,11 +87,29 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(_greeting(), style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-                              const SizedBox(height: 2),
-                              Text(
-                                user?.displayName.isNotEmpty == true ? user!.displayName : 'Guest',
-                                style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.success,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(_greeting(), style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              ShaderMask(
+                                shaderCallback: (bounds) => const LinearGradient(
+                                  colors: [AppColors.primary, AppColors.primaryHover],
+                                ).createShader(bounds),
+                                child: Text(
+                                  user?.displayName.isNotEmpty == true ? user!.displayName : 'Guest',
+                                  style: GoogleFonts.inter(fontWeight: FontWeight.w300, fontSize: 28, color: Colors.white),
+                                ),
                               ),
                             ],
                           ),
@@ -100,8 +118,28 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                           onTap: () => context.push('/notifications'),
                           child: Container(
                             width: 44, height: 44,
-                            decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor)),
-                            child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22),
+                            decoration: BoxDecoration(
+                              color: context.surfaceColor,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: context.borderColor),
+                            ),
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22),
+                                ),
+                                Positioned(
+                                  right: 10, top: 10,
+                                  child: Container(
+                                    width: 8, height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.error,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -113,7 +151,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: Text('What are you craving?', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 24, color: context.textPrimaryColor)),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppColors.textPrimary, AppColors.textSecondary],
+                    ).createShader(bounds),
+                    child: Text('What are you craving?', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 26, color: Colors.white)),
+                  ),
                 ),
               ),
 
@@ -166,27 +209,34 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: Container(
-                    decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor)),
+                    decoration: BoxDecoration(
+                      color: context.surfaceAltColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
+                    ),
                     child: TextField(
                       controller: _searchCtrl,
                       onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
                       style: GoogleFonts.inter(color: context.textPrimaryColor),
                       decoration: InputDecoration(
                         hintText: 'Search restaurants, cuisines...',
-                        hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                        prefixIcon: Icon(Icons.search_rounded, color: context.textMutedColor, size: 22),
+                        hintStyle: GoogleFonts.inter(color: AppColors.textMuted),
+                        prefixIcon: Container(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(Icons.search_rounded, color: AppColors.primary, size: 22),
+                        ),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.clear_rounded, size: 20, color: context.textMutedColor),
+                                icon: Icon(Icons.clear_rounded, size: 20, color: AppColors.textMuted),
                                 onPressed: () { _searchCtrl.clear(); setState(() => _searchQuery = ''); },
                               )
                             : null,
                         filled: true,
                         fillColor: Colors.transparent,
                         contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                       ),
                     ),
                   ),
@@ -207,11 +257,27 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     child: Row(
                       children: [
-                        Text('Active Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                        Container(
+                          width: 4,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text('Active Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 17, color: context.textPrimaryColor)),
                         const Spacer(),
                         GestureDetector(
                           onTap: () => context.go('/order-history'),
-                          child: Text('History', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: context.primaryColor)),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text('History', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: AppColors.primary)),
+                          ),
                         ),
                       ],
                     ),
@@ -236,7 +302,20 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                  child: Text('Nearby', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: AppColors.customerAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text('Nearby', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 17, color: context.textPrimaryColor)),
+                    ],
+                  ),
                 ),
               ),
 
@@ -373,7 +452,18 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: context.borderColor)),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 Container(
@@ -545,7 +635,18 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
           onTap: () => context.go('/restaurant/${d['id']}', extra: {'name': name, 'commissionPercent': commission}),
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: context.borderColor)),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

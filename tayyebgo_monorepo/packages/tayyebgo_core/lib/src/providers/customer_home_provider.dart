@@ -62,12 +62,12 @@ class CustomerHomeProvider extends ChangeNotifier {
     return FirebaseFirestore.instance
         .collection('orders')
         .where('customerId', isEqualTo: userId)
-        .where('status', whereIn: ['delivered', 'cancelled'])
         .orderBy('createdAt', descending: true)
-        .limit(50)
+        .limit(100)
         .snapshots()
         .map((snap) => snap.docs
             .map((d) => {'id': d.id, ...d.data()})
+            .where((d) => ['delivered', 'cancelled'].contains(d['status']))
             .toList());
   }
 

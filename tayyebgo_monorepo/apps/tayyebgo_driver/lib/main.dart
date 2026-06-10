@@ -87,6 +87,7 @@ class _DriverAppState extends State<DriverApp> {
         AppRouter.route('/splash', const DriverSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/forgot-password', const ForgotPasswordScreen(), name: 'forgotPassword'),
         AppRouter.route('/onboarding', const DriverOnboardingScreen(), name: 'onboarding'),
         AppRouter.route('/dashboard', const AuthStateRedirector(child: DriverDashboardScreen()), name: 'dashboard'),
         AppRouter.route('/available-requests', const AvailableRequestsScreen(), name: 'availableRequests'),

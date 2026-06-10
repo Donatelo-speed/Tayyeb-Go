@@ -152,9 +152,14 @@ class DashboardView extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Command Center', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor)),
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [AppColors.adminAccent, AppColors.cyan],
+              ).createShader(bounds),
+              child: Text('Command Center', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: Colors.white)),
+            ),
             const SizedBox(height: 4),
-            Text('Your platform at a glance', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
+            Text('Your platform at a glance', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
           ],
         ),
       ],

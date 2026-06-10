@@ -54,6 +54,7 @@ class AuthProvider extends ChangeNotifier {
 
   UserModel? _user;
   bool _isLoading = false;
+  bool _isInitializing = true;
   String? _error;
   String? _verificationId;
   int _otpCountdown = 0;
@@ -64,6 +65,7 @@ class AuthProvider extends ChangeNotifier {
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isInitializing => _isInitializing;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
   int get otpCountdown => _otpCountdown;
@@ -84,7 +86,7 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider() {
     _instance = this;
-    _isLoading = true;
+    _isInitializing = true;
     _authSubscription = fb.FirebaseAuth.instance.authStateChanges().listen(
       _syncFirebaseUser,
       onError: (Object e) {
@@ -104,9 +106,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _syncFirebaseUser(fb.User? firebaseUser) async {
     if (firebaseUser == null) {
-      final hadState = _user != null || _isLoading || _error != null;
+      final hadState = _user != null || _isInitializing || _error != null;
       _user = null;
-      _isLoading = false;
+      _isInitializing = false;
       if (hadState) {
         notifyListeners();
         _notifyRouter();
@@ -114,7 +116,7 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
 
-    if (_user?.id == firebaseUser.uid && !_isLoading) {
+    if (_user?.id == firebaseUser.uid && !_isInitializing) {
       return;
     }
 
@@ -122,13 +124,13 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
 
-    _isLoading = true;
+    _isInitializing = true;
     _error = null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
     await resolveUser(firebaseUser);
-    _isLoading = false;
+    _isInitializing = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
       _notifyRouter();

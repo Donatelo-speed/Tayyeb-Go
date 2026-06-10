@@ -76,26 +76,49 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Driver', style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: context.textMutedColor,
-                          )),
-                          const SizedBox(height: 2),
-                          Text('Dashboard', style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w200,
-                            fontSize: 28,
-                          )),
+                          Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.driverAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text('Driver', style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: AppColors.textMuted,
+                              )),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [AppColors.driverAccent, AppColors.emerald],
+                            ).createShader(bounds),
+                            child: Text('Dashboard', style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w300,
+                              fontSize: 28,
+                              color: Colors.white,
+                            )),
+                          ),
                         ],
                       ),
                     ),
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.surfaceAltColor,
-                        borderRadius: BorderRadius.circular(12),
+                    GestureDetector(
+                      onTap: () => context.go('/driver-profile'),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: context.surfaceAltColor,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
+                        ),
+                        child: Icon(Icons.person_rounded, color: AppColors.textMuted, size: 22),
                       ),
-                      child: Icon(Icons.settings_outlined, color: context.textMutedColor, size: 22),
                     ),
                   ],
                 ),
@@ -353,34 +376,40 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.borderColor),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 18),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
               ),
-            ],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 14),
           Text(value, style: GoogleFonts.inter(
             fontWeight: FontWeight.w800,
-            fontSize: 20,
+            fontSize: 22,
+            color: AppColors.textPrimary,
           )),
           const SizedBox(height: 4),
           Text(label, style: GoogleFonts.inter(
             fontSize: 12,
-            color: context.textMutedColor,
+            color: AppColors.textMuted,
           )),
         ],
       ),
@@ -400,15 +429,31 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
         decoration: BoxDecoration(
           color: context.surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.borderColor),
+          border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 26),
-            const SizedBox(height: 8),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 10),
             Text(label, style: GoogleFonts.inter(
               fontWeight: FontWeight.w600,
               fontSize: 13,
+              color: AppColors.textPrimary,
             )),
           ],
         ),

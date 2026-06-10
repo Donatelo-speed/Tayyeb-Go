@@ -443,11 +443,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
           height: 50,
           child: OutlinedButton.icon(
             onPressed: auth.isLoading ? null : _handleGoogleSignUp,
-            icon: Image.network(
-              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+            icon: Container(
               width: 20,
               height: 20,
-              errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, size: 24, color: AppColors.textPrimary),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 0.5),
+              ),
+              child: const Center(
+                child: Text('G', style: TextStyle(
+                  color: Color(0xFF4285F4),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                )),
+              ),
             ),
             label: Text('Continue with Google', style: AppTypography.bodyMedium.copyWith(
               fontWeight: FontWeight.w600,

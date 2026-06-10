@@ -85,6 +85,7 @@ export 'src/screens/access_denied_screen.dart';
 export 'src/screens/login_screen.dart';
 export 'src/screens/sign_up_screen.dart';
 export 'src/screens/app_loading_screen.dart';
+export 'src/screens/forgot_password_screen.dart';
 
 export 'src/screens/profile_screen.dart';
 export 'src/screens/settings_screen.dart';
@@ -109,6 +110,7 @@ export 'presentation/shared_widgets/press_scale.dart';
 export 'presentation/shared_widgets/ui_feedback.dart';
 export 'presentation/shared_widgets/slide_transition.dart';
 export 'presentation/shared_widgets/brand_logo.dart';
+export 'presentation/shared_widgets/animated_widgets.dart';
 export 'presentation/shared_widgets/page_transitions.dart';
 export 'presentation/shared_widgets/skill_card.dart';
 export 'presentation/shared_widgets/skill_execution_view.dart';

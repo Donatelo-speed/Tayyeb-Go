@@ -40,16 +40,21 @@ class _CustomerMainScreenState extends State<CustomerMainScreen> {
           ),
         ),
         Container(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           decoration: BoxDecoration(
             color: context.surfaceColor,
             border: Border(
-              top: BorderSide(color: context.borderColor, width: 0.5),
+              top: BorderSide(color: context.borderColor.withValues(alpha: 0.5), width: 0.5),
             ),
           ),
           child: SafeArea(
             top: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+              decoration: BoxDecoration(
+                color: context.surfaceAltColor,
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -71,33 +76,33 @@ class _CustomerMainScreenState extends State<CustomerMainScreen> {
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 64,
-        child: Column(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(horizontal: isActive ? 18 : 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: isActive ? AppColors.primary.withValues(alpha: 0.12) : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                icon,
-                size: 24,
-                color: isActive ? AppColors.primary : context.textMutedColor,
-              ),
+            Icon(
+              icon,
+              size: 20,
+              color: isActive ? Colors.white : AppColors.textMuted,
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? AppColors.primary : context.textMutedColor,
+            if (isActive) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -108,31 +113,19 @@ class _CustomerMainScreenState extends State<CustomerMainScreen> {
     return GestureDetector(
       onTap: () => context.push('/profile'),
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 64,
-        child: Column(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                Icons.person_rounded,
-                size: 24,
-                color: context.textMutedColor,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              'Profile',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-                color: context.textMutedColor,
-              ),
+            Icon(
+              Icons.person_rounded,
+              size: 20,
+              color: AppColors.textMuted,
             ),
           ],
         ),

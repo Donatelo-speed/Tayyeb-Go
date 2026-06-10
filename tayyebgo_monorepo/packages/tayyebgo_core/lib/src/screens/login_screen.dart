@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_radius.dart';
 import '../../presentation/theme/app_typography.dart';
 import '../../presentation/shared_widgets/brand_logo.dart';
+import '../../presentation/shared_widgets/animated_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_listenable.dart';
 
@@ -25,6 +27,39 @@ class _LoginScreenState extends State<LoginScreen> {
   _AuthMode _mode = _AuthMode.phone;
   bool _obscurePassword = true;
   bool _otpSent = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRemembered();
+  }
+
+  Future<void> _loadRemembered() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('remembered_email');
+    final savedPassword = prefs.getString('remembered_password');
+    final remember = prefs.getBool('remember_me') ?? false;
+    if (remember && savedEmail != null && savedPassword != null) {
+      _emailCtrl.text = savedEmail;
+      _passwordCtrl.text = savedPassword;
+      _rememberMe = true;
+      setState(() {});
+    }
+  }
+
+  Future<void> _saveRemembered() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setString('remembered_email', _emailCtrl.text.trim());
+      await prefs.setString('remembered_password', _passwordCtrl.text);
+      await prefs.setBool('remember_me', true);
+    } else {
+      await prefs.remove('remembered_email');
+      await prefs.remove('remembered_password');
+      await prefs.setBool('remember_me', false);
+    }
+  }
 
   @override
   void dispose() {
@@ -58,7 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
     await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text, context);
-    if (mounted) _triggerRedirect();
+    if (mounted) {
+      await _saveRemembered();
+      _triggerRedirect();
+    }
   }
 
   Future<void> _handleGoogleSignIn() async {
@@ -151,20 +189,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLogo() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const BrandLogo(markSize: 82, fontSize: 28),
-        const SizedBox(height: 16),
-        Text(
-          'Fresh meals, daily errands, and local delivery.',
-          style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.textMuted,
-            letterSpacing: 0,
+    return AnimatedFadeSlide(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BrandLogo(markSize: 82, fontSize: 28),
+          const SizedBox(height: 16),
+          Text(
+            'Fresh meals, daily errands, and local delivery.',
+            style: AppTypography.bodyMedium.copyWith(
+              color: AppColors.textMuted,
+              letterSpacing: 0,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -284,17 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
-              onTap: () async {
-                final email = _emailCtrl.text.trim();
-                if (email.isEmpty) {
-                  _showSnack('Enter your email first', AppColors.warning);
-                  return;
-                }
-                await auth.resetPassword(email);
-                if (mounted && auth.error == null) {
-                  _showSnack('Password reset email sent', AppColors.success);
-                }
-              },
+              onTap: () => context.go('/forgot-password'),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
@@ -306,6 +336,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Checkbox(
+                  value: _rememberMe,
+                  onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                  activeColor: AppColors.primary,
+                  checkColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  side: const BorderSide(color: AppColors.border),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Remember me',
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           _buildPrimaryButton(
@@ -494,23 +546,20 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 50,
           child: OutlinedButton.icon(
             onPressed: auth.isLoading ? null : _handleGoogleSignIn,
-            icon: Image.network(
-              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+            icon: Container(
               width: 20,
               height: 20,
-              errorBuilder: (_, __, ___) => Container(
-                width: 20,
-                height: 20,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF4285F4), Color(0xFF34A853), Color(0xFFFBBC05), Color(0xFFEA4335)],
-                    stops: [0.0, 0.33, 0.66, 1.0],
-                  ),
-                ),
-                child: const Center(
-                  child: Text('G', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
-                ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 0.5),
+              ),
+              child: const Center(
+                child: Text('G', style: TextStyle(
+                  color: Color(0xFF4285F4),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                )),
               ),
             ),
             label: Text('Continue with Google', style: AppTypography.bodyMedium.copyWith(

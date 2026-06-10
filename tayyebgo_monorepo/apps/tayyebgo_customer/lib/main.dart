@@ -107,6 +107,7 @@ class _CustomerAppState extends State<CustomerApp> {
         AppRouter.route('/splash', const CustomerSplashScreen(), name: 'splash'),
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/forgot-password', const ForgotPasswordScreen(), name: 'forgotPassword'),
         AppRouter.route('/home', const AuthStateRedirector(child: CustomerMainScreen()), name: 'home'),
         AppRouter.route('/checkout', const CheckoutScreen(), name: 'checkout'),
         AppRouter.route('/cart', const CartScreen(), name: 'cart'),

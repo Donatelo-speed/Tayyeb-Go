@@ -35,7 +35,12 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        title: Text('Owner Dashboard', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w300)),
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.partnerAccent, AppColors.warning],
+          ).createShader(bounds),
+          child: Text('Owner Dashboard', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.white)),
+        ),
         backgroundColor: context.surfaceColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -208,25 +213,34 @@ class _OverviewTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surfaceColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.borderColor),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 18),
+            child: Icon(icon, color: color, size: 20),
           ),
           const Spacer(),
-          Text(value, style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.w800, letterSpacing: 0)),
+          Text(value, style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: 0, color: AppColors.textPrimary)),
           const SizedBox(height: 2),
-          Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, color: context.textMutedColor)),
+          Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textMuted)),
         ],
       ),
     );

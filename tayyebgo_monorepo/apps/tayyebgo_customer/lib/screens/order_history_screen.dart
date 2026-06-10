@@ -61,6 +61,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTick
               stream: context.read<CustomerHomeProvider>().watchOrderHistory(customerId),
               builder: (context, snap) {
                 if (snap.hasError) {
+                  debugPrint('Order history error: ${snap.error}');
                   return ErrorState(
                     icon: Icons.error_outline_rounded,
                     title: 'Failed to load orders',
@@ -126,7 +127,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTick
     return RefreshIndicator(
       color: context.primaryColor,
       backgroundColor: context.surfaceColor,
-      onRefresh: () async {},
+      onRefresh: () async => setState(() {}),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: orders.length,

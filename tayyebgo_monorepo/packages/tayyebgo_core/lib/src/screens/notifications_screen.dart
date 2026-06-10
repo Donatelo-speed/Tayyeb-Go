@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -5,9 +6,14 @@ import '../providers/auth_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../../presentation/theme/theme_provider.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -26,6 +32,7 @@ class NotificationsScreen extends StatelessWidget {
               stream: context.read<NotificationsProvider>().watchNotifications(userId),
               builder: (context, snap) {
                 if (snap.hasError) {
+                  debugPrint('Notifications error: ${snap.error}');
                   return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -67,7 +74,7 @@ class NotificationsScreen extends StatelessWidget {
                 return RefreshIndicator(
                   color: context.primaryColor,
                   backgroundColor: context.surfaceColor,
-                  onRefresh: () async {},
+                  onRefresh: () async => setState(() {}),
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: docs.length,
@@ -76,7 +83,10 @@ class NotificationsScreen extends StatelessWidget {
                       final read = d['read'] as bool? ?? false;
                       final title = d['title'] as String? ?? '';
                       final body = d['body'] as String? ?? '';
-                      final time = d['createdAt'] as String? ?? '';
+                      final rawTime = d['createdAt'];
+                      final time = rawTime is Timestamp
+                          ? rawTime.toDate().toIso8601String()
+                          : (rawTime as String? ?? '');
                       return GestureDetector(
                         onTap: () {
                           if (!read) {
