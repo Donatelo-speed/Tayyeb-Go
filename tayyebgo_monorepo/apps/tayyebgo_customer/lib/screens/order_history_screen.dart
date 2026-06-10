@@ -163,7 +163,7 @@ class _OrderCard extends StatelessWidget {
             : status[0].toUpperCase() + status.substring(1);
 
     return GestureDetector(
-      onTap: () => context.go('/tracking/${order['id']}'),
+      onTap: () => context.push('/tracking/${order['id']}'),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),

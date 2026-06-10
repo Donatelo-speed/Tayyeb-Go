@@ -64,7 +64,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
               IconButton(
                 key: _cartIconKey,
                 icon: Icon(Icons.shopping_cart_outlined, color: context.textMutedColor),
-                onPressed: () => context.go('/cart'),
+                onPressed: () => context.push('/cart'),
               ),
               Consumer<CartProvider>(
                 builder: (_, cart, __) {

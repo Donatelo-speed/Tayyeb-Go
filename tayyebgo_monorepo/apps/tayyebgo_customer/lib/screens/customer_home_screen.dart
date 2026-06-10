@@ -269,7 +269,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                         Text('Active Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 17, color: context.textPrimaryColor)),
                         const Spacer(),
                         GestureDetector(
-                          onTap: () => context.go('/order-history'),
+                          onTap: () => context.push('/order-history'),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
@@ -448,7 +448,7 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
       children: docs.map((d) {
         final status = d['status'] as String? ?? '';
         return GestureDetector(
-          onTap: () => context.go('/tracking/${d['id']}'),
+          onTap: () => context.push('/tracking/${d['id']}'),
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(16),
@@ -535,7 +535,7 @@ class _FavoritesSectionState extends State<_FavoritesSection> {
           final commission = (d['commissionPercent'] as num?)?.toDouble() ?? 15.0;
           final imageUrl = d['imageUrl'] as String?;
           return GestureDetector(
-            onTap: () => context.go('/restaurant/${d['id']}', extra: {'name': name, 'commissionPercent': commission}),
+            onTap: () => context.push('/restaurant/${d['id']}', extra: {'name': name, 'commissionPercent': commission}),
             child: Container(
               width: 120,
               decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: context.borderColor)),
@@ -632,7 +632,7 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
         final rating = (d['rating'] as num?)?.toDouble();
         final imageUrl = d['imageUrl'] as String?;
         return _ScaleOnTap(
-          onTap: () => context.go('/restaurant/${d['id']}', extra: {'name': name, 'commissionPercent': commission}),
+          onTap: () => context.push('/restaurant/${d['id']}', extra: {'name': name, 'commissionPercent': commission}),
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
