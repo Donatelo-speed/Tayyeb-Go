@@ -12,8 +12,8 @@ class DriverProfileScreen extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
     final displayName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Driver';
-    final email = user?.email.isNotEmpty == true ? user!.email : '';
-    final phone = user?.phone?.isNotEmpty == true ? user!.phone : '';
+    final email = user?.email ?? '';
+    final phone = user?.phone ?? '';
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'D';
 
     return Scaffold(
