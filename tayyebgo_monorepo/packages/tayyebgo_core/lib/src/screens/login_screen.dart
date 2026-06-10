@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final savedEmail = prefs.getString('remembered_email');
     final savedPassword = prefs.getString('remembered_password');
     final remember = prefs.getBool('remember_me') ?? false;
-    if (remember && savedEmail != null && savedPassword != null) {
+    if (mounted && remember && savedEmail != null && savedPassword != null) {
       _emailCtrl.text = savedEmail;
       _passwordCtrl.text = savedPassword;
       _rememberMe = true;
@@ -85,15 +85,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _verifyOtp(String code) async {
     final auth = context.read<AuthProvider>();
-    await auth.verifyOtpCode(code);
-    if (mounted) _triggerRedirect();
+    final success = await auth.verifyOtpCode(code);
+    if (mounted && success) _triggerRedirect();
   }
 
   Future<void> _submitEmail() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
-    await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text, context);
-    if (mounted) {
+    final success = await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text, context);
+    if (mounted && success) {
       await _saveRemembered();
       _triggerRedirect();
     }
@@ -101,14 +101,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleGoogleSignIn() async {
     final auth = context.read<AuthProvider>();
-    await auth.loginWithGoogle();
-    if (mounted) _triggerRedirect();
+    final success = await auth.loginWithGoogle();
+    if (mounted && success) _triggerRedirect();
   }
 
   Future<void> _handleAppleSignIn() async {
     final auth = context.read<AuthProvider>();
-    await auth.loginWithApple();
-    if (mounted) _triggerRedirect();
+    final success = await auth.loginWithApple();
+    if (mounted && success) _triggerRedirect();
   }
 
   void _showSnack(String msg, Color color) {

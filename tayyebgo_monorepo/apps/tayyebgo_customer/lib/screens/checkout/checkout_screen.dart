@@ -187,7 +187,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 }
 
-class _CheckoutForm extends StatelessWidget {
+class _CheckoutForm extends StatefulWidget {
   final TextEditingController addressCtrl;
   final TextEditingController instructionsCtrl;
   final FulfillmentType fulfillment;
@@ -205,15 +205,22 @@ class _CheckoutForm extends StatelessWidget {
   });
 
   @override
+  State<_CheckoutForm> createState() => _CheckoutFormState();
+}
+
+class _CheckoutFormState extends State<_CheckoutForm> {
+  String? _selectedTip;
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         _buildSection(context, 'Delivery Details'),
         const SizedBox(height: 12),
-        _buildField(context, 'Delivery Address', Icons.location_on_outlined, addressCtrl, maxLines: 2, hint: 'Street, building, apartment'),
+        _buildField(context, 'Delivery Address', Icons.location_on_outlined, widget.addressCtrl, maxLines: 2, hint: 'Street, building, apartment'),
         const SizedBox(height: 12),
-        _buildField(context, 'Special Instructions', Icons.edit_note_rounded, instructionsCtrl, maxLines: 2, hint: 'Leave at door, ring bell, etc.'),
+        _buildField(context, 'Special Instructions', Icons.edit_note_rounded, widget.instructionsCtrl, maxLines: 2, hint: 'Leave at door, ring bell, etc.'),
         const SizedBox(height: 24),
         _buildSection(context, 'Fulfillment'),
         const SizedBox(height: 12),
@@ -227,7 +234,7 @@ class _CheckoutForm extends StatelessWidget {
         const SizedBox(height: 24),
         _buildSection(context, 'Order Summary'),
         const SizedBox(height: 12),
-        _buildSummaryCard(context, cart),
+        _buildSummaryCard(context),
         const SizedBox(height: 16),
         _buildTipSection(context),
         const SizedBox(height: 24),
@@ -235,7 +242,7 @@ class _CheckoutForm extends StatelessWidget {
           width: double.infinity,
           height: 54,
           child: ElevatedButton(
-            onPressed: onPlaceOrder,
+            onPressed: widget.onPlaceOrder,
             style: ElevatedButton.styleFrom(
               backgroundColor: context.primaryColor,
               foregroundColor: Colors.white,
@@ -243,7 +250,7 @@ class _CheckoutForm extends StatelessWidget {
               elevation: 0,
             ),
             child: Text(
-              'Place Order — \$${cart.grandTotal.toStringAsFixed(2)}',
+              'Place Order — \$${widget.cart.grandTotal.toStringAsFixed(2)}',
               style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
             ),
           ),
@@ -280,9 +287,9 @@ class _CheckoutForm extends StatelessWidget {
   }
 
   Widget _fulfillmentTile(BuildContext context, FulfillmentType type, IconData icon, String label) {
-    final selected = fulfillment == type;
+    final selected = widget.fulfillment == type;
     return GestureDetector(
-      onTap: () => onFulfillmentChanged(type),
+      onTap: () => widget.onFulfillmentChanged(type),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -301,31 +308,6 @@ class _CheckoutForm extends StatelessWidget {
             Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: selected ? context.primaryColor : context.textMutedColor)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryCard(BuildContext context, CartProvider cart) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Column(
-        children: [
-          _summaryRow(context, 'Items (${cart.totalQuantity})', '\$${cart.subtotal.toStringAsFixed(2)}'),
-          _summaryRow(context, 'Delivery Fee', fulfillment == FulfillmentType.pickup ? 'Free' : '\$${cart.deliveryFee.toStringAsFixed(2)}'),
-          _summaryRow(context, 'Tax', '\$${cart.tax.toStringAsFixed(2)}'),
-          if (cart.promoDiscount > 0)
-            _summaryRow(context, 'Discount', '-\$${cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Divider(color: context.borderColor),
-          ),
-          _summaryRow(context, 'Total', '\$${cart.grandTotal.toStringAsFixed(2)}', bold: true),
-        ],
       ),
     );
   }
@@ -360,17 +342,54 @@ class _CheckoutForm extends StatelessWidget {
   }
 
   Widget _tipButton(BuildContext context, String label) {
+    final isSelected = _selectedTip == label;
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: context.backgroundColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: context.borderColor),
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedTip = label),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? context.primaryColor.withValues(alpha: 0.15) : context.backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isSelected ? context.primaryColor : context.borderColor,
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Center(
+            child: Text(label, style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              color: isSelected ? context.primaryColor : context.textMutedColor,
+            )),
+          ),
         ),
-        child: Center(
-          child: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textMutedColor)),
-        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        children: [
+          _summaryRow(context, 'Items (${widget.cart.totalQuantity})', '\$${widget.cart.subtotal.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Delivery Fee', widget.fulfillment == FulfillmentType.pickup ? 'Free' : '\$${widget.cart.deliveryFee.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Tax', '\$${widget.cart.tax.toStringAsFixed(2)}'),
+          if (widget.cart.promoDiscount > 0)
+            _summaryRow(context, 'Discount', '-\$${widget.cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Divider(color: context.borderColor),
+          ),
+          _summaryRow(context, 'Total', '\$${widget.cart.grandTotal.toStringAsFixed(2)}', bold: true),
+        ],
       ),
     );
   }

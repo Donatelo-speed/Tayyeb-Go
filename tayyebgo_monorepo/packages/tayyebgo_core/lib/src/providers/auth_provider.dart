@@ -241,6 +241,7 @@ class AuthProvider extends ChangeNotifier {
     String? address,
   }) async {
     _isLoading = true;
+    _loginInProgress = true;
     _error = null;
     notifyListeners();
 
@@ -253,6 +254,7 @@ class AuthProvider extends ChangeNotifier {
       if (credential.user == null) {
         _error = 'Account creation returned empty user';
         _isLoading = false;
+        _loginInProgress = false;
         notifyListeners();
         return false;
       }
@@ -275,17 +277,20 @@ class AuthProvider extends ChangeNotifier {
           .doc(credential.user!.uid)
           .set(_user!.toFirestore());
       _isLoading = false;
+      _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _loginInProgress = false;
       notifyListeners();
       return false;
     } catch (e) {
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _loginInProgress = false;
       notifyListeners();
       return false;
     }
@@ -420,10 +425,8 @@ class AuthProvider extends ChangeNotifier {
       _otpCountdown--;
       if (_otpCountdown <= 0) {
         t.cancel();
-        notifyListeners();
-      } else if (_otpCountdown % 5 == 0) {
-        notifyListeners();
       }
+      notifyListeners();
     });
   }
 

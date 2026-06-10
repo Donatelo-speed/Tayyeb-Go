@@ -97,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -193,7 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
           ),
@@ -276,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
           ),
@@ -296,7 +296,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
           ),
@@ -318,7 +318,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primaryLight, Colors.white],
+              colors: [AppColors.primaryLight, AppColors.surface],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -356,7 +356,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
           ),
@@ -415,7 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
           ),
@@ -489,7 +489,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
       ),

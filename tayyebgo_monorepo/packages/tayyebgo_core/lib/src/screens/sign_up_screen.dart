@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -372,24 +373,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
-            child: Text.rich(
-              TextSpan(
-                text: 'I agree to the ',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
-                children: [
-                  TextSpan(
-                    text: 'Terms & Conditions',
-                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
-                  ),
-                  const TextSpan(text: ' and '),
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
+          child: Text.rich(
+            TextSpan(
+              text: 'I agree to the ',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+              children: [
+                TextSpan(
+                  text: 'Terms & Conditions',
+                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      // TODO: Open Terms & Conditions URL
+                    },
+                ),
+                const TextSpan(text: ' and '),
+                TextSpan(
+                  text: 'Privacy Policy',
+                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      // TODO: Open Privacy Policy URL
+                    },
+                ),
+              ],
             ),
           ),
         ),
