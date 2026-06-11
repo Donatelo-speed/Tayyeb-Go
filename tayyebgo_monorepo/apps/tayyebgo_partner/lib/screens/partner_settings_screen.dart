@@ -29,33 +29,68 @@ class PartnerSettingsScreen extends StatelessWidget {
           _profileHeader(context, initial, displayName, email),
           const SizedBox(height: 20),
           _section(context, 'Store', [
-            _row(context, Icons.store_rounded, 'Store Details', () {}),
-            _row(context, Icons.access_time_rounded, 'Business Hours', () {}),
-            _row(context, Icons.delivery_dining_rounded, 'Delivery Settings', () {}),
-            _row(context, Icons.payment_rounded, 'Payment Methods', () {}),
+            _row(context, Icons.store_rounded, 'Store Details', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Store details coming soon')));
+            }),
+            _row(context, Icons.access_time_rounded, 'Business Hours', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Business hours management coming soon')));
+            }),
+            _row(context, Icons.delivery_dining_rounded, 'Delivery Settings', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delivery settings coming soon')));
+            }),
+            _row(context, Icons.payment_rounded, 'Payment Methods', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment methods coming soon')));
+            }),
           ]),
           const SizedBox(height: 14),
           _section(context, 'Menu', [
-            _row(context, Icons.restaurant_menu_rounded, 'Menu Management', () {}),
-            _row(context, Icons.inventory_2_rounded, 'Inventory', () {}),
-            _row(context, Icons.local_offer_rounded, 'Promotions', () {}),
+            _row(context, Icons.restaurant_menu_rounded, 'Menu Management', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Use the Menu tab in the dashboard')));
+            }),
+            _row(context, Icons.inventory_2_rounded, 'Inventory', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Inventory management coming soon')));
+            }),
+            _row(context, Icons.local_offer_rounded, 'Promotions', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Use the Promos tab in the dashboard')));
+            }),
           ]),
           const SizedBox(height: 14),
           _section(context, 'Preferences', [
-            _row(context, Icons.notifications_outlined, 'Notifications', () {}),
-            _row(context, Icons.language_rounded, 'Language', () {}),
-            _row(context, Icons.print_rounded, 'Printer Settings', () {}),
+            _row(context, Icons.notifications_outlined, 'Notifications', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notification settings coming soon')));
+            }),
+            _row(context, Icons.language_rounded, 'Language', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Language selection coming soon')));
+            }),
+            _row(context, Icons.print_rounded, 'Printer Settings', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Printer settings coming soon')));
+            }),
           ]),
           const SizedBox(height: 14),
           _section(context, 'Account', [
-            _row(context, Icons.person_rounded, 'Personal Info', () {}),
-            _row(context, Icons.lock_outline_rounded, 'Change Password', () {}),
-            _row(context, Icons.storefront_rounded, 'Add New Store', () {}),
+            _row(context, Icons.person_rounded, 'Personal Info', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Personal info editing coming soon')));
+            }),
+            _row(context, Icons.lock_outline_rounded, 'Change Password', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password change coming soon')));
+            }),
+            _row(context, Icons.storefront_rounded, 'Add New Store', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add new store coming soon')));
+            }),
           ]),
           const SizedBox(height: 14),
           _section(context, 'Support', [
-            _row(context, Icons.help_outline_rounded, 'Help Center', () {}),
-            _row(context, Icons.info_outline_rounded, 'About', () {}),
+            _row(context, Icons.help_outline_rounded, 'Help Center', () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Help center coming soon')));
+            }),
+            _row(context, Icons.info_outline_rounded, 'About', () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'TayyebGo Partner',
+                applicationVersion: '1.0.0',
+                children: [Text('Restaurant partner management app', style: GoogleFonts.inter())],
+              );
+            }),
           ]),
           const SizedBox(height: 20),
           SizedBox(

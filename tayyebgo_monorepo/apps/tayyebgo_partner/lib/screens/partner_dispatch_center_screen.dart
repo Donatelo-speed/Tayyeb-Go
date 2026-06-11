@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class PartnerDispatchCenterScreen extends StatelessWidget {
@@ -7,6 +9,10 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthProvider>().user;
+    if (user == null) return const SizedBox.shrink();
+    final restaurantId = user.vendorId ?? user.id;
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -15,44 +21,144 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _statusCard(context, 'Active Orders', '3', Icons.receipt_long_rounded, context.warningColor),
-          const SizedBox(height: 12),
-          _statusCard(context, 'Pending Acceptance', '1', Icons.hourglass_top_rounded, context.errorColor),
-          const SizedBox(height: 12),
-          _statusCard(context, 'Ready for Pickup', '2', Icons.inventory_2_rounded, context.successColor),
-          const SizedBox(height: 24),
-          Text('Recent Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
-          const SizedBox(height: 12),
-          _orderCard(context, '#1042', 'Ahmad K.', '2 items', 'SYP 4,500', 'New', context.errorColor),
-          const SizedBox(height: 10),
-          _orderCard(context, '#1041', 'Sara M.', '1 item', 'SYP 2,800', 'Prep', context.warningColor),
-          const SizedBox(height: 10),
-          _orderCard(context, '#1040', 'Omar H.', '3 items', 'SYP 6,200', 'Ready', context.successColor),
-          const SizedBox(height: 10),
-          _orderCard(context, '#1039', 'Lina A.', '1 item', 'SYP 1,900', 'Delivered', context.textMutedColor),
-        ],
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('orders')
+            .where('restaurantId', isEqualTo: restaurantId)
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(color: context.primaryColor));
+          }
+          if (snap.hasError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 48, color: context.errorColor),
+                  const SizedBox(height: 12),
+                  Text('Error loading orders', style: GoogleFonts.inter(color: context.textMutedColor)),
+                ],
+              ),
+            );
+          }
+
+          final docs = snap.data?.docs ?? [];
+          if (docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.receipt_long_rounded, size: 64, color: context.textMutedColor),
+                  const SizedBox(height: 16),
+                  Text('No orders yet', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor)),
+                  const SizedBox(height: 4),
+                  Text('Orders will appear here when customers place them', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                ],
+              ),
+            );
+          }
+
+          int activeCount = 0;
+          int pendingCount = 0;
+          int readyCount = 0;
+          for (final doc in docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final status = data['status'] as String? ?? '';
+            if (status == 'pending' || status == 'confirmed') pendingCount++;
+            if (status == 'preparing') activeCount++;
+            if (status == 'ready') readyCount++;
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Row(
+                children: [
+                  Expanded(child: _statusCard(context, 'Active', '$activeCount', Icons.kitchen_rounded, context.warningColor)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _statusCard(context, 'Pending', '$pendingCount', Icons.hourglass_top_rounded, context.errorColor)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _statusCard(context, 'Ready', '$readyCount', Icons.check_circle_rounded, context.successColor)),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text('Recent Orders', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
+              const SizedBox(height: 12),
+              ...docs.take(20).map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final status = data['status'] as String? ?? '';
+                final customerName = data['customerName'] as String? ?? 'Customer';
+                final items = data['items'] as List<dynamic>? ?? [];
+                final total = (data['total'] as num?)?.toDouble() ?? 0;
+                final orderId = (data['orderId'] as String? ?? doc.id);
+                final shortId = orderId.length > 6 ? orderId.substring(0, 6) : orderId;
+
+                Color statusColor;
+                String statusLabel;
+                switch (status) {
+                  case 'pending':
+                    statusColor = context.errorColor;
+                    statusLabel = 'New';
+                    break;
+                  case 'confirmed':
+                    statusColor = context.primaryColor;
+                    statusLabel = 'Confirmed';
+                    break;
+                  case 'preparing':
+                    statusColor = context.warningColor;
+                    statusLabel = 'Prep';
+                    break;
+                  case 'ready':
+                    statusColor = context.successColor;
+                    statusLabel = 'Ready';
+                    break;
+                  case 'delivered':
+                  case 'completed':
+                    statusColor = context.textMutedColor;
+                    statusLabel = 'Done';
+                    break;
+                  default:
+                    statusColor = context.textMutedColor;
+                    statusLabel = status;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _orderCard(
+                    context,
+                    '#$shortId',
+                    customerName,
+                    '${items.length} item${items.length == 1 ? '' : 's'}',
+                    'SYP ${total.toStringAsFixed(0)}',
+                    statusLabel,
+                    statusColor,
+                  ),
+                );
+              }),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _statusCard(BuildContext context, String label, String count, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: context.borderColor),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(width: 44, height: 44, decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: color, size: 22)),
-          const SizedBox(width: 14),
-          Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
-          const Spacer(),
-          Text(count, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 22, color: color)),
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 8),
+          Text(count, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: color)),
+          const SizedBox(height: 2),
+          Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 11, color: context.textMutedColor)),
         ],
       ),
     );
