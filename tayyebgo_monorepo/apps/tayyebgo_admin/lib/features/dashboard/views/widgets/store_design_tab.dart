@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -217,7 +218,27 @@ class _FeaturedProductsSection extends StatelessWidget {
         if (featured.isEmpty)
           Text('No featured products selected. Choose products to highlight on the store page.', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor))
         else
-          ...featured.map((p) => ListTile(dense: true, title: Text(p.toString(), style: GoogleFonts.inter(color: context.textPrimaryColor)), trailing: IconButton(icon: Icon(Icons.close, size: 16, color: context.textMutedColor), onPressed: () => {}))),
+          ...featured.map((p) => ListTile(
+            dense: true,
+            title: Text(p.toString(), style: GoogleFonts.inter(color: context.textPrimaryColor)),
+            trailing: IconButton(
+              icon: Icon(Icons.close, size: 16, color: context.textMutedColor),
+              onPressed: () async {
+                try {
+                  await FirebaseFirestore.instance.collection('restaurants').doc(storeId).update({
+                    'featuredProducts': FieldValue.arrayRemove([p]),
+                  });
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product removed from featured')));
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to remove: $e')));
+                  }
+                }
+              },
+            ),
+          )),
       ]),
     );
   }

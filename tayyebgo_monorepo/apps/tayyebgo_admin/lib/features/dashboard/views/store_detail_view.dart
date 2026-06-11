@@ -24,6 +24,18 @@ class StoreDetailView extends StatelessWidget {
           future: FirebaseFirestore.instance.collection('restaurants').doc(storeId).get(),
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: context.primaryColor));
+            if (snap.hasError) return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 48, color: context.errorColor),
+                  const SizedBox(height: 12),
+                  Text('Error loading store', style: GoogleFonts.inter(color: context.textMutedColor)),
+                  const SizedBox(height: 8),
+                  Text('${snap.error}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                ],
+              ),
+            );
             if (!snap.hasData || !snap.data!.exists) return Center(child: Text('Store not found', style: GoogleFonts.inter(color: context.textMutedColor)));
             final d = snap.data!.data() as Map<String, dynamic>;
             return _buildDetail(context, d);

@@ -183,12 +183,31 @@ class StoresView extends StatelessWidget {
             PopupMenuButton<String>(
               icon: Icon(Icons.more_vert, color: context.textMutedColor),
               onSelected: (v) async {
-                if (v == 'toggle') {
-                  await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).update({'isActive': !isActive});
-                } else if (v == 'open') {
-                  await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).update({'isOpenNow': !isOpen});
-                } else if (v == 'delete') {
-                  await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).delete();
+                try {
+                  if (v == 'toggle') {
+                    await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).update({'isActive': !isActive});
+                  } else if (v == 'open') {
+                    await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).update({'isOpenNow': !isOpen});
+                  } else if (v == 'delete') {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text('Delete Store?'),
+                        content: Text('This will permanently delete "${name}".'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete', style: TextStyle(color: context.errorColor))),
+                        ],
+                      ),
+                    );
+                    if (confirm == true) {
+                      await FirebaseFirestore.instance.collection('restaurants').doc(doc.id).delete();
+                    }
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed: $e')));
+                  }
                 }
               },
               itemBuilder: (_) => [

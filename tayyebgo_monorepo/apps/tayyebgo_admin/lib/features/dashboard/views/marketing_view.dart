@@ -118,11 +118,40 @@ class _CampaignsTab extends StatelessWidget {
                             ),
                             Switch(
                               value: isActive,
-                              onChanged: (v) => FirebaseFirestore.instance.collection('campaigns').doc(docs[i].id).update({'isActive': v}),
+                              onChanged: (v) async {
+                                try {
+                                  await FirebaseFirestore.instance.collection('campaigns').doc(docs[i].id).update({'isActive': v});
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update: $e')));
+                                  }
+                                }
+                              },
                               activeColor: context.primaryColor,
                             ),
                             IconButton(
-                              onPressed: () => FirebaseFirestore.instance.collection('campaigns').doc(docs[i].id).delete(),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Text('Delete Campaign?'),
+                                    content: Text('This will permanently delete "$name".'),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                                      TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete', style: TextStyle(color: context.errorColor))),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  try {
+                                    await FirebaseFirestore.instance.collection('campaigns').doc(docs[i].id).delete();
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                                    }
+                                  }
+                                }
+                              },
                               icon: Icon(Icons.delete_outline, color: context.textMutedColor),
                             ),
                           ],
@@ -322,11 +351,40 @@ class _CouponsTab extends StatelessWidget {
                             ),
                             Switch(
                               value: isActive,
-                              onChanged: (v) => FirebaseFirestore.instance.collection('coupons').doc(docs[i].id).update({'isActive': v}),
+                              onChanged: (v) async {
+                                try {
+                                  await FirebaseFirestore.instance.collection('coupons').doc(docs[i].id).update({'isActive': v});
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update: $e')));
+                                  }
+                                }
+                              },
                               activeColor: context.primaryColor,
                             ),
                             IconButton(
-                              onPressed: () => FirebaseFirestore.instance.collection('coupons').doc(docs[i].id).delete(),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Text('Delete Coupon?'),
+                                    content: Text('This will permanently delete coupon "$code".'),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                                      TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete', style: TextStyle(color: context.errorColor))),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  try {
+                                    await FirebaseFirestore.instance.collection('coupons').doc(docs[i].id).delete();
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                                    }
+                                  }
+                                }
+                              },
                               icon: Icon(Icons.delete_outline, color: context.textMutedColor),
                             ),
                           ],
