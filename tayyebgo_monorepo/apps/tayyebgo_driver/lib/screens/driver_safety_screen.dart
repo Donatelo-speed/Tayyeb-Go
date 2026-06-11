@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DriverSafetyScreen extends StatelessWidget {
   const DriverSafetyScreen({super.key});
@@ -40,15 +42,26 @@ class DriverSafetyScreen extends StatelessWidget {
             iconColor: context.primaryColor,
             title: 'Identity Verification',
             subtitle: 'Verify your identity for safety',
-            onTap: () => context.go('/profile'),
+            onTap: () => context.push('/driver-profile'),
           ),
           const SizedBox(height: 10),
           _SafetyCard(
             icon: Icons.phone_rounded,
             iconColor: context.successColor,
             title: 'Emergency Contact',
-            subtitle: 'Call support: 0XX-XXX-XXX',
-            onTap: () {},
+            subtitle: 'Call support: +963-XXX-XXX-XXXX',
+            onTap: () async {
+              final uri = Uri.parse('tel:+9630000000000');
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not launch phone dialer')),
+                  );
+                }
+              }
+            },
           ),
           const SizedBox(height: 24),
           Container(
@@ -106,16 +119,36 @@ class DriverSafetyScreen extends StatelessWidget {
             child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('SOS alert sent to support', style: GoogleFonts.inter()),
-                  backgroundColor: context.errorColor,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              );
+              final user = AuthProvider.instance?.user;
+              if (user == null) return;
+              try {
+                await FirebaseFirestore.instance.collection('sos_alerts').add({
+                  'driverId': user.id,
+                  'driverName': user.displayName,
+                  'driverPhone': user.phone,
+                  'type': 'sos',
+                  'status': 'pending',
+                  'createdAt': FieldValue.serverTimestamp(),
+                });
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('SOS alert sent to support', style: GoogleFonts.inter()),
+                      backgroundColor: context.errorColor,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to send SOS: $e')),
+                  );
+                }
+              }
             },
             child: Text('Send SOS', style: GoogleFonts.inter(color: context.errorColor, fontWeight: FontWeight.w700)),
           ),
@@ -126,48 +159,114 @@ class DriverSafetyScreen extends StatelessWidget {
 
   void _showReportDialog(BuildContext context) {
     final ctrl = TextEditingController();
+    String selectedType = 'general';
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Report Issue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
-        content: TextField(
-          controller: ctrl,
-          maxLines: 4,
-          style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
-          decoration: InputDecoration(
-            hintText: 'Describe the issue...',
-            hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
-            filled: true,
-            fillColor: context.backgroundColor,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: context.surfaceColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text('Report Issue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _reportChip('general', 'General', Icons.flag_rounded, selectedType, setDialogState),
+                  _reportChip('harassment', 'Harassment', Icons.person_off_rounded, selectedType, setDialogState),
+                  _reportChip('unsafe_area', 'Unsafe Area', Icons.warning_amber_rounded, selectedType, setDialogState),
+                  _reportChip('accident', 'Accident', Icons.car_crash_rounded, selectedType, setDialogState),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: ctrl,
+                maxLines: 3,
+                style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 14),
+                decoration: InputDecoration(
+                  hintText: 'Describe the issue...',
+                  hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+                  filled: true,
+                  fillColor: context.backgroundColor,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                if (ctrl.text.trim().isEmpty) return;
+                final user = AuthProvider.instance?.user;
+                if (user == null) return;
+                try {
+                  await FirebaseFirestore.instance.collection('driver_reports').add({
+                    'driverId': user.id,
+                    'driverName': user.displayName,
+                    'type': selectedType,
+                    'description': ctrl.text.trim(),
+                    'status': 'pending',
+                    'createdAt': FieldValue.serverTimestamp(),
+                  });
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Report submitted', style: GoogleFonts.inter()),
+                        backgroundColor: context.successColor,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to submit report: $e')),
+                    );
+                  }
+                }
+              },
+              child: Text('Submit', style: GoogleFonts.inter(color: context.primaryColor, fontWeight: FontWeight.w700)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reportChip(String value, String label, IconData icon, String selectedType, StateSetter setDialogState) {
+    return GestureDetector(
+      onTap: () => setDialogState(() => selectedType = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: selectedType == value ? AppColors.driverAccent.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selectedType == value ? AppColors.driverAccent : Colors.grey,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (ctrl.text.trim().isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Report submitted', style: GoogleFonts.inter()),
-                    backgroundColor: context.successColor,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                );
-              }
-            },
-            child: Text('Submit', style: GoogleFonts.inter(color: context.primaryColor, fontWeight: FontWeight.w700)),
-          ),
-        ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: selectedType == value ? AppColors.driverAccent : Colors.grey),
+            const SizedBox(width: 4),
+            Text(label, style: GoogleFonts.inter(
+              fontSize: 12,
+              color: selectedType == value ? AppColors.driverAccent : Colors.grey,
+              fontWeight: FontWeight.w500,
+            )),
+          ],
+        ),
       ),
     );
   }

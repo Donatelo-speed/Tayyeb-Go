@@ -98,7 +98,15 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
     }
     setState(() => _isRequesting = true);
     final uid = AuthProvider.instance?.user?.id;
-    if (uid == null) return;
+    if (uid == null) {
+      if (mounted) {
+        setState(() => _isRequesting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not authenticated')),
+        );
+      }
+      return;
+    }
     final success = await prov.requestPayout(uid, amount);
     if (!mounted) return;
     setState(() => _isRequesting = false);

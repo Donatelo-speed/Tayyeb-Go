@@ -64,21 +64,62 @@ class DriverProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 28),
           _section(context, 'Account', [
-            _row(context, Icons.person_rounded, 'Personal Information', () {}),
-            _row(context, Icons.directions_car_rounded, 'Vehicle Details', () {}),
-            _row(context, Icons.badge_rounded, 'Documents', () {}),
-            _row(context, Icons.location_on_rounded, 'Delivery Zone', () {}),
+            _row(context, Icons.person_rounded, 'Personal Information', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Personal information editing coming soon')),
+              );
+            }),
+            _row(context, Icons.directions_car_rounded, 'Vehicle Details', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Vehicle details coming soon')),
+              );
+            }),
+            _row(context, Icons.badge_rounded, 'Documents', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Document upload coming soon')),
+              );
+            }),
+            _row(context, Icons.location_on_rounded, 'Delivery Zone', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Delivery zone selection coming soon')),
+              );
+            }),
           ]),
           const SizedBox(height: 16),
           _section(context, 'Preferences', [
-            _row(context, Icons.language_rounded, 'Language', () {}),
-            _row(context, Icons.notifications_outlined, 'Notifications', () {}),
-            _row(context, Icons.lock_outline_rounded, 'Change Password', () {}),
+            _row(context, Icons.language_rounded, 'Language', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Language selection coming soon')),
+              );
+            }),
+            _row(context, Icons.notifications_outlined, 'Notifications', () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+              );
+            }),
+            _row(context, Icons.lock_outline_rounded, 'Change Password', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Password change coming soon')),
+              );
+            }),
           ]),
           const SizedBox(height: 16),
           _section(context, 'Support', [
-            _row(context, Icons.help_outline_rounded, 'Help Center', () {}),
-            _row(context, Icons.info_outline_rounded, 'About', () {}),
+            _row(context, Icons.help_outline_rounded, 'Help Center', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Help center coming soon')),
+              );
+            }),
+            _row(context, Icons.info_outline_rounded, 'About', () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'TayyebGo Driver',
+                applicationVersion: '1.0.0',
+                children: [
+                  Text('Delivery platform driver app', style: GoogleFonts.inter()),
+                ],
+              );
+            }),
           ]),
           const SizedBox(height: 16),
           SizedBox(

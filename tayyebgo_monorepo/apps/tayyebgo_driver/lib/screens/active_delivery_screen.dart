@@ -230,7 +230,20 @@ class _FoodDeliveryView extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             final prov = ctx.read<DispatchProvider>();
-            await prov.completeDelivery(dispatchId, orderId);
+            try {
+              await prov.completeDelivery(dispatchId, orderId);
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text('Delivery marked as complete!')),
+                );
+              }
+            } catch (e) {
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('Failed to complete delivery: $e')),
+                );
+              }
+            }
           },
           style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
           child: Text('Mark Delivered', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
@@ -245,7 +258,20 @@ class _FoodDeliveryView extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             final prov = ctx.read<DispatchProvider>();
-            await prov.markPickedUp(dispatchId, orderId);
+            try {
+              await prov.markPickedUp(dispatchId, orderId);
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text('Marked as picked up!')),
+                );
+              }
+            } catch (e) {
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('Failed to mark pickup: $e')),
+                );
+              }
+            }
           },
           style: ElevatedButton.styleFrom(backgroundColor: ctx.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
           child: Text('Picked Up from Restaurant', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
@@ -454,7 +480,20 @@ class _AnythingDeliveryView extends StatelessWidget {
       height: 52,
       child: ElevatedButton.icon(
         onPressed: () async {
-          await ctx.read<AnythingProvider>().updateStatus(requestId, nextStatus);
+          try {
+            await ctx.read<AnythingProvider>().updateStatus(requestId, nextStatus);
+            if (ctx.mounted) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                const SnackBar(content: Text('Status updated')),
+              );
+            }
+          } catch (e) {
+            if (ctx.mounted) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text('Failed to update status: $e')),
+              );
+            }
+          }
         },
         icon: Icon(icon, size: 20),
         label: Text(text, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),

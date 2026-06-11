@@ -108,7 +108,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => context.go('/driver-profile'),
+                      onTap: () => context.push('/driver-profile'),
                       child: Container(
                         width: 44,
                         height: 44,
@@ -251,21 +251,21 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       icon: Icons.list_alt_rounded,
                       label: 'Requests',
                       color: context.warningColor,
-                      onTap: () => context.go('/available-requests'),
+                      onTap: () => context.push('/available-requests'),
                     )),
                     const SizedBox(width: 12),
                     Expanded(child: _quickAction(
                       icon: Icons.account_balance_wallet_rounded,
                       label: 'Earnings',
                       color: const Color(0xFF10B981),
-                      onTap: () => context.go('/earnings'),
+                      onTap: () => context.push('/earnings'),
                     )),
                     const SizedBox(width: 12),
                     Expanded(child: _quickAction(
                       icon: Icons.wallet_rounded,
                       label: 'Wallet',
                       color: const Color(0xFF8B5CF6),
-                      onTap: () => context.go('/wallet'),
+                      onTap: () => context.push('/wallet'),
                     )),
                   ],
                 ),
@@ -339,7 +339,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => context.go('/earnings'),
+                        onTap: () => context.push('/earnings'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
@@ -465,11 +465,19 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
       Map<String, dynamic> dispatch, String action) async {
     final id = dispatch['id'] as String;
     final prov = context.read<DispatchProvider>();
-    if (action == 'accept') {
-      await prov.acceptDispatch(id);
-      if (mounted) context.go('/active-delivery-food/$id');
-    } else {
-      await prov.rejectDispatch(id);
+    try {
+      if (action == 'accept') {
+        await prov.acceptDispatch(id);
+        if (mounted) context.push('/active-delivery-food/$id');
+      } else {
+        await prov.rejectDispatch(id);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to ${action} delivery: $e')),
+        );
+      }
     }
   }
 
@@ -623,7 +631,7 @@ class _ActiveOrdersSection extends StatelessWidget {
             final doc = snap.data!.docs.first;
             final d = doc.data() as Map<String, dynamic>;
             return GestureDetector(
-              onTap: () => context.go('/active-delivery/${doc.id}'),
+              onTap: () => context.push('/active-delivery/${doc.id}'),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(16),
@@ -700,7 +708,7 @@ class _ActiveOrdersSection extends StatelessWidget {
               children: foodDeliveries.map((d) {
                 final id = d['id'] as String;
                 return GestureDetector(
-                  onTap: () => context.go('/active-delivery-food/$id'),
+                  onTap: () => context.push('/active-delivery-food/$id'),
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.all(16),

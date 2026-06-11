@@ -11,11 +11,17 @@ class DriverEarningsScreen extends StatefulWidget {
 
 class _DriverEarningsScreenState extends State<DriverEarningsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
+  int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
     _tabCtrl = TabController(length: 3, vsync: this);
+    _tabCtrl.addListener(() {
+      if (!_tabCtrl.indexIsChanging) {
+        setState(() => _selectedTab = _tabCtrl.index);
+      }
+    });
     final user = AuthProvider.instance?.user;
     if (user != null) {
       context.read<DriverWalletProvider>().loadWallet(user.id);
@@ -89,20 +95,46 @@ class _DriverEarningsScreenState extends State<DriverEarningsScreen> with Single
                     const SizedBox(height: 16),
                     Text('Recent Transactions', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
                     const SizedBox(height: 12),
-                    if (walletProv.transactions.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: context.borderColor),
-                        ),
-                        child: Center(
-                          child: Text('No transactions yet', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
-                        ),
-                      )
-                    else
-                      ...walletProv.transactions.map((txn) => _TransactionCard(txn: txn)),
+                    Builder(
+                      builder: (context) {
+                        final now = DateTime.now();
+                        final filtered = walletProv.transactions.where((txn) {
+                          final ts = txn['timestamp'];
+                          if (ts == null) return _selectedTab == 0;
+                          DateTime date;
+                          if (ts is DateTime) {
+                            date = ts;
+                          } else if (ts is String) {
+                            date = DateTime.tryParse(ts) ?? DateTime(2000);
+                          } else {
+                            return _selectedTab == 0;
+                          }
+                          if (_selectedTab == 1) {
+                            return date.year == now.year && date.month == now.month && date.day == now.day;
+                          } else if (_selectedTab == 2) {
+                            final weekAgo = now.subtract(const Duration(days: 7));
+                            return date.isAfter(weekAgo);
+                          }
+                          return true;
+                        }).toList();
+                        if (filtered.isEmpty) {
+                          return Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: context.surfaceColor,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: context.borderColor),
+                            ),
+                            child: Center(
+                              child: Text('No transactions for this period', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
+                            ),
+                          );
+                        }
+                        return Column(
+                          children: filtered.map((txn) => _TransactionCard(txn: txn)).toList(),
+                        );
+                      },
+                    ),
                   ],
                 ),
     );

@@ -156,8 +156,16 @@ class _DispatchRequestCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       final prov = context.read<DispatchProvider>();
-                      await prov.acceptDispatch(id);
-                      if (context.mounted) context.go('/active-delivery-food/$id');
+                      try {
+                        await prov.acceptDispatch(id);
+                        if (context.mounted) context.push('/active-delivery-food/$id');
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to accept: $e')),
+                          );
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.successColor,
@@ -259,8 +267,16 @@ class _AnythingRequestCard extends StatelessWidget {
               onPressed: () async {
                 final user = context.read<AuthProvider>().user;
                 if (user == null) return;
-                final success = await context.read<AnythingProvider>().acceptRequest(request.id, user.id, user.displayName);
-                if (success && context.mounted) context.go('/active-delivery/${request.id}');
+                try {
+                  final success = await context.read<AnythingProvider>().acceptRequest(request.id, user.id, user.displayName);
+                  if (success && context.mounted) context.push('/active-delivery/${request.id}');
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to accept request: $e')),
+                    );
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.successColor,
