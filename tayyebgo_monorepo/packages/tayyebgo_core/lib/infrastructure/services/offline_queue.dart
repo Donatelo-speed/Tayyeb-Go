@@ -129,11 +129,6 @@ class OfflineQueue {
     }
   }
 
-  /// Calculate exponential backoff delay
-  Duration _calculateRetryDelay(int retryCount) {
-    return _baseRetryDelay * (1 << retryCount);
-  }
-
   /// Dispose resources
   void dispose() {
     stopAutoSync();

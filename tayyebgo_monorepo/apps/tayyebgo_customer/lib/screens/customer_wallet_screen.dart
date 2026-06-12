@@ -82,25 +82,11 @@ class CustomerWalletScreen extends StatelessWidget {
               Row(
                 children: [
                   _walletAction(context, Icons.add_rounded, 'Top Up', () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Top up coming soon', style: GoogleFonts.inter()),
-                        backgroundColor: context.primaryColor,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletTopUpScreen()));
                   }),
                   const SizedBox(width: 12),
                   _walletAction(context, Icons.send_rounded, 'Send', () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Send money coming soon', style: GoogleFonts.inter()),
-                        backgroundColor: context.primaryColor,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletSendScreen()));
                   }),
                   const SizedBox(width: 12),
                   _walletAction(context, Icons.history_rounded, 'History', () {}),

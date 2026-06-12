@@ -14,11 +14,16 @@ import 'screens/driver_onboarding_screen.dart';
 import 'screens/driver_profile_screen.dart';
 import 'screens/driver_dashboard_screen.dart';
 import 'screens/driver_splash_screen.dart';
+import 'screens/driver_edit_profile_screen.dart';
+import 'screens/driver_documents_screen.dart';
+import 'screens/delivery_history_screen.dart';
+import 'screens/driver_shell_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    AuthProvider.defaultExpectedRole = UserRole.driver;
     AuthGateService.instance.init();
     AppLocator.instance.init();
     runApp(const DriverApp());
@@ -70,6 +75,7 @@ class _DriverAppState extends State<DriverApp> {
   late final AuthListenable _authListenable;
   late final GoRouter _router;
   late final ThemeProvider _themeProvider;
+  LocaleProvider? _localeProvider;
 
   @override
   void initState() {
@@ -77,6 +83,12 @@ class _DriverAppState extends State<DriverApp> {
     _authListenable = AuthListenable();
     _router = _buildRouter();
     _themeProvider = ThemeProvider();
+    _initLocale();
+  }
+
+  Future<void> _initLocale() async {
+    final lp = await LocaleProvider.create();
+    if (mounted) setState(() => _localeProvider = lp);
   }
 
   GoRouter _buildRouter() {
@@ -85,15 +97,29 @@ class _DriverAppState extends State<DriverApp> {
       initialLocation: '/splash',
       routes: [
         AppRouter.route('/splash', const DriverSplashScreen(), name: 'splash'),
-        AppRouter.route('/login', const LoginScreen(), name: 'login'),
-        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/login', const LoginScreen(
+          showSignUpLink: false,
+          subtitle: 'Deliver orders and earn on your schedule.',
+        ), name: 'login'),
         AppRouter.route('/forgot-password', const ForgotPasswordScreen(), name: 'forgotPassword'),
+        AppRouter.route('/privacy-policy', const PrivacyPolicyScreen(), name: 'privacyPolicy'),
+        AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
+        AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
         AppRouter.route('/onboarding', const DriverOnboardingScreen(), name: 'onboarding'),
-        AppRouter.route('/dashboard', const AuthStateRedirector(child: DriverDashboardScreen()), name: 'dashboard'),
-        AppRouter.route('/available-requests', const AvailableRequestsScreen(), name: 'availableRequests'),
-        AppRouter.route('/earnings', const DriverEarningsScreen(), name: 'earnings'),
+        ShellRoute(
+          builder: (context, state, child) => DriverShellScreen(child: child),
+          routes: [
+            AppRouter.route('/dashboard', const AuthStateRedirector(child: DriverDashboardScreen()), name: 'dashboard'),
+            AppRouter.route('/available-requests', const AvailableRequestsScreen(), name: 'availableRequests'),
+            AppRouter.route('/earnings', const DriverEarningsScreen(), name: 'earnings'),
+            AppRouter.route('/profile', const DriverProfileScreen(), name: 'profile'),
+          ],
+        ),
         AppRouter.route('/wallet', const DriverWalletScreen(), name: 'wallet'),
         AppRouter.route('/safety', const DriverSafetyScreen(), name: 'safety'),
+        AppRouter.route('/delivery-history', const DeliveryHistoryScreen(), name: 'deliveryHistory'),
+        AppRouter.route('/edit-profile', const DriverEditProfileScreen(), name: 'editProfile'),
+        AppRouter.route('/documents', const DriverDocumentsScreen(), name: 'documents'),
         GoRoute(
           path: '/active-delivery/:id',
           name: 'activeDelivery',
@@ -111,7 +137,6 @@ class _DriverAppState extends State<DriverApp> {
             ),
           ),
         ),
-        AppRouter.route('/profile', const DriverProfileScreen(), name: 'profile'),
         AppRouter.route('/settings', const SettingsScreen(), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
       ],
@@ -131,6 +156,7 @@ class _DriverAppState extends State<DriverApp> {
   void dispose() {
     _authListenable.dispose();
     _themeProvider.dispose();
+    _localeProvider?.dispose();
     super.dispose();
   }
 
@@ -142,7 +168,7 @@ class _DriverAppState extends State<DriverApp> {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider.value(value: _themeProvider),
         // Lazy-loaded providers - only created when accessed
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider.value(value: _localeProvider ?? LocaleProvider(const Locale('en'))),
         ChangeNotifierProvider(create: (_) => AnythingProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => DriverWalletProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => DispatchProvider(), lazy: true),
@@ -151,13 +177,25 @@ class _DriverAppState extends State<DriverApp> {
       ],
       child: _DispatchLifecycle(
         child: ErrorBoundary(
-          child: MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'TayyebGo - Driver',
-            theme: TayyebGoTheme.lightTheme(context),
-            darkTheme: TayyebGoTheme.darkTheme(context),
-            themeMode: _themeProvider.mode,
-            routerConfig: _router,
+          child: Consumer<LocaleProvider>(
+            builder: (context, localeProv, _) {
+              final locale = _localeProvider?.locale ?? const Locale('en');
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: 'TayyebGo - Driver',
+                locale: locale,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  DefaultMaterialLocalizations.delegate,
+                  DefaultWidgetsLocalizations.delegate,
+                ],
+                supportedLocales: AppLocalizations.supportedLocales,
+                theme: TayyebGoTheme.lightTheme(context),
+                darkTheme: TayyebGoTheme.darkTheme(context),
+                themeMode: _themeProvider.mode,
+                routerConfig: _router,
+              );
+            },
           ),
         ),
       ),

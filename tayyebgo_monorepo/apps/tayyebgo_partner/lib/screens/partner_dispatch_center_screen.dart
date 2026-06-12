@@ -11,7 +11,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.read<AuthProvider>().user;
     if (user == null) return const SizedBox.shrink();
-    final restaurantId = user.vendorId ?? user.id;
+    final restaurantId = user.vendorId;
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
@@ -21,7 +21,9 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: restaurantId == null
+          ? Center(child: Text('No restaurant associated with this account.'))
+          : StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('orders')
             .where('restaurantId', isEqualTo: restaurantId)

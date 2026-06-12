@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -44,12 +45,12 @@ class PartnerGatekeeper extends StatelessWidget {
                   onPressed: () async {
                     await context.read<AuthProvider>().logout();
                     if (context.mounted) {
-                      Navigator.of(context).pushReplacementNamed('/login');
+                      context.go('/login');
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.primaryColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.textInverse,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text('Sign Out', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),

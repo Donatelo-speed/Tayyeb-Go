@@ -16,6 +16,7 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    AuthProvider.defaultExpectedRole = UserRole.superAdmin;
     AuthGateService.instance.init();
     AppLocator.instance.init();
     runApp(const AdminApp());
@@ -82,6 +83,7 @@ class _AdminAppState extends State<AdminApp> {
   late final AuthProvider _authProvider;
   late final AuthListenable _authListenable;
   late final GoRouter _router;
+  LocaleProvider? _localeProvider;
 
   @override
   void initState() {
@@ -89,6 +91,12 @@ class _AdminAppState extends State<AdminApp> {
     _authProvider = AuthProvider();
     _authListenable = AuthListenable();
     _router = _buildRouter();
+    _initLocale();
+  }
+
+  Future<void> _initLocale() async {
+    final lp = await LocaleProvider.create();
+    if (mounted) setState(() => _localeProvider = lp);
   }
 
   GoRouter _buildRouter() {
@@ -97,20 +105,25 @@ class _AdminAppState extends State<AdminApp> {
       initialLocation: '/splash',
       routes: [
         AppRouter.route('/splash', const AdminSplashScreen(), name: 'splash'),
-        AppRouter.route('/login', const LoginScreen(), name: 'login'),
-        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/login', const LoginScreen(
+          showSignUpLink: false,
+          subtitle: 'Monitor and manage the entire platform.',
+        ), name: 'login'),
         AppRouter.route(
           '/forgot-password',
           const ForgotPasswordScreen(),
           name: 'forgot-password',
         ),
+        AppRouter.route('/privacy-policy', const PrivacyPolicyScreen(), name: 'privacyPolicy'),
+        AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
+        AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
         AppRouter.route(
           '/dashboard',
-          const AuthStateRedirector(child: AdminDashboardScreen()),
+          AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()),
           name: 'dashboard',
         ),
-        AppRouter.route('/profile', const AuthStateRedirector(child: AdminDashboardScreen()), name: 'profile'),
-        AppRouter.route('/settings', const AuthStateRedirector(child: AdminDashboardScreen()), name: 'settings'),
+        AppRouter.route('/profile', AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()), name: 'profile'),
+        AppRouter.route('/settings', AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
       ],
       redirect: _redirect,
@@ -130,6 +143,7 @@ class _AdminAppState extends State<AdminApp> {
     _authListenable.dispose();
     _router.dispose();
     _authProvider.dispose();
+    _localeProvider?.dispose();
     super.dispose();
   }
 
@@ -141,22 +155,34 @@ class _AdminAppState extends State<AdminApp> {
         ChangeNotifierProvider.value(value: _authProvider),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         // Lazy-loaded providers - only created when accessed
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider.value(value: _localeProvider ?? LocaleProvider(const Locale('en'))),
         ChangeNotifierProvider(create: (_) => AdminStatsProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => NotificationsProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => UserProfileProvider(), lazy: true),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
-          return ErrorBoundary(
-            child: MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'TayyebGo - Admin',
-              theme: TayyebGoTheme.lightTheme(context),
-              darkTheme: TayyebGoTheme.darkTheme(context),
-              themeMode: themeProvider.mode,
-              routerConfig: _router,
-            ),
+          return Consumer<LocaleProvider>(
+            builder: (context, localeProv, _) {
+              final locale = _localeProvider?.locale ?? const Locale('en');
+              return ErrorBoundary(
+                child: MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  title: 'TayyebGo - Admin',
+                  locale: locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    DefaultMaterialLocalizations.delegate,
+                    DefaultWidgetsLocalizations.delegate,
+                  ],
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  theme: TayyebGoTheme.lightTheme(context),
+                  darkTheme: TayyebGoTheme.darkTheme(context),
+                  themeMode: themeProvider.mode,
+                  routerConfig: _router,
+                ),
+              );
+            },
           );
         },
       ),

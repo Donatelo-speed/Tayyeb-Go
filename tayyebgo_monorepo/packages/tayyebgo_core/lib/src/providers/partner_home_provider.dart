@@ -88,10 +88,9 @@ class PartnerHomeProvider extends ChangeNotifier {
   }
 
   Future<void> addMenuItem(String restaurantId, Map<String, dynamic> data) async {
-    await FirebaseFirestore.instance
-        .collection('restaurants')
-        .doc(restaurantId)
-        .collection('menu_items')
-        .add(data);
+    await FirebaseFirestore.instance.collection('menu_items').add({
+      ...data,
+      'restaurantId': restaurantId,
+    });
   }
 }

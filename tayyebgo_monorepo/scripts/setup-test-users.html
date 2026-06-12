@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo — Test User Setup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; max-width: 700px; margin: 0 auto; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #38bdf8; }
+    .subtitle { color: #94a3b8; margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #334155; }
+    .card h2 { font-size: 16px; margin-bottom: 4px; color: #f1f5f9; }
+    .card .role { color: #94a3b8; font-size: 13px; margin-bottom: 12px; }
+    button { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: background 0.2s; }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    button.success { background: #16a34a; }
+    .log { background: #0f172a; border-radius: 8px; padding: 16px; margin-top: 20px; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; }
+    .warning { background: #78350f; border: 1px solid #b45309; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.5; }
+    .warning a { color: #38bdf8; }
+    .success-box { background: #064e3b; border: 1px solid #059669; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 14px; line-height: 1.5; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    th, td { text-align: left; padding: 8px 12px; font-size: 13px; border-bottom: 1px solid #334155; }
+    th { color: #94a3b8; font-weight: 600; }
+    td { font-family: monospace; }
+    .email { color: #38bdf8; }
+    .pass { color: #a78bfa; }
+    .role-tag { background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .step { color: #f1f5f9; font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+  </style>
+</head>
+<body>
+  <h1>TayyebGo — Test User Setup</h1>
+  <p class="subtitle">One password for all accounts. Creates Firebase Auth + Firestore docs with correct roles.</p>
+
+  <div class="warning">
+    <strong>Step 1:</strong> Go to <a href="https://console.firebase.google.com/project/tayyebgo/authentication/users" target="_blank">Firebase Console → Authentication → Users</a> and DELETE all existing test users (admin@test.com, customer@test.com, driver@test.com, owner@test.com, cashier@test.com).<br><br>
+    <strong>Step 2:</strong> Go to <a href="https://console.firebase.google.com/project/tayyebgo/firestore/data" target="_blank">Firebase Console → Firestore → Data</a> and DELETE all documents in the <code>users</code> collection.
+  </div>
+
+  <div class="success-box" id="credentials-box" style="display:none;">
+    <strong>ALL ACCOUNTS USE PASSWORD: test123</strong><br><br>
+    <table>
+      <tr><th>Email</th><th>Password</th><th>App</th><th>Role</th></tr>
+      <tr><td class="email">admin@test.com</td><td class="pass">test123</td><td>Admin</td><td><span class="role-tag">superAdmin</span></td></tr>
+      <tr><td class="email">customer@test.com</td><td class="pass">test123</td><td>Customer</td><td><span class="role-tag">customer</span></td></tr>
+      <tr><td class="email">driver@test.com</td><td class="pass">test123</td><td>Driver</td><td><span class="role-tag">driver</span></td></tr>
+      <tr><td class="email">owner@test.com</td><td class="pass">test123</td><td>Partner</td><td><span class="role-tag">restaurantOwner</span></td></tr>
+      <tr><td class="email">cashier@test.com</td><td class="pass">test123</td><td>Partner</td><td><span class="role-tag">cashier</span></td></tr>
+    </table>
+  </div>
+
+  <div class="step">Step 3: Create All Test Users</div>
+  <div class="card">
+    <h2>Create Users + Firestore Docs</h2>
+    <div class="role">Creates all 5 Firebase Auth accounts and Firestore user documents with correct roles</div>
+    <button id="createAll" onclick="createAllUsers()">Create All Test Users</button>
+  </div>
+
+  <div class="step">Step 4: Test Logins</div>
+  <div class="card">
+    <h2>Verify Each Account Works</h2>
+    <div class="role">Click each button to verify the account can sign in</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+      <button onclick="testLogin('admin@test.com')" style="font-size: 12px; padding: 8px 14px;">Test Admin</button>
+      <button onclick="testLogin('customer@test.com')" style="font-size: 12px; padding: 8px 14px;">Test Customer</button>
+      <button onclick="testLogin('driver@test.com')" style="font-size: 12px; padding: 8px 14px;">Test Driver</button>
+      <button onclick="testLogin('owner@test.com')" style="font-size: 12px; padding: 8px 14px;">Test Owner</button>
+      <button onclick="testLogin('cashier@test.com')" style="font-size: 12px; padding: 8px 14px;">Test Cashier</button>
+    </div>
+  </div>
+
+  <div class="log" id="log">Ready. Delete old users + Firestore docs first, then click "Create All Test Users".\n</div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",
+      authDomain: "tayyebgo.firebaseapp.com",
+      projectId: "tayyebgo",
+      storageBucket: "tayyebgo.firebasestorage.app",
+      messagingSenderId: "32555940559",
+      appId: "1:32555940559:web:f47c1e1c5e5e5e5e5e5e5e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const PASSWORD = 'test123';
+
+    const USERS = [
+      { uid: 'admin-test', email: 'admin@test.com', displayName: 'Super Admin', role: 'superAdmin' },
+      { uid: 'customer-test', email: 'customer@test.com', displayName: 'Customer User', role: 'customer' },
+      { uid: 'driver-test', email: 'driver@test.com', displayName: 'Driver User', role: 'driver' },
+      { uid: 'owner-test', email: 'owner@test.com', displayName: 'Restaurant Owner', role: 'restaurantOwner' },
+      { uid: 'cashier-test', email: 'cashier@test.com', displayName: 'Cashier User', role: 'cashier' },
+    ];
+
+    function log(msg) {
+      const el = document.getElementById('log');
+      el.textContent += msg + '\n';
+      el.scrollTop = 99999;
+    }
+
+    async function createFirestoreDoc(user, uid) {
+      const userRef = doc(db, 'users', uid);
+      await setDoc(userRef, {
+        id: uid,
+        email: user.email,
+        displayName: user.displayName,
+        phone: null,
+        photoUrl: null,
+        role: user.role,
+        restaurantId: null,
+        isActive: true,
+        loyaltyPoints: 0,
+        address: null,
+        preferredLocale: 'en',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastSignInAt: serverTimestamp(),
+      }, { merge: true });
+    }
+
+    window.createAllUsers = async function() {
+      const btn = document.getElementById('createAll');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      let created = 0;
+      let existing = 0;
+      let errors = 0;
+
+      log('--- Creating Firebase Auth users (password: test123) ---');
+
+      for (const u of USERS) {
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, u.email, PASSWORD);
+          log('✅ Auth created: ' + u.email + ' (uid=' + cred.user.uid + ')');
+          created++;
+
+          try {
+            await createFirestoreDoc(u, cred.user.uid);
+            log('   ✅ Firestore doc created with role=' + u.role);
+          } catch (fsErr) {
+            log('   ⚠️  Firestore doc failed: ' + fsErr.message);
+          }
+
+          await auth.signOut();
+        } catch (e) {
+          if (e.code === 'auth/email-already-in-use') {
+            log('⚠️  Already exists: ' + u.email + ' — DELETE in Firebase Console first');
+            existing++;
+          } else {
+            log('❌ Error: ' + u.email + ' — ' + e.message);
+            errors++;
+          }
+        }
+      }
+
+      if (existing > 0) {
+        log('\n--- Attempting to fix Firestore docs for existing users ---');
+        for (const u of USERS) {
+          try {
+            await signInWithEmailAndPassword(auth, u.email, PASSWORD);
+            await createFirestoreDoc(u, auth.currentUser.uid);
+            log('✅ Firestore doc fixed for ' + u.email + ' role=' + u.role);
+            await auth.signOut();
+          } catch (e) {
+            log('⚠️  Could not fix Firestore doc for ' + u.email + ': ' + e.message);
+          }
+        }
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Create All Test Users';
+      btn.classList.add('success');
+
+      log('\n========================================');
+      log('DONE: ' + created + ' created, ' + existing + ' already existed, ' + errors + ' errors');
+      log('========================================');
+      log('\nALL ACCOUNTS: password = test123');
+      log('');
+      log('  admin@test.com     → Admin App');
+      log('  customer@test.com  → Customer App');
+      log('  driver@test.com    → Driver App');
+      log('  owner@test.com     → Partner App');
+      log('  cashier@test.com   → Partner App');
+
+      document.getElementById('credentials-box').style.display = 'block';
+    };
+
+    window.testLogin = async function(email) {
+      try {
+        await signInWithEmailAndPassword(auth, email, PASSWORD);
+        log('✅ Login OK: ' + email + ' / test123');
+        await auth.signOut();
+      } catch (e) {
+        log('❌ Login FAILED: ' + email + ' — ' + e.message);
+      }
+    };
+  </script>
+</body>
+</html>

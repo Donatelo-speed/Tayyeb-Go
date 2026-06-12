@@ -242,7 +242,7 @@ class _CustomerCard extends StatelessWidget {
         content: SizedBox(
           width: 350,
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('orders').where('userId', isEqualTo: uid).orderBy('createdAt', descending: true).limit(20).snapshots(),
+            stream: FirebaseFirestore.instance.collection('orders').where('customerId', isEqualTo: uid).orderBy('createdAt', descending: true).limit(20).snapshots(),
             builder: (context, orderSnap) {
               if (orderSnap.hasError) return Text('Error loading orders', style: GoogleFonts.inter(color: context.errorColor, fontSize: 13));
               int refundCount = 0;

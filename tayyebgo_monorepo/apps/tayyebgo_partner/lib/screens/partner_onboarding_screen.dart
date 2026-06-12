@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,6 +21,10 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
   final _addressCtrl = TextEditingController();
   String _businessType = 'Restaurant';
   String _role = 'Owner';
+  bool _selfDelivery = true;
+  bool _platformDrivers = true;
+  bool _pickupOnly = false;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -34,7 +40,38 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
     if (_step < 5) {
       setState(() => _step++);
     } else {
-      context.go('/dashboard');
+      _saveAndContinue();
+    }
+  }
+
+  Future<void> _saveAndContinue() async {
+    final user = fb.FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    setState(() => _isSaving = true);
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'businessName': _businessNameCtrl.text.trim(),
+        'displayName': _ownerNameCtrl.text.trim(),
+        'phone': _phoneCtrl.text.trim(),
+        'email': _emailCtrl.text.trim(),
+        'storeAddress': _addressCtrl.text.trim(),
+        'businessType': _businessType,
+        'role': _role.toLowerCase() == 'owner' ? 'restaurantOwner' : _role.toLowerCase(),
+        'selfDelivery': _selfDelivery,
+        'platformDrivers': _platformDrivers,
+        'pickupOnly': _pickupOnly,
+        'onboardingCompleted': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) context.go('/dashboard');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -97,7 +134,9 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
-                      child: Text(_step == 5 ? 'Go to Dashboard' : 'Continue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: _isSaving
+                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+                          : Text(_step == 5 ? 'Go to Dashboard' : 'Continue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
                     ),
                   ),
                 ],
@@ -182,11 +221,11 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
           const SizedBox(height: 24),
           _darkField(context: context, controller: _addressCtrl, label: 'Store Address', icon: Icons.location_on_rounded),
           const SizedBox(height: 16),
-          _toggleOption(context, 'Self Delivery', 'Use your own drivers', true),
+          _toggleOption(context, 'Self Delivery', 'Use your own drivers', _selfDelivery, (v) => setState(() => _selfDelivery = v)),
           const SizedBox(height: 12),
-          _toggleOption(context, 'Platform Drivers', 'Use TayyebGo drivers', true),
+          _toggleOption(context, 'Platform Drivers', 'Use TayyebGo drivers', _platformDrivers, (v) => setState(() => _platformDrivers = v)),
           const SizedBox(height: 12),
-          _toggleOption(context, 'Pickup Only', 'Customers pick up orders', false),
+          _toggleOption(context, 'Pickup Only', 'Customers pick up orders', _pickupOnly, (v) => setState(() => _pickupOnly = v)),
         ];
       default:
         return [];
@@ -306,7 +345,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
     );
   }
 
-  Widget _toggleOption(BuildContext context, String title, String subtitle, bool enabled) {
+  Widget _toggleOption(BuildContext context, String title, String subtitle, bool enabled, ValueChanged<bool> onChanged) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -327,7 +366,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
           ),
           Switch.adaptive(
             value: enabled,
-            onChanged: (_) {},
+            onChanged: onChanged,
             activeColor: context.warningColor,
             activeTrackColor: context.warningColor.withValues(alpha: 0.3),
             inactiveThumbColor: context.textMutedColor,

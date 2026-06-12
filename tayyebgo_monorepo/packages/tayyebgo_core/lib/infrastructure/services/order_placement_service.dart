@@ -1,7 +1,14 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderPlacementService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Generates a 4-digit delivery PIN for order verification.
+  String _generateDeliveryPin() {
+    final rng = Random.secure();
+    return (1000 + rng.nextInt(9000)).toString();
+  }
 
   Future<String> placeOrder({
     required String customerId,
@@ -15,8 +22,14 @@ class OrderPlacementService {
     Map<String, dynamic>? deliveryAddress,
     double? dropoffLatitude,
     double? dropoffLongitude,
+    String? promoCode,
+    double? promoDiscount,
+    int? subtotalCents,
+    int? deliveryFeeCents,
+    int? taxCents,
   }) async {
     final orderRef = _firestore.collection('orders').doc();
+    final deliveryPin = _generateDeliveryPin();
 
     final now = FieldValue.serverTimestamp();
     final statusHistory = [
@@ -42,9 +55,16 @@ class OrderPlacementService {
       'deliveryAddress': deliveryAddress,
       'dropoffLatitude': dropoffLatitude,
       'dropoffLongitude': dropoffLongitude,
+      'deliveryPin': deliveryPin,
+      'deliveryPinVerified': false,
       'statusHistory': statusHistory,
       'createdAt': now,
       'updatedAt': now,
+      if (promoCode != null && promoCode.isNotEmpty) 'promoCode': promoCode,
+      if (promoDiscount != null && promoDiscount > 0) 'promoDiscount': promoDiscount,
+      if (subtotalCents != null) 'subtotalAmount': subtotalCents,
+      if (deliveryFeeCents != null) 'deliveryFee': deliveryFeeCents,
+      if (taxCents != null) 'taxAmount': taxCents,
     };
 
     await orderRef.set(orderData);

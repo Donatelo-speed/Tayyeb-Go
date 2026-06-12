@@ -175,17 +175,21 @@ class CartProvider extends ChangeNotifier {
     await _saveToPrefs();
   }
 
-  Future<String?> applyCoupon(String code) async {
+  Future<String?> applyCoupon(String code, {String? customerId, String? phone}) async {
     if (code.trim().isEmpty) return 'Enter a coupon code';
     try {
       final promo = await AppLocator.instance.promotionLookup.validateCoupon(code);
       if (promo == null) return 'Invalid or expired coupon';
+
       final type = promo['type'] as String? ?? 'percentage';
       final value = (promo['value'] as num?)?.toDouble() ?? 0;
-      final minOrder = (promo['minOrder'] as num?)?.toDouble() ?? 0;
-      final maxDiscount = (promo['maxDiscount'] as num?)?.toDouble();
-      final expiresAt = promo['expiresAt'] as Timestamp?;
-      if (expiresAt != null && expiresAt.toDate().isBefore(DateTime.now())) {
+      final minOrder = (promo['minOrderAmount'] as num?)?.toDouble() ??
+          (promo['minOrder'] as num?)?.toDouble() ?? 0;
+      final maxDiscount = (promo['maxDiscountAmount'] as num?)?.toDouble() ??
+          (promo['maxDiscount'] as num?)?.toDouble();
+      final expiryDate = (promo['expiryDate'] as Timestamp?)?.toDate() ??
+          (promo['expiresAt'] as Timestamp?)?.toDate();
+      if (expiryDate != null && expiryDate.isBefore(DateTime.now())) {
         return 'This coupon has expired';
       }
       if (subtotal < minOrder) {

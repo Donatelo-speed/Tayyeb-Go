@@ -15,6 +15,7 @@ class UserModel {
   final String preferredLocale;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final DateTime? lastSignInAt;
 
   UserModel({
     required this.id,
@@ -30,6 +31,7 @@ class UserModel {
     this.preferredLocale = 'en',
     this.createdAt,
     this.updatedAt,
+    this.lastSignInAt,
   });
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
@@ -48,6 +50,7 @@ class UserModel {
       preferredLocale: d['preferredLocale'] as String? ?? 'en',
       createdAt: (d['createdAt'] as Timestamp?)?.toDate(),
       updatedAt: (d['updatedAt'] as Timestamp?)?.toDate(),
+      lastSignInAt: (d['lastSignInAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -62,6 +65,9 @@ class UserModel {
         'loyaltyPoints': loyaltyPoints,
         if (address != null) 'address': address,
         'preferredLocale': preferredLocale,
+        'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        if (lastSignInAt != null) 'lastSignInAt': Timestamp.fromDate(lastSignInAt!),
       };
 
   UserModel copyWith({
@@ -78,6 +84,7 @@ class UserModel {
     String? preferredLocale,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? lastSignInAt,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -93,6 +100,7 @@ class UserModel {
       preferredLocale: preferredLocale ?? this.preferredLocale,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastSignInAt: lastSignInAt ?? this.lastSignInAt,
     );
   }
 }

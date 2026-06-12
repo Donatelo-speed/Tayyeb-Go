@@ -17,6 +17,7 @@ import 'views/zones_view.dart';
 import 'views/notifications_view.dart';
 import 'views/marketing_view.dart';
 import 'views/settlements_view.dart';
+import 'views/operations_center_view.dart';
 import '../../../core/widgets/app_command_bar.dart' as cmdbar_impl;
 import '../../../core/widgets/responsive_builder.dart' as resp;
 
@@ -32,11 +33,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<int> _navHistory = [0];
 
-  // Total tabs = 15 (Operations + Analytics merged into Dashboard, removed).
-  static const int _kTabCount = 15;
+  // Total tabs = 16 (Operations + Dashboard + 14 others).
+  static const int _kTabCount = 16;
 
   // 6+6 grouped sidebar: indices 0..5 in MENU, 6..11 in MORE.
-  // 12..14 are Settings, Profile, System Health (deep-linkable aliases).
+  // 12..15 are Operations, System Health, Settings, Profile (deep-linkable aliases).
   static const List<int> _moreIndices = [6, 7, 8, 9, 10, 11];
 
   @override
@@ -89,6 +90,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     TabItem('Notifications', Icons.notifications_active_rounded, activeIcon: Icons.notifications),
     TabItem('Zones', Icons.location_on_rounded, activeIcon: Icons.location_on),
     TabItem('Support', Icons.support_agent_rounded, activeIcon: Icons.support_agent),
+    TabItem('Operations', Icons.monitor_heart_rounded, activeIcon: Icons.monitor_heart),
     TabItem('System Health', Icons.health_and_safety_outlined, activeIcon: Icons.health_and_safety),
     TabItem('Settings', Icons.settings_rounded, activeIcon: Icons.settings),
     TabItem('Profile', Icons.person_rounded, activeIcon: Icons.person),
@@ -303,6 +305,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         NotificationsView(),
         ZonesView(),
         SupportView(),
+        OperationsCenterView(),
         SystemHealthView(),
         SettingsView(),
         ProfileView(),

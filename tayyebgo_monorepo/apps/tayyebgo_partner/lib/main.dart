@@ -17,11 +17,17 @@ import 'screens/partner_marketing_center_screen.dart';
 import 'screens/partner_settings_screen.dart';
 import 'screens/partner_menu_management_screen.dart';
 import 'screens/partner_splash_screen.dart';
+import 'screens/partner_contracts_screen.dart';
+import 'screens/partner_payouts_screen.dart';
+import 'screens/partner_analytics_screen.dart';
+import 'screens/store_theme_screen.dart';
+import 'screens/modifier_builder_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    AuthProvider.defaultExpectedRole = UserRole.restaurantOwner;
     AuthGateService.instance.init();
     SyncEngine.instance.start();
     AppLocator.instance.init();
@@ -76,6 +82,7 @@ class _PartnerAppState extends State<PartnerApp> {
   late final AuthListenable _authListenable;
   late final GoRouter _router;
   late final ThemeProvider _themeProvider;
+  LocaleProvider? _localeProvider;
 
   @override
   void initState() {
@@ -83,6 +90,12 @@ class _PartnerAppState extends State<PartnerApp> {
     _authListenable = AuthListenable();
     _router = _buildRouter();
     _themeProvider = ThemeProvider();
+    _initLocale();
+  }
+
+  Future<void> _initLocale() async {
+    final lp = await LocaleProvider.create();
+    if (mounted) setState(() => _localeProvider = lp);
   }
 
   GoRouter _buildRouter() {
@@ -91,21 +104,37 @@ class _PartnerAppState extends State<PartnerApp> {
       initialLocation: '/splash',
       routes: [
         AppRouter.route('/splash', const PartnerSplashScreen(), name: 'splash'),
-        AppRouter.route('/login', const LoginScreen(), name: 'login'),
-        AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
+        AppRouter.route('/login', const LoginScreen(
+          showSignUpLink: false,
+          subtitle: 'Manage your restaurant and grow your business.',
+        ), name: 'login'),
         AppRouter.route('/forgot-password', const ForgotPasswordScreen(), name: 'forgotPassword'),
+        AppRouter.route('/privacy-policy', const PrivacyPolicyScreen(), name: 'privacyPolicy'),
+        AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
+        AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
         AppRouter.route('/onboarding', const PartnerOnboardingScreen(), name: 'onboarding'),
-        AppRouter.route('/dashboard', const AuthStateRedirector(child: PartnerGatekeeper()), name: 'dashboard'),
+        AppRouter.route('/dashboard', AuthStateRedirector(allowedRoles: UserRole.partnerRoles, child: const PartnerGatekeeper()), name: 'dashboard'),
         AppRouter.route('/profile', const ProfileScreen(), name: 'profile'),
         AppRouter.route('/settings', const PartnerSettingsScreen(), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
         AppRouter.route('/dispatch-center', const PartnerDispatchCenterScreen(), name: 'dispatchCenter'),
         AppRouter.route('/marketing-center', const PartnerMarketingCenterScreen(), name: 'marketingCenter'),
+        AppRouter.route('/contracts', const PartnerContractsScreen(), name: 'contracts'),
+        AppRouter.route('/payouts', const PartnerPayoutsScreen(), name: 'payouts'),
+        AppRouter.route('/analytics', const PartnerAnalyticsScreen(), name: 'analytics'),
+        AppRouter.route('/store-theme', const StoreThemeScreen(), name: 'storeTheme'),
         GoRoute(
           path: '/menu/:id',
           name: 'menu',
           pageBuilder: (_, state) => SlideTransitionPage(
             page: PartnerMenuManagementScreen(restaurantId: state.pathParameters['id']!),
+          ),
+        ),
+        GoRoute(
+          path: '/modifiers/:itemId',
+          name: 'modifiers',
+          pageBuilder: (_, state) => SlideTransitionPage(
+            page: ModifierBuilderScreen(menuItemId: state.pathParameters['itemId']!),
           ),
         ),
         GoRoute(
@@ -145,6 +174,7 @@ class _PartnerAppState extends State<PartnerApp> {
   @override
   void dispose() {
     _authListenable.dispose();
+    _localeProvider?.dispose();
     super.dispose();
   }
 
@@ -156,7 +186,7 @@ class _PartnerAppState extends State<PartnerApp> {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider.value(value: _themeProvider),
         // Lazy-loaded providers - only created when accessed
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider.value(value: _localeProvider ?? LocaleProvider(const Locale('en'))),
         ChangeNotifierProvider(create: (_) => OfflineQueueProvider()..load(), lazy: true),
         ChangeNotifierProvider(create: (ctx) => PartnerRoleController(ctx.read<AuthProvider>()), lazy: true),
         ChangeNotifierProvider(create: (_) => NotificationsProvider(), lazy: true),
@@ -166,13 +196,25 @@ class _PartnerAppState extends State<PartnerApp> {
       child: ErrorBoundary(
         child: Consumer<ThemeProvider>(
           builder: (context, themeProvider, _) {
-            return MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'TayyebGo - Partner',
-              theme: TayyebGoTheme.lightTheme(context),
-              darkTheme: TayyebGoTheme.darkTheme(context),
-              themeMode: themeProvider.mode,
-              routerConfig: _router,
+            return Consumer<LocaleProvider>(
+              builder: (context, localeProv, _) {
+                final locale = _localeProvider?.locale ?? const Locale('en');
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  title: 'TayyebGo - Partner',
+                  locale: locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    DefaultMaterialLocalizations.delegate,
+                    DefaultWidgetsLocalizations.delegate,
+                  ],
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  theme: TayyebGoTheme.lightTheme(context),
+                  darkTheme: TayyebGoTheme.darkTheme(context),
+                  themeMode: themeProvider.mode,
+                  routerConfig: _router,
+                );
+              },
             );
           },
         ),

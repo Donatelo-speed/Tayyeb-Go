@@ -57,8 +57,9 @@ service cloud.firestore {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
       allow update: if isOwner(userId)
-        && (!request.resource.data.diff(resource.data).affectedKeys()
-              .hasAny(['role', 'isActive']))
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['displayName', 'email', 'phone', 'photoUrl', 'address',
+                      'preferredLocale', 'fcmToken', 'updatedAt'])
         || isAdmin();
       allow delete: if isAdmin();
 
@@ -98,7 +99,8 @@ service cloud.firestore {
       // Subcollection: restaurant orders
       match /orders/{orderId} {
         allow read: if isAuthenticated()
-          && (resource.data.userId == request.auth.uid
+          && (resource.data.customerId == request.auth.uid
+            || resource.data.userId == request.auth.uid
             || isAdmin()
             || isRestaurantOwner(restaurantId)
             || isDriver()
@@ -113,10 +115,10 @@ service cloud.firestore {
 
       // Subcollection: reviews
       match /reviews/{reviewId} {
-        allow read: if true;
+        allow read: if isAuthenticated();
         allow create: if isCustomer();
         allow update: if isOwner(request.auth.uid);
-        allow delete: if isAdmin();
+        allow delete: if isAdmin() || isOwner(request.auth.uid);
       }
 
       // Subcollection: promo codes
@@ -124,6 +126,9 @@ service cloud.firestore {
         allow read: if isAuthenticated();
         allow write: if isAdmin()
           || isRestaurantOwner(restaurantId);
+        allow update: if isCustomer()
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['usageCount', 'updatedAt']);
       }
 
       // Subcollection: products (admin catalog management)
@@ -154,19 +159,40 @@ service cloud.firestore {
     // ============================================================
     match /orders/{orderId} {
       allow read: if isAuthenticated()
-        && (resource.data.userId == request.auth.uid
+        && (resource.data.customerId == request.auth.uid
+          || resource.data.userId == request.auth.uid
           || isAdmin()
           || isDriver());
-      allow create: if isCustomer();
-      allow update: if isAdmin() || isDriver();
+      // C1 FIX: Validate customerId on create
+      allow create: if isCustomer()
+        && request.resource.data.customerId == request.auth.uid;
+      // C2 FIX: Drivers can only update delivery-relevant fields
+      allow update: if isAdmin()
+        || (isDriver()
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['status', 'driverId', 'driverName', 'estimatedDeliveryTime',
+                        'actualDeliveryTime', 'deliveryProof', 'deliveryPin',
+                        'updatedAt']))
+        || isRestaurantOwner(resource.data.restaurantId)
+        || isCashier(resource.data.restaurantId);
       allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // MENU ITEMS (top-level collection)
+    // ============================================================
+    match /menu_items/{menuItemId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin()
+        || isRestaurantOwner(resource.data.restaurantId)
+        || isCashier(resource.data.restaurantId);
     }
 
     // ============================================================
     // DRIVERS
     // ============================================================
     match /drivers/{driverId} {
-      allow read: if isAuthenticated();
+      allow read: if isAdmin() || isOwner(driverId);
       allow write: if isAdmin() || isOwner(driverId);
     }
 
@@ -174,7 +200,7 @@ service cloud.firestore {
     // DRIVER LOCATIONS (live GPS)
     // ============================================================
     match /driver_locations/{driverId} {
-      allow read: if isAuthenticated();
+      allow read: if isAdmin() || isOwner(driverId);
       allow write: if isOwner(driverId);
       allow delete: if isAdmin();
     }
@@ -189,7 +215,8 @@ service cloud.firestore {
       // Subcollection: wallet transaction history
       match /transactions/{txnId} {
         allow read: if isOwner(driverId) || isAdmin();
-        allow create: if isOwner(driverId);
+        // C5 FIX: Only admin can create wallet transactions (prevents driver self-crediting)
+        allow create: if isAdmin();
         allow delete: if isAdmin();
       }
     }
@@ -200,7 +227,9 @@ service cloud.firestore {
     match /dispatch_requests/{requestId} {
       allow read: if isAdmin() || isDriver();
       allow create: if isAdmin();
-      allow update: if isAdmin() || isDriver();
+      // C3 FIX: Drivers can only update their own dispatch requests
+      allow update: if isAdmin()
+        || (isDriver() && resource.data.driverId == request.auth.uid);
       allow delete: if isAdmin();
     }
 
@@ -212,7 +241,9 @@ service cloud.firestore {
         && (resource.data.userId == request.auth.uid
           || isAdmin()
           || isDriver());
-      allow create: if isCustomer();
+      allow create: if isCustomer()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending';
       allow update: if isAdmin() || isDriver();
       allow delete: if isAdmin();
     }
@@ -221,8 +252,12 @@ service cloud.firestore {
     // DELIVERIES / DISPATCH (legacy)
     // ============================================================
     match /dispatches/{dispatchId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin() || isDriver();
+      allow read: if isAdmin() || isDriver();
+      // C4 FIX: Drivers cannot delete or create dispatches
+      allow create: if isAdmin();
+      allow update: if isAdmin()
+        || (isDriver() && resource.data.driverId == request.auth.uid);
+      allow delete: if isAdmin();
     }
 
     // ============================================================
@@ -232,7 +267,9 @@ service cloud.firestore {
       allow read: if isAuthenticated()
         && (resource.data.userId == request.auth.uid
           || isAdmin());
-      allow create: if isAuthenticated();
+      // C6 FIX: Only customers can create payments, and must match their own userId
+      allow create: if isCustomer()
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -244,7 +281,9 @@ service cloud.firestore {
       allow read: if isAuthenticated()
         && (resource.data.userId == request.auth.uid
           || isAdmin());
-      allow create: if isAuthenticated();
+      // C7 FIX: Only customers can create payment intents, must match userId
+      allow create: if isCustomer()
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -306,6 +345,9 @@ service cloud.firestore {
     match /promos/{promoId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
+      allow update: if isCustomer()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['usageCount', 'updatedAt']);
     }
 
     // ============================================================
@@ -313,9 +355,9 @@ service cloud.firestore {
     // ============================================================
     match /notifications/{notificationId} {
       allow read: if isAuthenticated()
-        && resource.data.userId == request.auth.uid;
+        && resource.data.recipientId == request.auth.uid;
       allow create: if isAdmin();
-      allow update: if isOwner(resource.data.userId);
+      allow update: if isOwner(resource.data.recipientId);
       allow delete: if isAdmin();
     }
 
@@ -324,7 +366,7 @@ service cloud.firestore {
     // ============================================================
     match /activity_log/{logId} {
       allow read: if isAdmin();
-      allow create: if isAuthenticated();
+      allow create: if isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -349,7 +391,14 @@ service cloud.firestore {
     // ============================================================
     match /customers/{customerId} {
       allow read: if isOwner(customerId) || isAdmin();
-      allow write: if isOwner(customerId) || isAdmin();
+      // H1 FIX: Customers can only update safe fields (no loyaltyPoints, walletBalance, etc.)
+      allow create: if isOwner(customerId);
+      allow update: if isOwner(customerId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'email', 'phone', 'profileImage', 'addresses',
+                      'notificationPreferences', 'updatedAt'])
+        || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // ============================================================
@@ -390,7 +439,8 @@ service cloud.firestore {
     match /documents/{documentId} {
       allow read: if isAdmin()
         || isOwner(resource.data.userId);
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin()
         || isOwner(resource.data.userId);
       allow delete: if isAdmin();
@@ -460,7 +510,9 @@ service cloud.firestore {
       allow read: if isAuthenticated()
         && (resource.data.userId == request.auth.uid
           || isAdmin());
-      allow create: if isAuthenticated();
+      // H3 FIX: Validate userId on create
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin()
         || isOwner(resource.data.userId);
       allow delete: if isAdmin();
@@ -488,6 +540,60 @@ service cloud.firestore {
     match /emergency_alerts/{alertId} {
       allow read: if isAdmin();
       allow create: if isDriver();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // PROMO USAGE (server-side tracking)
+    // ============================================================
+    match /promo_usage/{usageId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() || isCustomer();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // FRAUD SCORES (server-side computation)
+    // ============================================================
+    match /fraud_scores/{scoreId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // ORDER FLAGS (server-side fraud detection)
+    // ============================================================
+    match /order_flags/{flagId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // USER DEVICES (device fingerprinting)
+    // ============================================================
+    match /user_devices/{deviceId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DISPUTES (order disputes)
+    // ============================================================
+    match /disputes/{disputeId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }

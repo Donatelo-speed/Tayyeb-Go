@@ -8,12 +8,19 @@ class FirebasePromotionLookupRepository implements IPromotionLookupRepository {
 
   @override
   Future<Map<String, dynamic>?> validateCoupon(String code) async {
+    final normalizedCode = code.trim().toUpperCase();
+    if (normalizedCode.isEmpty) return null;
+
     final snapshot = await _firestore
         .collection('promos')
-        .where('code', isEqualTo: code.trim().toUpperCase())
-        .where('active', isEqualTo: true)
+        .where('code', isEqualTo: normalizedCode)
         .get();
     if (snapshot.docs.isEmpty) return null;
-    return snapshot.docs.first.data();
+
+    final data = snapshot.docs.first.data();
+    final isActive = data['isActive'] as bool? ?? data['active'] as bool? ?? false;
+    if (!isActive) return null;
+
+    return data;
   }
 }

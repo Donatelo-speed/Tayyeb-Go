@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'driver_live_map_screen.dart';
 
 class ActiveDeliveryScreen extends StatelessWidget {
   final String requestId;
@@ -64,23 +65,54 @@ class _FoodDeliveryView extends StatelessWidget {
             final restaurantName = orderData['restaurantName'] as String? ?? d['restaurantName'] as String? ?? '';
             final dispatchStatus = d['status'] as String? ?? '';
 
+            final dispatchLat = (d['pickupLat'] as num?)?.toDouble() ?? 0.0;
+            final dispatchLng = (d['pickupLon'] as num?)?.toDouble() ?? 0.0;
+            final dropoffLat = (d['dropoffLat'] as num?)?.toDouble() ?? 0.0;
+            final dropoffLng = (d['dropoffLon'] as num?)?.toDouble() ?? 0.0;
+
+            final restLat = dispatchLat != 0 ? dispatchLat : ((orderData['pickupLatitude'] as num?)?.toDouble() ?? 0.0);
+            final restLng = dispatchLng != 0 ? dispatchLng : ((orderData['pickupLongitude'] as num?)?.toDouble() ?? 0.0);
+
+            final custLat = dropoffLat != 0 ? dropoffLat : ((orderData['dropoffLatitude'] as num?)?.toDouble() ?? 0.0);
+            final custLng = dropoffLng != 0 ? dropoffLng : ((orderData['dropoffLongitude'] as num?)?.toDouble() ?? 0.0);
+
+            final deliveryAddr = orderData['deliveryAddress'] is Map
+                ? (orderData['deliveryAddress'] as Map<String, dynamic>)['address'] as String? ?? ''
+                : orderData['deliveryAddress'] as String? ?? '';
+            final deliveryFee = (orderData['deliveryFee'] as num?)?.toDouble() ?? 0.0;
+
+            final hasCoords = restLat != 0 && restLng != 0 && custLat != 0 && custLng != 0;
+
             return Column(
               children: [
                 Expanded(
                   flex: 6,
-                  child: Container(
-                    color: context.surfaceColor,
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.map_outlined, size: 48, color: context.successColor),
-                          const SizedBox(height: 12),
-                          Text('Live Map', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: hasCoords
+                      ? DriverLiveMapScreen(
+                          orderId: orderId,
+                          restaurantName: restaurantName,
+                          restaurantLat: restLat,
+                          restaurantLng: restLng,
+                          customerAddress: deliveryAddr,
+                          customerLat: custLat,
+                          customerLng: custLng,
+                          deliveryFee: deliveryFee,
+                          dispatchId: requestId,
+                          currentStatus: dispatchStatus,
+                        )
+                      : Container(
+                          color: context.surfaceColor,
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.map_outlined, size: 48, color: context.successColor),
+                                const SizedBox(height: 12),
+                                Text('Location unavailable', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                              ],
+                            ),
+                          ),
+                        ),
                 ),
                 Expanded(
                   flex: 4,
@@ -228,23 +260,7 @@ class _FoodDeliveryView extends StatelessWidget {
         width: double.infinity,
         height: 52,
         child: ElevatedButton(
-          onPressed: () async {
-            final prov = ctx.read<DispatchProvider>();
-            try {
-              await prov.completeDelivery(dispatchId, orderId);
-              if (ctx.mounted) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(content: Text('Delivery marked as complete!')),
-                );
-              }
-            } catch (e) {
-              if (ctx.mounted) {
-                ScaffoldMessenger.of(ctx).showSnackBar(
-                  SnackBar(content: Text('Failed to complete delivery: $e')),
-                );
-              }
-            }
-          },
+          onPressed: () => _confirmDelivery(ctx, dispatchId, orderId),
           style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
           child: Text('Mark Delivered', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
         ),
@@ -281,6 +297,92 @@ class _FoodDeliveryView extends StatelessWidget {
 
     return const SizedBox.shrink();
   }
+
+  Future<void> _confirmDelivery(BuildContext ctx, String dispatchId, String orderId) async {
+    // Step 1: Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: ctx.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: ctx.successColor, size: 24),
+            const SizedBox(width: 10),
+            Text('Confirm Delivery', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18)),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to mark this delivery as complete? This action cannot be undone.',
+          style: GoogleFonts.inter(color: ctx.textSecondaryColor, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel', style: GoogleFonts.inter(color: ctx.textMutedColor, fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: Text('Confirm', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !ctx.mounted) return;
+
+    // Step 2: Verify delivery PIN
+    final pinVerified = await showModalBottomSheet<bool>(
+      context: ctx,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => DeliveryPinVerificationSheet(
+        orderId: orderId,
+        onVerified: () {},
+      ),
+    );
+
+    if (pinVerified != true || !ctx.mounted) return;
+
+    // Step 3: Check if COD order — show COD verification sheet
+    try {
+      final orderDoc = await FirebaseFirestore.instance.collection('orders').doc(orderId).get();
+      final orderData = orderDoc.data();
+      final paymentMethod = orderData?['paymentMethod'] as String? ?? '';
+      final orderTotal = (orderData?['totalAmount'] as num?)?.toDouble() ?? 0.0;
+
+      if (paymentMethod == 'cash' && ctx.mounted) {
+        final codConfirmed = await showModalBottomSheet<bool>(
+          context: ctx,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => CodVerificationSheet(
+            orderId: orderId,
+            orderTotal: orderTotal,
+            driverId: ctx.read<AuthProvider>().user?.id ?? '',
+          ),
+        );
+
+        if (codConfirmed != true || !ctx.mounted) return;
+      }
+
+      // Step 4: Complete the delivery
+      final prov = ctx.read<DispatchProvider>();
+      await prov.completeDelivery(dispatchId, orderId);
+      if (ctx.mounted) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(content: Text('Delivery completed successfully!')),
+        );
+      }
+    } catch (e) {
+      if (ctx.mounted) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(content: Text('Failed to complete delivery: $e')),
+        );
+      }
+    }
+  }
 }
 
 class _AnythingDeliveryView extends StatelessWidget {
@@ -308,24 +410,52 @@ class _AnythingDeliveryView extends StatelessWidget {
         final instructions = d['instructions'] as String? ?? '';
         final dropoffAddress = d['dropoffAddress'] as String? ?? '';
         final customerName = d['customerName'] as String? ?? '';
+        final storeLat = (d['storeLatitude'] as num?)?.toDouble() ?? 0.0;
+        final storeLng = (d['storeLongitude'] as num?)?.toDouble() ?? 0.0;
+        final dropLat = (d['dropoffLatitude'] as num?)?.toDouble() ?? 0.0;
+        final dropLng = (d['dropoffLongitude'] as num?)?.toDouble() ?? 0.0;
+        final deliveryFee = (d['deliveryFee'] as num?)?.toDouble() ?? 0.0;
+
+        final hasCoords = storeLat != 0 && storeLng != 0 && dropLat != 0 && dropLng != 0;
+
+        final statusStr = switch (status) {
+          AnythingRequestStatus.accepted => 'accepted',
+          AnythingRequestStatus.shopping => 'shopping',
+          AnythingRequestStatus.enRoute => 'pickedUp',
+          AnythingRequestStatus.delivered => 'delivered',
+          _ => '',
+        };
 
         return Column(
           children: [
             Expanded(
               flex: 6,
-              child: Container(
-                color: context.surfaceColor,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.map_outlined, size: 48, color: context.successColor),
-                      const SizedBox(height: 12),
-                      Text('Live Map', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-                    ],
-                  ),
-                ),
-              ),
+              child: hasCoords
+                  ? DriverLiveMapScreen(
+                      orderId: requestId,
+                      restaurantName: storeName,
+                      restaurantLat: storeLat,
+                      restaurantLng: storeLng,
+                      customerAddress: dropoffAddress.isNotEmpty ? dropoffAddress : customerName,
+                      customerLat: dropLat,
+                      customerLng: dropLng,
+                      deliveryFee: deliveryFee,
+                      dispatchId: requestId,
+                      currentStatus: statusStr,
+                    )
+                  : Container(
+                      color: context.surfaceColor,
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.map_outlined, size: 48, color: context.successColor),
+                            const SizedBox(height: 12),
+                            Text('Location unavailable', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                    ),
             ),
             Expanded(
               flex: 4,

@@ -111,6 +111,8 @@ class OrderTrackingScreen extends StatelessWidget {
                       if (currentStatusString == 'dispatched' && driverId != null && dropLat != null && dropLng != null)
                         _EtaCard(driverId: driverId, destination: GeoLocation(dropLat, dropLng)),
                       if (driverId != null) _DriverContactCard(driverId: driverId),
+                      if ((currentStatusString == 'dispatched' || currentStatusString == 'pickedUp') && d['deliveryPin'] != null)
+                        _DeliveryPinCard(pin: d['deliveryPin'] as String),
                       _buildTimeline(context, currentStatus),
                       const SizedBox(height: 12),
                       _buildOrderDetails(context, d),
@@ -543,17 +545,80 @@ class _DriverContactCard extends StatelessWidget {
   }
 
   Future<void> _launchCall(String phone) async {
-    final uri = Uri(scheme: 'tel', path: phone);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+    try {
+      final uri = Uri(scheme: 'tel', path: phone);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Failed to launch call: $e');
     }
   }
 
   Future<void> _launchMessage(String phone) async {
-    final uri = Uri(scheme: 'sms', path: phone);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+    try {
+      final uri = Uri(scheme: 'sms', path: phone);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Failed to launch message: $e');
     }
+  }
+}
+
+class _DeliveryPinCard extends StatelessWidget {
+  final String pin;
+  const _DeliveryPinCard({required this.pin});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [context.primaryColor.withValues(alpha: 0.15), context.primaryColor.withValues(alpha: 0.05)],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.primaryColor.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: context.primaryColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.pin_rounded, color: context.primaryColor, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Delivery PIN', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: context.textMutedColor)),
+                const SizedBox(height: 4),
+                Text(
+                  pin,
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 28, color: context.primaryColor, letterSpacing: 8),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: context.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text('Share with driver', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.primaryColor)),
+          ),
+        ],
+      ),
+    );
   }
 }
 

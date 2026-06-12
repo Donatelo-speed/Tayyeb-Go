@@ -53,8 +53,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       displayName: _nameCtrl.text.trim(),
       phone: _phoneCtrl.text.trim().isNotEmpty ? _phoneCtrl.text.trim() : null,
     );
-    if (mounted && success) {
+    if (!mounted) return;
+    if (success) {
       _triggerRedirect();
+    } else if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
     }
   }
 
@@ -62,6 +65,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final auth = context.read<AuthProvider>();
     await auth.loginWithGoogle();
     if (!mounted) return;
+    if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
+      return;
+    }
     final user = auth.user;
     if (user != null && (user.phone == null || user.phone!.isEmpty)) {
       _showPhoneCollectionDialog();
@@ -74,6 +81,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final auth = context.read<AuthProvider>();
     await auth.loginWithApple();
     if (!mounted) return;
+    if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
+      return;
+    }
     final user = auth.user;
     if (user != null && (user.phone == null || user.phone!.isEmpty)) {
       _showPhoneCollectionDialog();

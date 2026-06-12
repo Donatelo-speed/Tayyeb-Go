@@ -295,6 +295,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    child: _RecommendationsSection(customerId: customerId),
+                  ),
+                ),
+
+              if (customerId != null)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                     child: _FavoritesSection(customerId: customerId),
                   ),
                 ),
@@ -494,6 +502,128 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
   }
 }
 
+class _RecommendationsSection extends StatefulWidget {
+  final String customerId;
+  const _RecommendationsSection({required this.customerId});
+  @override
+  State<_RecommendationsSection> createState() => _RecommendationsSectionState();
+}
+
+class _RecommendationsSectionState extends State<_RecommendationsSection> {
+  final _recEngine = RecommendationEngine();
+  List<Map<String, dynamic>> _restaurants = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final recs = await _recEngine.getRecommendedRestaurants(userId: widget.customerId, limit: 6);
+      if (mounted) setState(() { _restaurants = recs; _isLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) return const SizedBox.shrink();
+    if (_restaurants.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 20,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text('For You', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 17, color: context.textPrimaryColor)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 180,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _restaurants.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (_, i) {
+              final r = _restaurants[i];
+              final name = r['name'] as String? ?? '';
+              final cuisine = r['cuisine'] as String? ?? r['cuisineType'] as String? ?? '';
+              final imageUrl = r['imageUrl'] as String?;
+              final rating = (r['rating'] as num?)?.toDouble() ?? 0;
+              final id = r['id'] as String? ?? '';
+
+              return GestureDetector(
+                onTap: () => context.push('/restaurant/$id'),
+                child: Container(
+                  width: 160,
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 90,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceAlt,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                        ),
+                        child: imageUrl != null && imageUrl.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                                child: Image.network(imageUrl, fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Center(child: Icon(Icons.restaurant_rounded, color: AppColors.primary, size: 28))),
+                              )
+                            : Center(child: Icon(Icons.restaurant_rounded, color: AppColors.primary, size: 28)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: context.textPrimaryColor), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 2),
+                            Text(cuisine, style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 11), maxLines: 1),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(Icons.star_rounded, size: 13, color: AppColors.warning),
+                                const SizedBox(width: 2),
+                                Text(rating > 0 ? rating.toStringAsFixed(1) : 'New', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _FavoritesSection extends StatefulWidget {
   final String customerId;
   const _FavoritesSection({required this.customerId});
@@ -684,26 +814,25 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                _infoChip(context, Icons.access_time_rounded, '20-30 min'),
-                                const SizedBox(width: 12),
-                                _infoChip(context, Icons.delivery_dining_rounded, 'Free delivery'),
+                                if (rating != null) ...[
+                                  _infoChip(context, Icons.star_rounded, rating.toStringAsFixed(1)),
+                                  const SizedBox(width: 12),
+                                ],
+                                _infoChip(context, Icons.delivery_dining_rounded, 'Delivery'),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      GestureDetector(
+                      _ScaleOnTap(
                         onTap: () => _toggleFavorite(d['id'] as String, isFav),
-                        child: _ScaleOnTap(
-                          onTap: () => _toggleFavorite(d['id'] as String, isFav),
-                          child: Container(
-                            width: 40, height: 40,
-                            decoration: BoxDecoration(
-                              color: isFav ? Colors.red.withValues(alpha: 0.1) : context.surfaceAltColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : context.textMutedColor, size: 20),
+                        child: Container(
+                          width: 40, height: 40,
+                          decoration: BoxDecoration(
+                            color: isFav ? Colors.red.withValues(alpha: 0.1) : context.surfaceAltColor,
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          child: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : context.textMutedColor, size: 20),
                         ),
                       ),
                     ],

@@ -12,6 +12,8 @@ import 'screens/checkout/checkout_screen.dart';
 import 'screens/customer_main_screen.dart';
 import 'screens/menu/restaurant_menu_screen.dart';
 import 'screens/order_history_screen.dart';
+import 'screens/address_management_screen.dart';
+import 'screens/reorder_screen.dart';
 import 'screens/tracking/order_tracking_screen.dart';
 import 'screens/explore_screen.dart';
 import 'screens/customer_wallet_screen.dart';
@@ -21,6 +23,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    AuthProvider.defaultExpectedRole = UserRole.customer;
     AuthGateService.instance.init();
     AppLocator.instance.init();
     runApp(const CustomerApp());
@@ -82,6 +85,7 @@ class _CustomerAppState extends State<CustomerApp> {
   late final AuthListenable _authListenable;
   late final GoRouter _router;
   late final ThemeProvider _themeProvider;
+  LocaleProvider? _localeProvider;
 
   @override
   void initState() {
@@ -89,6 +93,14 @@ class _CustomerAppState extends State<CustomerApp> {
     _authListenable = AuthListenable();
     _router = _buildRouter();
     _themeProvider = ThemeProvider();
+    _initLocale();
+  }
+
+  Future<void> _initLocale() async {
+    final lp = await LocaleProvider.create();
+    if (mounted) {
+      setState(() => _localeProvider = lp);
+    }
   }
 
   @override
@@ -96,6 +108,7 @@ class _CustomerAppState extends State<CustomerApp> {
     _authListenable.dispose();
     _router.dispose();
     _themeProvider.dispose();
+    _localeProvider?.dispose();
     super.dispose();
   }
 
@@ -108,10 +121,20 @@ class _CustomerAppState extends State<CustomerApp> {
         AppRouter.route('/login', const LoginScreen(), name: 'login'),
         AppRouter.route('/signup', const SignUpScreen(), name: 'signup'),
         AppRouter.route('/forgot-password', const ForgotPasswordScreen(), name: 'forgotPassword'),
+        AppRouter.route('/privacy-policy', const PrivacyPolicyScreen(), name: 'privacyPolicy'),
+        AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
+        AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
+        AppRouter.route('/onboarding', const CustomerOnboardingScreen(), name: 'onboarding'),
         AppRouter.route('/home', const AuthStateRedirector(child: CustomerMainScreen()), name: 'home'),
         AppRouter.route('/checkout', const CheckoutScreen(), name: 'checkout'),
         AppRouter.route('/cart', const CartScreen(), name: 'cart'),
         AppRouter.route('/order-history', const OrderHistoryScreen(), name: 'orderHistory'),
+        AppRouter.route('/addresses', const AddressManagementScreen(), name: 'addresses'),
+        GoRoute(
+          path: '/reorder/:id',
+          name: 'reorder',
+          builder: (_, state) => ReorderScreen(orderId: state.pathParameters['id']!),
+        ),
         AppRouter.route('/profile', const ProfileScreen(), name: 'profile'),
         AppRouter.route('/explore', const ExploreScreen(), name: 'explore'),
         AppRouter.route('/wallet', const CustomerWalletScreen(), name: 'wallet'),
@@ -171,7 +194,7 @@ class _CustomerAppState extends State<CustomerApp> {
         ChangeNotifierProvider.value(value: _themeProvider),
         // Lazy-loaded providers - only created when accessed
         ChangeNotifierProvider(create: (_) => CartProvider(), lazy: true),
-        ChangeNotifierProvider(create: (_) => LocaleProvider('en'), lazy: true),
+        ChangeNotifierProvider.value(value: _localeProvider ?? LocaleProvider(const Locale('en'))),
         ChangeNotifierProvider(create: (_) => AnythingProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => AddressProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => LoyaltyProvider(), lazy: true),
@@ -182,13 +205,33 @@ class _CustomerAppState extends State<CustomerApp> {
       child: ErrorBoundary(
         child: Consumer<ThemeProvider>(
           builder: (context, theme, _) {
-            return MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              title: 'TayyebGo',
-              theme: TayyebGoTheme.lightTheme(context),
-              darkTheme: TayyebGoTheme.darkTheme(context),
-              themeMode: theme.mode,
-              routerConfig: _router,
+            return Consumer<LocaleProvider>(
+              builder: (context, localeProv, _) {
+                final locale = _localeProvider?.locale ?? const Locale('en');
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  title: 'TayyebGo',
+                  locale: locale,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    DefaultMaterialLocalizations.delegate,
+                    DefaultWidgetsLocalizations.delegate,
+                  ],
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localeResolutionCallback: (locale, supportedLocales) {
+                    for (final supported in supportedLocales) {
+                      if (locale?.languageCode == supported.languageCode) {
+                        return supported;
+                      }
+                    }
+                    return supportedLocales.first;
+                  },
+                  theme: TayyebGoTheme.lightTheme(context),
+                  darkTheme: TayyebGoTheme.darkTheme(context),
+                  themeMode: theme.mode,
+                  routerConfig: _router,
+                );
+              },
             );
           },
         ),

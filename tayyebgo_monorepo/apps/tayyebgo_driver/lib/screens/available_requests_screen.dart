@@ -155,7 +155,22 @@ class _DispatchRequestCard extends StatelessWidget {
                   height: 44,
                   child: ElevatedButton(
                     onPressed: () async {
+                      // SINGLE ACTIVE DELIVERY LOCK: Check if driver already has an active delivery
                       final prov = context.read<DispatchProvider>();
+                      final activeCount = prov.activeDeliveries.length;
+                      if (activeCount > 0) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('You already have an active delivery. Complete it before accepting a new one.'),
+                              backgroundColor: AppColors.warning,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                        return;
+                      }
                       try {
                         await prov.acceptDispatch(id);
                         if (context.mounted) context.push('/active-delivery-food/$id');
@@ -184,7 +199,15 @@ class _DispatchRequestCard extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () async {
                       final prov = context.read<DispatchProvider>();
-                      await prov.rejectDispatch(id);
+                      try {
+                        await prov.rejectDispatch(id);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to reject: $e')),
+                          );
+                        }
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: context.textMutedColor,
@@ -265,6 +288,21 @@ class _AnythingRequestCard extends StatelessWidget {
             height: 48,
             child: ElevatedButton(
               onPressed: () async {
+                // SINGLE ACTIVE DELIVERY LOCK
+                final dispatch = context.read<DispatchProvider>();
+                if (dispatch.activeDeliveries.isNotEmpty) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('You already have an active delivery. Complete it first.'),
+                        backgroundColor: AppColors.warning,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    );
+                  }
+                  return;
+                }
                 final user = context.read<AuthProvider>().user;
                 if (user == null) return;
                 try {

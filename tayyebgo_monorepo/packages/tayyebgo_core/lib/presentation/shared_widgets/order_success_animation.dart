@@ -209,7 +209,7 @@ class _ConfettiPainter extends CustomPainter {
       if (y < -20 || y > size.height + 20) continue;
 
       final paint = Paint()..color = p.color;
-      final saveCount = canvas.save();
+      canvas.save();
       canvas.translate(x, y);
       canvas.rotate(p.rotation + p.rotationSpeed * t);
 
@@ -221,7 +221,7 @@ class _ConfettiPainter extends CustomPainter {
         ),
         paint,
       );
-      canvas.restoreToCount(saveCount);
+      canvas.restore();
     }
   }
 

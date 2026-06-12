@@ -125,7 +125,14 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
             );
           }
 
-          final items = docs.map((d) => Product.fromJson({...d, 'firestoreId': d['id']})).toList();
+          final items = <Product>[];
+          for (final d in docs) {
+            try {
+              items.add(Product.fromJson({...d, 'firestoreId': d['id']}));
+            } catch (e) {
+              debugPrint('Failed to parse product ${d['id']}: $e');
+            }
+          }
           final categories = <String, List<Product>>{};
           for (final item in items) {
             categories.putIfAbsent(item.category, () => []);

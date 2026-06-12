@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
 /// Shows a small circular item that flies from [start] to [end] with a curved

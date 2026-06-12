@@ -1,0 +1,6 @@
+uid,email,password,displayName
+test-admin-001,admin@test.com,Admin123!,Test Admin
+test-customer-001,customer@test.com,Customer123!,Test Customer
+test-driver-001,driver@test.com,Driver123!,Test Driver
+test-partner-owner-001,partner-owner@test.com,Owner123!,Test Restaurant Owner
+test-partner-cashier-001,partner-cashier@test.com,Cashier123!,Test Cashier

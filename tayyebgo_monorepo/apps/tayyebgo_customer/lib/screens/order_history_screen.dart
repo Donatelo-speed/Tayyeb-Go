@@ -160,7 +160,9 @@ class _OrderCard extends StatelessWidget {
         ? 'Delivered'
         : isCancelled
             ? 'Cancelled'
-            : status[0].toUpperCase() + status.substring(1);
+            : status.isEmpty
+                ? ''
+                : status[0].toUpperCase() + status.substring(1);
 
     return GestureDetector(
       onTap: () => context.push('/tracking/${order['id']}'),

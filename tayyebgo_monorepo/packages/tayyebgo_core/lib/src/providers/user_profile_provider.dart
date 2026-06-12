@@ -45,8 +45,9 @@ class UserProfileProvider extends ChangeNotifier {
       if (picked == null) return null;
       final ref = FirebaseStorage.instance
           .ref()
-          .child('profile_images')
-          .child('$userId.jpg');
+          .child('users')
+          .child('$userId')
+          .child('profile_picture.jpg');
       await ref.putData(await picked.readAsBytes());
       final url = await ref.getDownloadURL();
       _profileImageUrl = url;

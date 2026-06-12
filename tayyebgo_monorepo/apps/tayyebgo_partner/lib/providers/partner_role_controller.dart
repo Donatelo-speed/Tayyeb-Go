@@ -13,6 +13,7 @@ class PartnerRoleController extends ChangeNotifier {
     _auth.addListener(notifyListeners);
   }
 
+  /// The partner sub-role: 'owner', 'cashier', or 'unknown'.
   String get currentRole {
     final role = _auth.user?.role;
     if (role == UserRole.cashier) return 'cashier';
@@ -20,6 +21,9 @@ class PartnerRoleController extends ChangeNotifier {
     if (role == UserRole.superAdmin) return 'owner';
     return 'unknown';
   }
+
+  /// The partner sub-role as a UserRole enum value.
+  UserRole? get currentUserRole => _auth.user?.role;
 
   String? get restaurantId => _auth.user?.vendorId;
 

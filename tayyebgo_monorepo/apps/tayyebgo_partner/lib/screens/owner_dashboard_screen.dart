@@ -405,10 +405,20 @@ class _MenuTab extends StatelessWidget {
                       Switch(
                         value: available,
                         activeColor: context.successColor,
-                        onChanged: (v) => FirebaseFirestore.instance
-                            .collection('menu_items')
-                            .doc(doc.id)
-                            .update({'isAvailable': v}),
+                        onChanged: (v) async {
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection('menu_items')
+                                .doc(doc.id)
+                                .update({'isAvailable': v});
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update availability: $e')),
+                              );
+                            }
+                          }
+                        },
                       ),
                       GestureDetector(
                         onTap: () => _showMenuItemDialog(context, doc, restaurantId),
@@ -489,10 +499,10 @@ void _showMenuItemDialog(BuildContext context, DocumentSnapshot? existing, Strin
       ),
       actions: [
         TGB.ghost(label: 'Cancel', onPressed: () => Navigator.pop(ctx)),
-        TGB.primary(
-          label: isEdit ? 'Update' : 'Create',
-          isExpanded: false,
-          onPressed: () {
+          TGB.primary(
+            label: isEdit ? 'Update' : 'Create',
+            isExpanded: false,
+            onPressed: () async {
             if (nameCtrl.text.trim().isEmpty || priceCtrl.text.trim().isEmpty) return;
             final data = <String, dynamic>{
               'name': nameCtrl.text.trim(),
@@ -507,12 +517,20 @@ void _showMenuItemDialog(BuildContext context, DocumentSnapshot? existing, Strin
               data['restaurantId'] = restaurantId;
             }
             final coll = FirebaseFirestore.instance.collection('menu_items');
-            if (isEdit) {
-              coll.doc(existing.id).update(data);
-            } else {
-              coll.add(data);
+            try {
+              if (isEdit) {
+                await coll.doc(existing.id).update(data);
+              } else {
+                await coll.add(data);
+              }
+              Navigator.pop(ctx);
+            } catch (e) {
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('Failed to save menu item: $e')),
+                );
+              }
             }
-            Navigator.pop(ctx);
           },
         ),
       ],
@@ -528,9 +546,17 @@ void _confirmDeleteMenuItem(BuildContext context, String id, String name) {
       content: Text('Delete "$name"?'),
       actions: [
         TGB.ghost(label: 'Cancel', onPressed: () => Navigator.pop(ctx)),
-        TGB.destructive(label: 'Delete', isExpanded: false, onPressed: () {
-          FirebaseFirestore.instance.collection('menu_items').doc(id).delete();
-          Navigator.pop(ctx);
+        TGB.destructive(label: 'Delete', isExpanded: false, onPressed: () async {
+          try {
+            await FirebaseFirestore.instance.collection('menu_items').doc(id).delete();
+            Navigator.pop(ctx);
+          } catch (e) {
+            if (ctx.mounted) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text('Failed to delete menu item: $e')),
+              );
+            }
+          }
         }),
       ],
     ),
@@ -628,10 +654,20 @@ class _DispatchTab extends StatelessWidget {
                       Switch(
                         value: isOnline,
                         activeColor: context.successColor,
-                        onChanged: (v) => FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(doc.id)
-                            .update({'isActive': v}),
+                        onChanged: (v) async {
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(doc.id)
+                                .update({'isActive': v});
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update driver status: $e')),
+                              );
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -685,7 +721,7 @@ class _MarketingTab extends StatelessWidget {
         const SizedBox(height: 16),
         StreamBuilder<QuerySnapshot>(
           stream: () {
-            var q = FirebaseFirestore.instance.collection('promos').where('active', isEqualTo: true) as Query;
+            var q = FirebaseFirestore.instance.collection('promos').where('isActive', isEqualTo: true) as Query;
             if (restaurantId != null) {
               q = q.where('restaurantId', isEqualTo: restaurantId);
             }
@@ -736,12 +772,22 @@ class _MarketingTab extends StatelessWidget {
                         ),
                       ),
                       Switch(
-                        value: d['active'] as bool? ?? true,
+                        value: d['isActive'] as bool? ?? d['active'] as bool? ?? true,
                         activeColor: context.successColor,
-                        onChanged: (v) => FirebaseFirestore.instance
-                            .collection('promos')
-                            .doc(doc.id)
-                            .update({'active': v}),
+                        onChanged: (v) async {
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection('promos')
+                                .doc(doc.id)
+                                .update({'isActive': v, 'active': v});
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update promotion: $e')),
+                              );
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -790,18 +836,34 @@ void _showPromoDialog(BuildContext context, String? restaurantId) {
         ),
         actions: [
           TGB.ghost(label: 'Cancel', onPressed: () => Navigator.pop(ctx)),
-          TGB.primary(label: 'Create', isExpanded: false, onPressed: () {
+          TGB.primary(label: 'Create', isExpanded: false, onPressed: () async {
             if (codeCtrl.text.trim().isEmpty) return;
-            FirebaseFirestore.instance.collection('promos').add({
-              'code': codeCtrl.text.trim().toUpperCase(),
-              'type': type,
-              'value': double.tryParse(valueCtrl.text.trim()) ?? 10,
-              'minOrder': double.tryParse(minOrderCtrl.text.trim()) ?? 0,
-              'active': true,
-              if (restaurantId != null) 'restaurantId': restaurantId,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-            Navigator.pop(ctx);
+            try {
+              final code = codeCtrl.text.trim().toUpperCase();
+              final value = double.tryParse(valueCtrl.text.trim()) ?? 10;
+              final minOrder = double.tryParse(minOrderCtrl.text.trim()) ?? 0;
+              await FirebaseFirestore.instance.collection('promos').add({
+                'code': code,
+                'type': type,
+                'value': value,
+                'minOrder': minOrder,
+                'minOrderAmount': minOrder,
+                'active': true,
+                'isActive': true,
+                if (restaurantId != null) 'restaurantId': restaurantId,
+                'usageCount': 0,
+                'usageLimit': 0,
+                'createdAt': FieldValue.serverTimestamp(),
+                'updatedAt': FieldValue.serverTimestamp(),
+              });
+              Navigator.pop(ctx);
+            } catch (e) {
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('Failed to create promotion: $e')),
+                );
+              }
+            }
           }),
         ],
       ),
@@ -809,8 +871,9 @@ void _showPromoDialog(BuildContext context, String? restaurantId) {
   );
 }
 
-void _showRestaurantProfileDialog(BuildContext context, String restaurantId) {
-  FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get().then((snap) {
+void _showRestaurantProfileDialog(BuildContext context, String restaurantId) async {
+  try {
+    final snap = await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get();
     if (!snap.exists) return;
     final d = snap.data() as Map<String, dynamic>;
     final nameCtrl = TextEditingController(text: d['name'] as String? ?? '');
@@ -818,6 +881,8 @@ void _showRestaurantProfileDialog(BuildContext context, String restaurantId) {
     final phoneCtrl = TextEditingController(text: d['phone'] as String? ?? '');
     final streetCtrl = TextEditingController(text: d['street'] as String? ?? '');
     final cityCtrl = TextEditingController(text: d['city'] as String? ?? '');
+
+    if (!context.mounted) return;
 
     showDialog(
       context: context,
@@ -841,20 +906,34 @@ void _showRestaurantProfileDialog(BuildContext context, String restaurantId) {
         ),
         actions: [
           TGB.ghost(label: 'Cancel', onPressed: () => Navigator.pop(ctx)),
-          TGB.primary(label: 'Save', isExpanded: false, onPressed: () {
-            FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
-              'name': nameCtrl.text.trim(),
-              'cuisineType': cuisineCtrl.text.trim(),
-              'phone': phoneCtrl.text.trim(),
-              'street': streetCtrl.text.trim(),
-              'city': cityCtrl.text.trim(),
-            });
-            Navigator.pop(ctx);
+          TGB.primary(label: 'Save', isExpanded: false, onPressed: () async {
+            try {
+              await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                'name': nameCtrl.text.trim(),
+                'cuisineType': cuisineCtrl.text.trim(),
+                'phone': phoneCtrl.text.trim(),
+                'street': streetCtrl.text.trim(),
+                'city': cityCtrl.text.trim(),
+              });
+              Navigator.pop(ctx);
+            } catch (e) {
+              if (ctx.mounted) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text('Failed to save profile: $e')),
+                );
+              }
+            }
           }),
         ],
       ),
     );
-  });
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load restaurant profile: $e')),
+      );
+    }
+  }
 }
 
 void _showOrderDetailDialog(BuildContext context, String orderId, Map<String, dynamic> d) {

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,6 +18,9 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
   final _phoneCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _licenseCtrl = TextEditingController();
+  String _vehicleType = 'Motorcycle';
+  String _zone = 'Al-Waer';
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -30,7 +35,46 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
     if (_step < 5) {
       setState(() => _step++);
     } else {
-      context.go('/dashboard');
+      _saveAndContinue();
+    }
+  }
+
+  Future<void> _saveAndContinue() async {
+    final user = fb.FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    if (_nameCtrl.text.trim().isEmpty || _phoneCtrl.text.trim().isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter your name and phone number.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'displayName': _nameCtrl.text.trim(),
+        'phone': _phoneCtrl.text.trim(),
+        'email': _emailCtrl.text.trim(),
+        'vehicleType': _vehicleType,
+        'zone': _zone,
+        'onboardingCompleted': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) context.go('/dashboard');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -93,7 +137,9 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
-                      child: Text(_step == 5 ? 'Get Started' : 'Continue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
+                      child: _isSaving
+                        ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                        : Text(_step == 5 ? 'Get Started' : 'Continue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
                     ),
                   ),
                 ],
@@ -134,13 +180,13 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
           const SizedBox(height: 4),
           Text('What do you deliver with?', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           const SizedBox(height: 24),
-          _vehicleOption(context, Icons.two_wheeler_rounded, 'Motorcycle', true),
+          _vehicleOption(context, Icons.two_wheeler_rounded, 'Motorcycle'),
           const SizedBox(height: 12),
-          _vehicleOption(context, Icons.directions_car_rounded, 'Car', false),
+          _vehicleOption(context, Icons.directions_car_rounded, 'Car'),
           const SizedBox(height: 12),
-          _vehicleOption(context, Icons.pedal_bike_rounded, 'Bicycle', false),
+          _vehicleOption(context, Icons.pedal_bike_rounded, 'Bicycle'),
           const SizedBox(height: 12),
-          _vehicleOption(context, Icons.local_shipping_rounded, 'Van/Truck', false),
+          _vehicleOption(context, Icons.local_shipping_rounded, 'Van/Truck'),
         ];
       case 3:
         return [
@@ -162,13 +208,13 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
           const SizedBox(height: 4),
           Text('Select your primary delivery zone', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           const SizedBox(height: 24),
-          _zoneOption(context, 'Al-Waer', '120 SYP fee', true),
+          _zoneOption(context, 'Al-Waer', '120 SYP fee'),
           const SizedBox(height: 12),
-          _zoneOption(context, 'Bab Amr', '100 SYP fee', false),
+          _zoneOption(context, 'Bab Amr', '100 SYP fee'),
           const SizedBox(height: 12),
-          _zoneOption(context, 'New City', '150 SYP fee', false),
+          _zoneOption(context, 'New City', '150 SYP fee'),
           const SizedBox(height: 12),
-          _zoneOption(context, 'Al-Hamidiyah', '80 SYP fee', false),
+          _zoneOption(context, 'Al-Hamidiyah', '80 SYP fee'),
         ];
       case 5:
         return [
@@ -208,22 +254,26 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
     );
   }
 
-  Widget _vehicleOption(BuildContext context, IconData icon, String label, bool selected) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: selected ? context.successColor : context.borderColor, width: selected ? 2 : 1),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: selected ? context.successColor : context.textMutedColor, size: 28),
-          const SizedBox(width: 14),
-          Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor)),
-          const Spacer(),
-          if (selected) Icon(Icons.check_circle_rounded, color: context.successColor, size: 22),
-        ],
+  Widget _vehicleOption(BuildContext context, IconData icon, String label) {
+    final selected = _vehicleType == label;
+    return GestureDetector(
+      onTap: () => setState(() => _vehicleType = label),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? context.successColor : context.borderColor, width: selected ? 2 : 1),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: selected ? context.successColor : context.textMutedColor, size: 28),
+            const SizedBox(width: 14),
+            Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor)),
+            const Spacer(),
+            if (selected) Icon(Icons.check_circle_rounded, color: context.successColor, size: 22),
+          ],
+        ),
       ),
     );
   }
@@ -255,29 +305,33 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
     );
   }
 
-  Widget _zoneOption(BuildContext context, String name, String fee, bool selected) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: selected ? context.successColor : context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.location_on_rounded, color: selected ? context.successColor : context.textMutedColor, size: 22),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
-                Text(fee, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-              ],
+  Widget _zoneOption(BuildContext context, String name, String fee) {
+    final selected = _zone == name;
+    return GestureDetector(
+      onTap: () => setState(() => _zone = name),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: selected ? context.successColor : context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.location_on_rounded, color: selected ? context.successColor : context.textMutedColor, size: 22),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                  Text(fee, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                ],
+              ),
             ),
-          ),
-          if (selected) Icon(Icons.check_circle_rounded, color: context.successColor, size: 22),
-        ],
+            if (selected) Icon(Icons.check_circle_rounded, color: context.successColor, size: 22),
+          ],
+        ),
       ),
     );
   }

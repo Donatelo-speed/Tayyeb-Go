@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: cloud_functions/functions/package-lock.json
+          cache-dependency-path: functions/package-lock.json
       
       - name: Get dependencies - Customer
         working-directory: apps/tayyebgo_customer
@@ -62,26 +62,21 @@ jobs:
         run: flutter build web --release
       
       - name: Install Cloud Functions dependencies
-        working-directory: cloud_functions/functions
+        working-directory: functions
         run: npm ci
       
-      - name: Build Cloud Functions
-        working-directory: cloud_functions/functions
-        run: npm run build
-      
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v13.0.0
         with:
-          args: deploy --only hosting,functions,firestore,storage
+          args: deploy --only hosting,functions,firestore:rules,storage
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
       
       - name: Rollback on failure
         if: failure()
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting,functions,firestore,storage
+        run: |
+          npx firebase-tools hosting:rollback --token "$FIREBASE_TOKEN" --project "$PROJECT_ID"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

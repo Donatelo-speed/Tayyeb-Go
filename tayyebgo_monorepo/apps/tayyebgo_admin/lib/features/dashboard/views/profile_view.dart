@@ -35,7 +35,7 @@ class ProfileView extends StatelessWidget {
 }
 
 class _HeroCard extends StatelessWidget {
-  final dynamic user;
+  final UserModel? user;
   const _HeroCard({this.user});
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _StatsCard extends StatelessWidget {
-  final dynamic user;
+  final UserModel? user;
   const _StatsCard({this.user});
   @override
   Widget build(BuildContext context) {
@@ -112,16 +112,13 @@ class _StatsCard extends StatelessWidget {
     final createdAt = user?.createdAt;
     String signInText = 'Never';
     if (lastSignIn != null) {
-      final dt = lastSignIn is DateTime ? lastSignIn : DateTime.now();
-      signInText = _fmtDate(dt);
+      signInText = _fmtDate(lastSignIn);
     } else if (createdAt != null) {
-      final dt = createdAt is DateTime ? createdAt : DateTime.now();
-      signInText = _fmtDate(dt);
+      signInText = _fmtDate(createdAt);
     }
     String accountAge = '—';
     if (createdAt != null) {
-      final dt = createdAt is DateTime ? createdAt : DateTime.now();
-      final diff = DateTime.now().difference(dt);
+      final diff = DateTime.now().difference(createdAt);
       if (diff.inDays > 365) {
         accountAge = '${(diff.inDays / 365).floor()}y ${((diff.inDays % 365) / 30).floor()}m';
       } else if (diff.inDays > 30) {

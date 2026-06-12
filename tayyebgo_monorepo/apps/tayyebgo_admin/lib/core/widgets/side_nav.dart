@@ -88,12 +88,16 @@ class _SideNavState extends State<SideNav> {
                     style: AppTypography.bodyBold.copyWith(
                       color: context.sidebarTextColor,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   Text(
                     'Admin Console',
                     style: AppTypography.label.copyWith(
                       color: context.sidebarMutedColor,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
@@ -190,6 +194,8 @@ class _SideNavState extends State<SideNav> {
                         fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                         color: selected ? context.sidebarTextColor : context.sidebarMutedColor,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                   if (hasBadge) TGBadge.count(count: int.tryParse(t.badge ?? '0') ?? 0),

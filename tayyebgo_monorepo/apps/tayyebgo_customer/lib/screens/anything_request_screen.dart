@@ -50,8 +50,12 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
   }
 
   Future<void> _pickPhoto() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024);
-    if (file != null && mounted) setState(() => _photoPath = file.path);
+    try {
+      final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024);
+      if (file != null && mounted) setState(() => _photoPath = file.path);
+    } catch (e) {
+      debugPrint('Failed to pick photo: $e');
+    }
   }
 
   Future<void> _submit() async {
@@ -60,29 +64,40 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
 
     setState(() => _isSubmitting = true);
     final auth = context.read<AuthProvider>();
-    if (auth.user == null) { _showSnack('Not logged in'); return; }
+    if (auth.user == null) {
+      if (mounted) setState(() => _isSubmitting = false);
+      _showSnack('Not logged in');
+      return;
+    }
 
-    final anything = context.read<AnythingProvider>();
-    final requestId = await anything.createRequest(
-      user: auth.user!,
-      storeName: _storeCtrl.text.trim(),
-      items: _items.map((i) => {
-        'name': i.controller.text.trim(),
-        'quantity': int.tryParse(i.quantityCtrl.text) ?? 1,
-      }).toList(),
-      budget: double.tryParse(_budgetCtrl.text) ?? 0,
-      photoUrl: _photoPath,
-      instructions: _instructionsCtrl.text.trim(),
-      dropoffLatitude: _lat ?? 0,
-      dropoffLongitude: _lng ?? 0,
-      dropoffAddress: _addressCtrl.text.trim(),
-    );
+    try {
+      final anything = context.read<AnythingProvider>();
+      final requestId = await anything.createRequest(
+        user: auth.user!,
+        storeName: _storeCtrl.text.trim(),
+        items: _items.map((i) => {
+          'name': i.controller.text.trim(),
+          'quantity': int.tryParse(i.quantityCtrl.text) ?? 1,
+        }).toList(),
+        budget: double.tryParse(_budgetCtrl.text) ?? 0,
+        photoUrl: _photoPath,
+        instructions: _instructionsCtrl.text.trim(),
+        dropoffLatitude: _lat ?? 0,
+        dropoffLongitude: _lng ?? 0,
+        dropoffAddress: _addressCtrl.text.trim(),
+      );
 
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-    if (requestId != null) {
-      context.go('/anything-tracking/$requestId');
-    } else {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      if (requestId != null) {
+        context.go('/anything-tracking/$requestId');
+      } else {
+        _showSnack('Failed to submit request');
+      }
+    } catch (e) {
+      debugPrint('Submit request failed: $e');
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
       _showSnack('Failed to submit request');
     }
   }

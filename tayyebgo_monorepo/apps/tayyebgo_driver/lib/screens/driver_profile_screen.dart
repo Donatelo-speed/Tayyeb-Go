@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
+
 class DriverProfileScreen extends StatelessWidget {
   const DriverProfileScreen({super.key});
 
@@ -65,24 +66,16 @@ class DriverProfileScreen extends StatelessWidget {
           const SizedBox(height: 28),
           _section(context, 'Account', [
             _row(context, Icons.person_rounded, 'Personal Information', () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Personal information editing coming soon')),
-              );
+              context.push('/edit-profile');
             }),
             _row(context, Icons.directions_car_rounded, 'Vehicle Details', () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Vehicle details coming soon')),
-              );
+              context.push('/edit-profile');
             }),
             _row(context, Icons.badge_rounded, 'Documents', () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Document upload coming soon')),
-              );
+              context.push('/documents');
             }),
-            _row(context, Icons.location_on_rounded, 'Delivery Zone', () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Delivery zone selection coming soon')),
-              );
+            _row(context, Icons.history_rounded, 'Delivery History', () {
+              context.push('/delivery-history');
             }),
           ]),
           const SizedBox(height: 16),
@@ -93,9 +86,7 @@ class DriverProfileScreen extends StatelessWidget {
               );
             }),
             _row(context, Icons.notifications_outlined, 'Notifications', () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
+              context.push('/notifications');
             }),
             _row(context, Icons.lock_outline_rounded, 'Change Password', () {
               ScaffoldMessenger.of(context).showSnackBar(

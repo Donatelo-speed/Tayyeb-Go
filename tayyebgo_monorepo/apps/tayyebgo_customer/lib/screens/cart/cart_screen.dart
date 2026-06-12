@@ -31,7 +31,7 @@ class CartScreen extends StatelessWidget {
               title: 'Cart is empty',
               subtitle: 'Browse restaurants and add items',
               actionText: 'Browse Restaurants',
-              onAction: () => context.go('/home'),
+              onAction: () => context.push('/home'),
             )
           : Column(
               children: [
@@ -57,7 +57,7 @@ class CartScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () => context.go('/checkout'),
+                        onPressed: () => context.push('/checkout'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.primaryColor,
                           foregroundColor: Colors.white,

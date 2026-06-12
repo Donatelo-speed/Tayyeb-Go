@@ -75,11 +75,8 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
 
   Future<void> _saveToFirestore() async {
     for (final item in _detectedItems) {
-      await FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('menu_items')
-          .add({
+      await FirebaseFirestore.instance.collection('menu_items').add({
+        'restaurantId': widget.restaurantId,
         'name': item['name'],
         'nameAr': item['name'],
         'price': item['price'],

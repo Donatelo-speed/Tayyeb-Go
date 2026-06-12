@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class CustomerSplashScreen extends StatefulWidget {
@@ -26,7 +27,14 @@ class _CustomerSplashScreenState extends State<CustomerSplashScreen> {
     if (auth.user != null) {
       context.go('/home');
     } else {
-      context.go('/login');
+      final prefs = await SharedPreferences.getInstance();
+      final seenOnboarding = prefs.getBool('customer_onboarding_seen') ?? false;
+      if (!mounted) return;
+      if (seenOnboarding) {
+        context.go('/login');
+      } else {
+        context.go('/onboarding');
+      }
     }
   }
 

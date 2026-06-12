@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'stripe_stub.dart' if (dart.library.io) 'stripe_stub_native.dart';
 
 enum _CheckoutStep { form, processing, error, done }
 
@@ -125,6 +127,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         commissionPercent: cart.commissionPercent ?? 15.0,
         fulfillmentType: _fulfillment.name,
         deliveryAddress: {'fullAddress': _addressCtrl.text.trim()},
+        promoCode: cart.appliedCoupon,
+        promoDiscount: cart.promoDiscount > 0 ? cart.promoDiscount : null,
+        subtotalCents: (cart.subtotal * 100).round(),
+        deliveryFeeCents: (cart.deliveryFee * 100).round(),
+        taxCents: (cart.tax * 100).round(),
       );
 
       if (_selectedPaymentMethod == PaymentMethodType.shamCash) {
@@ -145,19 +152,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           commissionPercent: cart.commissionPercent ?? 15.0,
         ));
         if (!intentResult.success) throw Exception(intentResult.errorMessage ?? 'Stripe payment failed');
-        if (intentResult.checkoutUrl != null && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Redirect to payment: ${intentResult.checkoutUrl}', style: GoogleFonts.inter()),
-              duration: const Duration(seconds: 5),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-          );
+
+        if (intentResult.clientSecret != null && context.mounted) {
+          final stripeSuccess = await _processStripePayment(context, intentResult.clientSecret!);
+          if (!stripeSuccess) throw Exception('Card payment was declined');
         }
       }
 
       if (context.mounted) {
+        if (cart.appliedCoupon != null) {
+          try {
+            await PromoAbuseService.instance.recordPromoUsage(
+              promoCode: cart.appliedCoupon!,
+              customerId: auth.user?.id ?? '',
+              phone: auth.user?.phone,
+            );
+            final promoSnap = await FirebaseFirestore.instance
+                .collection('promos')
+                .where('code', isEqualTo: cart.appliedCoupon!)
+                .get();
+            for (final doc in promoSnap.docs) {
+              await doc.reference.update({
+                'usageCount': FieldValue.increment(1),
+                'updatedAt': FieldValue.serverTimestamp(),
+              });
+            }
+          } catch (_) {}
+        }
         await cart.clearCart();
         setState(() => _step = _CheckoutStep.done);
 
@@ -169,7 +190,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               orderId: orderId,
               onDismiss: () {
                 entry.remove();
-                if (context.mounted) context.go('/tracking/$orderId');
+                if (context.mounted) context.push('/tracking/$orderId');
               },
             ),
           );
@@ -183,6 +204,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _errorMessage = e.toString();
         });
       }
+    }
+  }
+
+  Future<bool> _processStripePayment(BuildContext context, String clientSecret) async {
+    try {
+      final stripe = createStripeWrapper();
+      await stripe.initPaymentSheet(
+        clientSecret: clientSecret,
+        merchantDisplayName: 'TayyebGo',
+      );
+      await stripe.presentPaymentSheet();
+      return true;
+    } catch (e) {
+      if (context.mounted) {
+        final msg = e.toString().contains('cancelled') ? 'Payment was cancelled' : 'Payment failed';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg, style: GoogleFonts.inter()),
+            backgroundColor: context.errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+      return false;
     }
   }
 }
@@ -489,7 +535,7 @@ class _ErrorState extends StatelessWidget {
               width: double.infinity,
               height: 48,
               child: OutlinedButton(
-                onPressed: () => context.go('/cart'),
+                onPressed: () => context.pop(),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: context.textMutedColor,
                   side: BorderSide(color: context.borderColor),

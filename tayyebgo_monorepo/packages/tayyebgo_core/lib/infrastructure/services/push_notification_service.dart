@@ -13,7 +13,7 @@ class PushNotificationService {
     final template = NotificationTemplates.forStatus(status, restaurantName);
     await _firestore.collection('notifications').add({
       ...template.toMap(orderId),
-      'userId': customerId,
+      'recipientId': customerId,
       'role': 'customer',
       'read': false,
       'createdAt': FieldValue.serverTimestamp(),
@@ -28,7 +28,7 @@ class PushNotificationService {
     final data = NotificationTemplates.driverNotification(action, orderId);
     await _firestore.collection('notifications').add({
       ...data,
-      'userId': driverId,
+      'recipientId': driverId,
       'role': 'driver',
       'read': false,
       'createdAt': FieldValue.serverTimestamp(),
@@ -46,7 +46,7 @@ class PushNotificationService {
       'body': '$customerName\'s order is now $status',
       'type': 'partner_order_update',
       'orderId': orderId,
-      'restaurantId': restaurantId,
+      'recipientId': restaurantId,
       'role': 'partner',
       'read': false,
       'createdAt': FieldValue.serverTimestamp(),

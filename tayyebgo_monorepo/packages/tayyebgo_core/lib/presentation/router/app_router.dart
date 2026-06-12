@@ -35,10 +35,16 @@ abstract class AppRouter {
           name: 'access-denied',
           pageBuilder: (_, state) {
             final reason = state.uri.queryParameters['reason'];
+            final currentRole = state.uri.queryParameters['currentRole'];
+            final requiredRoles = state.uri.queryParameters['requiredRoles'];
+            final userId = state.uri.queryParameters['userId'];
             return SlideTransitionPage(
               key: state.pageKey,
               page: AccessDeniedScreen(
                 isDisabled: reason == 'disabled',
+                currentRole: currentRole,
+                requiredRoles: requiredRoles,
+                userId: userId,
                 onGoBack: () {
                   final context = routerKey.currentContext;
                   if (context != null && context.mounted) {

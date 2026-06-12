@@ -51,7 +51,7 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
           const SizedBox(height: 8),
           _optionTile(PaymentMethodType.shamCash, Icons.account_balance_wallet, 'Sham Cash', 'Pay with ShamCash wallet'),
           const SizedBox(height: 8),
-          _optionTile(PaymentMethodType.stripe, Icons.credit_card, 'Visa / Mastercard', 'Secure online payment via Stripe', comingSoon: true),
+          _optionTile(PaymentMethodType.stripe, Icons.credit_card, 'Visa / Mastercard', 'Secure online payment via Stripe'),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
@@ -68,17 +68,11 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _selected == PaymentMethodType.stripe
-                  ? null
-                  : () {
-                      widget.onSelected(_selected);
-                      Navigator.pop(context, _selected);
-                    },
-              child: Text(
-                _selected == PaymentMethodType.stripe
-                    ? 'Coming Soon'
-                    : 'Place Order — ${widget.totalAmount.format()}',
-              ),
+              onPressed: () {
+                widget.onSelected(_selected);
+                Navigator.pop(context, _selected);
+              },
+              child: Text('Place Order — ${widget.totalAmount.format()}'),
             ),
           ),
           const SizedBox(height: 16),
@@ -87,83 +81,48 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
     );
   }
 
-  Widget _optionTile(PaymentMethodType type, IconData icon, String title, String subtitle, {bool comingSoon = false}) {
+  Widget _optionTile(PaymentMethodType type, IconData icon, String title, String subtitle) {
     final selected = _selected == type;
-    final effective = comingSoon ? false : selected;
     return InkWell(
-      onTap: comingSoon
-          ? null
-          : () => setState(() => _selected = type),
+      onTap: () => setState(() => _selected = type),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: comingSoon
-                ? TayyebGoTheme.dividerColor
-                : effective
-                    ? TayyebGoTheme.primaryColor
-                    : TayyebGoTheme.dividerColor,
-            width: effective ? 2 : 1,
+            color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.dividerColor,
+            width: selected ? 2 : 1,
           ),
-          color: effective
+          color: selected
               ? TayyebGoTheme.primaryColor.withValues(alpha: 0.05)
               : TayyebGoTheme.surfaceColor,
         ),
         child: Row(children: [
           Icon(icon,
-              color: comingSoon
-                  ? TayyebGoTheme.textMuted
-                  : effective
-                      ? TayyebGoTheme.primaryColor
-                      : TayyebGoTheme.textSecondary,
+              color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.textSecondary,
               size: 28),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: comingSoon
-                              ? TayyebGoTheme.textMuted
-                              : effective
-                                  ? TayyebGoTheme.primaryColor
-                                  : TayyebGoTheme.textPrimary,
-                        )),
-                    if (comingSoon) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: TayyebGoTheme.warningColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text('Coming Soon',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: TayyebGoTheme.warningColor)),
-                      ),
-                    ],
-                  ],
-                ),
-                Text(subtitle,
+                Text(title,
                     style: TextStyle(
-                        color: comingSoon ? TayyebGoTheme.textMuted : TayyebGoTheme.caption.color)),
+                      fontWeight: FontWeight.w600,
+                      color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.textPrimary,
+                    )),
+                Text(subtitle,
+                    style: TextStyle(color: TayyebGoTheme.caption.color)),
               ],
             ),
           ),
-          if (!comingSoon)
-            Radio<PaymentMethodType>(
-              value: type,
-              groupValue: _selected,
-              activeColor: TayyebGoTheme.primaryColor,
-              onChanged: (v) => setState(() => _selected = v!),
-            )
-          else
-            Icon(Icons.lock_outline, size: 18, color: TayyebGoTheme.textMuted),
+          Radio<PaymentMethodType>(
+            value: type,
+            groupValue: _selected,
+            activeColor: TayyebGoTheme.primaryColor,
+            onChanged: (v) => setState(() => _selected = v!),
+          ),
         ]),
       ),
     );

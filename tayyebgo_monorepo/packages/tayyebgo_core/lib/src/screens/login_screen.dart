@@ -13,7 +13,18 @@ import '../services/auth_listenable.dart';
 enum _AuthMode { phone, email }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  /// Whether to show the "Don't have an account? Create Account" link.
+  /// Set to false for Driver, Partner, and Admin apps (customer-only signup).
+  final bool showSignUpLink;
+
+  /// App-specific subtitle shown below the logo.
+  final String subtitle;
+
+  const LoginScreen({
+    super.key,
+    this.showSignUpLink = true,
+    this.subtitle = 'Fresh meals, daily errands, and local delivery.',
+  });
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -38,11 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loadRemembered() async {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString('remembered_email');
-    final savedPassword = prefs.getString('remembered_password');
     final remember = prefs.getBool('remember_me') ?? false;
-    if (mounted && remember && savedEmail != null && savedPassword != null) {
+    if (mounted && remember && savedEmail != null) {
       _emailCtrl.text = savedEmail;
-      _passwordCtrl.text = savedPassword;
       _rememberMe = true;
       setState(() {});
     }
@@ -52,11 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (_rememberMe) {
       await prefs.setString('remembered_email', _emailCtrl.text.trim());
-      await prefs.setString('remembered_password', _passwordCtrl.text);
       await prefs.setBool('remember_me', true);
     } else {
       await prefs.remove('remembered_email');
-      await prefs.remove('remembered_password');
       await prefs.setBool('remember_me', false);
     }
   }
@@ -93,22 +100,35 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
     final success = await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text, context);
-    if (mounted && success) {
+    if (!mounted) return;
+    if (success) {
       await _saveRemembered();
       _triggerRedirect();
+    } else if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
     }
   }
 
   Future<void> _handleGoogleSignIn() async {
     final auth = context.read<AuthProvider>();
     final success = await auth.loginWithGoogle();
-    if (mounted && success) _triggerRedirect();
+    if (!mounted) return;
+    if (success) {
+      _triggerRedirect();
+    } else if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
+    }
   }
 
   Future<void> _handleAppleSignIn() async {
     final auth = context.read<AuthProvider>();
     final success = await auth.loginWithApple();
-    if (mounted && success) _triggerRedirect();
+    if (!mounted) return;
+    if (success) {
+      _triggerRedirect();
+    } else if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
+    }
   }
 
   void _showSnack(String msg, Color color) {
@@ -164,6 +184,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     _buildLogo(),
                     const SizedBox(height: 48),
+                    if (auth.error != null) ...[
+                      _buildErrorBanner(auth.error!),
+                      const SizedBox(height: 16),
+                    ],
                     if (_mode == _AuthMode.phone) _buildPhoneForm(auth),
                     if (_mode == _AuthMode.email) _buildEmailForm(auth),
                     const SizedBox(height: 24),
@@ -172,11 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildDivider(),
                     const SizedBox(height: 24),
                     _buildSocialButtons(auth),
-                    const SizedBox(height: 24),
-                    _buildSignUpLink(),
-                    if (auth.error != null) ...[
-                      const SizedBox(height: 16),
-                      _buildErrorBanner(auth.error!),
+                    if (widget.showSignUpLink) ...[
+                      const SizedBox(height: 24),
+                      _buildSignUpLink(),
                     ],
                   ],
                 ),
@@ -196,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const BrandLogo(markSize: 82, fontSize: 28),
           const SizedBox(height: 16),
           Text(
-            'Fresh meals, daily errands, and local delivery.',
+            widget.subtitle,
             style: AppTypography.bodyMedium.copyWith(
               color: AppColors.textMuted,
               letterSpacing: 0,
@@ -616,18 +638,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildErrorBanner(String message) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.08),
+        color: AppColors.error.withValues(alpha: 0.10),
         borderRadius: AppRadius.brSm,
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.error.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.error),
-          const SizedBox(width: 8),
+          const Icon(Icons.error_outline_rounded, size: 20, color: AppColors.error),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(message, style: AppTypography.bodySmall.copyWith(color: AppColors.error)),
+            child: Text(
+              message,
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),

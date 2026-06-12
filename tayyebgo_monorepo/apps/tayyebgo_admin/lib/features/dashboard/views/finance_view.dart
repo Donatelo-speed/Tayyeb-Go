@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
+import 'commission_editor_view.dart';
 
 const _purple = Color(0xFF8B5CF6);
 
@@ -132,6 +133,10 @@ class _FinanceContent extends StatelessWidget {
           _actionButton(context, 'Export Revenue Report', Icons.download_rounded, context.primaryColor),
           const SizedBox(height: 8),
           _actionButton(context, 'Process Payouts', Icons.payments_rounded, context.successColor),
+          const SizedBox(height: 8),
+          _actionButton(context, 'Edit Commissions', Icons.percent_rounded, const Color(0xFF6366F1)),
+          const SizedBox(height: 24),
+          const _DemandForecastSection(),
           const SizedBox(height: 24),
           Text('Per-Restaurant Breakdown', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
           const SizedBox(height: 12),
@@ -197,6 +202,8 @@ class _FinanceContent extends StatelessWidget {
       _exportRevenueReport(context);
     } else if (label == 'Process Payouts') {
       _processPayouts(context);
+    } else if (label == 'Edit Commissions') {
+      _openCommissionEditor(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('$label exported', style: GoogleFonts.inter()), backgroundColor: color, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
@@ -219,6 +226,13 @@ class _FinanceContent extends StatelessWidget {
     Clipboard.setData(ClipboardData(text: csv.toString()));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Report copied to clipboard', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+    );
+  }
+
+  void _openCommissionEditor(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CommissionEditorView()),
     );
   }
 
@@ -328,5 +342,160 @@ class _FinanceContent extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _DemandForecastSection extends StatefulWidget {
+  const _DemandForecastSection();
+
+  @override
+  State<_DemandForecastSection> createState() => _DemandForecastSectionState();
+}
+
+class _DemandForecastSectionState extends State<_DemandForecastSection> {
+  final _demandService = DemandPredictionService();
+  Map<String, dynamic>? _summary;
+  List<DemandForecast> _forecasts = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final summary = await _demandService.getDemandSummary();
+    final forecasts = await _demandService.predictNext24Hours();
+    if (mounted) {
+      setState(() {
+        _summary = summary;
+        _forecasts = forecasts.take(12).toList();
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.insights_rounded, color: Color(0xFFF59E0B), size: 20),
+              ),
+              const SizedBox(width: 10),
+              Text('Demand Forecast', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+              const Spacer(),
+              if (!_isLoading && _summary != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _levelColor(_summary!['currentLevel'] ?? 'low').withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${(_summary!['currentLevel'] as String? ?? 'low').toUpperCase()} DEMAND',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11, color: _levelColor(_summary!['currentLevel'] ?? 'low')),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_isLoading)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            Row(
+              children: [
+                _forecastStat('Peak Hour', _summary?['peakHour'] ?? 'N/A', const Color(0xFFEF4444)),
+                const SizedBox(width: 12),
+                _forecastStat('Peak Orders', '${_summary?['peakOrders'] ?? 0}', const Color(0xFFF59E0B)),
+                const SizedBox(width: 12),
+                _forecastStat('24h Total', '${_summary?['totalPredicted'] ?? 0}', context.primaryColor),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _forecasts.length,
+                itemBuilder: (context, i) {
+                  final f = _forecasts[i];
+                  final maxVal = _forecasts.fold<int>(0, (m, x) => x.predictedOrders > m ? x.predictedOrders : m);
+                  final barHeight = maxVal > 0 ? (f.predictedOrders / maxVal * 60) : 0.0;
+                  final color = _levelColor(f.demandLevel);
+                  return Container(
+                    width: 40,
+                    margin: const EdgeInsets.only(right: 6),
+                    child: Column(
+                      children: [
+                        Text('${f.predictedOrders}', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: 20,
+                              height: barHeight.toDouble(),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.7),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(f.hourLabel.substring(0, 2), style: GoogleFonts.inter(fontSize: 9, color: context.textMutedColor)),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _forecastStat(String label, String value, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 18, color: color)),
+            Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _levelColor(String level) {
+    switch (level) {
+      case 'high': return const Color(0xFFEF4444);
+      case 'medium': return const Color(0xFFF59E0B);
+      default: return const Color(0xFF10B981);
+    }
   }
 }

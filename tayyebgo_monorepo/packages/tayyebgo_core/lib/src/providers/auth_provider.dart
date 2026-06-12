@@ -16,9 +16,9 @@ String _friendlyAuthError(Object e) {
     case 'invalid-email':
       return 'Invalid email address. Please check and try again.';
     case 'user-not-found':
-      return 'No account found with this email address.';
+      return 'Incorrect email or password.';
     case 'wrong-password':
-      return 'Incorrect password. Please try again.';
+      return 'Incorrect email or password.';
     case 'email-already-in-use':
       return 'An account already exists with this email address.';
     case 'weak-password':
@@ -52,6 +52,10 @@ class AuthProvider extends ChangeNotifier {
   static AuthProvider? _instance;
   static AuthProvider? get instance => _instance;
 
+  /// Static role hint set before runApp() — used when no Firestore doc exists.
+  /// Each app sets this in main() to the role(s) it serves.
+  static UserRole? defaultExpectedRole;
+
   UserModel? _user;
   bool _isLoading = false;
   bool _isInitializing = true;
@@ -84,6 +88,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isCustomer => _user?.role == UserRole.customer;
   String get userRole => _user?.role.value ?? 'customer';
 
+  /// Whether the current user has any of the given roles.
+  bool hasAnyRole(List<UserRole> roles) =>
+      _user != null && roles.contains(_user!.role);
+
+  /// Whether the current user can access the given app.
+  bool canAccessApp(String app) =>
+      _user != null &&
+      UserRole.allowedRolesForApp(app).contains(_user!.role);
+
   AuthProvider() {
     _instance = this;
     _isInitializing = true;
@@ -92,6 +105,7 @@ class AuthProvider extends ChangeNotifier {
       onError: (Object e) {
         _error = _friendlyAuthError(e);
         _isLoading = false;
+        _isInitializing = false;
         notifyListeners();
         _notifyRouter();
       },
@@ -126,15 +140,11 @@ class AuthProvider extends ChangeNotifier {
 
     _isInitializing = true;
     _error = null;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notifyListeners();
-    });
+    notifyListeners();
     await resolveUser(firebaseUser);
     _isInitializing = false;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notifyListeners();
-      _notifyRouter();
-    });
+    notifyListeners();
+    _notifyRouter();
   }
 
   void setOnboardingComplete() {
@@ -142,8 +152,21 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The role this app expects users to have. Set by the app at startup.
+  /// When a new user signs in without a Firestore doc, this role is used
+  /// to create their profile instead of defaulting to customer.
+  UserRole? _expectedRole;
+
+  /// Set the expected role for this app instance.
+  /// Call this at app startup, e.g. AuthProvider.instance.setExpectedRole(UserRole.driver)
+  void setExpectedRole(UserRole role) => _expectedRole = role;
+
+  /// Clear the expected role (e.g. on logout).
+  void clearExpectedRole() => _expectedRole = null;
+
   Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
+      debugPrint('[AuthProvider] resolveUser: reading Firestore for uid=${firebaseUser.uid}');
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(firebaseUser.uid)
@@ -151,26 +174,69 @@ class AuthProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
       if (doc.exists) {
         _user = UserModel.fromFirestore(doc);
+        debugPrint('[AuthProvider] resolveUser: found doc, role=${_user!.role.value}');
+
+        final now = DateTime.now();
+
+        // ROLE RECONCILIATION: If the Firestore role doesn't match what this
+        // app expects, use the expected role locally. Try to persist it to
+        // Firestore but don't fail login if permissions deny the write.
+        final effectiveRole = _expectedRole ?? defaultExpectedRole;
+        if (effectiveRole != null && _user!.role != effectiveRole) {
+          debugPrint('[AuthProvider] resolveUser: role mismatch — Firestore=${_user!.role.value} expected=${effectiveRole.value} → using ${effectiveRole.value} locally');
+          _user = _user!.copyWith(role: effectiveRole);
+          try {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(firebaseUser.uid)
+                .update({'role': effectiveRole.value});
+          } catch (e) {
+            debugPrint('[AuthProvider] resolveUser: could not persist role to Firestore (non-critical): $e');
+          }
+        }
+
+        _user = _user!.copyWith(lastSignInAt: now, updatedAt: now);
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .update({
+            'lastSignInAt': Timestamp.fromDate(now),
+            'updatedAt': Timestamp.fromDate(now),
+          });
+        } catch (e) {
+          debugPrint('[AuthProvider] resolveUser: could not update timestamps (non-critical): $e');
+        }
       } else {
+        // No Firestore doc — create one using the app's expected role.
+        // This handles: (a) test users imported via CSV, (b) first login
+        // from a specific app. Uses instance _expectedRole first, then static
+        // defaultExpectedRole (set in main()), then falls back to customer.
+        final role = _expectedRole ?? defaultExpectedRole ?? UserRole.customer;
+        debugPrint('[AuthProvider] resolveUser: NO Firestore doc for uid=${firebaseUser.uid} — creating with role=${role.value}');
         final now = DateTime.now();
         _user = UserModel(
           id: firebaseUser.uid,
           email: firebaseUser.email ?? '',
           displayName: firebaseUser.displayName ?? '',
           photoUrl: firebaseUser.photoURL,
-          role: UserRole.customer,
+          role: role,
           createdAt: now,
           updatedAt: now,
+          lastSignInAt: now,
         );
         await FirebaseFirestore.instance
             .collection('users')
             .doc(firebaseUser.uid)
             .set(_user!.toFirestore());
+        debugPrint('[AuthProvider] resolveUser: created Firestore doc with role=${role.value}');
       }
     } on TimeoutException {
+      debugPrint('[AuthProvider] resolveUser: TIMEOUT');
       _error = 'Connection timed out. Please check your network.';
       _user = null;
     } catch (e) {
+      debugPrint('[AuthProvider] resolveUser: ERROR $e');
       _error = _friendlyAuthError(e);
       _user = null;
     }
@@ -182,6 +248,7 @@ class AuthProvider extends ChangeNotifier {
     String password,
     BuildContext context,
   ) async {
+    debugPrint('[AuthProvider] login: email=$email');
     _isLoading = true;
     _loginInProgress = true;
     _error = null;
@@ -197,13 +264,16 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
         return false;
       }
+      debugPrint('[AuthProvider] login: Firebase Auth success, uid=${credential.user!.uid}');
       await resolveUser(credential.user!);
       if (_user == null) {
+        debugPrint('[AuthProvider] login: resolveUser returned null');
         _isLoading = false;
         _loginInProgress = false;
         notifyListeners();
         return false;
       }
+      debugPrint('[AuthProvider] login: resolved user role=${_user!.role.value} isActive=${_user!.isActive}');
       if (!_user!.isActive) {
         _error =
             'Your account has been deactivated. Please contact your administrator.';
@@ -218,12 +288,14 @@ class AuthProvider extends ChangeNotifier {
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      debugPrint('[AuthProvider] login: FirebaseAuthException ${e.code}');
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
     } catch (e) {
+      debugPrint('[AuthProvider] login: error $e');
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -267,10 +339,11 @@ class AuthProvider extends ChangeNotifier {
         displayName: displayName,
         phone: phone,
         photoUrl: photoUrl,
-        role: UserRole.customer,
+        role: _expectedRole ?? defaultExpectedRole ?? UserRole.customer,
         address: address,
         createdAt: now,
         updatedAt: now,
+        lastSignInAt: now,
       );
       await FirebaseFirestore.instance
           .collection('users')
@@ -356,9 +429,59 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> loginWithApple() async {
-    _error = 'Apple sign-in coming soon';
+    _isLoading = true;
+    _loginInProgress = true;
+    _error = null;
     notifyListeners();
-    return false;
+    try {
+      final appleProvider = fb.AppleAuthProvider();
+      appleProvider.addScope('email');
+      appleProvider.addScope('name');
+      final fb.UserCredential result;
+      if (kIsWeb) {
+        result = await fb.FirebaseAuth.instance.signInWithPopup(appleProvider);
+      } else {
+        result = await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
+      }
+      if (result.user == null) {
+        _error = 'Apple sign-in returned no user';
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
+      await resolveUser(result.user!);
+      if (_user == null) {
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
+      if (!_user!.isActive) {
+        _error = 'Your account has been deactivated. Please contact your administrator.';
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
+      _isLoading = false;
+      _loginInProgress = false;
+      notifyListeners();
+      _notifyRouter();
+      return true;
+    } on fb.FirebaseAuthException catch (e) {
+      _error = _friendlyAuthError(e);
+      _isLoading = false;
+      _loginInProgress = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = _friendlyAuthError(e);
+      _isLoading = false;
+      _loginInProgress = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<void> resetPassword(String email) async {
@@ -369,10 +492,10 @@ class AuthProvider extends ChangeNotifier {
       await fb.FirebaseAuth.instance.sendPasswordResetEmail(
         email: email.trim(),
       );
-    } on fb.FirebaseAuthException catch (e) {
-      _error = _friendlyAuthError(e);
     } catch (e) {
-      _error = _friendlyAuthError(e);
+      // Always show success to prevent account enumeration.
+      // Firebase already silently ignores non-existent emails.
+      debugPrint('[resetPassword] Error (suppressed): $e');
     }
     _isLoading = false;
     notifyListeners();
@@ -451,13 +574,28 @@ class AuthProvider extends ChangeNotifier {
       );
       _verificationId = null;
       _otpTimer?.cancel();
+      _otpCountdown = 0;
       if (result.user != null) {
         await resolveUser(result.user!);
       }
+      if (_user == null) {
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
+      if (!_user!.isActive) {
+        _error = 'Your account has been deactivated. Please contact your administrator.';
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
       _isLoading = false;
+      _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
-      return _user != null;
+      return true;
     } on fb.FirebaseAuthException catch (e) {
       _error = _friendlyAuthError(e);
     } catch (e) {
@@ -491,6 +629,7 @@ class AuthProvider extends ChangeNotifier {
     _otpTimer?.cancel();
     _otpCountdown = 0;
     _isLoading = false;
+    clearExpectedRole();
     notifyListeners();
     _notifyRouter();
     await AuthGateService.instance.fireLogoutCallbacks();
@@ -553,8 +692,9 @@ class AuthProvider extends ChangeNotifier {
       }
       final ref = FirebaseStorage.instance
           .ref()
-          .child('profile_images')
-          .child('${_user!.id}.jpg');
+          .child('users')
+          .child('${_user!.id}')
+          .child('profile_picture.jpg');
       await ref.putData(await picked.readAsBytes());
       final url = await ref.getDownloadURL();
       _user = _user!.copyWith(photoUrl: url);

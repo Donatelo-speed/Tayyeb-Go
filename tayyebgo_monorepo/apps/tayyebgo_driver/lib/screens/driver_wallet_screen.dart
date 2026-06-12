@@ -97,25 +97,43 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
       return;
     }
     setState(() => _isRequesting = true);
-    final uid = AuthProvider.instance?.user?.id;
-    if (uid == null) {
-      if (mounted) {
-        setState(() => _isRequesting = false);
+    try {
+      final amountInCents = (amount * 100).round();
+      final result = await StripeCheckoutService.requestDriverPayout(
+        amountInCents: amountInCents,
+        payoutMethod: 'bank_transfer',
+      );
+      if (!mounted) return;
+      setState(() => _isRequesting = false);
+      _amountCtrl.clear();
+      if (result.success) {
+        final uid = AuthProvider.instance?.user?.id;
+        if (uid != null) prov.loadWallet(uid);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Not authenticated')),
+          SnackBar(
+            content: Text('Payout requested successfully', style: GoogleFonts.inter()),
+            backgroundColor: context.successColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.errorMessage ?? 'Request failed', style: GoogleFonts.inter()),
+            backgroundColor: context.errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
         );
       }
-      return;
-    }
-    final success = await prov.requestPayout(uid, amount);
-    if (!mounted) return;
-    setState(() => _isRequesting = false);
-    if (mounted) {
-      _amountCtrl.clear();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isRequesting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success ? 'Payout requested' : 'Request failed', style: GoogleFonts.inter()),
-          backgroundColor: success ? context.successColor : context.errorColor,
+          content: Text('Error: $e', style: GoogleFonts.inter()),
+          backgroundColor: context.errorColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),

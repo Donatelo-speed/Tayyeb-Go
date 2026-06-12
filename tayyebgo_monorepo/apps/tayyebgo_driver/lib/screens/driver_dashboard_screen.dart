@@ -56,11 +56,20 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     }
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  }
+
   @override
   Widget build(BuildContext context) {
     final walletProv = context.watch<DriverWalletProvider>();
     final wallet = walletProv.wallet;
     final dispatchProv = context.watch<DispatchProvider>();
+    final auth = context.watch<AuthProvider>();
+    final driverName = (auth.user?.displayName ?? 'Driver').split(' ').first;
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
@@ -76,6 +85,9 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text('Good ${_getGreeting()}, $driverName',
+                              style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
                               Container(
@@ -88,27 +100,16 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                               ),
                               const SizedBox(width: 6),
                               Text('Driver', style: GoogleFonts.inter(
-                                fontSize: 14,
+                                fontSize: 13,
                                 color: AppColors.textMuted,
                               )),
                             ],
-                          ),
-                          const SizedBox(height: 4),
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [AppColors.driverAccent, AppColors.emerald],
-                            ).createShader(bounds),
-                            child: Text('Dashboard', style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 28,
-                              color: Colors.white,
-                            )),
                           ),
                         ],
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => context.push('/driver-profile'),
+                      onTap: () => context.push('/profile'),
                       child: Container(
                         width: 44,
                         height: 44,
@@ -229,6 +230,13 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       value: 'SYP ${wallet?.balance.toStringAsFixed(0) ?? '0'}',
                       icon: Icons.account_balance_wallet_rounded,
                       color: const Color(0xFF10B981),
+                    )),
+                    const SizedBox(width: 12),
+                    Expanded(child: _earningsCard(
+                      label: 'Total Earned',
+                      value: 'SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}',
+                      icon: Icons.trending_up_rounded,
+                      color: const Color(0xFF8B5CF6),
                     )),
                     const SizedBox(width: 12),
                     Expanded(child: _earningsCard(
@@ -624,49 +632,61 @@ class _ActiveOrdersSection extends StatelessWidget {
               .where('status', whereIn: ['accepted', 'shopping', 'en_route'])
               .snapshots(),
           builder: (context, snap) {
-            if (snap.hasError) return const SizedBox.shrink();
+            if (snap.hasError) {
+              debugPrint('[Dashboard] StreamBuilder error: ${snap.error}');
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Failed to load deliveries',
+                  style: GoogleFonts.inter(color: context.errorColor, fontSize: 13),
+                ),
+              );
+            }
             if (!snap.hasData || snap.data!.docs.isEmpty) {
               return const SizedBox.shrink();
             }
-            final doc = snap.data!.docs.first;
-            final d = doc.data() as Map<String, dynamic>;
-            return GestureDetector(
-              onTap: () => context.push('/active-delivery/${doc.id}'),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: context.borderColor),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.shopping_bag_rounded, color: Color(0xFF10B981), size: 20),
+            return Column(
+              children: snap.data!.docs.map((doc) {
+                final d = doc.data() as Map<String, dynamic>;
+                return GestureDetector(
+                  onTap: () => context.push('/active-delivery/${doc.id}'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.surfaceColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: context.borderColor),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Anything: ${d['storeName'] as String? ?? 'Delivery'}',
-                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
-                          Text('Status: ${d['status'] as String? ?? ''}',
-                              style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-                        ],
-                      ),
-                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.shopping_bag_rounded, color: Color(0xFF10B981), size: 20),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Anything: ${d['storeName'] as String? ?? 'Delivery'}',
+                                  style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+                              Text('Status: ${d['status'] as String? ?? ''}',
+                                  style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                            ],
+                          ),
+                        ),
                         Icon(Icons.chevron_right, color: context.textMutedColor, size: 20),
-                  ],
-                ),
-              ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             );
           },
         ),

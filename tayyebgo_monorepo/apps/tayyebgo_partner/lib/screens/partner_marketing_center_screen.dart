@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import '../providers/partner_role_controller.dart';
 
 class PartnerMarketingCenterScreen extends StatelessWidget {
   const PartnerMarketingCenterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final restaurantId = context.read<PartnerRoleController>().restaurantId;
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -18,55 +22,48 @@ class PartnerMarketingCenterScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _statRow([
-            _miniStat(context, 'Active Campaigns', '2', context.warningColor),
-            _miniStat(context, 'Coupons Used', '47', context.successColor),
-            _miniStat(context, 'Redemptions', '128', context.primaryColor),
-          ]),
+          _StatsSection(restaurantId: restaurantId),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              Text('Campaigns', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text('New', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
-                style: TextButton.styleFrom(foregroundColor: context.warningColor),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _campaignCard(context, 'Welcome Offer', '20% off first order', '156 views', '34 redemptions', true),
-          const SizedBox(height: 10),
-          _campaignCard(context, 'Weekend Special', 'Free delivery Sat-Sun', '89 views', '12 redemptions', true),
-          const SizedBox(height: 10),
-          _campaignCard(context, 'Ramadan Deal', 'Iftar combo SYP 3,500', '0 views', '0 redemptions', false),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Text('Coupons', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text('New', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
-                style: TextButton.styleFrom(foregroundColor: context.warningColor),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _couponCard(context, 'WELCOME20', '20% off', 'Max 50 uses', '23 used'),
-          const SizedBox(height: 10),
-          _couponCard(context, 'FREEDEL', 'Free delivery', 'Max 100 uses', '67 used'),
+          _CouponsSection(restaurantId: restaurantId),
         ],
       ),
     );
   }
+}
 
-  Widget _statRow(List<Widget> children) {
-    return Row(
-      children: children.map((c) => Expanded(child: c)).toList().expand((w) => [w, const SizedBox(width: 10)]).toList()..removeLast(),
+class _StatsSection extends StatelessWidget {
+  final String? restaurantId;
+  const _StatsSection({this.restaurantId});
+
+  @override
+  Widget build(BuildContext context) {
+    final promosQuery = FirebaseFirestore.instance.collection('promos');
+    final query = restaurantId != null
+        ? promosQuery.where('restaurantId', isEqualTo: restaurantId)
+        : promosQuery;
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        final docs = snapshot.data?.docs ?? [];
+        int activeCount = 0;
+        int totalRedemptions = 0;
+        for (final doc in docs) {
+          final d = doc.data() as Map<String, dynamic>;
+          final isActive = d['isActive'] as bool? ?? d['active'] as bool? ?? false;
+          if (isActive) activeCount++;
+          totalRedemptions += (d['usageCount'] as num?)?.toInt() ?? 0;
+        }
+        return Row(
+          children: [
+            Expanded(child: _miniStat(context, 'Active Promos', '$activeCount', context.warningColor)),
+            const SizedBox(width: 10),
+            Expanded(child: _miniStat(context, 'Total Promos', '${docs.length}', context.successColor)),
+            const SizedBox(width: 10),
+            Expanded(child: _miniStat(context, 'Redemptions', '$totalRedemptions', context.primaryColor)),
+          ],
+        );
+      },
     );
   }
 
@@ -80,83 +77,299 @@ class PartnerMarketingCenterScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: color)),
+          Text(value, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w700, color: color)),
           const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11), textAlign: TextAlign.center),
+          Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor), textAlign: TextAlign.center),
         ],
       ),
     );
   }
+}
 
-  Widget _campaignCard(BuildContext context, String title, String desc, String views, String redemptions, bool active) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: active ? context.warningColor.withValues(alpha: 0.3) : context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
-                const SizedBox(height: 2),
-                Text(desc, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Text(views, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
-                    const SizedBox(width: 10),
-                    Text(redemptions, style: GoogleFonts.inter(color: context.warningColor, fontSize: 11, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ],
+class _CouponsSection extends StatelessWidget {
+  final String? restaurantId;
+  const _CouponsSection({this.restaurantId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text('Promo Codes', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: context.textPrimaryColor)),
+            const Spacer(),
+            TextButton.icon(
+              onPressed: () => _showCreatePromoDialog(context, restaurantId),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: Text('New', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+              style: TextButton.styleFrom(foregroundColor: context.primaryColor),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: active ? context.successColor.withValues(alpha: 0.1) : context.textMutedColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(active ? 'Active' : 'Draft', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: active ? context.successColor : context.textMutedColor)),
-          ),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        StreamBuilder<QuerySnapshot>(
+          stream: () {
+            var q = FirebaseFirestore.instance.collection('promos').orderBy('createdAt', descending: true) as Query;
+            if (restaurantId != null) {
+              q = q.where('restaurantId', isEqualTo: restaurantId);
+            }
+            return q.snapshots();
+          }(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ));
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return _buildEmptyState(context);
+            }
+            return Column(
+              children: snapshot.data!.docs.map((doc) {
+                final d = doc.data() as Map<String, dynamic>;
+                final code = d['code'] as String? ?? '';
+                final type = d['type'] as String? ?? 'percentage';
+                final value = (d['value'] as num?)?.toDouble() ?? 0;
+                final isActive = d['isActive'] as bool? ?? d['active'] as bool? ?? false;
+                final usageCount = (d['usageCount'] as num?)?.toInt() ?? 0;
+                final usageLimit = (d['usageLimit'] as num?)?.toInt() ?? 0;
+                final expiryDate = (d['expiryDate'] as Timestamp?)?.toDate();
+                final isExpired = expiryDate != null && expiryDate.isBefore(DateTime.now());
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isActive && !isExpired
+                              ? context.successColor.withValues(alpha: 0.1)
+                              : context.errorColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.local_offer_rounded,
+                          color: isActive && !isExpired ? context.successColor : context.errorColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(code, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: isActive && !isExpired
+                                        ? context.successColor.withValues(alpha: 0.1)
+                                        : context.errorColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    isActive && !isExpired ? 'Active' : (isExpired ? 'Expired' : 'Inactive'),
+                                    style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: isActive && !isExpired ? context.successColor : context.errorColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '$type — ${type == 'percentage' ? '${value.toStringAsFixed(0)}%' : '\$${value.toStringAsFixed(2)}'} off',
+                              style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor),
+                            ),
+                            if (usageLimit > 0)
+                              Text(
+                                '$usageCount / $usageLimit uses',
+                                style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: isActive,
+                        activeColor: context.successColor,
+                        onChanged: (v) async {
+                          try {
+                            await doc.reference.update({
+                              'isActive': v,
+                              'active': v,
+                              'updatedAt': FieldValue.serverTimestamp(),
+                            });
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update: $e')),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: Icon(Icons.delete_outline_rounded, size: 20, color: context.errorColor),
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete Promo'),
+                              content: Text('Delete promo code "$code"? This cannot be undone.'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Delete', style: TextStyle(color: context.errorColor))),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            try {
+                              await doc.reference.delete();
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to delete: $e')),
+                                );
+                              }
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+      ],
     );
   }
 
-  Widget _couponCard(BuildContext context, String code, String discount, String limit, String used) {
+  Widget _buildEmptyState(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: context.borderColor),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-            child: Text(code, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: context.warningColor)),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(discount, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: context.textPrimaryColor)),
-                Text('$limit · $used', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 20),
-        ],
+      child: Center(
+        child: Column(
+          children: [
+            Icon(Icons.local_offer_outlined, size: 48, color: context.textMutedColor.withValues(alpha: 0.5)),
+            const SizedBox(height: 16),
+            Text('No promo codes yet', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+            const SizedBox(height: 8),
+            Text('Create a promo to attract customers', style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor)),
+          ],
+        ),
       ),
     );
   }
+}
+
+void _showCreatePromoDialog(BuildContext context, String? restaurantId) {
+  final codeCtrl = TextEditingController();
+  final valueCtrl = TextEditingController(text: '10');
+  final minOrderCtrl = TextEditingController(text: '0');
+  final usageLimitCtrl = TextEditingController(text: '0');
+  String type = 'percentage';
+
+  showDialog(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setLocalState) => AlertDialog(
+        title: const Text('New Promo Code'),
+        content: SingleChildScrollView(
+          child: SizedBox(
+            width: 400,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextField(
+                controller: codeCtrl,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(labelText: 'Coupon Code', hintText: 'SUMMER20'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: type,
+                decoration: const InputDecoration(labelText: 'Discount Type'),
+                items: const [
+                  DropdownMenuItem(value: 'percentage', child: Text('Percentage')),
+                  DropdownMenuItem(value: 'flat', child: Text('Flat Amount')),
+                ],
+                onChanged: (v) => setLocalState(() => type = v ?? 'percentage'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: valueCtrl,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: type == 'percentage' ? 'Discount %' : 'Discount Amount (\$)'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: minOrderCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Min Order Amount (\$)'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: usageLimitCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Usage Limit (0 = unlimited)'),
+              ),
+            ]),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () async {
+              if (codeCtrl.text.trim().isEmpty) return;
+              try {
+                final code = codeCtrl.text.trim().toUpperCase();
+                final value = double.tryParse(valueCtrl.text.trim()) ?? 10;
+                final minOrder = double.tryParse(minOrderCtrl.text.trim()) ?? 0;
+                final usageLimit = int.tryParse(usageLimitCtrl.text.trim()) ?? 0;
+                await FirebaseFirestore.instance.collection('promos').add({
+                  'code': code,
+                  'type': type,
+                  'value': value,
+                  'minOrder': minOrder,
+                  'minOrderAmount': minOrder,
+                  'active': true,
+                  'isActive': true,
+                  'usageCount': 0,
+                  'usageLimit': usageLimit,
+                  if (restaurantId != null) 'restaurantId': restaurantId,
+                  'createdAt': FieldValue.serverTimestamp(),
+                  'updatedAt': FieldValue.serverTimestamp(),
+                });
+                Navigator.pop(ctx);
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(content: Text('Failed to create promo: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('Create'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

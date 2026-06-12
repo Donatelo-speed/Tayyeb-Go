@@ -24,6 +24,7 @@ class PaymentIntentResult {
   final String transactionId;
   final Money? commissionAmount;
   final String? checkoutUrl;
+  final String? clientSecret;
   final String? errorMessage;
   final DateTime processedAt;
 
@@ -32,6 +33,7 @@ class PaymentIntentResult {
     required this.transactionId,
     this.commissionAmount,
     this.checkoutUrl,
+    this.clientSecret,
     this.errorMessage,
     required this.processedAt,
   });

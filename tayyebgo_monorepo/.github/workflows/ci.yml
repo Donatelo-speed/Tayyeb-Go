@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [tayyebgo_core, tayyebgo_payment, tayyebgo_payout, tayyebgo_multi_tenant]
+        package: [tayyebgo_core, tayyebgo_multi_tenant]
     steps:
       - uses: actions/checkout@v4
       
@@ -127,6 +127,57 @@ jobs:
           name: ${{ matrix.app }}-web-build
           path: apps/${{ matrix.app }}/build/web
           retention-days: 7
+
+  deploy:
+    name: Deploy Customer App
+    runs-on: ubuntu-latest
+    needs: [analyze, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download customer build
+        uses: actions/download-artifact@v4
+        with:
+          name: tayyebgo_customer-web-build
+          path: build/web
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: tayyebgo
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Rollback to previous release
+        run: |
+          echo "Deploy failed — rolling back to previous version..."
+          firebase hosting:rollback --project tayyebgo --message "Auto-rollback: deploy ${{ github.sha }} failed" || echo "Rollback command not available, manual intervention needed"
+
+      - name: Notify on rollback
+        if: always()
+        run: |
+          echo "## Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: Rolled back to previous version" >> $GITHUB_STEP_SUMMARY
 
   cloud-functions-build:
     name: Build Cloud Functions

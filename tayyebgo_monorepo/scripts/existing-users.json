@@ -1,0 +1,61 @@
+{"users": [
+{
+  "localId": "admin-test",
+  "email": "admin@test.com",
+  "emailVerified": true,
+  "passwordHash": "m6tI2l37le4/T1SNZmwVpFIbk+REJJXY/Q/qxV3F/ItRmhQ0vcmLu02OmriQO9lmlaZI1lPcaR+KqInosHaADg==",
+  "salt": "gMd4+4rN8X70jA==",
+  "displayName": "Super Admin",
+  "lastSignedInAt": "1781178901845",
+  "createdAt": "1780224072760",
+  "disabled": false,
+  "customAttributes": "{\"role\":\"superAdmin\"}",
+  "providerUserInfo": []
+},
+{
+  "localId": "cashier-test",
+  "email": "cashier@test.com",
+  "emailVerified": true,
+  "passwordHash": "DZ+gcBOgRtTL3wCeN4+YSoc2J1NQ3Kkc4CELJqYRHAeFDUHyIFTAuvx2WYmlh311GjTVin7oR2Fl1edOQrjlRw==",
+  "salt": "y9dufiEnRVb9AA==",
+  "displayName": "Cashier",
+  "createdAt": "1780224074853",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "customer-test",
+  "email": "customer@test.com",
+  "emailVerified": true,
+  "passwordHash": "98mm6QOLeWG093LIGe13LuTb/RoFNqq7ixqIIYD0ffN8E1nQc0d7NZ4VYlP70tCIZS7LQwubJqnFupaH8U5fwA==",
+  "salt": "BJdJTa2p/jOLZw==",
+  "displayName": "Customer",
+  "lastSignedInAt": "1781179055571",
+  "createdAt": "1780224077152",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "driver-test",
+  "email": "driver@test.com",
+  "emailVerified": true,
+  "passwordHash": "YK5GUf6dxQ2y3/tmT5zdAn0upWVdpc2c8RnY6kvBIeqsMzTjBjptW8TNAaZsAXl8OHrYKLQN0Qmt0lrD8Y+07w==",
+  "salt": "bOeuGLMxC3k5NA==",
+  "displayName": "Driver",
+  "lastSignedInAt": "1781179029134",
+  "createdAt": "1780224076058",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "owner-test",
+  "email": "owner@test.com",
+  "emailVerified": true,
+  "passwordHash": "hnYjbN1hxK4o/KWJ4bzsm/EOcS4ZgboCAGHECkKb2vvAydqwh2AJN6m3k81YLRsiXCnvWV3VIbngwBWfALn4zg==",
+  "salt": "i/zbJEV6zNhU3A==",
+  "displayName": "Restaurant Owner",
+  "lastSignedInAt": "1781149442942",
+  "createdAt": "1780224073686",
+  "disabled": false,
+  "providerUserInfo": []
+}]}
