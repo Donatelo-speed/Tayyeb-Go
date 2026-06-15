@@ -1,232 +1,148 @@
 import 'package:flutter/material.dart';
 import '../presentation/theme/app_colors.dart';
-import '../presentation/theme/app_radius.dart';
-import '../presentation/theme/app_shadow.dart';
+import '../presentation/theme/app_spacing.dart';
 
-/// TGC = TayyebGoCard — Unified card system
 enum TGCVariant { surface, elevated, outlined, glass }
 
 class TGC extends StatelessWidget {
   final Widget child;
   final TGCVariant variant;
-  final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final double? width;
-  final double? height;
-  final Color? color;
-  final Gradient? gradient;
-  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final double borderRadius;
+  final VoidCallback? onTap;
 
   const TGC({
     super.key,
     required this.child,
     this.variant = TGCVariant.surface,
-    this.onTap,
     this.padding,
     this.margin,
-    this.width,
-    this.height,
-    this.color,
-    this.gradient,
-    this.borderRadius,
+    this.backgroundColor,
+    this.borderRadius = 16,
+    this.onTap,
   });
-
-  // ── Named constructors ──
-  const TGC.surface({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.width,
-    this.height,
-  })  : variant = TGCVariant.surface,
-        color = null,
-        gradient = null,
-        borderRadius = null;
-
-  const TGC.elevated({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.width,
-    this.height,
-  })  : variant = TGCVariant.elevated,
-        color = null,
-        gradient = null,
-        borderRadius = null;
-
-  const TGC.outlined({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.width,
-    this.height,
-  })  : variant = TGCVariant.outlined,
-        color = null,
-        gradient = null,
-        borderRadius = null;
-
-  const TGC.glass({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.width,
-    this.height,
-  })  : variant = TGCVariant.glass,
-        color = null,
-        gradient = null,
-        borderRadius = null;
-
-  const TGC.gradient({
-    super.key,
-    required this.child,
-    required this.gradient,
-    this.onTap,
-    this.padding = const EdgeInsets.all(16),
-    this.margin,
-    this.width,
-    this.height,
-  })  : variant = TGCVariant.elevated,
-        color = null,
-        borderRadius = null;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final br = borderRadius ?? AppRadius.brCard;
-
-    return Padding(
-      padding: margin ?? EdgeInsets.zero,
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-          width: width,
-          height: height,
-          decoration: _decoration(isDark, br),
-          child: ClipRRect(
-            borderRadius: br,
-            child: Material(
-              color: Colors.transparent,
-              child: onTap != null
-                  ? InkWell(
-                      onTap: onTap,
-                      borderRadius: br,
-                      child: Padding(
-                        padding: padding ?? const EdgeInsets.all(16),
-                        child: child,
-                      ),
-                    )
-                  : Padding(
-                      padding: padding ?? const EdgeInsets.all(16),
-                      child: child,
-                    ),
-            ),
-          ),
-        ),
-      ),
+    final bgColor = backgroundColor ?? _getBackgroundColor(isDark);
+    
+    Widget card = Container(
+      margin: margin,
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: _getDecoration(isDark, bgColor),
+      child: child,
     );
+
+    if (onTap != null) {
+      card = GestureDetector(
+        onTap: onTap,
+        child: card,
+      );
+    }
+
+    return card;
   }
 
-  BoxDecoration _decoration(bool isDark, BorderRadius br) {
+  Color _getBackgroundColor(bool isDark) {
     switch (variant) {
       case TGCVariant.surface:
-        return BoxDecoration(
-          color: color ?? (isDark ? AppColors.surface : AppColors.surface),
-          borderRadius: br,
-          border: Border.all(
-            color: isDark ? AppColors.border : AppColors.divider,
-            width: 1,
-          ),
-        );
-
+        return isDark ? AppColors.surface : Colors.white;
       case TGCVariant.elevated:
-        return BoxDecoration(
-          color: color ?? (isDark ? AppColors.surface : AppColors.surface),
-          gradient: gradient,
-          borderRadius: br,
-          boxShadow: AppShadow.elevation2(isDark),
-        );
-
+        return isDark ? AppColors.surfaceElevated : Colors.white;
       case TGCVariant.outlined:
-        return BoxDecoration(
-          color: color ?? Colors.transparent,
-          borderRadius: br,
-          border: Border.all(
-            color: isDark ? AppColors.border : AppColors.border,
-            width: 1,
-          ),
-        );
-
+        return Colors.transparent;
       case TGCVariant.glass:
-        return BoxDecoration(
-          color: isDark ? AppColors.glassSurface : AppColors.glassSurface,
-          borderRadius: br,
-          border: Border.all(
-            color: AppColors.glassBorder,
-            width: 1,
-          ),
-        );
+        return isDark 
+            ? AppColors.glassSurface 
+            : Colors.white.withValues(alpha: 0.7);
     }
+  }
+
+  BoxDecoration _getDecoration(bool isDark, Color bgColor) {
+    final borderColor = isDark ? AppColors.border : const Color(0xFFDDE7E2);
+    
+    return BoxDecoration(
+      color: bgColor,
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: variant == TGCVariant.outlined || variant == TGCVariant.glass
+          ? Border.all(
+              color: borderColor.withValues(alpha: variant == TGCVariant.glass ? 0.3 : 0.6),
+              width: 1,
+            )
+          : null,
+      boxShadow: variant == TGCVariant.elevated
+          ? [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ]
+          : variant == TGCVariant.glass
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+    );
   }
 }
 
-// ── KPI Card ──
+/// KPI stat card
 class TGCKpi extends StatelessWidget {
-  final String title;
+  final String label;
   final String value;
-  final String? subtitle;
   final IconData? icon;
-  final Gradient? gradient;
-  final Color? iconColor;
+  final Color? color;
+  final String? subtitle;
 
   const TGCKpi({
     super.key,
-    required this.title,
+    required this.label,
     required this.value,
-    this.subtitle,
     this.icon,
-    this.gradient,
-    this.iconColor,
+    this.color,
+    this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return TGC.elevated(
+    final accentColor = color ?? AppColors.primary;
+    
+    return TGC(
+      variant: TGCVariant.surface,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              if (icon != null)
+              if (icon != null) ...[
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.primary).withValues(alpha: 0.1),
-                    borderRadius: AppRadius.brSm,
+                    color: accentColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(icon, size: 18, color: iconColor ?? AppColors.primary),
+                  child: Icon(icon, color: accentColor, size: 18),
                 ),
-              if (icon != null) const SizedBox(width: 10),
+                const SizedBox(width: 10),
+              ],
               Expanded(
                 child: Text(
-                  title,
+                  label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
+                    color: isDark ? AppColors.textMuted : const Color(0xFF8A9891),
                     fontWeight: FontWeight.w500,
-                    color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -236,9 +152,9 @@ class TGCKpi extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-              color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.textPrimary : const Color(0xFF10201A),
               letterSpacing: 0,
             ),
           ),
@@ -248,7 +164,7 @@ class TGCKpi extends StatelessWidget {
               subtitle!,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                color: isDark ? AppColors.textMuted : const Color(0xFF8A9891),
               ),
             ),
           ],
@@ -258,5 +174,41 @@ class TGCKpi extends StatelessWidget {
   }
 }
 
-// Backward compatibility alias
-typedef AppCard = TGC;
+/// Gradient card for premium features
+class TGCGradient extends StatelessWidget {
+  final Widget child;
+  final List<Color> gradient;
+  final EdgeInsetsGeometry? padding;
+  final double borderRadius;
+
+  const TGCGradient({
+    super.key,
+    required this.child,
+    this.gradient = const [AppColors.primary, Color(0xFF8B5CF6)],
+    this.padding,
+    this.borderRadius = 16,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding ?? const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradient,
+        ),
+        borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: gradient.first.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}

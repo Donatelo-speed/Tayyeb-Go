@@ -599,6 +599,80 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // WALLET TRANSACTIONS (top-level, used by customer wallet screen)
+    // ============================================================
+    match /wallet_transactions/{txnId} {
+      allow read: if isAuthenticated()
+        && (resource.data.userId == request.auth.uid
+          || isAdmin());
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // SOS ALERTS (driver emergency alerts)
+    // ============================================================
+    match /sos_alerts/{alertId} {
+      allow read: if isAdmin()
+        || (isDriver() && resource.data.driverId == request.auth.uid);
+      allow create: if isDriver()
+        && request.resource.data.driverId == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // DRIVER REPORTS (safety/incident reports)
+    // ============================================================
+    match /driver_reports/{reportId} {
+      allow read: if isAdmin()
+        || (isDriver() && resource.data.driverId == request.auth.uid);
+      allow create: if isDriver()
+        && request.resource.data.driverId == request.auth.uid;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // SEARCH HISTORY (user search queries)
+    // ============================================================
+    match /search_history/{historyId} {
+      allow read: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================================
+    // CONTRACT REQUESTS (partner contract submissions)
+    // ============================================================
+    match /contract_requests/{requestId} {
+      allow read: if isAdmin()
+        || (isRestaurantOwner(resource.data.restaurantId));
+      allow create: if isRestaurantOwner(request.resource.data.restaurantId);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // REVIEWS (top-level, used by review_service.dart)
+    // ============================================================
+    match /reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isCustomer()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin()
+        || (isOwner(resource.data.userId));
+      allow delete: if isAdmin()
+        || isOwner(resource.data.userId);
+    }
+
+    // ============================================================
     // DENY everything else by default
     // ============================================================
     match /{document=**} {

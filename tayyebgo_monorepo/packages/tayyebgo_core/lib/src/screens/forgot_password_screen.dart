@@ -149,7 +149,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
         const SizedBox(height: 20),
         Text(
           'Reset Password',
-          style: AppTypography.titleLarge.copyWith(fontWeight: FontWeight.w300),
+          style: AppTypography.titleLarge.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Text(

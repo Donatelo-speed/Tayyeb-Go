@@ -158,7 +158,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
           const SizedBox(height: 40),
           Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.person_add_rounded, color: context.successColor, size: 40))),
           const SizedBox(height: 24),
-          Center(child: Text('Welcome, Driver!', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor))),
+          Center(child: Text('Welcome, Driver!', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
           Center(child: Text('Let\'s set up your account in a few quick steps.', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14), textAlign: TextAlign.center)),
         ];
@@ -221,7 +221,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
           const SizedBox(height: 40),
           Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.check_circle_rounded, color: context.successColor, size: 40))),
           const SizedBox(height: 24),
-          Center(child: Text('You\'re All Set!', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor))),
+          Center(child: Text('You\'re All Set!', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
           Center(child: Text('Start accepting deliveries and earning money.', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14), textAlign: TextAlign.center)),
         ];

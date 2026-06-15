@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
-class PartnerSettingsScreen extends StatelessWidget {
+class PartnerSettingsScreen extends StatefulWidget {
   const PartnerSettingsScreen({super.key});
 
+  @override
+  State<PartnerSettingsScreen> createState() => _PartnerSettingsScreenState();
+}
+
+class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -14,6 +20,7 @@ class PartnerSettingsScreen extends StatelessWidget {
     final displayName = user?.displayName.isNotEmpty == true ? user!.displayName : 'Store';
     final email = user?.email.isNotEmpty == true ? user!.email : '';
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'S';
+    final restaurantId = user?.vendorId;
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
@@ -28,60 +35,76 @@ class PartnerSettingsScreen extends StatelessWidget {
         children: [
           _profileHeader(context, initial, displayName, email),
           const SizedBox(height: 20),
+
           _section(context, 'Store', [
             _row(context, Icons.store_rounded, 'Store Details', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Store details coming soon')));
+              _showStoreDetailsSheet(context, restaurantId);
             }),
             _row(context, Icons.access_time_rounded, 'Business Hours', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Business hours management coming soon')));
+              _showBusinessHoursSheet(context, restaurantId);
             }),
-            _row(context, Icons.delivery_dining_rounded, 'Delivery Settings', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delivery settings coming soon')));
-            }),
-            _row(context, Icons.payment_rounded, 'Payment Methods', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment methods coming soon')));
+            _row(context, Icons.delivery_dining_rounded, 'Delivery Fee', () {
+              _showDeliveryFeeSheet(context, restaurantId);
             }),
           ]),
+
           const SizedBox(height: 14),
-          _section(context, 'Menu', [
+          _section(context, 'Quick Links', [
             _row(context, Icons.restaurant_menu_rounded, 'Menu Management', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Use the Menu tab in the dashboard')));
-            }),
-            _row(context, Icons.inventory_2_rounded, 'Inventory', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Inventory management coming soon')));
+              context.push('/menu-management');
             }),
             _row(context, Icons.local_offer_rounded, 'Promotions', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Use the Promos tab in the dashboard')));
+              context.push('/marketing');
+            }),
+            _row(context, Icons.analytics_rounded, 'Analytics', () {
+              context.push('/analytics');
             }),
           ]),
+
           const SizedBox(height: 14),
           _section(context, 'Preferences', [
             _row(context, Icons.notifications_outlined, 'Notifications', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notification settings coming soon')));
+              _showNotificationsSettings(context);
             }),
             _row(context, Icons.language_rounded, 'Language', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Language selection coming soon')));
-            }),
-            _row(context, Icons.print_rounded, 'Printer Settings', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Printer settings coming soon')));
+              final locale = context.read<LocaleProvider>();
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text('Language', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RadioListTile<String>(
+                        title: const Text('English'),
+                        value: 'en',
+                        groupValue: locale.locale.languageCode,
+                        onChanged: (v) { locale.setLocale(v!); Navigator.pop(ctx); },
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('العربية'),
+                        value: 'ar',
+                        groupValue: locale.locale.languageCode,
+                        onChanged: (v) { locale.setLocale(v!); Navigator.pop(ctx); },
+                      ),
+                    ],
+                  ),
+                ),
+              );
             }),
           ]),
+
           const SizedBox(height: 14),
           _section(context, 'Account', [
             _row(context, Icons.person_rounded, 'Personal Info', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Personal info editing coming soon')));
-            }),
-            _row(context, Icons.lock_outline_rounded, 'Change Password', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password change coming soon')));
-            }),
-            _row(context, Icons.storefront_rounded, 'Add New Store', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Add new store coming soon')));
+              _showPersonalInfoSheet(context, user);
             }),
           ]),
+
           const SizedBox(height: 14),
           _section(context, 'Support', [
             _row(context, Icons.help_outline_rounded, 'Help Center', () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Help center coming soon')));
+              context.push('/help-support');
             }),
             _row(context, Icons.info_outline_rounded, 'About', () {
               showAboutDialog(
@@ -92,6 +115,7 @@ class PartnerSettingsScreen extends StatelessWidget {
               );
             }),
           ]),
+
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -110,6 +134,263 @@ class PartnerSettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  void _showStoreDetailsSheet(BuildContext context, String? restaurantId) {
+    if (restaurantId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No restaurant linked to this account')));
+      return;
+    }
+    final nameCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final feeCtrl = TextEditingController();
+    showModalBottomSheet(
+      context: context, isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.7, minChildSize: 0.5, maxChildSize: 0.9, expand: false,
+        builder: (ctx, scrollCtrl) => FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get(),
+          builder: (context, snap) {
+            final data = snap.data?.data() as Map<String, dynamic>?;
+            if (data != null && nameCtrl.text.isEmpty) {
+              nameCtrl.text = data['name'] ?? '';
+              descCtrl.text = data['description'] ?? '';
+              feeCtrl.text = (data['deliveryFee'] ?? 0).toString();
+            }
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: ListView(
+                controller: scrollCtrl,
+                children: [
+                  Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+                  const SizedBox(height: 16),
+                  Text('Store Details', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+                  const SizedBox(height: 20),
+                  _inputField('Store Name', nameCtrl),
+                  const SizedBox(height: 12),
+                  _inputField('Description', descCtrl, maxLines: 3),
+                  const SizedBox(height: 12),
+                  _inputField('Delivery Fee (\$)', feeCtrl, keyboardType: TextInputType.number),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                        'name': nameCtrl.text.trim(),
+                        'description': descCtrl.text.trim(),
+                        'deliveryFee': double.tryParse(feeCtrl.text) ?? 0,
+                        'updatedAt': FieldValue.serverTimestamp(),
+                      });
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Store updated')));
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
+                    child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showBusinessHoursSheet(BuildContext context, String? restaurantId) {
+    if (restaurantId == null) return;
+    final hours = <String, Map<String, dynamic>>{};
+    final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    showModalBottomSheet(
+      context: context, isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.8, minChildSize: 0.5, maxChildSize: 0.95, expand: false,
+        builder: (ctx, scrollCtrl) => FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get(),
+          builder: (context, snap) {
+            final data = snap.data?.data() as Map<String, dynamic>?;
+            final existing = data?['businessHours'] as Map<String, dynamic>? ?? {};
+            return StatefulBuilder(
+              builder: (ctx, setModalState) => Padding(
+                padding: const EdgeInsets.all(20),
+                child: ListView(
+                  controller: scrollCtrl,
+                  children: [
+                    Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+                    const SizedBox(height: 16),
+                    Text('Business Hours', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+                    const SizedBox(height: 20),
+                    ...days.map((day) {
+                      final h = existing[day] as Map<String, dynamic>? ?? {};
+                      final open = h['open'] ?? '09:00';
+                      final close = h['close'] ?? '22:00';
+                      final closed = h['closed'] ?? false;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 90, child: Text(day, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13))),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: closed
+                                  ? Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor)),
+                                      child: Text('Closed', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
+                                    )
+                                  : Row(
+                                      children: [
+                                        Expanded(child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                          decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor)),
+                                          child: Text('$open - $close', style: GoogleFonts.inter(fontSize: 13), textAlign: TextAlign.center),
+                                        )),
+                                      ],
+                                    ),
+                            ),
+                            const SizedBox(width: 8),
+                            Switch(
+                              value: !closed,
+                              onChanged: (v) {
+                                hours[day] = {'open': open, 'close': close, 'closed': !v};
+                                setModalState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                          'businessHours': hours.isNotEmpty ? hours : existing,
+                          'updatedAt': FieldValue.serverTimestamp(),
+                        });
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hours updated')));
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
+                      child: const Text('Save Hours', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showDeliveryFeeSheet(BuildContext context, String? restaurantId) {
+    if (restaurantId == null) return;
+    final feeCtrl = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text('Delivery Fee', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            const SizedBox(height: 16),
+            _inputField('Delivery Fee (\$)', feeCtrl, keyboardType: TextInputType.number),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                  'deliveryFee': double.tryParse(feeCtrl.text) ?? 0,
+                  'updatedAt': FieldValue.serverTimestamp(),
+                });
+                if (ctx.mounted) Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delivery fee updated')));
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
+              child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNotificationsSettings(BuildContext context) {
+    final user = context.read<AuthProvider>().user;
+    if (user == null) return;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text('Notification Settings', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: Text('New Order Alerts', style: GoogleFonts.inter(fontSize: 14)),
+              value: true,
+              onChanged: (v) {},
+              activeColor: AppColors.partnerAccent,
+            ),
+            SwitchListTile(
+              title: Text('Order Status Updates', style: GoogleFonts.inter(fontSize: 14)),
+              value: true,
+              onChanged: (v) {},
+              activeColor: AppColors.partnerAccent,
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showPersonalInfoSheet(BuildContext context, dynamic user) {
+    final nameCtrl = TextEditingController(text: user?.displayName ?? '');
+    final phoneCtrl = TextEditingController(text: user?.phone ?? '');
+    showModalBottomSheet(
+      context: context, isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 20, right: 20, top: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text('Personal Info', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            const SizedBox(height: 16),
+            _inputField('Name', nameCtrl),
+            const SizedBox(height: 12),
+            _inputField('Phone', phoneCtrl, keyboardType: TextInputType.phone),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                await FirebaseFirestore.instance.collection('users').doc(user!.id).update({
+                  'displayName': nameCtrl.text.trim(),
+                  'phone': phoneCtrl.text.trim(),
+                  'updatedAt': FieldValue.serverTimestamp(),
+                });
+                if (ctx.mounted) Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated')));
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
+              child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -136,7 +417,6 @@ class PartnerSettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 22),
         ],
       ),
     );
@@ -176,6 +456,19 @@ class PartnerSettingsScreen extends StatelessWidget {
             Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _inputField(String label, TextEditingController ctrl, {TextInputType? keyboardType, int maxLines = 1}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
     );
   }

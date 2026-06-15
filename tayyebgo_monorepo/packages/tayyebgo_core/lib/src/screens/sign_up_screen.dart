@@ -268,7 +268,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'Create Your Account',
           style: AppTypography.titleLarge.copyWith(
             color: AppColors.textPrimary,
-            fontWeight: FontWeight.w300,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 6),

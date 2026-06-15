@@ -38,20 +38,35 @@ class _DriverShellScreenState extends State<DriverShellScreen> {
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         decoration: BoxDecoration(
-          color: context.surfaceColor,
-          border: Border(top: BorderSide(color: context.borderColor, width: 0.5)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+          color: context.backgroundColor,
+          border: Border(
+            top: BorderSide(
+              color: context.borderColor.withValues(alpha: 0.3),
+              width: 0.5,
             ),
-          ],
+          ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: context.borderColor.withValues(alpha: 0.3),
+                width: 0.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 _navItem(0, Icons.dashboard_rounded, 'Dashboard'),
@@ -78,29 +93,42 @@ class _DriverShellScreenState extends State<DriverShellScreen> {
         },
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? context.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(
+            horizontal: isSelected ? 16 : 12,
+            vertical: 12,
           ),
-          child: Column(
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.driverAccent.withValues(alpha: 0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 22,
-                color: isSelected ? context.primaryColor : context.textMutedColor,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? context.primaryColor : context.textMutedColor,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  icon,
+                  key: ValueKey('$index-$isSelected'),
+                  size: 22,
+                  color: isSelected ? AppColors.driverAccent : AppColors.textMuted,
                 ),
               ),
+              if (isSelected) ...[
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.driverAccent,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -237,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!_otpSent) ...[
           Text(
             'Enter your phone number',
-            style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w300),
+            style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
@@ -310,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Text(
             'Sign in with email',
-            style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w300),
+            style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 28),
           _buildField(

@@ -1,203 +1,179 @@
 import 'package:flutter/material.dart';
 
-/// Shared TayyebGo color system.
+/// TayyebGo brand color system.
 ///
-/// The brand palette uses charcoal surfaces, fresh green actions, and warm
-/// food-service accents so the four apps feel related without becoming a
-/// single-hue interface.
+/// The brand uses warm food-forward color, a fresh route accent, and quiet
+/// operational neutrals so customer, driver, partner, and admin apps feel
+/// related without becoming one orange screen.
 abstract class AppColors {
-  // Brand
-  static const Color primary = Color(0xFF00A676);
-  static const Color primaryHover = Color(0xFF2DD4BF);
-  static const Color primarySoft = Color(0xFF12362E);
-  static const Color primaryAlt = Color(0xFF0E8F70);
-  static const Color primaryLight = Color(0x1A00A676);
-  static const Color primaryDark = Color(0xFF006B4F);
-  static const Color accent = Color(0xFFFFB703);
-  static const Color accentLight = Color(0x1AFFB703);
+  static const Color primary = Color(0xFFFF5A2C);
+  static const Color primaryHover = Color(0xFFFF7A3D);
+  static const Color primarySoft = Color(0x26FF5A2C);
+  static const Color primaryAlt = Color(0xFFDB3E1D);
+  static const Color primaryLight = Color(0x33FF5A2C);
+  static const Color primaryDark = Color(0xFF9E2F18);
 
-  // Gradients
-  static const Color gradientStart = Color(0xFF00A676);
-  static const Color gradientEnd = Color(0xFFFFB703);
+  static const Color accent = Color(0xFF35C88A);
+  static const Color accentLight = Color(0x2635C88A);
+  static const Color gradientStart = primary;
+  static const Color gradientEnd = Color(0xFFFFB84D);
+  static const Color route = Color(0xFF21B8A6);
+  static const Color routeSoft = Color(0x2621B8A6);
 
-  // Semantic
-  static const Color info = Color(0xFF06B6D4);
-  static const Color premium = Color(0xFF7C3AED);
-  static const Color premiumSoft = Color(0x1A7C3AED);
-  static const Color purple = Color(0xFF7C3AED);
-  static const Color cyan = Color(0xFF06B6D4);
-  static const Color emerald = Color(0xFF10B981);
-  static const Color amber = Color(0xFFF59E0B);
-  static const Color shadow = Color(0xFF050706);
+  static const Color customerAccent = primary;
+  static const Color driverAccent = Color(0xFF14B87A);
+  static const Color partnerAccent = Color(0xFFF4A51C);
+  static const Color adminAccent = Color(0xFF5263F3);
 
-  // Surfaces
-  static const Color background = Color(0xFF0B0F0E);
-  static const Color surface = Color(0xFF121816);
-  static const Color surfaceAlt = Color(0xFF1A2420);
-  static const Color surfaceHover = Color(0xFF21302A);
-  static const Color surfaceElevated = Color(0xFF17201D);
-  static const Color surfaceSunken = Color(0xFF080B0A);
+  static const Color info = Color(0xFF3E8CFF);
+  static const Color premium = Color(0xFF8E5CF7);
+  static const Color premiumSoft = Color(0x268E5CF7);
+  static const Color purple = premium;
+  static const Color cyan = Color(0xFF17B6D2);
+  static const Color emerald = Color(0xFF15B87A);
+  static const Color amber = Color(0xFFF4A51C);
+  static const Color shadow = Color(0xFF050711);
 
-  // Glass
-  static const Color glassSurface = Color(0x26121816);
-  static const Color glassBorder = Color(0x1AFFFFFF);
+  static const Color background = Color(0xFF090B10);
+  static const Color surface = Color(0xFF121722);
+  static const Color surfaceAlt = Color(0xFF1A2130);
+  static const Color surfaceHover = Color(0xFF222B3B);
+  static const Color surfaceElevated = Color(0xFF171D2A);
+  static const Color surfaceSunken = Color(0xFF07090D);
+
+  static const Color glassSurface = Color(0xB3121722);
+  static const Color glassBorder = Color(0x1FFFFFFF);
   static const Color glassOverlay = Color(0x66000000);
 
-  // Status
-  static const Color error = Color(0xFFF87171);
-  static const Color errorSoft = Color(0x1AF87171);
-  static const Color success = Color(0xFF34D399);
-  static const Color successSoft = Color(0x1A34D399);
-  static const Color warning = Color(0xFFFBBF24);
-  static const Color warningSoft = Color(0x1AFBBF24);
-  static const Color infoSoft = Color(0x1A06B6D4);
+  static const Color error = Color(0xFFFF4D5E);
+  static const Color errorSoft = Color(0x26FF4D5E);
+  static const Color success = Color(0xFF22C96D);
+  static const Color successSoft = Color(0x2622C96D);
+  static const Color warning = Color(0xFFFFC247);
+  static const Color warningSoft = Color(0x26FFC247);
+  static const Color infoSoft = Color(0x263E8CFF);
 
-  // Glow
-  static const Color glowPrimary = Color(0x3300A676);
-  static const Color glowSuccess = Color(0x3334D399);
-  static const Color glowError = Color(0x33F87171);
-  static const Color glowWarning = Color(0x33FBBF24);
+  static const Color glowPrimary = Color(0x40FF5A2C);
+  static const Color glowSuccess = Color(0x3322C96D);
+  static const Color glowError = Color(0x33FF4D5E);
+  static const Color glowWarning = Color(0x33FFC247);
 
-  // Typography
-  static const Color textPrimary = Color(0xFFF8FAF8);
-  static const Color textSecondary = Color(0xFFC8D6CF);
-  static const Color textTertiary = Color(0xFF9AA9A1);
-  static const Color textMuted = Color(0xFF7A8780);
-  static const Color textInverse = Color(0xFF07100C);
+  static const Color textPrimary = Color(0xFFF7F9FC);
+  static const Color textSecondary = Color(0xFFB8C0CC);
+  static const Color textTertiary = Color(0xFF8792A3);
+  static const Color textMuted = Color(0xFF6B7686);
+  static const Color textInverse = Color(0xFFFFFFFF);
 
-  // Borders
-  static const Color border = Color(0xFF26352F);
-  static const Color borderStrong = Color(0xFF365047);
-  static const Color divider = Color(0xFF1D2924);
+  static const Color border = Color(0xFF273043);
+  static const Color borderStrong = Color(0xFF3A465C);
+  static const Color divider = Color(0xFF1E2635);
 
-  // Rating
-  static const Color ratingStar = Color(0xFFFFB703);
-
-  // Scrim
+  static const Color ratingStar = Color(0xFFFFC247);
   static const Color scrim = Color(0x99000000);
 
-  // Legacy aliases
   static const Color cardBackground = surface;
   static const Color overlay = scrim;
 
-  // Sidebar
-  static const Color sidebarBg = Color(0xFF090D0B);
-  static const Color sidebarText = Color(0xFFC8D6CF);
-  static const Color sidebarMuted = Color(0xFF7A8780);
+  static const Color sidebarBg = Color(0xFF080A0F);
+  static const Color sidebarText = Color(0xFFE7EBF2);
+  static const Color sidebarMuted = Color(0xFF8993A3);
   static const Color sidebarActive = primary;
-  static const Color sidebarActiveBg = primaryLight;
-  static const Color sidebarBorder = Color(0xFF16211D);
+  static const Color sidebarActiveBg = Color(0x1FFF5A2C);
+  static const Color sidebarBorder = Color(0xFF1B2230);
 
-  // Chart and stat gradients
-  static const List<Color> revenueGradient = [primary, cyan];
-  static const List<Color> ordersGradient = [emerald, primaryHover];
-  static const List<Color> driversGradient = [amber, warning];
-  static const List<Color> storesGradient = [Color(0xFFFF6B35), accent];
+  static const List<Color> revenueGradient = [primary, gradientEnd];
+  static const List<Color> ordersGradient = [emerald, route];
+  static const List<Color> driversGradient = [driverAccent, Color(0xFF45D4A3)];
+  static const List<Color> storesGradient = [partnerAccent, Color(0xFFFFD36B)];
 
-  // Dark aliases
   static const Color surfaceDark = background;
   static const Color darkBg = background;
-
-  // Per-app accents
-  static const Color customerAccent = Color(0xFFFF6B35);
-  static const Color driverAccent = Color(0xFF10B981);
-  static const Color partnerAccent = Color(0xFFF59E0B);
-  static const Color adminAccent = Color(0xFF06B6D4);
 }
 
 typedef DarkAppColors = AppColors;
 
 /// Light theme colors.
 abstract class LightAppColors {
-  // Brand
-  static const Color primary = Color(0xFF008B6A);
-  static const Color primaryHover = Color(0xFF047857);
-  static const Color primarySoft = Color(0xFFE3F7EF);
-  static const Color primaryAlt = Color(0xFF00765A);
-  static const Color primaryLight = Color(0x1A008B6A);
-  static const Color primaryDark = Color(0xFF005940);
-  static const Color accent = Color(0xFFFFB703);
-  static const Color accentLight = Color(0x1AFFB703);
+  static const Color primary = AppColors.primary;
+  static const Color primaryHover = AppColors.primaryHover;
+  static const Color primarySoft = Color(0xFFFFEFE8);
+  static const Color primaryAlt = AppColors.primaryAlt;
+  static const Color primaryLight = Color(0x29FF5A2C);
+  static const Color primaryDark = AppColors.primaryDark;
 
-  // Gradients
-  static const Color gradientStart = Color(0xFF008B6A);
-  static const Color gradientEnd = Color(0xFFFFB703);
+  static const Color accent = AppColors.accent;
+  static const Color accentLight = Color(0xFFE9FAF3);
+  static const Color gradientStart = AppColors.gradientStart;
+  static const Color gradientEnd = AppColors.gradientEnd;
+  static const Color route = AppColors.route;
+  static const Color routeSoft = Color(0xFFE7F8F5);
 
-  // Semantic
-  static const Color info = Color(0xFF0891B2);
-  static const Color premium = Color(0xFF7C3AED);
-  static const Color premiumSoft = Color(0xFFEDE9FE);
-  static const Color purple = Color(0xFF7C3AED);
-  static const Color cyan = Color(0xFF0891B2);
-  static const Color emerald = Color(0xFF059669);
-  static const Color amber = Color(0xFFD97706);
-  static const Color shadow = Color(0xFF0F172A);
+  static const Color customerAccent = AppColors.customerAccent;
+  static const Color driverAccent = AppColors.driverAccent;
+  static const Color partnerAccent = AppColors.partnerAccent;
+  static const Color adminAccent = AppColors.adminAccent;
 
-  // Surfaces
-  static const Color background = Color(0xFFF6F8F7);
+  static const Color info = AppColors.info;
+  static const Color premium = AppColors.premium;
+  static const Color premiumSoft = Color(0xFFF3EDFF);
+  static const Color purple = AppColors.purple;
+  static const Color cyan = AppColors.cyan;
+  static const Color emerald = AppColors.emerald;
+  static const Color amber = AppColors.amber;
+  static const Color shadow = Color(0xFF1D2736);
+
+  static const Color background = Color(0xFFF7F4EF);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceAlt = Color(0xFFEEF3F0);
-  static const Color surfaceHover = Color(0xFFF9FBFA);
+  static const Color surfaceAlt = Color(0xFFF2F5F7);
+  static const Color surfaceHover = Color(0xFFFFFAF6);
   static const Color surfaceElevated = Color(0xFFFFFFFF);
-  static const Color surfaceSunken = Color(0xFFE8EFEC);
+  static const Color surfaceSunken = Color(0xFFEAEFF2);
 
-  // Glass
-  static const Color glassSurface = Color(0xCCFFFFFF);
-  static const Color glassBorder = Color(0x33FFFFFF);
-  static const Color glassOverlay = Color(0x4D000000);
+  static const Color glassSurface = Color(0xD9FFFFFF);
+  static const Color glassBorder = Color(0x80FFFFFF);
+  static const Color glassOverlay = Color(0x33000000);
 
-  // Status
-  static const Color error = Color(0xFFDC2626);
-  static const Color errorSoft = Color(0xFFFEE2E2);
-  static const Color success = Color(0xFF059669);
-  static const Color successSoft = Color(0xFFD1FAE5);
-  static const Color warning = Color(0xFFD97706);
-  static const Color warningSoft = Color(0xFFFEF3C7);
-  static const Color infoSoft = Color(0xFFE0F2FE);
+  static const Color error = AppColors.error;
+  static const Color errorSoft = Color(0xFFFFEDF0);
+  static const Color success = AppColors.success;
+  static const Color successSoft = Color(0xFFEAFBF2);
+  static const Color warning = Color(0xFFE69710);
+  static const Color warningSoft = Color(0xFFFFF6DF);
+  static const Color infoSoft = Color(0xFFECF4FF);
 
-  // Glow
-  static const Color glowPrimary = Color(0x33008B6A);
-  static const Color glowSuccess = Color(0x33059669);
-  static const Color glowError = Color(0x33DC2626);
-  static const Color glowWarning = Color(0x33D97706);
+  static const Color glowPrimary = AppColors.glowPrimary;
+  static const Color glowSuccess = AppColors.glowSuccess;
+  static const Color glowError = AppColors.glowError;
+  static const Color glowWarning = AppColors.glowWarning;
 
-  // Typography
-  static const Color textPrimary = Color(0xFF10201A);
-  static const Color textSecondary = Color(0xFF40534B);
-  static const Color textTertiary = Color(0xFF62756C);
-  static const Color textMuted = Color(0xFF8A9891);
+  static const Color textPrimary = Color(0xFF151922);
+  static const Color textSecondary = Color(0xFF4B5564);
+  static const Color textTertiary = Color(0xFF737F90);
+  static const Color textMuted = Color(0xFF93A0AF);
   static const Color textInverse = Color(0xFFFFFFFF);
 
-  // Borders
-  static const Color border = Color(0xFFDDE7E2);
-  static const Color borderStrong = Color(0xFFBCCDC5);
-  static const Color divider = Color(0xFFEAF0ED);
+  static const Color border = Color(0xFFDCE3EA);
+  static const Color borderStrong = Color(0xFFC6D0DA);
+  static const Color divider = Color(0xFFE8EDF2);
 
-  // Rating
-  static const Color ratingStar = Color(0xFFFFB703);
-
-  // Scrim
+  static const Color ratingStar = Color(0xFFE69710);
   static const Color scrim = Color(0x66000000);
 
-  // Legacy aliases
   static const Color cardBackground = surface;
   static const Color overlay = scrim;
 
-  // Sidebar
-  static const Color sidebarBg = Color(0xFF10201A);
-  static const Color sidebarText = Color(0xFFEAF0ED);
-  static const Color sidebarMuted = Color(0xFF9AA9A1);
-  static const Color sidebarActive = primary;
-  static const Color sidebarActiveBg = primaryLight;
-  static const Color sidebarBorder = Color(0xFF1F332B);
+  static const Color sidebarBg = Color(0xFF0B1018);
+  static const Color sidebarText = Color(0xFFE7EBF2);
+  static const Color sidebarMuted = Color(0xFF909BAD);
+  static const Color sidebarActive = AppColors.primary;
+  static const Color sidebarActiveBg = Color(0x1FFF5A2C);
+  static const Color sidebarBorder = Color(0xFF1C2636);
 
-  // Chart and stat gradients
-  static const List<Color> revenueGradient = [primary, cyan];
-  static const List<Color> ordersGradient = [emerald, Color(0xFF10B981)];
-  static const List<Color> driversGradient = [amber, accent];
-  static const List<Color> storesGradient = [Color(0xFFFF6B35), accent];
+  static const List<Color> revenueGradient = AppColors.revenueGradient;
+  static const List<Color> ordersGradient = AppColors.ordersGradient;
+  static const List<Color> driversGradient = AppColors.driversGradient;
+  static const List<Color> storesGradient = AppColors.storesGradient;
 
-  // Dark aliases
   static const Color surfaceDark = surface;
   static const Color darkBg = background;
 }

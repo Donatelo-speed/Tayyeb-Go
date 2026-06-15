@@ -14,10 +14,10 @@ import 'widgets/quick_actions.dart';
 import 'widgets/ranking_cards.dart';
 import 'widgets/stats_card.dart';
 
-const _statOrange = LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFD97706)], begin: Alignment.topLeft, end: Alignment.bottomRight);
-const _statGreen = LinearGradient(colors: [Color(0xFF10B981), Color(0xFF059669)], begin: Alignment.topLeft, end: Alignment.bottomRight);
-const _statPurple = LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight);
-const _statBlue = LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF4F46E5)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statOrange = LinearGradient(colors: [AppColors.primary, AppColors.primaryHover], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statGreen = LinearGradient(colors: [AppColors.driverAccent, const Color(0xFF059669)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statPurple = LinearGradient(colors: [AppColors.adminAccent, const Color(0xFF4F46E5)], begin: Alignment.topLeft, end: Alignment.bottomRight);
+const _statBlue = LinearGradient(colors: [AppColors.cyan, const Color(0xFF0891B2)], begin: Alignment.topLeft, end: Alignment.bottomRight);
 
 class DashboardView extends StatelessWidget {
   const DashboardView();
@@ -154,9 +154,9 @@ class DashboardView extends StatelessWidget {
           children: [
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [AppColors.adminAccent, AppColors.cyan],
+                colors: [AppColors.primary, AppColors.primaryHover],
               ).createShader(bounds),
-              child: Text('Command Center', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: Colors.white)),
+              child: Text('Command Center', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: Colors.white, letterSpacing: 0)),
             ),
             const SizedBox(height: 4),
             Text('Your platform at a glance', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),

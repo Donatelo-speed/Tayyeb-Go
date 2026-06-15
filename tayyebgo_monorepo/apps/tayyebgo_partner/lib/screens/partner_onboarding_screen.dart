@@ -155,7 +155,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
           const SizedBox(height: 40),
           Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.store_rounded, color: context.warningColor, size: 40))),
           const SizedBox(height: 24),
-          Center(child: Text('Partner Setup', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor))),
+          Center(child: Text('Partner Setup', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
           Center(child: Text('Set up your business profile to start receiving orders.', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14), textAlign: TextAlign.center)),
         ];

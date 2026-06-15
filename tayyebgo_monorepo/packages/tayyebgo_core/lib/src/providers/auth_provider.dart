@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../domain/enums/user_role.dart';
+import '../../infrastructure/services/push_notification_service.dart';
 import '../models/user_model.dart';
 import '../services/auth_gate.dart';
 import '../services/auth_listenable.dart';
@@ -145,6 +146,10 @@ class AuthProvider extends ChangeNotifier {
     _isInitializing = false;
     notifyListeners();
     _notifyRouter();
+
+    if (_user != null) {
+      PushNotificationService().initializeAndRegister(_user!.id, _user!.role.name);
+    }
   }
 
   void setOnboardingComplete() {

@@ -18,6 +18,11 @@ import 'screens/tracking/order_tracking_screen.dart';
 import 'screens/explore_screen.dart';
 import 'screens/customer_wallet_screen.dart';
 import 'screens/customer_splash_screen.dart';
+import 'screens/membership_screen.dart';
+import 'screens/referral_screen.dart';
+import 'screens/gift_cards_screen.dart';
+import 'screens/points_rewards_screen.dart';
+import 'screens/tayyebgo_picks_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,6 +145,11 @@ class _CustomerAppState extends State<CustomerApp> {
         AppRouter.route('/wallet', const CustomerWalletScreen(), name: 'wallet'),
         AppRouter.route('/settings', const SettingsScreen(), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
+        AppRouter.route('/membership', const MembershipScreen(), name: 'membership'),
+        AppRouter.route('/referral', const ReferralScreen(), name: 'referral'),
+        AppRouter.route('/gift-cards', const GiftCardsScreen(), name: 'giftCards'),
+        AppRouter.route('/points-rewards', const PointsRewardsScreen(), name: 'pointsRewards'),
+        AppRouter.route('/picks', const TayyebGoPicksScreen(), name: 'picks'),
         AppRouter.route('/anything-request', const AnythingRequestScreen(), name: 'anythingRequest'),
         GoRoute(
           path: '/anything-tracking/:id',

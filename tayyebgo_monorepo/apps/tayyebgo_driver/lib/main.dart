@@ -18,6 +18,7 @@ import 'screens/driver_edit_profile_screen.dart';
 import 'screens/driver_documents_screen.dart';
 import 'screens/delivery_history_screen.dart';
 import 'screens/driver_shell_screen.dart';
+import 'screens/driver_heatmap_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -117,6 +118,7 @@ class _DriverAppState extends State<DriverApp> {
         ),
         AppRouter.route('/wallet', const DriverWalletScreen(), name: 'wallet'),
         AppRouter.route('/safety', const DriverSafetyScreen(), name: 'safety'),
+        AppRouter.route('/heatmap', const DriverHeatMapScreen(), name: 'heatmap'),
         AppRouter.route('/delivery-history', const DeliveryHistoryScreen(), name: 'deliveryHistory'),
         AppRouter.route('/edit-profile', const DriverEditProfileScreen(), name: 'editProfile'),
         AppRouter.route('/documents', const DriverDocumentsScreen(), name: 'documents'),

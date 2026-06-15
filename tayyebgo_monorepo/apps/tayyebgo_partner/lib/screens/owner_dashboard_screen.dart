@@ -35,27 +35,58 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        title: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [AppColors.partnerAccent, AppColors.warning],
-          ).createShader(bounds),
-          child: Text('Owner Dashboard', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.white)),
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.partnerAccent, Color(0xFFFCD34D)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.store_rounded, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Partner Dashboard',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: context.textPrimaryColor,
+                letterSpacing: 0,
+              ),
+            ),
+          ],
         ),
         backgroundColor: context.surfaceColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        bottom: TabBar(
-          controller: _tabCtrl,
-          isScrollable: true,
-          labelColor: context.warningColor,
-          unselectedLabelColor: context.textMutedColor,
-          indicatorColor: context.warningColor,
-          tabs: const [
-            Tab(icon: Icon(Icons.dashboard_rounded, size: 20), text: 'Overview'),
-            Tab(icon: Icon(Icons.menu_book_rounded, size: 20), text: 'Menu'),
-            Tab(icon: Icon(Icons.delivery_dining_rounded, size: 20), text: 'Dispatch'),
-            Tab(icon: Icon(Icons.local_offer_rounded, size: 20), text: 'Marketing'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TabBar(
+              controller: _tabCtrl,
+              isScrollable: true,
+              labelColor: Colors.white,
+              unselectedLabelColor: context.textMutedColor,
+              indicatorColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+              unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 13),
+              dividerColor: Colors.transparent,
+              tabs: [
+                Tab(icon: Icon(Icons.dashboard_rounded, size: 18), text: 'Overview'),
+                Tab(icon: Icon(Icons.menu_book_rounded, size: 18), text: 'Menu'),
+                Tab(icon: Icon(Icons.delivery_dining_rounded, size: 18), text: 'Dispatch'),
+                Tab(icon: Icon(Icons.local_offer_rounded, size: 18), text: 'Marketing'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -142,10 +173,10 @@ class _OverviewTab extends StatelessWidget {
               crossAxisSpacing: 12,
               childAspectRatio: 1.6,
               children: [
-                _kpiCard(context, 'Total Orders', '$totalOrders', Icons.shopping_bag_rounded, context.warningColor),
-                _kpiCard(context, 'Daily Orders', '$dailyOrders', Icons.today_rounded, context.successColor),
-                _kpiCard(context, 'Revenue', '\$${revenue.toStringAsFixed(0)}', Icons.attach_money_rounded, context.successColor),
-                _kpiCard(context, 'Active', '$active', Icons.pending_actions_rounded, context.warningColor),
+                TGStat(label: 'Total Orders', value: '$totalOrders', icon: Icons.shopping_bag_rounded, color: AppColors.partnerAccent),
+                TGStat(label: 'Daily Orders', value: '$dailyOrders', icon: Icons.today_rounded, color: AppColors.driverAccent),
+                TGStat(label: 'Revenue', value: '\$${revenue.toStringAsFixed(0)}', icon: Icons.attach_money_rounded, color: AppColors.primary),
+                TGStat(label: 'Active', value: '$active', icon: Icons.pending_actions_rounded, color: AppColors.warning),
               ],
             ),
 
@@ -155,7 +186,7 @@ class _OverviewTab extends StatelessWidget {
             ],
 
             const SizedBox(height: 24),
-            Text('Recent Orders', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500)),
+            TGSection(title: 'Recent Orders', color: AppColors.partnerAccent),
             const SizedBox(height: 12),
             StreamBuilder<QuerySnapshot>(
               stream: () {
@@ -209,16 +240,16 @@ class _OverviewTab extends StatelessWidget {
 
   Widget _kpiCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surfaceColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -227,20 +258,22 @@ class _OverviewTab extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 22),
           ),
           const Spacer(),
-          Text(value, style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: 0, color: AppColors.textPrimary)),
-          const SizedBox(height: 2),
-          Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textMuted)),
+          Text(value, style: GoogleFonts.inter(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: 0, color: context.textPrimaryColor)),
+          const SizedBox(height: 4),
+          Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textMuted)),
         ],
       ),
     );

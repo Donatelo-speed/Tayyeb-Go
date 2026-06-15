@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,8 +14,10 @@ class CustomerMainScreen extends StatefulWidget {
   State<CustomerMainScreen> createState() => _CustomerMainScreenState();
 }
 
-class _CustomerMainScreenState extends State<CustomerMainScreen> {
+class _CustomerMainScreenState extends State<CustomerMainScreen>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
+  late final AnimationController _animCtrl;
 
   final _screens = const [
     CustomerHomeScreen(),
@@ -22,112 +25,156 @@ class _CustomerMainScreenState extends State<CustomerMainScreen> {
     OrderHistoryScreen(),
   ];
 
-  final _labels = const ['Home', 'Explore', 'Orders'];
-  final _icons = const [
-    Icons.home_rounded,
-    Icons.explore_rounded,
-    Icons.receipt_long_rounded,
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _animCtrl = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _animCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: IndexedStack(
-            index: _currentIndex,
-            children: _screens,
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            border: Border(
-              top: BorderSide(color: context.borderColor.withValues(alpha: 0.5), width: 0.5),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-              decoration: BoxDecoration(
-                color: context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(0, _icons[0], _labels[0]),
-                  _buildNavItem(1, _icons[1], _labels[1]),
-                  _buildNavItem(2, _icons[2], _labels[2]),
-                  _buildProfileItem(),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+    return Scaffold(
+      backgroundColor: context.backgroundColor,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: _buildGlassmorphismNav(),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    final isActive = _currentIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeInOut,
-        padding: EdgeInsets.symmetric(horizontal: isActive ? 18 : 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isActive ? Colors.white : AppColors.textMuted,
-            ),
-            if (isActive) ...[
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+  Widget _buildGlassmorphismNav() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: context.surfaceColor.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: context.borderColor.withValues(alpha: 0.2),
+                width: 0.5,
               ),
-            ],
-          ],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                _buildNavTab(0, Icons.home_rounded, 'Home'),
+                _buildNavTab(1, Icons.explore_rounded, 'Explore'),
+                _buildNavTab(2, Icons.receipt_long_rounded, 'Orders'),
+                _buildProfileTab(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileItem() {
+  Widget _buildNavTab(int index, IconData icon, String label) {
+    final isSelected = _currentIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          if (_currentIndex != index) {
+            TGHaptics.light();
+            setState(() => _currentIndex = index);
+          }
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(
+            horizontal: isSelected ? 16 : 8,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  icon,
+                  key: ValueKey('$index-$isSelected'),
+                  size: 22,
+                  color: isSelected ? AppColors.primary : AppColors.textMuted,
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(width: 8),
+                AnimatedFadeSlide(
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileTab() {
     return GestureDetector(
-      onTap: () => context.push('/profile'),
+      onTap: () {
+        TGHaptics.light();
+        context.push('/profile');
+      },
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.person_rounded,
-              size: 20,
-              color: AppColors.textMuted,
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.primaryHover],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: const Icon(
+          Icons.person_rounded,
+          size: 20,
+          color: Colors.white,
         ),
       ),
     );

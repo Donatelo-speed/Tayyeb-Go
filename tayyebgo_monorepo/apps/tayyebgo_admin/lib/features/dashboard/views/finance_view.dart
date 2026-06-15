@@ -114,7 +114,7 @@ class _FinanceContent extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Financial Overview', style: GoogleFonts.inter(fontWeight: FontWeight.w200, fontSize: 28, color: context.textPrimaryColor)),
+          Text('Financial Overview', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor)),
           const SizedBox(height: 4),
           Text('Revenue, commissions, and payouts', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           const SizedBox(height: 24),

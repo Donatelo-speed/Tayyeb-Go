@@ -58,9 +58,9 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   }
 
   @override
@@ -75,7 +75,9 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
       backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
+            // Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -85,40 +87,74 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Good ${_getGreeting()}, $driverName',
-                              style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.driverAccent,
-                                  shape: BoxShape.circle,
-                                ),
+                          AnimatedFadeSlide(
+                            duration: const Duration(milliseconds: 500),
+                            child: Text(
+                              '${_getGreeting()}, $driverName',
+                              style: GoogleFonts.inter(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: context.textPrimaryColor,
+                                letterSpacing: 0,
                               ),
-                              const SizedBox(width: 6),
-                              Text('Driver', style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: AppColors.textMuted,
-                              )),
-                            ],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AnimatedFadeSlide(
+                            delay: 100,
+                            duration: const Duration(milliseconds: 500),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: _isOnline ? AppColors.driverAccent : AppColors.textMuted,
+                                    shape: BoxShape.circle,
+                                    boxShadow: _isOnline ? [
+                                      BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.5), blurRadius: 6, spreadRadius: 1),
+                                    ] : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _isOnline ? 'Online & Ready' : 'Offline',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: _isOnline ? AppColors.driverAccent : AppColors.textMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => context.push('/profile'),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: context.surfaceAltColor,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
+                    AnimatedFadeSlide(
+                      delay: 200,
+                      duration: const Duration(milliseconds: 500),
+                      child: AnimatedPressScale(
+                        onTap: () => context.push('/profile'),
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2)),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              driverName[0].toUpperCase(),
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.white),
+                            ),
+                          ),
                         ),
-                        child: Icon(Icons.person_rounded, color: AppColors.textMuted, size: 22),
                       ),
                     ),
                   ],
@@ -126,243 +162,192 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
               ),
             ),
 
+            // Online Toggle
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: GestureDetector(
-                  onTap: _toggleOnline,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: _isOnline
-                            ? [const Color(0xFF10B981), const Color(0xFF059669)]
-                            : [context.surfaceAltColor, context.surfaceColor],
+                child: AnimatedFadeSlide(
+                  delay: 150,
+                  duration: const Duration(milliseconds: 500),
+                  child: AnimatedPressScale(
+                    onTap: _toggleOnline,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOutCubic,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: _isOnline
+                              ? [AppColors.driverAccent, const Color(0xFF059669)]
+                              : [context.surfaceColor, context.surfaceColor],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: _isOnline
+                            ? [BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))]
+                            : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
                       ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: _isOnline
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF10B981).withValues(alpha: 0.4),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: Row(
-                      children: [
-                        if (_isOnline)
+                      child: Row(
+                        children: [
                           Container(
-                            width: 12,
-                            height: 12,
+                            width: 14,
+                            height: 14,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: _isOnline ? Colors.white : AppColors.textMuted,
                               shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withValues(alpha: 0.5),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
+                              boxShadow: _isOnline ? [BoxShadow(color: Colors.white.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 2)] : null,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _isOnline ? 'You are Online' : 'Tap to go Online',
+                                  style: TextStyle(
+                                    color: _isOnline ? Colors.white : context.textPrimaryColor,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
                                 ),
+                                if (!_isOnline)
+                                  Text(
+                                    'Start receiving delivery requests',
+                                    style: TextStyle(color: context.textMutedColor, fontSize: 12),
+                                  ),
                               ],
                             ),
-                          )
-                        else
-                          Container(
-                            width: 12,
-                            height: 12,
+                          ),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 400),
+                            width: 52, height: 28,
                             decoration: BoxDecoration(
-                              color: context.textMutedColor,
-                              shape: BoxShape.circle,
+                              color: _isOnline ? Colors.white.withValues(alpha: 0.2) : context.surfaceAltColor,
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                          ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Text(
-                            _isOnline ? 'You are Online' : 'You are Offline',
-                            style: TextStyle(
-                              color: _isOnline ? Colors.white : context.textPrimaryColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          width: 52,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: _isOnline
-                                ? Colors.white.withValues(alpha: 0.2)
-                                : context.surfaceAltColor,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(3),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 400),
-                              width: 22,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                color: _isOnline ? Colors.white : context.textMutedColor,
-                                shape: BoxShape.circle,
+                            child: Padding(
+                              padding: const EdgeInsets.all(3),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 400),
+                                width: 22, height: 22,
+                                decoration: BoxDecoration(
+                                  color: _isOnline ? Colors.white : AppColors.textMuted,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Stats Row
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: AnimatedFadeSlide(
+                  delay: 200,
+                  duration: const Duration(milliseconds: 500),
+                  child: Row(
+                    children: [
+                      Expanded(child: TGStat(label: 'Balance', value: 'SYP ${wallet?.balance.toStringAsFixed(0) ?? '0'}', icon: Icons.account_balance_wallet_rounded, color: AppColors.driverAccent)),
+                      const SizedBox(width: 12),
+                      Expanded(child: TGStat(label: 'Earned', value: 'SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}', icon: Icons.trending_up_rounded, color: AppColors.primary)),
+                      const SizedBox(width: 12),
+                      Expanded(child: TGStat(label: 'Deliveries', value: '${wallet?.totalDeliveries ?? 0}', icon: Icons.delivery_dining_rounded, color: AppColors.adminAccent)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Quick Actions
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: AnimatedFadeSlide(
+                  delay: 250,
+                  duration: const Duration(milliseconds: 500),
+                  child: Row(
+                    children: [
+                      _quickAction(context, Icons.list_alt_rounded, 'Requests', AppColors.warning, () => context.push('/available-requests')),
+                      const SizedBox(width: 12),
+                      _quickAction(context, Icons.map_rounded, 'Heat Map', AppColors.driverAccent, () => context.push('/heatmap')),
+                      const SizedBox(width: 12),
+                      _quickAction(context, Icons.account_balance_wallet_rounded, 'Wallet', AppColors.purple, () => context.push('/wallet')),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Active Dispatches
+            if (dispatchProv.assignedDispatches.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                  child: AnimatedFadeSlide(
+                    delay: 300,
+                    duration: const Duration(milliseconds: 500),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.5)]), borderRadius: BorderRadius.circular(2))),
+                            const SizedBox(width: 12),
+                            Text('Active Dispatch', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor, letterSpacing: 0)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        _AssignedDispatchCard(
+                          dispatches: dispatchProv.assignedDispatches,
+                          onAccept: (d) => _handleDispatchAction(d, 'accept'),
+                          onReject: (d) => _handleDispatchAction(d, 'reject'),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-            ),
 
+            // Active Deliveries
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Row(
-                  children: [
-                    Expanded(child: _earningsCard(
-                      label: 'Balance',
-                      value: 'SYP ${wallet?.balance.toStringAsFixed(0) ?? '0'}',
-                      icon: Icons.account_balance_wallet_rounded,
-                      color: const Color(0xFF10B981),
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: _earningsCard(
-                      label: 'Total Earned',
-                      value: 'SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}',
-                      icon: Icons.trending_up_rounded,
-                      color: const Color(0xFF8B5CF6),
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: _earningsCard(
-                      label: 'Deliveries',
-                      value: '${wallet?.totalDeliveries ?? 0}',
-                      icon: Icons.delivery_dining_rounded,
-                      color: context.primaryColor,
-                    )),
-                  ],
-                ),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Row(
-                  children: [
-                    Expanded(child: _quickAction(
-                      icon: Icons.list_alt_rounded,
-                      label: 'Requests',
-                      color: context.warningColor,
-                      onTap: () => context.push('/available-requests'),
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: _quickAction(
-                      icon: Icons.account_balance_wallet_rounded,
-                      label: 'Earnings',
-                      color: const Color(0xFF10B981),
-                      onTap: () => context.push('/earnings'),
-                    )),
-                    const SizedBox(width: 12),
-                    Expanded(child: _quickAction(
-                      icon: Icons.wallet_rounded,
-                      label: 'Wallet',
-                      color: const Color(0xFF8B5CF6),
-                      onTap: () => context.push('/wallet'),
-                    )),
-                  ],
-                ),
-              ),
-            ),
-
-            if (dispatchProv.assignedDispatches.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: _AssignedDispatchCard(
-                    dispatches: dispatchProv.assignedDispatches,
-                    onAccept: (d) => _handleDispatchAction(d, 'accept'),
-                    onReject: (d) => _handleDispatchAction(d, 'reject'),
-                  ),
-                ),
-              ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: Text('Active Deliveries', style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                )),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: _ActiveOrdersSection(wallet: wallet),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: context.borderColor),
-                  ),
-                  child: Row(
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                child: AnimatedFadeSlide(
+                  delay: 350,
+                  duration: const Duration(milliseconds: 500),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.trending_up_rounded, color: Color(0xFF10B981), size: 24),
+                      Row(
+                        children: [
+                          Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.primary, AppColors.primaryHover]), borderRadius: BorderRadius.circular(2))),
+                          const SizedBox(width: 12),
+                          Text('Active Deliveries', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor, letterSpacing: 0)),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Total Earnings', style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: context.textMutedColor,
-                            )),
-                            Text('SYP ${wallet?.totalEarned.toStringAsFixed(0) ?? '0'}',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 20,
-                                )),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.push('/earnings'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text('Details', style: GoogleFonts.inter(
-                            color: const Color(0xFF10B981),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          )),
-                        ),
-                      ),
+                      const SizedBox(height: 12),
+                      _ActiveOrdersSection(wallet: wallet),
                     ],
                   ),
+                ),
+              ),
+            ),
+
+            // Performance Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                child: AnimatedFadeSlide(
+                  delay: 400,
+                  duration: const Duration(milliseconds: 500),
+                  child: _buildPerformanceCard(context),
                 ),
               ),
             ),
@@ -374,402 +359,251 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     );
   }
 
-  Widget _earningsCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
-        boxShadow: [
-          BoxShadow(
+  Widget _quickAction(BuildContext context, IconData icon, String label, Color color, VoidCallback onTap) {
+    return Expanded(
+      child: AnimatedPressScale(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
             color: color.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: color.withValues(alpha: 0.15), width: 0.5),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 20),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(height: 8),
+              Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textPrimaryColor)),
+            ],
           ),
-          const SizedBox(height: 14),
-          Text(value, style: GoogleFonts.inter(
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
-            color: AppColors.textPrimary,
-          )),
-          const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(
-            fontSize: 12,
-            color: AppColors.textMuted,
-          )),
-        ],
-      ),
-    );
-  }
-
-  Widget _quickAction({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-        decoration: BoxDecoration(
-          color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 10),
-            Text(label, style: GoogleFonts.inter(
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              color: AppColors.textPrimary,
-            )),
-          ],
         ),
       ),
     );
   }
 
-  Future<void> _handleDispatchAction(
-      Map<String, dynamic> dispatch, String action) async {
-    final id = dispatch['id'] as String;
-    final prov = context.read<DispatchProvider>();
+  Widget _buildPerformanceCard(BuildContext context) {
+    final userId = context.read<AuthProvider>().user?.id;
+    if (userId == null) return const SizedBox.shrink();
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots(),
+      builder: (context, snapshot) {
+        final data = snapshot.data?.data() as Map<String, dynamic>?;
+        final rating = (data?['rating'] as num?)?.toDouble() ?? 0.0;
+        final totalDeliveries = data?['totalDeliveries'] ?? 0;
+        String ratingText = rating > 0 ? rating.toStringAsFixed(1) : '—';
+        String subText = rating >= 4.5 ? 'Excellent rating!' : rating > 0 ? 'Keep going!' : 'Complete deliveries to earn a rating';
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft, end: Alignment.bottomRight,
+              colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Driver Score', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.8), fontSize: 13)),
+                    const SizedBox(height: 4),
+                    Text(ratingText, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 32, color: Colors.white, letterSpacing: 0)),
+                    const SizedBox(height: 4),
+                    Text(subText, style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 12)),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  Container(
+                    width: 60, height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.star_rounded, color: Colors.white, size: 32),
+                  ),
+                  const SizedBox(height: 4),
+                  Text('$totalDeliveries deliveries', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 10)),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _toggleOnline() {
+    final userId = context.read<AuthProvider>().user?.id;
+    if (userId == null) return;
+    setState(() => _isOnline = !_isOnline);
+    DriverLocationService.instance.setOnlineStatus(userId, _isOnline);
+    if (_isOnline) {
+      DriverLocationService.instance.start(userId);
+    }
+  }
+
+  Future<void> _handleDispatchAction(Map<String, dynamic> dispatch, String action) async {
+    final userId = context.read<AuthProvider>().user?.id;
+    if (userId == null) return;
+    final dispatchId = dispatch['id'] as String?;
+    if (dispatchId == null) return;
     try {
       if (action == 'accept') {
-        await prov.acceptDispatch(id);
-        if (mounted) context.push('/active-delivery-food/$id');
-      } else {
-        await prov.rejectDispatch(id);
+        await FirebaseFirestore.instance.collection('dispatch_requests').doc(dispatchId).update({
+          'status': 'accepted',
+          'driverId': userId,
+          'acceptedAt': FieldValue.serverTimestamp(),
+        });
+        if (mounted) context.push('/active-delivery-food/$dispatchId');
+      } else if (action == 'reject') {
+        await FirebaseFirestore.instance.collection('dispatch_requests').doc(dispatchId).update({
+          'status': 'rejected',
+          'rejectedAt': FieldValue.serverTimestamp(),
+        });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to ${action} delivery: $e')),
-        );
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
-  }
-
-  Future<void> _toggleOnline() async {
-    final newState = !_isOnline;
-    final userId = context.read<AuthProvider>().user?.id;
-    if (userId != null) {
-      await FirebaseFirestore.instance.collection('driver_locations').doc(userId).set({
-        'isOnline': newState,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'isOnline': newState,
-      }).catchError((_) {});
-      if (newState) {
-        DriverLocationService.instance.start(userId);
-      } else {
-        DriverLocationService.instance.stop();
-      }
-    }
-    if (!mounted) return;
-    setState(() {
-      _isOnline = newState;
-    });
   }
 }
 
 class _AssignedDispatchCard extends StatelessWidget {
   final List<Map<String, dynamic>> dispatches;
-  final void Function(Map<String, dynamic>) onAccept;
-  final void Function(Map<String, dynamic>) onReject;
-
-  const _AssignedDispatchCard({
-    required this.dispatches,
-    required this.onAccept,
-    required this.onReject,
-  });
-
+  final Function(Map<String, dynamic>) onAccept;
+  final Function(Map<String, dynamic>) onReject;
+  const _AssignedDispatchCard({required this.dispatches, required this.onAccept, required this.onReject});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.warningColor.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.warningColor.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      children: dispatches.map((d) {
+        final restaurant = d['restaurantName'] ?? d['restaurantId'] ?? 'Restaurant';
+        final items = (d['items'] as List?)?.length ?? 0;
+        final total = ((d['totalCents'] ?? 0) / 100).toStringAsFixed(0);
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.driverAccent.withValues(alpha: 0.3), width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: context.warningColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+              Row(children: [
+                Icon(Icons.restaurant_rounded, color: AppColors.driverAccent, size: 20),
+                const SizedBox(width: 8),
+                Expanded(child: Text('$restaurant', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor))),
+                Text('SYP $total', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.driverAccent)),
+              ]),
+              const SizedBox(height: 8),
+              Text('$items item${items == 1 ? '' : 's'}', style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor)),
+              const SizedBox(height: 12),
+              Row(children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => onReject(d),
+                    style: OutlinedButton.styleFrom(side: BorderSide(color: AppColors.error), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    child: Text('Reject', style: TextStyle(color: AppColors.error)),
+                  ),
                 ),
-                child: Icon(Icons.delivery_dining, color: context.warningColor, size: 18),
-              ),
-              const SizedBox(width: 12),
-              Text('New Delivery Requests', style: GoogleFonts.inter(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              )),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => onAccept(d),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.driverAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    child: const Text('Accept', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ]),
             ],
           ),
-          const SizedBox(height: 14),
-          ...dispatches.take(3).map((d) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.borderColor),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Order: ${(d['orderId'] as String? ?? '').substring(0, 6)}...',
-                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14),
-                            ),
-                            Text('Delivery fee included',
-                                style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => onAccept(d),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: context.successColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(Icons.check_circle, color: context.successColor, size: 20),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () => onReject(d),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: context.errorColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(Icons.cancel, color: context.errorColor, size: 20),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
-        ],
-      ),
+        );
+      }).toList(),
     );
   }
 }
 
 class _ActiveOrdersSection extends StatelessWidget {
-  final DriverWalletModel? wallet;
-  const _ActiveOrdersSection({this.wallet});
-
+  final dynamic wallet;
+  const _ActiveOrdersSection({required this.wallet});
   @override
   Widget build(BuildContext context) {
     final userId = context.read<AuthProvider>().user?.id;
     if (userId == null) return const SizedBox.shrink();
-
-    return Column(
-      children: [
-        StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('anything_requests')
-              .where('driverId', isEqualTo: userId)
-              .where('status', whereIn: ['accepted', 'shopping', 'en_route'])
-              .snapshots(),
-          builder: (context, snap) {
-            if (snap.hasError) {
-              debugPrint('[Dashboard] StreamBuilder error: ${snap.error}');
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Failed to load deliveries',
-                  style: GoogleFonts.inter(color: context.errorColor, fontSize: 13),
-                ),
-              );
-            }
-            if (!snap.hasData || snap.data!.docs.isEmpty) {
-              return const SizedBox.shrink();
-            }
-            return Column(
-              children: snap.data!.docs.map((doc) {
-                final d = doc.data() as Map<String, dynamic>;
-                return GestureDetector(
-                  onTap: () => context.push('/active-delivery/${doc.id}'),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: context.borderColor),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('dispatch_requests')
+          .where('driverId', isEqualTo: userId)
+          .where('status', whereIn: ['accepted', 'picked_up']).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text('No active deliveries', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
+            ),
+          );
+        }
+        return Column(
+          children: snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final restaurant = data['restaurantName'] ?? 'Restaurant';
+            final customer = data['customerName'] ?? 'Customer';
+            final status = data['status'] ?? 'unknown';
+            final orderId = doc.id;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3), width: 1),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                      child: Text(status.toUpperCase(), style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: AppColors.warning)),
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.shopping_bag_rounded, color: Color(0xFF10B981), size: 20),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Anything: ${d['storeName'] as String? ?? 'Delivery'}',
-                                  style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
-                              Text('Status: ${d['status'] as String? ?? ''}',
-                                  style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.chevron_right, color: context.textMutedColor, size: 20),
-                      ],
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => context.push('/active-delivery-food/$orderId'),
+                      child: Text('Open', style: TextStyle(color: AppColors.driverAccent, fontWeight: FontWeight.w600)),
                     ),
-                  ),
-                );
-              }).toList(),
+                  ]),
+                  const SizedBox(height: 8),
+                  _infoRow(Icons.restaurant_rounded, 'Pickup', restaurant, context),
+                  const SizedBox(height: 4),
+                  _infoRow(Icons.person_rounded, 'Deliver to', customer, context),
+                ],
+              ),
             );
-          },
-        ),
-        Consumer<DispatchProvider>(
-          builder: (context, prov, _) {
-            final foodDeliveries = prov.activeDeliveries;
-            if (foodDeliveries.isEmpty) {
-              return StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('anything_requests')
-                    .where('driverId', isEqualTo: userId)
-                    .where('status', whereIn: ['accepted', 'shopping', 'en_route'])
-                    .snapshots(),
-                builder: (ctx, snap) {
-                  if (snap.hasError) return const SizedBox.shrink();
-                  if (snap.hasData && snap.data!.docs.isEmpty && foodDeliveries.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: context.borderColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.inbox_rounded, color: context.textMutedColor, size: 28),
-                          const SizedBox(width: 14),
-                          Text('No active deliveries',
-                              style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
-                        ],
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              );
-            }
-            return Column(
-              children: foodDeliveries.map((d) {
-                final id = d['id'] as String;
-                return GestureDetector(
-                  onTap: () => context.push('/active-delivery-food/$id'),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: context.borderColor),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.delivery_dining_rounded, color: Color(0xFF10B981), size: 20),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Food Delivery',
-                                  style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
-                              Text('Status: ${d['status'] as String? ?? ''}',
-                                  style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                    Icon(Icons.chevron_right, color: context.textMutedColor, size: 20),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        ),
-      ],
+          }).toList(),
+        );
+      },
     );
+  }
+
+  Widget _infoRow(IconData icon, String label, String value, BuildContext context) {
+    return Row(children: [
+      Icon(icon, size: 16, color: AppColors.textMuted),
+      const SizedBox(width: 8),
+      Text('$label: ', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+      Expanded(child: Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 13, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis)),
+    ]);
   }
 }

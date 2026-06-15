@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /// Animated container that fades and slides in on build.
 class AnimatedFadeSlide extends StatefulWidget {
@@ -6,6 +7,7 @@ class AnimatedFadeSlide extends StatefulWidget {
   final Duration duration;
   final Offset beginOffset;
   final Curve curve;
+  final double delay;
 
   const AnimatedFadeSlide({
     super.key,
@@ -13,6 +15,7 @@ class AnimatedFadeSlide extends StatefulWidget {
     this.duration = const Duration(milliseconds: 500),
     this.beginOffset = const Offset(0, 0.15),
     this.curve = Curves.easeOutCubic,
+    this.delay = 0,
   });
 
   @override
@@ -34,7 +37,14 @@ class _AnimatedFadeSlideState extends State<AnimatedFadeSlide>
       begin: widget.beginOffset,
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: widget.curve));
-    _ctrl.forward();
+    
+    if (widget.delay > 0) {
+      Future.delayed(Duration(milliseconds: widget.delay.toInt()), () {
+        if (mounted) _ctrl.forward();
+      });
+    } else {
+      _ctrl.forward();
+    }
   }
 
   @override
@@ -231,6 +241,366 @@ class _AnimatedPulseState extends State<AnimatedPulse>
     return FadeTransition(
       opacity: _anim,
       child: widget.child,
+    );
+  }
+}
+
+/// Parallax scroll effect widget
+class ParallaxWidget extends StatefulWidget {
+  final Widget child;
+  final ScrollController scrollController;
+  final double rate;
+  final bool vertical;
+
+  const ParallaxWidget({
+    super.key,
+    required this.child,
+    required this.scrollController,
+    this.rate = 0.5,
+    this.vertical = true,
+  });
+
+  @override
+  State<ParallaxWidget> createState() => _ParallaxWidgetState();
+}
+
+class _ParallaxWidgetState extends State<ParallaxWidget> {
+  double _offset = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void didUpdateWidget(ParallaxWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scrollController != widget.scrollController) {
+      oldWidget.scrollController.removeListener(_onScroll);
+      widget.scrollController.addListener(_onScroll);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.scrollController.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      _offset = widget.scrollController.offset * widget.rate;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: widget.vertical ? Offset(0, -_offset) : Offset(-_offset, 0),
+      child: widget.child,
+    );
+  }
+}
+
+/// Shimmer loading effect
+class ShimmerWidget extends StatefulWidget {
+  final Widget child;
+  final Color? baseColor;
+  final Color? highlightColor;
+
+  const ShimmerWidget({
+    super.key,
+    required this.child,
+    this.baseColor,
+    this.highlightColor,
+  });
+
+  @override
+  State<ShimmerWidget> createState() => _ShimmerWidgetState();
+}
+
+class _ShimmerWidgetState extends State<ShimmerWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = widget.baseColor ?? (isDark ? const Color(0xFF1A2420) : const Color(0xFFEEF3F0));
+    final highlightColor = widget.highlightColor ?? (isDark 
+        ? const Color(0xFF243830).withValues(alpha: 0.5) 
+        : const Color(0xFFD6E0DA));
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ShaderMask(
+          shaderCallback: (bounds) {
+            return LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [baseColor, highlightColor, baseColor],
+              stops: [
+                (_controller.value - 0.3).clamp(0.0, 1.0),
+                _controller.value,
+                (_controller.value + 0.3).clamp(0.0, 1.0),
+              ],
+            ).createShader(bounds);
+          },
+          child: widget.child,
+        );
+      },
+    );
+  }
+}
+
+/// Slide to reveal animation
+class SlideToReveal extends StatefulWidget {
+  final Widget child;
+  final Widget revealedChild;
+  final VoidCallback? onRevealed;
+  final double threshold;
+
+  const SlideToReveal({
+    super.key,
+    required this.child,
+    required this.revealedChild,
+    this.onRevealed,
+    this.threshold = 0.7,
+  });
+
+  @override
+  State<SlideToReveal> createState() => _SlideToRevealState();
+}
+
+class _SlideToRevealState extends State<SlideToReveal>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  double _dragExtent = 0;
+  bool _isRevealed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(-0.3, 0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: widget.revealedChild,
+        ),
+        SlideTransition(
+          position: _slideAnimation,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                final width = context.size?.width ?? 1;
+                setState(() {
+                _dragExtent += -(details.primaryDelta ?? 0);
+                final progress = (_dragExtent / width).clamp(0.0, 1.0);
+                _controller.value = progress;
+                
+                if (progress > widget.threshold && !_isRevealed) {
+                  _isRevealed = true;
+                  widget.onRevealed?.call();
+                }
+              });
+            },
+            onHorizontalDragEnd: (details) {
+              if (_controller.value < widget.threshold) {
+                _controller.reverse();
+                _dragExtent = 0;
+                _isRevealed = false;
+              } else {
+                _controller.forward();
+              }
+            },
+            child: widget.child,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Animated tab indicator
+class AnimatedTabIndicator extends StatefulWidget {
+  final int selectedIndex;
+  final int itemCount;
+  final Color color;
+  final double height;
+  final double spacing;
+
+  const AnimatedTabIndicator({
+    super.key,
+    required this.selectedIndex,
+    required this.itemCount,
+    this.color = const Color(0xFF00A676),
+    this.height = 3,
+    this.spacing = 24,
+  });
+
+  @override
+  State<AnimatedTabIndicator> createState() => _AnimatedTabIndicatorState();
+}
+
+class _AnimatedTabIndicatorState extends State<AnimatedTabIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  int _previousIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(AnimatedTabIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedIndex != widget.selectedIndex) {
+      _previousIndex = oldWidget.selectedIndex;
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final lerp = _animation.value;
+        final left = _previousIndex * widget.spacing + 
+            (widget.selectedIndex - _previousIndex) * widget.spacing * lerp;
+        
+        return Positioned(
+          bottom: 0,
+          left: left,
+          child: Container(
+            width: widget.spacing * 0.6,
+            height: widget.height,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: BorderRadius.circular(widget.height / 2),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Animated press scale widget
+class AnimatedPressScale extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final double scale;
+  final Duration duration;
+
+  const AnimatedPressScale({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.scale = 0.95,
+    this.duration = const Duration(milliseconds: 120),
+  });
+
+  @override
+  State<AnimatedPressScale> createState() => _AnimatedPressScaleState();
+}
+
+class _AnimatedPressScaleState extends State<AnimatedPressScale>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: widget.scale,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap?.call();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
+      ),
     );
   }
 }

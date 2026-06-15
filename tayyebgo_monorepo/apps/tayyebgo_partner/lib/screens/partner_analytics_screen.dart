@@ -56,7 +56,7 @@ class _PartnerAnalyticsScreenState extends State<PartnerAnalyticsScreen> {
             'Analytics',
             style: GoogleFonts.inter(
               fontSize: 18,
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),

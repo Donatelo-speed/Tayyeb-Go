@@ -1,257 +1,110 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_gradients.dart';
+import '../theme/app_shadow.dart';
 
-class TayyebLogoPainter extends CustomPainter {
-  final double progress;
-  final bool dark;
+enum LogoVariant { full, icon, text }
 
-  TayyebLogoPainter({this.progress = 1.0, this.dark = false});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final r = math.min(size.width, size.height) / 2 * 0.92;
-
-    final bgPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [AppColors.primary, AppColors.accent],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromCircle(center: center, radius: r))
-      ..style = PaintingStyle.fill;
-
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCircle(center: center, radius: r * progress),
-        Radius.circular(28 * progress),
-      ),
-      bgPaint,
-    );
-
-    canvas.save();
-    canvas.clipRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCircle(center: center, radius: r * progress),
-        Radius.circular(28 * progress),
-      ),
-    );
-
-    final w = size.width;
-    final h = size.height;
-    final sw = w * 0.016;
-    final whitePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.92 * progress)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = sw
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final leftX = w * 0.36;
-    final rightX = w * 0.64;
-    final topY = h * 0.22;
-    final bottomY = h * 0.78;
-
-    canvas.drawLine(Offset(leftX, bottomY), Offset(leftX, topY), whitePaint);
-    canvas.drawLine(Offset(rightX, bottomY), Offset(rightX, topY), whitePaint);
-
-    final tineWidth = (rightX - leftX) * 0.6;
-    final tineCenterX = (leftX + rightX) / 2;
-    canvas.drawLine(
-      Offset(tineCenterX - tineWidth, topY),
-      Offset(tineCenterX + tineWidth, topY),
-      whitePaint..strokeWidth = sw * 0.85,
-    );
-    canvas.drawLine(
-      Offset(tineCenterX - tineWidth * 0.7, topY + h * 0.13),
-      Offset(tineCenterX + tineWidth * 0.7, topY + h * 0.13),
-      whitePaint..strokeWidth = sw * 0.75,
-    );
-
-    canvas.drawLine(
-      Offset(leftX - w * 0.1, topY + h * 0.28),
-      Offset(rightX + w * 0.1, topY + h * 0.28),
-      whitePaint..strokeWidth = sw * 0.9,
-    );
-
-    final dotPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.55 * progress)
-      ..style = PaintingStyle.fill;
-    final dotR = w * 0.028;
-    canvas.drawCircle(Offset(leftX + w * 0.028, topY - h * 0.06), dotR * progress, dotPaint);
-    canvas.drawCircle(Offset(rightX - w * 0.028, topY - h * 0.06), dotR * progress, dotPaint);
-
-    canvas.restore();
-
-    if (progress > 0.35) {
-      final ringProgress = ((progress - 0.35) / 0.65).clamp(0.0, 1.0);
-      final ringPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.18 * ringProgress)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = sw * 0.6;
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCircle(center: center, radius: r * 0.88 * progress),
-          Radius.circular(24 * progress),
-        ),
-        ringPaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(TayyebLogoPainter old) =>
-      old.progress != progress || old.dark != dark;
-}
-
-class AnimatedLogoMark extends StatefulWidget {
+class TayyebGoLogo extends StatelessWidget {
   final double size;
-  final bool animate;
-  final bool dark;
+  final bool showText;
+  final bool showShadow;
+  final LogoVariant variant;
+  final Axis direction;
 
-  const AnimatedLogoMark({
+  const TayyebGoLogo({
     super.key,
-    this.size = 88,
-    this.animate = true,
-    this.dark = false,
+    this.size = 80,
+    this.showText = true,
+    this.showShadow = true,
+    this.variant = LogoVariant.full,
+    this.direction = Axis.vertical,
   });
 
   @override
-  State<AnimatedLogoMark> createState() => _AnimatedLogoMarkState();
+  Widget build(BuildContext context) {
+    final text = _LogoWordmark(size: size);
+
+    if (variant == LogoVariant.text) {
+      return text;
+    }
+
+    final mark = TayyebGoBrandMark(size: size, showShadow: showShadow);
+
+    if (!showText || variant == LogoVariant.icon) {
+      return mark;
+    }
+
+    final gap = SizedBox(
+      width: direction == Axis.horizontal ? size * 0.18 : 0,
+      height: direction == Axis.vertical ? size * 0.14 : 0,
+    );
+
+    return direction == Axis.horizontal
+        ? Row(mainAxisSize: MainAxisSize.min, children: [mark, gap, text])
+        : Column(mainAxisSize: MainAxisSize.min, children: [mark, gap, text]);
+  }
 }
 
-class _AnimatedLogoMarkState extends State<AnimatedLogoMark>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
+class TayyebGoCompactLogo extends StatelessWidget {
+  final double size;
 
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      duration: const Duration(milliseconds: 1400),
-      vsync: this,
-    );
-    _anim = CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
-    if (widget.animate) {
-      _ctrl.forward();
-    } else {
-      _ctrl.value = 1.0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const TayyebGoCompactLogo({super.key, this.size = 32});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, _) => CustomPaint(
-        size: Size(widget.size, widget.size),
-        painter: TayyebLogoPainter(
-          progress: _anim.value,
-          dark: widget.dark,
-        ),
-      ),
-    );
+    return TayyebGoBrandMark(size: size, showShadow: false);
   }
 }
 
-class BrandWordmark extends StatefulWidget {
+class TayyebGoAnimatedLogo extends StatefulWidget {
+  final double size;
+
+  const TayyebGoAnimatedLogo({super.key, this.size = 100});
+
+  @override
+  State<TayyebGoAnimatedLogo> createState() => _TayyebGoAnimatedLogoState();
+}
+
+class BrandLogo extends StatelessWidget {
+  final double markSize;
   final double fontSize;
-  final Color textColor;
-  final bool animate;
+  final String? subtitle;
 
-  const BrandWordmark({
+  const BrandLogo({
     super.key,
-    this.fontSize = 28,
-    this.textColor = AppColors.textPrimary,
-    this.animate = true,
+    this.markSize = 72,
+    this.fontSize = 24,
+    this.subtitle,
   });
 
   @override
-  State<BrandWordmark> createState() => _BrandWordmarkState();
-}
-
-class _BrandWordmarkState extends State<BrandWordmark>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _fadeAnim;
-  late Animation<Offset> _slideAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      duration: const Duration(milliseconds: 700),
-      vsync: this,
-    );
-    _fadeAnim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.4),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-
-    if (widget.animate) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) _ctrl.forward();
-      });
-    } else {
-      _ctrl.value = 1.0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnim,
-      child: SlideTransition(
-        position: _slideAnim,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShaderMask(
-              shaderCallback: (bounds) =>
-                  const LinearGradient(colors: [AppColors.primary, AppColors.accent]).createShader(bounds),
-              child: Text(
-                'Tayyeb',
-                style: TextStyle(
-                  fontSize: widget.fontSize,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: 0,
-                  height: 1.1,
-                ),
-              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TayyebGoLogo(size: markSize, showText: true),
+        if (subtitle != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            subtitle!,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.textSecondary
+                  : LightAppColors.textSecondary,
+              fontSize: fontSize * 0.55,
+              fontWeight: FontWeight.w500,
             ),
-            Text(
-              'GO',
-              style: TextStyle(
-                fontSize: widget.fontSize * 1.05,
-                fontWeight: FontWeight.w300,
-                color: widget.textColor.withValues(alpha: 0.7),
-                letterSpacing: 0,
-                height: 1.0,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      ],
     );
   }
 }
 
-class BrandedSplashView extends StatefulWidget {
+class BrandedSplashView extends StatelessWidget {
   final String label;
   final String tagline;
   final IconData icon;
@@ -266,39 +119,149 @@ class BrandedSplashView extends StatefulWidget {
   });
 
   @override
-  State<BrandedSplashView> createState() => _BrandedSplashViewState();
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: isDark ? AppGradients.darkAppBackground : AppGradients.lightAppBackground,
+        ),
+        child: Center(
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 900),
+            tween: Tween(begin: 0, end: 1),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value,
+                child: Transform.translate(
+                  offset: Offset(0, 20 * (1 - value)),
+                  child: child,
+                ),
+              );
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    TayyebGoAnimatedLogo(size: 104),
+                    Positioned(
+                      right: -2,
+                      bottom: -2,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: accentColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isDark ? AppColors.background : Colors.white,
+                            width: 3,
+                          ),
+                        ),
+                        child: Icon(icon, color: Colors.white, size: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _LogoWordmark(size: 104),
+                const SizedBox(height: 8),
+                Text(
+                  tagline,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? AppColors.textSecondary : LightAppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _BrandedSplashViewState extends State<BrandedSplashView>
+class TayyebGoBrandMark extends StatelessWidget {
+  final double size;
+  final bool showShadow;
+
+  const TayyebGoBrandMark({
+    super.key,
+    this.size = 64,
+    this.showShadow = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = math.max(8.0, size * 0.24);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: AppGradients.primaryGradient,
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: showShadow ? AppShadow.glowPrimary(Theme.of(context).brightness == Brightness.dark) : null,
+      ),
+      child: CustomPaint(
+        painter: _BrandGlyphPainter(),
+      ),
+    );
+  }
+}
+
+class _LogoWordmark extends StatelessWidget {
+  final double size;
+
+  const _LogoWordmark({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => AppGradients.primaryGradientHorizontal.createShader(bounds),
+      child: Text(
+        'TayyebGo',
+        style: TextStyle(
+          fontSize: size * 0.34,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          height: 1,
+          letterSpacing: 0,
+        ),
+      ),
+    );
+  }
+}
+
+class _TayyebGoAnimatedLogoState extends State<TayyebGoAnimatedLogo>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Animation<double> _scale;
+  late final Animation<double> _turn;
   late final Animation<double> _fade;
-  late final Animation<Offset> _slide;
-  late final Animation<double> _logoScale;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..forward();
+    _scale = Tween<double>(begin: 0.82, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
+    _turn = Tween<double>(begin: -0.03, end: 0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    );
     _fade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0, 0.6, curve: Curves.easeOut),
-    );
-    _slide = Tween<Offset>(
-      begin: const Offset(0, 0.08),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0, 0.6, curve: Curves.easeOutCubic),
-    ));
-    _logoScale = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0, 0.7, curve: Curves.elasticOut),
-      ),
+      curve: const Interval(0, 0.55, curve: Curves.easeOut),
     );
   }
 
@@ -310,135 +273,76 @@ class _BrandedSplashViewState extends State<BrandedSplashView>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final background = isDark ? AppColors.background : LightAppColors.background;
-    final surface = isDark ? AppColors.surface : LightAppColors.surface;
-    final textPrimary = isDark ? AppColors.textPrimary : LightAppColors.textPrimary;
-    final textMuted = isDark ? AppColors.textMuted : LightAppColors.textMuted;
-    final border = isDark ? AppColors.border : LightAppColors.border;
-
-    return Scaffold(
-      backgroundColor: background,
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              background,
-              isDark ? const Color(0xFF0F1713) : const Color(0xFFEAF3EF),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: FadeTransition(
-              opacity: _fade,
-              child: SlideTransition(
-                position: _slide,
-                child: Padding(
-                  padding: const EdgeInsets.all(28),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ScaleTransition(
-                        scale: _logoScale,
-                        child: BrandLogo(
-                          markSize: 88,
-                          fontSize: 28,
-                          textColor: textPrimary,
-                          dark: isDark,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: surface,
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: border),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(widget.icon, size: 18, color: widget.accentColor),
-                            const SizedBox(width: 8),
-                            Text(
-                              widget.label,
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        widget.tagline,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: textMuted,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      SizedBox(
-                        width: 132,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(999),
-                          child: LinearProgressIndicator(
-                            minHeight: 4,
-                            backgroundColor: border,
-                            valueColor: AlwaysStoppedAnimation<Color>(widget.accentColor),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+    return FadeTransition(
+      opacity: _fade,
+      child: RotationTransition(
+        turns: _turn,
+        child: ScaleTransition(
+          scale: _scale,
+          child: TayyebGoBrandMark(size: widget.size),
         ),
       ),
     );
   }
 }
 
-class BrandLogo extends StatelessWidget {
-  final double markSize;
-  final double fontSize;
-  final Color textColor;
-  final bool animate;
-  final bool dark;
-  final double gap;
+class _BrandGlyphPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final s = size.shortestSide;
+    final white = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
+    final soft = Paint()
+      ..color = Colors.white.withValues(alpha: 0.26)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = s * 0.055
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true;
 
-  const BrandLogo({
-    super.key,
-    this.markSize = 72,
-    this.fontSize = 26,
-    this.textColor = AppColors.textPrimary,
-    this.animate = true,
-    this.dark = false,
-    this.gap = 16,
-  });
+    final route = Path()
+      ..moveTo(s * 0.2, s * 0.68)
+      ..cubicTo(s * 0.36, s * 0.55, s * 0.48, s * 0.82, s * 0.64, s * 0.66)
+      ..cubicTo(s * 0.72, s * 0.58, s * 0.76, s * 0.5, s * 0.82, s * 0.44);
+    canvas.drawPath(route, soft);
+
+    final pin = Path()
+      ..moveTo(s * 0.5, s * 0.17)
+      ..cubicTo(s * 0.31, s * 0.17, s * 0.2, s * 0.31, s * 0.2, s * 0.45)
+      ..cubicTo(s * 0.2, s * 0.63, s * 0.38, s * 0.72, s * 0.5, s * 0.86)
+      ..cubicTo(s * 0.62, s * 0.72, s * 0.8, s * 0.63, s * 0.8, s * 0.45)
+      ..cubicTo(s * 0.8, s * 0.31, s * 0.69, s * 0.17, s * 0.5, s * 0.17)
+      ..close();
+    canvas.drawPath(pin, white);
+
+    final cut = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
+    canvas.drawCircle(Offset(s * 0.5, s * 0.43), s * 0.16, cut);
+
+    final bite = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
+    final cloche = Path()
+      ..moveTo(s * 0.4, s * 0.45)
+      ..quadraticBezierTo(s * 0.5, s * 0.31, s * 0.6, s * 0.45)
+      ..lineTo(s * 0.64, s * 0.45)
+      ..quadraticBezierTo(s * 0.5, s * 0.25, s * 0.36, s * 0.45)
+      ..close();
+    canvas.drawPath(cloche, bite);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(s * 0.35, s * 0.47, s * 0.3, s * 0.045),
+        Radius.circular(s * 0.02),
+      ),
+      bite,
+    );
+    canvas.drawCircle(Offset(s * 0.5, s * 0.33), s * 0.025, bite);
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedLogoMark(size: markSize, animate: animate, dark: dark),
-        SizedBox(height: gap),
-        BrandWordmark(
-          fontSize: fontSize,
-          textColor: textColor,
-          animate: animate,
-        ),
-      ],
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

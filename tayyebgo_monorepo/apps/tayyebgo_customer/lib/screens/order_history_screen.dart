@@ -13,7 +13,8 @@ class OrderHistoryScreen extends StatefulWidget {
   State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
 }
 
-class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTickerProviderStateMixin {
+class _OrderHistoryScreenState extends State<OrderHistoryScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
 
   @override
@@ -35,83 +36,115 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTick
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
-      appBar: AppBar(
-        title: Text('Order History', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-        backgroundColor: context.backgroundColor,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        bottom: TabBar(
-          controller: _tabCtrl,
-          labelColor: context.primaryColor,
-          unselectedLabelColor: context.textMutedColor,
-          indicatorColor: context.primaryColor,
-          indicatorWeight: 3,
-          labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
-          unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 14),
-          tabs: const [
-            Tab(text: 'Active'),
-            Tab(text: 'Completed'),
-            Tab(text: 'Cancelled'),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: AnimatedFadeSlide(
+                duration: const Duration(milliseconds: 500),
+                child: Text(
+                  'Order History',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 32,
+                    color: context.textPrimaryColor,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+            ),
+            AnimatedFadeSlide(
+              delay: 100,
+              duration: const Duration(milliseconds: 500),
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                decoration: BoxDecoration(
+                  color: context.surfaceColor,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: context.borderColor.withValues(alpha: 0.3),
+                    width: 0.5,
+                  ),
+                ),
+                child: TabBar(
+                  controller: _tabCtrl,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: context.textMutedColor,
+                  indicatorColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  unselectedLabelStyle: GoogleFonts.inter(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                  dividerColor: Colors.transparent,
+                  splashBorderRadius: BorderRadius.circular(14),
+                  tabs: const [
+                    Tab(text: 'Active'),
+                    Tab(text: 'Completed'),
+                    Tab(text: 'Cancelled'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: customerId == null
+                  ? Center(
+                      child: Text(
+                        'Not logged in',
+                        style: GoogleFonts.inter(color: context.textMutedColor),
+                      ),
+                    )
+                  : StreamBuilder<List<Map<String, dynamic>>>(
+                      stream: context.read<CustomerHomeProvider>().watchOrderHistory(customerId),
+                      builder: (context, snap) {
+                        if (snap.hasError) {
+                          debugPrint('Order history error: ${snap.error}');
+                          return EmptyState(
+                            icon: Icons.error_outline_rounded,
+                            title: 'Failed to load orders',
+                            subtitle: 'Please check your connection and try again',
+                            actionText: 'Retry',
+                            onAction: () => setState(() {}),
+                            accentColor: context.errorColor,
+                          );
+                        }
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return SkeletonList(itemCount: 5, itemHeight: 80);
+                        }
+                        final docs = snap.data ?? [];
+                        if (docs.isEmpty) {
+                          return EmptyState(
+                            icon: Icons.receipt_long_outlined,
+                            title: 'No past orders',
+                            subtitle: 'Your orders will appear here',
+                            accentColor: context.primaryColor,
+                          );
+                        }
+
+                        final activeOrders = docs.where((d) => !['delivered', 'cancelled'].contains(d['status'])).toList();
+                        final completedOrders = docs.where((d) => d['status'] == 'delivered').toList();
+                        final cancelledOrders = docs.where((d) => d['status'] == 'cancelled').toList();
+
+                        return TabBarView(
+                          controller: _tabCtrl,
+                          children: [
+                            _buildOrderList(context, activeOrders, 'No active orders', 'Your current orders will appear here'),
+                            _buildOrderList(context, completedOrders, 'No completed orders', 'Delivered orders will appear here'),
+                            _buildOrderList(context, cancelledOrders, 'No cancelled orders', 'Cancelled orders will appear here'),
+                          ],
+                        );
+                      },
+                    ),
+            ),
           ],
         ),
       ),
-      body: customerId == null
-          ? Center(child: Text('Not logged in', style: GoogleFonts.inter(color: context.textMutedColor)))
-          : StreamBuilder<List<Map<String, dynamic>>>(
-              stream: context.read<CustomerHomeProvider>().watchOrderHistory(customerId),
-              builder: (context, snap) {
-                if (snap.hasError) {
-                  debugPrint('Order history error: ${snap.error}');
-                  return ErrorState(
-                    icon: Icons.error_outline_rounded,
-                    title: 'Failed to load orders',
-                    subtitle: 'Please check your connection and try again',
-                    actionText: 'Retry',
-                    onAction: () => setState(() {}),
-                  );
-                }
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return SkeletonList(itemCount: 5, itemHeight: 80);
-                }
-                final docs = snap.data ?? [];
-                if (docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: context.surfaceColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: context.borderColor),
-                          ),
-                          child: Icon(Icons.receipt_long_outlined, size: 36, color: context.textMutedColor),
-                        ),
-                        const SizedBox(height: 16),
-                        Text('No past orders', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 4),
-                        Text('Your orders will appear here', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-                      ],
-                    ),
-                  );
-                }
-
-                final activeOrders = docs.where((d) => !['delivered', 'cancelled'].contains(d['status'])).toList();
-                final completedOrders = docs.where((d) => d['status'] == 'delivered').toList();
-                final cancelledOrders = docs.where((d) => d['status'] == 'cancelled').toList();
-
-                return TabBarView(
-                  controller: _tabCtrl,
-                  children: [
-                    _buildOrderList(context, activeOrders, 'No active orders', 'Your current orders will appear here'),
-                    _buildOrderList(context, completedOrders, 'No completed orders', 'Delivered orders will appear here'),
-                    _buildOrderList(context, cancelledOrders, 'No cancelled orders', 'Cancelled orders will appear here'),
-                  ],
-                );
-              },
-            ),
     );
   }
 
@@ -121,6 +154,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTick
         icon: Icons.inbox_outlined,
         title: emptyTitle,
         subtitle: emptyDesc,
+        accentColor: context.primaryColor,
       );
     }
 
@@ -129,9 +163,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> with SingleTick
       backgroundColor: context.surfaceColor,
       onRefresh: () async => setState(() {}),
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         itemCount: orders.length,
-        itemBuilder: (_, i) => _OrderCard(order: orders[i]),
+        itemBuilder: (_, i) => AnimatedFadeSlide(
+          delay: (i * 50).toDouble(),
+          duration: const Duration(milliseconds: 400),
+          child: _OrderCard(order: orders[i]),
+        ),
       ),
     );
   }
@@ -164,24 +202,41 @@ class _OrderCard extends StatelessWidget {
                 ? ''
                 : status[0].toUpperCase() + status.substring(1);
 
-    return GestureDetector(
+    return AnimatedPressScale(
       onTap: () => context.push('/tracking/${order['id']}'),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: context.borderColor),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: context.borderColor.withValues(alpha: 0.4),
+            width: 0.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    statusColor.withValues(alpha: 0.15),
+                    statusColor.withValues(alpha: 0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 isDelivered
@@ -190,32 +245,53 @@ class _OrderCard extends StatelessWidget {
                         ? Icons.cancel_rounded
                         : Icons.receipt_long_rounded,
                 color: statusColor,
-                size: 22,
+                size: 24,
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     restaurantName,
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor),
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: context.textPrimaryColor,
+                      letterSpacing: 0,
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text(statusText, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: statusColor)),
+                        child: Text(
+                          statusText,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: statusColor,
+                          ),
+                        ),
                       ),
                       if (itemCount > 0) ...[
                         const SizedBox(width: 8),
-                        Text('$itemCount items', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                        Text(
+                          '$itemCount items',
+                          style: GoogleFonts.inter(
+                            color: context.textMutedColor,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -227,10 +303,19 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Text(
                   '\$${total.toStringAsFixed(2)}',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: context.textPrimaryColor,
+                    letterSpacing: 0,
+                  ),
                 ),
-                const SizedBox(height: 2),
-                Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 18),
+                const SizedBox(height: 4),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: context.textMutedColor,
+                  size: 20,
+                ),
               ],
             ),
           ],

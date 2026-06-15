@@ -148,25 +148,31 @@ class _EarningsSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF0D3320), context.surfaceColor],
+          colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.successColor.withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.driverAccent.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Text('Total Earned', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
+          Text('Total Earned', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
           const SizedBox(height: 8),
           Text(
             'SYP ${wallet.totalEarned.toStringAsFixed(0)}',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 36, color: context.successColor),
+            style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 40, color: Colors.white, letterSpacing: 0),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -183,10 +189,14 @@ class _EarningsSummaryCard extends StatelessWidget {
   Widget _stat(BuildContext context, IconData icon, String label, String value) {
     return Column(
       children: [
-        Icon(icon, color: context.successColor, size: 20),
-        const SizedBox(height: 6),
-        Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimaryColor)),
-        Text(label, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 11)),
+        Container(
+          width: 36, height: 36,
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: Colors.white, size: 18),
+        ),
+        const SizedBox(height: 8),
+        Text(value, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white)),
+        Text(label, style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 11)),
       ],
     );
   }
@@ -200,11 +210,14 @@ class _LevelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final nextDeliveries = wallet.deliveriesToNextLevel;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.borderColor),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,34 +225,42 @@ class _LevelCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _levelColor(wallet.level).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    colors: [_levelColor(wallet.level), _levelColor(wallet.level).withValues(alpha: 0.7)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(_levelIcon(wallet.level), color: _levelColor(wallet.level), size: 20),
+                child: Icon(_levelIcon(wallet.level), color: Colors.white, size: 22),
               ),
-              const SizedBox(width: 10),
-              Text(wallet.level.displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimaryColor)),
-              const Spacer(),
-              Text('${wallet.totalDeliveries} deliveries', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(wallet.level.displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                    Text('${wallet.totalDeliveries} deliveries', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 12)),
+                  ],
+                ),
+              ),
             ],
           ),
           if (wallet.level != DriverLevel.elite) ...[
-            const SizedBox(height: 12),
-            Text('$nextDeliveries more to ${wallet.nextLevel.displayName}', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
+            Text('$nextDeliveries more to ${wallet.nextLevel.displayName}', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
+            const SizedBox(height: 10),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: wallet.totalDeliveries / wallet.nextLevel.minDeliveries,
-                backgroundColor: context.borderColor,
-                color: context.successColor,
+                backgroundColor: context.borderColor.withValues(alpha: 0.5),
+                color: AppColors.driverAccent,
                 minHeight: 6,
               ),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
               _bonusTag(context, Icons.star_rounded, '${wallet.averageRating.toStringAsFixed(1)} avg'),
@@ -293,34 +314,58 @@ class _TransactionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEarning = txn['type'] == 'earning';
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.borderColor),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: isEarning ? context.successColor.withValues(alpha: 0.1) : context.warningColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isEarning
+                    ? [AppColors.driverAccent.withValues(alpha: 0.15), AppColors.driverAccent.withValues(alpha: 0.05)]
+                    : [AppColors.warning.withValues(alpha: 0.15), AppColors.warning.withValues(alpha: 0.05)],
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               isEarning ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-              color: isEarning ? context.successColor : context.warningColor,
+              color: isEarning ? AppColors.driverAccent : AppColors.warning,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(txn['description'] as String? ?? '', style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 14, color: context.textPrimaryColor)),
+                Text(
+                  txn['description'] as String? ?? '',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: context.textPrimaryColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  txn['timestamp'] != null ? _formatDate(txn['timestamp']) : '',
+                  style: GoogleFonts.inter(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),
@@ -328,12 +373,26 @@ class _TransactionCard extends StatelessWidget {
             'SYP ${(txn['amount'] as num?)?.toStringAsFixed(0) ?? '0'}',
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: isEarning ? context.successColor : context.warningColor,
+              fontSize: 15,
+              color: isEarning ? AppColors.driverAccent : AppColors.warning,
+              letterSpacing: 0,
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatDate(dynamic ts) {
+    DateTime date;
+    if (ts is DateTime) {
+      date = ts;
+    } else if (ts is String) {
+      date = DateTime.tryParse(ts) ?? DateTime(2000);
+    } else {
+      return '';
+    }
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${months[date.month - 1]} ${date.day}';
   }
 }

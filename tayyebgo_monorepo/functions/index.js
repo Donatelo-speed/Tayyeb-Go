@@ -665,7 +665,9 @@ exports.confirmWalletTopUp = functions.https.onCall(async (request) => {
       }, { merge: true });
     });
 
-    return { success: true, newBalance: amountInDollars };
+    const updatedUserSnap = await db.collection('users').doc(userId).get();
+    const actualNewBalance = updatedUserSnap.data()?.walletBalance ?? amountInDollars;
+    return { success: true, newBalance: actualNewBalance };
   } catch (err) {
     console.error('confirmWalletTopUp error:', err.message);
     throw new functions.https.HttpsError('internal', err.message);
@@ -964,11 +966,11 @@ exports.validateOrderPricing = functions.firestore.onDocumentCreated(
     console.log(`[validateOrderPricing] Validating order ${orderId} with ${items.length} items`);
 
     try {
-      // Fetch menu items from the restaurant's menu subcollection
+      // Fetch menu items from the restaurant's menu_items subcollection
       const menuSnapshot = await db
         .collection('restaurants')
         .doc(restaurantId)
-        .collection('menu')
+        .collection('menu_items')
         .get();
 
       // Build price lookup: itemId -> { price, name }

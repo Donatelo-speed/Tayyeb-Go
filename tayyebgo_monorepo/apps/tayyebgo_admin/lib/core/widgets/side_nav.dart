@@ -63,33 +63,28 @@ class _SideNavState extends State<SideNav> {
       padding: EdgeInsets.symmetric(horizontal: widget.collapsed ? 12 : 16, vertical: 16),
       child: Row(
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.8)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: AppRadius.brSm,
-            ),
-            child: const Center(child: Icon(Icons.bolt_rounded, color: Colors.white, size: 20)),
-          ),
+          const TayyebGoCompactLogo(size: 36),
           if (!widget.collapsed) ...[
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'TayyebGo',
-                    style: AppTypography.bodyBold.copyWith(
-                      color: context.sidebarTextColor,
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryHover],
+                    ).createShader(bounds),
+                    child: Text(
+                      'TayyebGo',
+                      style: AppTypography.bodyBold.copyWith(
+                        color: Colors.white,
+                        fontSize: 18,
+                        letterSpacing: 0,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
                   Text(
                     'Admin Console',

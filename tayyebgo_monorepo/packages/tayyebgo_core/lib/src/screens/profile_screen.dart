@@ -186,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : Center(
                           child: Text(
                             (user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : '?'),
-                            style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w200, color: AppColors.textPrimary),
+                            style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                           ),
                         ),
                 ),
