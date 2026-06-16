@@ -35,3 +35,4 @@ dependencies:
   flutter_stripe: ^11.1.0
 
 dev_dependencies:
+  test: ^1.25.8
