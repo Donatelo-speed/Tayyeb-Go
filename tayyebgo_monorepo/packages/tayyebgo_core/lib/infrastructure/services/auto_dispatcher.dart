@@ -31,6 +31,9 @@ class AutoDispatcher implements IAutoDispatcher {
     final data = doc.data()!;
     if (data['status'] != 'pending') return;
 
+    // Skip high-risk fraud flagged dispatches — hold for manual review
+    if (data['fraudRisk'] == true) return;
+
     final storeId = data['storeId'] as String? ?? branchId;
     final storeDoc = await _firestore.collection('restaurants').doc(storeId).get();
     final storeData = storeDoc.data() ?? {};

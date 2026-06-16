@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'fake_order_detector.dart';
 
 class OrderPlacementService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Generates a 4-digit delivery PIN for order verification.
   String _generateDeliveryPin() {
     final rng = Random.secure();
     return (1000 + rng.nextInt(9000)).toString();
@@ -28,6 +28,20 @@ class OrderPlacementService {
     int? deliveryFeeCents,
     int? taxCents,
   }) async {
+    // Fraud detection before creating anything
+    DetectionResult? fraudResult;
+    try {
+      fraudResult = await FakeOrderDetector.instance.analyzeOrder(
+        customerId: customerId,
+        restaurantId: restaurantId,
+        totalAmount: totalAmountInCents / 100.0,
+        paymentMethod: paymentMethodType,
+        deliveryAddress: deliveryAddress ?? {},
+      );
+    } catch (e) {
+      // Don't block orders on fraud check failure
+    }
+
     final orderRef = _firestore.collection('orders').doc();
     final deliveryPin = _generateDeliveryPin();
 
@@ -65,6 +79,7 @@ class OrderPlacementService {
       if (subtotalCents != null) 'subtotalAmount': subtotalCents,
       if (deliveryFeeCents != null) 'deliveryFee': deliveryFeeCents,
       if (taxCents != null) 'taxAmount': taxCents,
+      if (fraudResult != null) 'fraudCheck': fraudResult.toMap(),
     };
 
     await orderRef.set(orderData);
@@ -82,6 +97,8 @@ class OrderPlacementService {
     } catch (_) {}
 
     final dispatchRef = _firestore.collection('dispatch_requests').doc();
+    final isHighRisk = fraudResult != null && fraudResult.riskLevel == 'HIGH';
+
     await dispatchRef.set({
       'orderId': orderRef.id,
       'restaurantId': restaurantId,
@@ -92,6 +109,9 @@ class OrderPlacementService {
       'dropoffLon': dropoffLongitude,
       'customerId': customerId,
       'createdAt': FieldValue.serverTimestamp(),
+      if (isHighRisk) 'fraudRisk': true,
+      if (fraudResult != null) 'riskLevel': fraudResult.riskLevel,
+      if (fraudResult != null) 'riskFlags': fraudResult.flags,
     });
 
     return orderRef.id;
