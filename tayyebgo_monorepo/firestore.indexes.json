@@ -349,13 +349,6 @@
       ]
     },
     {
-      "collectionGroup": "subscriptions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "orders",
       "queryScope": "COLLECTION",
       "fields": [
