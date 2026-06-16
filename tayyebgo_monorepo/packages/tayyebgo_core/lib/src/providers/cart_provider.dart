@@ -8,6 +8,9 @@ import '../models/product.dart';
 import '../models/modifier.dart';
 import '../models/cart_line_item.dart';
 import '../di/app_locator.dart';
+import '../../domain/entities/zone.dart';
+import '../../domain/value_objects/geo_location.dart';
+import '../../infrastructure/services/pricing_engine.dart';
 
 const _uuid = Uuid();
 
@@ -26,22 +29,47 @@ class CartProvider extends ChangeNotifier {
   double _couponDiscount = 0.0;
   double _deliveryOverrideFee = -1.0;
   double _taxRate = AppConstants.taxRate;
+  ZoneModel? _zone;
+  GeoLocation? _restaurantLocation;
+  GeoLocation? _deliveryLocation;
+  bool _isSubscriber = false;
+  PricingResult? _pricingResult;
 
   String? get restaurantId => _restaurantId;
   String? get restaurantName => _restaurantName;
   double? get commissionPercent => _commissionPercent;
+  ZoneModel? get zone => _zone;
+  PricingResult? get pricingResult => _pricingResult;
 
   List<CartLineItem> get lines => _lines.values.toList();
   int get totalQuantity =>
       _lines.values.fold(0, (sum, l) => sum + l.quantity);
   double get subtotal =>
       _lines.values.fold(0.0, (sum, l) => sum + l.lineTotal);
-  double get deliveryFee =>
-      _deliveryOverrideFee >= 0 ? _deliveryOverrideFee : (subtotal > AppConstants.freeDeliveryThreshold ? 0.0 : AppConstants.deliveryFee);
+  double get deliveryFee {
+    if (_deliveryOverrideFee >= 0) return _deliveryOverrideFee;
+    // Use PricingEngine if zone + locations are set
+    if (_zone != null && _restaurantLocation != null && _deliveryLocation != null) {
+      final engine = PricingEngine();
+      _pricingResult = engine.calculate(
+        subtotal: subtotal,
+        restaurantLocation: _restaurantLocation!,
+        deliveryLocation: _deliveryLocation!,
+        zone: _zone,
+        discount: _couponDiscount,
+        isSubscriber: _isSubscriber,
+      );
+      return _pricingResult!.deliveryFee;
+    }
+    // Fallback to flat fee
+    return subtotal >= AppConstants.freeDeliveryThreshold ? 0.0 : AppConstants.deliveryFee;
+  }
   double get tax => subtotal * _taxRate;
   double get promoDiscount => _couponDiscount;
-  double get grandTotal =>
-      (subtotal + deliveryFee + tax - _couponDiscount).clamp(0.0, double.infinity);
+  double get grandTotal {
+    if (_pricingResult != null) return _pricingResult!.grandTotal;
+    return (subtotal + deliveryFee + tax - _couponDiscount).clamp(0.0, double.infinity);
+  }
   bool get isEmpty => _lines.isEmpty;
   String? get appliedCoupon => _appliedCouponCode;
   double get taxRate => _taxRate;
@@ -57,6 +85,12 @@ class CartProvider extends ChangeNotifier {
       'coupon_discount': _couponDiscount,
       'delivery_override_fee': _deliveryOverrideFee,
       'tax_rate': _taxRate,
+      'zone_id': _zone?.id,
+      'restaurant_lat': _restaurantLocation?.latitude,
+      'restaurant_lng': _restaurantLocation?.longitude,
+      'delivery_lat': _deliveryLocation?.latitude,
+      'delivery_lng': _deliveryLocation?.longitude,
+      'is_subscriber': _isSubscriber,
     };
     await prefs.setString(_prefsKey, jsonEncode(data));
   }
@@ -225,6 +259,22 @@ class CartProvider extends ChangeNotifier {
     _deliveryOverrideFee = fee;
     notifyListeners();
     _saveToPrefs();
+  }
+
+  void setZone(ZoneModel? zone) {
+    _zone = zone;
+    notifyListeners();
+  }
+
+  void setLocations({GeoLocation? restaurant, GeoLocation? delivery}) {
+    if (restaurant != null) _restaurantLocation = restaurant;
+    if (delivery != null) _deliveryLocation = delivery;
+    notifyListeners();
+  }
+
+  void setSubscriber(bool value) {
+    _isSubscriber = value;
+    notifyListeners();
   }
 
   void setTaxRate(double rate) {

@@ -31,6 +31,7 @@ export 'domain/entities/restaurant.dart';
 export 'domain/entities/user.dart';
 export 'domain/entities/skill.dart';
 export 'domain/entities/skill_execution.dart';
+export 'domain/entities/zone.dart';
 
 export 'src/providers/auth_provider.dart';
 export 'src/providers/cart_provider.dart';
@@ -83,6 +84,7 @@ export 'infrastructure/services/order_state_machine.dart';
 export 'infrastructure/services/skill_execution_engine.dart';
 export 'src/services/auth_gate.dart';
 export 'src/services/auth_listenable.dart';
+export 'src/services/test_account_seeder.dart';
 export 'src/widgets/order_status_badge.dart';
 export 'src/widgets/shimmer_loading.dart';
 export 'ui/empty_state.dart';
@@ -163,6 +165,7 @@ export 'domain/repositories/i_anything_repository.dart';
 export 'domain/repositories/i_dispatch_repository.dart';
 export 'domain/repositories/i_promotion_lookup_repository.dart';
 export 'domain/repositories/i_subscription_repository.dart';
+export 'domain/repositories/i_zone_repository.dart';
 
 export 'src/di/app_locator.dart';
 
@@ -187,6 +190,7 @@ export 'infrastructure/repositories/firebase_anything_repository.dart';
 export 'infrastructure/repositories/firebase_dispatch_repository.dart';
 export 'infrastructure/repositories/firebase_promotion_lookup_repository.dart';
 export 'infrastructure/repositories/firebase_subscription_repository.dart';
+export 'infrastructure/repositories/firebase_zone_repository.dart';
 
 export 'infrastructure/services/auto_dispatcher.dart';
 export 'infrastructure/services/connectivity_service.dart';
@@ -216,6 +220,7 @@ export 'src/screens/wallet_send_screen.dart';
 export 'src/screens/loyalty_rewards_screen.dart';
 export 'infrastructure/services/sync_engine.dart';
 export 'infrastructure/services/delivery_earnings_service.dart';
+export 'infrastructure/services/pricing_engine.dart';
 
 export 'presentation/router/app_router.dart';
 export 'presentation/router/route_guards.dart';
