@@ -28,11 +28,18 @@ import '../../infrastructure/repositories/firebase_loyalty_repository.dart';
 import '../../infrastructure/repositories/firebase_anything_repository.dart';
 import '../../infrastructure/repositories/firebase_dispatch_repository.dart';
 import '../../infrastructure/repositories/firebase_promotion_lookup_repository.dart';
+import '../../infrastructure/services/payment_orchestrator.dart';
+import '../../infrastructure/services/cash_payment_provider.dart';
+import '../../infrastructure/services/shamcash_payment_provider.dart';
+import '../../infrastructure/services/stripe_payment_provider.dart';
 
 class AppLocator {
   AppLocator._();
 
   static final AppLocator instance = AppLocator._();
+
+  // Payment orchestrator - initialized immediately
+  late final PaymentOrchestrator paymentOrchestrator;
 
   // Essential repository - initialized immediately
   late final IAuthRepository auth;
@@ -81,6 +88,12 @@ class AppLocator {
   IPromotionLookupRepository get promotionLookup => _promotionLookup ??= FirebasePromotionLookupRepository.instance;
 
   void init() {
+    // Initialize payment orchestrator with all providers
+    paymentOrchestrator = PaymentOrchestrator.instance;
+    paymentOrchestrator.register(CashPaymentProvider());
+    paymentOrchestrator.register(ShamCashPaymentProvider());
+    paymentOrchestrator.register(StripePaymentProvider());
+
     // Only initialize essential repository immediately
     auth = FirebaseAuthRepository.instance;
     // All other repositories are lazy-loaded on first access
