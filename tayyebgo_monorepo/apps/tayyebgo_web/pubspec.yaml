@@ -1,0 +1,45 @@
+name: tayyebgo_web
+description: TayyebGo Unified Web App — All roles in one login
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.1.2
+  go_router: ^17.2.3
+  intl: ^0.20.2
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  url_launcher: ^6.2.4
+  flutter_map: ^8.3.0
+  latlong2: ^0.9.1
+  image_picker: ^1.1.2
+  fl_chart: ^0.68.0
+  cloud_functions: ^5.3.6
+  geolocator: ^14.0.2
+  tayyebgo_core:
+    path: ../../packages/tayyebgo_core
+  tayyebgo_multi_tenant:
+    path: ../../packages/tayyebgo_multi_tenant
+  tayyebgo_customer:
+    path: ../tayyebgo_customer
+  tayyebgo_partner:
+    path: ../tayyebgo_partner
+  tayyebgo_driver:
+    path: ../tayyebgo_driver
+  tayyebgo_admin:
+    path: ../tayyebgo_admin
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
