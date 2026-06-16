@@ -122,8 +122,6 @@ class _AdminAppState extends State<AdminApp> {
           AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()),
           name: 'dashboard',
         ),
-        AppRouter.route('/profile', AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()), name: 'profile'),
-        AppRouter.route('/settings', AuthStateRedirector(allowedRoles: UserRole.adminRoles, child: const AdminDashboardScreen()), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
       ],
       redirect: _redirect,

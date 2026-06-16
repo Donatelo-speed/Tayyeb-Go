@@ -223,8 +223,14 @@ export 'presentation/router/route_guards.dart';
 export 'ui/tayyebgo_ui.dart';
 export 'presentation/shared_widgets/tg_design_system.dart'
     show
+        TGHaptics,
+        TGSection,
+        TGStat,
+        TGListItem,
+        TGRefresh,
         TGOrderTimeline,
         TGTimelineStep,
         TGPrice,
+        TGRating,
         TGDeliveryBadge,
         TGUserAvatar;

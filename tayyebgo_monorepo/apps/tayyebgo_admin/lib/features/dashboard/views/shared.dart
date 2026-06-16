@@ -11,7 +11,6 @@ import '../../../core/widgets/side_nav.dart' as nav_impl;
 
 export '../admin_helper.dart';
 export '../../../core/widgets/widgets.dart';
-export '../../../core/error_handling/app_toast.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Legacy aliases — keep old view files compiling while pointing at the

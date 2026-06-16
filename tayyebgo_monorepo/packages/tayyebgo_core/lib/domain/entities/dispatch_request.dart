@@ -131,7 +131,14 @@ class DriverScore {
   final double distanceKm;
   final double rating;
   final int activeDeliveries;
+  final int completedDeliveries;
+  final bool isSubscribed;
   final double score;
+  final double distanceScore;
+  final double ratingScore;
+  final double completionScore;
+  final double workloadScore;
+  final double subscriptionScore;
 
   const DriverScore({
     required this.driverId,
@@ -141,7 +148,14 @@ class DriverScore {
     required this.distanceKm,
     required this.rating,
     required this.activeDeliveries,
+    this.completedDeliveries = 0,
+    this.isSubscribed = false,
     required this.score,
+    this.distanceScore = 0,
+    this.ratingScore = 0,
+    this.completionScore = 0,
+    this.workloadScore = 0,
+    this.subscriptionScore = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -152,7 +166,14 @@ class DriverScore {
         'distanceKm': distanceKm,
         'rating': rating,
         'activeDeliveries': activeDeliveries,
+        'completedDeliveries': completedDeliveries,
+        'isSubscribed': isSubscribed,
         'score': score,
+        'distanceScore': distanceScore,
+        'ratingScore': ratingScore,
+        'completionScore': completionScore,
+        'workloadScore': workloadScore,
+        'subscriptionScore': subscriptionScore,
       };
 
   factory DriverScore.fromJson(Map<String, dynamic> m) => DriverScore(
@@ -163,6 +184,13 @@ class DriverScore {
         distanceKm: (m['distanceKm'] as num?)?.toDouble() ?? 0,
         rating: (m['rating'] as num?)?.toDouble() ?? 0,
         activeDeliveries: (m['activeDeliveries'] as num?)?.toInt() ?? 0,
+        completedDeliveries: (m['completedDeliveries'] as num?)?.toInt() ?? 0,
+        isSubscribed: m['isSubscribed'] == true,
         score: (m['score'] as num?)?.toDouble() ?? 0,
+        distanceScore: (m['distanceScore'] as num?)?.toDouble() ?? 0,
+        ratingScore: (m['ratingScore'] as num?)?.toDouble() ?? 0,
+        completionScore: (m['completionScore'] as num?)?.toDouble() ?? 0,
+        workloadScore: (m['workloadScore'] as num?)?.toDouble() ?? 0,
+        subscriptionScore: (m['subscriptionScore'] as num?)?.toDouble() ?? 0,
       );
 }

@@ -14,6 +14,8 @@ class Driver {
   final GeoLocation? currentLocation;
   final double rating;
   final int activeDeliveries;
+  final int completedDeliveries;
+  final bool isSubscribed;
   final DateTime createdAt;
 
   const Driver({
@@ -29,6 +31,8 @@ class Driver {
     this.currentLocation,
     this.rating = 5.0,
     this.activeDeliveries = 0,
+    this.completedDeliveries = 0,
+    this.isSubscribed = false,
     required this.createdAt,
   });
 
@@ -47,6 +51,8 @@ class Driver {
         if (currentLocation != null) ...currentLocation!.toMap(),
         'rating': rating,
         'activeDeliveries': activeDeliveries,
+        'completedDeliveries': completedDeliveries,
+        'isSubscribed': isSubscribed,
         'createdAt': createdAt.toIso8601String(),
       };
 
@@ -65,6 +71,8 @@ class Driver {
             : null,
         rating: (m['rating'] as num?)?.toDouble() ?? 5.0,
         activeDeliveries: (m['activeDeliveries'] as num?)?.toInt() ?? 0,
+        completedDeliveries: (m['completedDeliveries'] as num?)?.toInt() ?? 0,
+        isSubscribed: m['isSubscribed'] == true,
         createdAt: DateTime.tryParse(m['createdAt'] as String? ?? '') ??
             DateTime.now(),
       );

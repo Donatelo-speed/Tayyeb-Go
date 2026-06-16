@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../domain/value_objects/geohash.dart';
+import '../../domain/value_objects/geo_location.dart';
 
 class DriverLocationService {
   static final DriverLocationService instance = DriverLocationService._();
@@ -17,6 +18,13 @@ class DriverLocationService {
   static const Duration _minInterval = Duration(seconds: 5);
   static const Duration _staleThreshold = Duration(minutes: 5);
   static const Duration _cleanupInterval = Duration(minutes: 2);
+
+  /// Fake GPS detection: maximum allowed speed in m/s (approx 180 km/h)
+  static const double _maxAllowedSpeed = 50.0;
+  /// Maximum allowed distance jump in meters between consecutive updates
+  static const double _maxAllowedJump = 2000.0;
+  GeoLocation? _lastKnownPosition;
+  DateTime? _lastPositionTime;
 
   void start(String driverId) {
     _driverId = driverId;
@@ -45,6 +53,8 @@ class DriverLocationService {
     _heartbeatTimer = null;
     _cleanupTimer = null;
     _driverId = null;
+    _lastKnownPosition = null;
+    _lastPositionTime = null;
   }
 
   bool get isRunning => _driverId != null;
@@ -89,20 +99,76 @@ class DriverLocationService {
     await batch.commit();
   }
 
+  bool _detectFakeGps(Position pos) {
+    final now = DateTime.now();
+    final currentPos = GeoLocation(pos.latitude, pos.longitude);
+
+    if (_lastKnownPosition != null && _lastPositionTime != null) {
+      final timeDiff = now.difference(_lastPositionTime!).inSeconds;
+      if (timeDiff > 0) {
+        final distance = _lastKnownPosition!.distanceTo(currentPos);
+        final speed = distance / timeDiff;
+
+        /// Check for impossible speed (teleportation)
+        if (speed > _maxAllowedSpeed) {
+          _flagSuspiciousActivity('Impossible speed detected: ${speed.toStringAsFixed(1)} m/s');
+          return true;
+        }
+
+        /// Check for large distance jump
+        if (distance > _maxAllowedJump) {
+          _flagSuspiciousActivity('Distance jump detected: ${distance.toStringAsFixed(0)}m in ${timeDiff}s');
+          return true;
+        }
+      }
+    }
+
+    _lastKnownPosition = currentPos;
+    _lastPositionTime = now;
+    return false;
+  }
+
+  void _flagSuspiciousActivity(String reason) {
+    final id = _driverId;
+    if (id == null) return;
+
+    _firestore.collection('driver_locations').doc(id).update({
+      'suspiciousActivity': FieldValue.arrayUnion([
+        {
+          'reason': reason,
+          'timestamp': FieldValue.serverTimestamp(),
+        }
+      ]),
+    });
+
+    _firestore.collection('activity_log').doc().set({
+      'type': 'fake_gps_suspected',
+      'driverId': id,
+      'reason': reason,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   void _updateLocation(Position pos) {
     final id = _driverId;
     if (id == null) return;
     if (!_isOnline) return;
     final now = DateTime.now();
     if (now.difference(_lastUpdate) < _minInterval) return;
+
+    /// Fake GPS detection
+    if (_detectFakeGps(pos)) return;
+
     _lastUpdate = now;
     final geohash = Geohash.encode(pos.latitude, pos.longitude, precision: 4);
+
     _firestore.collection('driver_locations').doc(id).set({
       'latitude': pos.latitude,
       'longitude': pos.longitude,
       'geohash': geohash,
       'heading': pos.heading,
       'speed': pos.speed,
+      'accuracy': pos.accuracy,
       'isOnline': true,
       'updatedAt': FieldValue.serverTimestamp(),
     });

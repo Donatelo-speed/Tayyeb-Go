@@ -455,7 +455,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
     return Row(
       children: [
         Expanded(
-          child: TGCard(
+          child: Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -500,7 +500,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: TGCard(
+          child: Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
