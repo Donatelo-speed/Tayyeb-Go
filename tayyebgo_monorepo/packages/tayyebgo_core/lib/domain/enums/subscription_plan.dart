@@ -1,21 +1,33 @@
 enum SubscriptionPlanType {
-  basic('basic', 'Basic', 1, 10000, [
-    'free_delivery',
-    '5_percent_discount',
+  starter('starter', 'Starter', 1, 500, [
+    'free_delivery_first_3_orders',
+    '3_percent_discount',
     'priority_offers',
   ]),
-  plus('plus', 'Plus', 3, 25000, [
+  plus('plus', 'Plus', 3, 1000, [
     'free_delivery',
-    '10_percent_discount',
-    'monthly_offers',
+    '7_percent_discount',
+    'monthly_exclusive_offers',
     'priority_support',
   ]),
-  premium('premium', 'Premium', 6, 45000, [
+  pro('pro', 'Pro', 6, 2000, [
+    'free_delivery',
+    '12_percent_discount',
+    'exclusive_deals',
+    'early_access',
+    'priority_support',
+    'vip_badge',
+  ]),
+  vip('vip', 'VIP', 12, 2500, [
     'free_delivery',
     '15_percent_discount',
     'exclusive_deals',
     'early_access',
     'priority_support',
+    'vip_badge',
+    'dedicated_support',
+    'monthly_free_item',
+    'double_rewards',
   ]);
 
   final String value;
@@ -35,7 +47,7 @@ enum SubscriptionPlanType {
   static SubscriptionPlanType fromValue(String v) =>
       SubscriptionPlanType.values.firstWhere(
         (p) => p.value == v,
-        orElse: () => basic,
+        orElse: () => starter,
       );
 
   String get priceDisplay => '\$${(priceInCents / 100).toStringAsFixed(0)}';
@@ -43,8 +55,18 @@ enum SubscriptionPlanType {
   int get freeDeliveryLimit => -1;
 
   double get discountPercent => switch (this) {
-        SubscriptionPlanType.basic => 5.0,
-        SubscriptionPlanType.plus => 10.0,
-        SubscriptionPlanType.premium => 15.0,
+        SubscriptionPlanType.starter => 3.0,
+        SubscriptionPlanType.plus => 7.0,
+        SubscriptionPlanType.pro => 12.0,
+        SubscriptionPlanType.vip => 15.0,
       };
+
+  String get monthlyPriceDisplay {
+    final monthly = priceInCents / 100 / durationMonths;
+    return '\$${monthly.toStringAsFixed(2)}/mo';
+  }
+
+  bool get isPopular => this == SubscriptionPlanType.plus;
+  bool get isBestValue => this == SubscriptionPlanType.pro;
+  bool get isBestDeal => this == SubscriptionPlanType.vip;
 }

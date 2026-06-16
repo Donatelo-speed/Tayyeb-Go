@@ -15,23 +15,6 @@ class PushNotificationService {
     }
   }
 
-  Future<void> _saveFcmToken(String userId, String token) async {
-    try {
-      await _firestore.collection('users').doc(userId).update({
-        'fcmToken': token,
-        'fcmUpdatedAt': FieldValue.serverTimestamp(),
-      });
-      await _firestore.collection('user_devices').doc(userId).set({
-        'userId': userId,
-        'fcmToken': token,
-        'platform': defaultTargetPlatform == TargetPlatform.android ? 'android' : 'ios',
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    } catch (e) {
-      debugPrint('[PushNotification] Error saving token: $e');
-    }
-  }
-
   Future<void> sendOrderNotification({
     required String orderId,
     required String customerId,

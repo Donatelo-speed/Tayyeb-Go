@@ -1431,7 +1431,7 @@ class _LoyaltyPointsBanner extends StatelessWidget {
         final data = snapshot.data?.data() as Map<String, dynamic>?;
         final points = data?['loyaltyPoints'] ?? 0;
         return AnimatedPressScale(
-          onTap: () => context.push('/loyalty'),
+          onTap: () => context.push('/points-rewards'),
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -1506,7 +1506,7 @@ class _QuickActionsGrid extends StatelessWidget {
         ),
         Expanded(
           child: AnimatedPressScale(
-            onTap: () => context.push('/loyalty'),
+            onTap: () => context.push('/points-rewards'),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 16),

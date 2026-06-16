@@ -19,54 +19,86 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
   @override
   void initState() {
     super.initState();
-    final userId = context.read<AuthProvider>().user?.id;
-    if (userId != null) {
-      context.read<SubscriptionProvider>().loadSubscription(userId);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final userId = context.read<AuthProvider>().user?.id;
+      if (userId != null) {
+        context.read<SubscriptionProvider>().loadSubscription(userId);
+      }
+    });
   }
 
   Color _planColor(SubscriptionPlanType plan) {
     switch (plan) {
-      case SubscriptionPlanType.basic:
+      case SubscriptionPlanType.starter:
         return const Color(0xFF22C55E);
       case SubscriptionPlanType.plus:
         return AppColors.primary;
-      case SubscriptionPlanType.premium:
+      case SubscriptionPlanType.pro:
         return const Color(0xFF8B5CF6);
+      case SubscriptionPlanType.vip:
+        return const Color(0xFFF59E0B);
     }
   }
 
   IconData _planIcon(SubscriptionPlanType plan) {
     switch (plan) {
-      case SubscriptionPlanType.basic:
+      case SubscriptionPlanType.starter:
         return Icons.bolt_rounded;
       case SubscriptionPlanType.plus:
         return Icons.star_rounded;
-      case SubscriptionPlanType.premium:
+      case SubscriptionPlanType.pro:
         return Icons.diamond_rounded;
+      case SubscriptionPlanType.vip:
+        return Icons.workspace_premium_rounded;
     }
+  }
+
+  String? _planBadge(SubscriptionPlanType plan) {
+    if (plan.isPopular) return 'POPULAR';
+    if (plan.isBestValue) return 'BEST VALUE';
+    if (plan.isBestDeal) return 'BEST DEAL';
+    return null;
   }
 
   String _benefitLabel(String benefit) {
     switch (benefit) {
       case 'free_delivery':
         return 'Free delivery on all orders';
+      case 'free_delivery_first_3_orders':
+        return 'Free delivery on first 3 orders';
+      case '3_percent_discount':
+        return '3% discount on every order';
       case '5_percent_discount':
         return '5% discount on every order';
+      case '7_percent_discount':
+        return '7% discount on every order';
       case '10_percent_discount':
         return '10% discount on every order';
+      case '12_percent_discount':
+        return '12% discount on every order';
       case '15_percent_discount':
         return '15% discount on every order';
       case 'priority_offers':
         return 'Priority access to offers';
       case 'monthly_offers':
         return 'Exclusive monthly offers';
+      case 'monthly_exclusive_offers':
+        return 'Monthly exclusive offers';
       case 'exclusive_deals':
         return 'Exclusive VIP deals';
       case 'early_access':
         return 'Early access to new features';
       case 'priority_support':
         return 'Priority customer support';
+      case 'vip_badge':
+        return 'VIP badge on your profile';
+      case 'dedicated_support':
+        return 'Dedicated account manager';
+      case 'monthly_free_item':
+        return 'One free premium item per month';
+      case 'double_rewards':
+        return 'Double rewards points';
       default:
         return benefit.replaceAll('_', ' ');
     }
@@ -165,10 +197,10 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                       final idx = entry.key;
                       final plan = entry.value;
                       return AnimatedFadeSlide(
-                        delay: 200 + (idx * 100).toDouble(),
+                        delay: 200 + (idx * 80).toDouble(),
                         duration: const Duration(milliseconds: 500),
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.only(bottom: 12),
                           child: _buildPlanCard(plan),
                         ),
                       );
@@ -176,7 +208,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                   ),
                   const SizedBox(height: 16),
                   AnimatedFadeSlide(
-                    delay: 550,
+                    delay: 600,
                     duration: const Duration(milliseconds: 500),
                     child: AnimatedPressScale(
                       onTap: () => _onSubscribe(user),
@@ -396,18 +428,19 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
   Widget _buildPlanCard(SubscriptionPlanType plan) {
     final isSelected = _selectedPlan == plan;
     final color = _planColor(plan);
+    final badge = _planBadge(plan);
 
     return AnimatedPressScale(
       onTap: () => setState(() => _selectedPlan = plan),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
               ? color.withValues(alpha: 0.08)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isSelected
                 ? color.withValues(alpha: 0.5)
@@ -436,8 +469,8 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
             Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -447,11 +480,11 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                         color.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(_planIcon(plan), color: color, size: 24),
+                  child: Icon(_planIcon(plan), color: color, size: 22),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,12 +495,12 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                             'TayyebGo ${plan.displayName}',
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w700,
-                              fontSize: 18,
+                              fontSize: 16,
                               color: context.textPrimaryColor,
                               letterSpacing: 0,
                             ),
                           ),
-                          if (plan == SubscriptionPlanType.plus) ...[
+                          if (badge != null) ...[
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -477,14 +510,14 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    AppColors.primary,
-                                    AppColors.primary.withValues(alpha: 0.8),
+                                    color,
+                                    color.withValues(alpha: 0.8),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                'POPULAR',
+                                badge,
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 9,
@@ -498,10 +531,10 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${plan.durationMonths} months',
+                        '${plan.durationMonths} ${plan.durationMonths == 1 ? 'month' : 'months'} — ${plan.monthlyPriceDisplay}',
                         style: GoogleFonts.inter(
                           color: context.textMutedColor,
-                          fontSize: 13,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -509,30 +542,30 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  width: 24,
-                  height: 24,
+                  width: 22,
+                  height: 22,
                   decoration: BoxDecoration(
                     color: isSelected ? color : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(11),
                     border: Border.all(
                       color: isSelected ? color : context.borderColor,
                       width: 2,
                     ),
                   ),
                   child: isSelected
-                      ? const Icon(Icons.check, color: Colors.white, size: 14)
+                      ? const Icon(Icons.check, color: Colors.white, size: 12)
                       : null,
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 14),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: isSelected
                     ? color.withValues(alpha: 0.06)
                     : context.surfaceAltColor.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -541,15 +574,15 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                     plan.priceDisplay,
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w800,
-                      fontSize: 36,
+                      fontSize: 32,
                       color: color,
                       letterSpacing: 0,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8, left: 4),
+                    padding: const EdgeInsets.only(bottom: 6, left: 4),
                     child: Text(
-                      '/ ${plan.durationMonths} months',
+                      '/ ${plan.durationMonths} ${plan.durationMonths == 1 ? 'mo' : 'mos'}',
                       style: GoogleFonts.inter(
                         color: context.textMutedColor,
                         fontSize: 13,
@@ -557,7 +590,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                     ),
                   ),
                   const Spacer(),
-                  if (plan == SubscriptionPlanType.premium)
+                  if (plan.isBestDeal)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
@@ -565,7 +598,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Best Value',
+                        'Save ${((1 - (plan.priceInCents / 100) / ((plan.priceInCents / 100) / plan.durationMonths * 12)) * 100).toInt()}%',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 11,
@@ -576,27 +609,27 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             ...plan.benefits.map((b) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
                   Container(
-                    width: 20,
-                    height: 20,
+                    width: 18,
+                    height: 18,
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.check, color: color, size: 12),
+                    child: Icon(Icons.check, color: color, size: 10),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _benefitLabel(b),
                       style: GoogleFonts.inter(
                         color: context.textPrimaryColor,
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
                   ),

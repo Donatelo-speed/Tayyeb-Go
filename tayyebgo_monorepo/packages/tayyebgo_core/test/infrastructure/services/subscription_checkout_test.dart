@@ -13,7 +13,7 @@ void main() {
       service = SubscriptionService.instance;
     });
 
-    test('applies 10% discount for active Plus subscription', () {
+    test('applies 7% discount for active Plus subscription', () {
       final subscription = CustomerSubscription(
         id: 'sub_1',
         userId: 'user_1',
@@ -21,7 +21,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 30)),
         expiryDate: DateTime.now().add(const Duration(days: 60)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
       );
 
@@ -31,19 +31,20 @@ void main() {
         isDelivery: true,
       );
 
-      expect(result.discount, const Money(1000));
+      // 7% of 10000 = 700
+      expect(result.discount, const Money(700));
       expect(result.freeDelivery, true);
     });
 
-    test('applies 5% discount for active Basic subscription', () {
+    test('applies 3% discount for active Starter subscription', () {
       final subscription = CustomerSubscription(
         id: 'sub_2',
         userId: 'user_2',
-        plan: SubscriptionPlanType.basic,
+        plan: SubscriptionPlanType.starter,
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
-        expiryDate: DateTime.now().add(const Duration(days: 80)),
-        pricePaid: const Money(10000),
+        expiryDate: DateTime.now().add(const Duration(days: 20)),
+        pricePaid: const Money(500),
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       );
 
@@ -53,19 +54,20 @@ void main() {
         isDelivery: true,
       );
 
-      expect(result.discount, const Money(1000));
+      // 3% of 20000 = 600
+      expect(result.discount, const Money(600));
       expect(result.freeDelivery, true);
     });
 
-    test('applies 15% discount for active Premium subscription', () {
+    test('applies 15% discount for active VIP subscription', () {
       final subscription = CustomerSubscription(
         id: 'sub_3',
         userId: 'user_3',
-        plan: SubscriptionPlanType.premium,
+        plan: SubscriptionPlanType.vip,
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 60)),
-        expiryDate: DateTime.now().add(const Duration(days: 120)),
-        pricePaid: const Money(45000),
+        expiryDate: DateTime.now().add(const Duration(days: 300)),
+        pricePaid: const Money(2500),
         createdAt: DateTime.now().subtract(const Duration(days: 60)),
       );
 
@@ -75,6 +77,7 @@ void main() {
         isDelivery: false,
       );
 
+      // 15% of 10000 = 1500
       expect(result.discount, const Money(1500));
       expect(result.freeDelivery, false);
     });
@@ -87,7 +90,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 90)),
         expiryDate: DateTime.now().subtract(const Duration(days: 1)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 90)),
       );
 
@@ -105,11 +108,11 @@ void main() {
       final subscription = CustomerSubscription(
         id: 'sub_5',
         userId: 'user_5',
-        plan: SubscriptionPlanType.premium,
+        plan: SubscriptionPlanType.vip,
         status: SubscriptionStatus.cancelled,
         startDate: DateTime.now().subtract(const Duration(days: 30)),
-        expiryDate: DateTime.now().add(const Duration(days: 150)),
-        pricePaid: const Money(45000),
+        expiryDate: DateTime.now().add(const Duration(days: 330)),
+        pricePaid: const Money(2500),
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
         cancelledAt: DateTime.now().subtract(const Duration(days: 5)),
         cancelReason: 'No longer needed',
@@ -133,7 +136,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
         expiryDate: DateTime.now().add(const Duration(days: 80)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       );
 
@@ -143,7 +146,8 @@ void main() {
         isDelivery: false,
       );
 
-      expect(result.discount, const Money(1000));
+      // 7% of 10000 = 700
+      expect(result.discount, const Money(700));
       expect(result.freeDelivery, false);
     });
 
@@ -151,11 +155,11 @@ void main() {
       final subscription = CustomerSubscription(
         id: 'sub_7',
         userId: 'user_7',
-        plan: SubscriptionPlanType.basic,
+        plan: SubscriptionPlanType.starter,
         status: SubscriptionStatus.pending,
         startDate: DateTime.now(),
         expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(10000),
+        pricePaid: const Money(500),
         createdAt: DateTime.now(),
       );
 
@@ -173,11 +177,11 @@ void main() {
       final subscription = CustomerSubscription(
         id: 'sub_8',
         userId: 'user_8',
-        plan: SubscriptionPlanType.premium,
+        plan: SubscriptionPlanType.vip,
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
-        expiryDate: DateTime.now().add(const Duration(days: 170)),
-        pricePaid: const Money(45000),
+        expiryDate: DateTime.now().add(const Duration(days: 350)),
+        pricePaid: const Money(2500),
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       );
 
@@ -201,7 +205,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 30)),
         expiryDate: DateTime.now().add(const Duration(days: 60)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
       );
       expect(sub.isActive, true);
@@ -215,7 +219,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 90)),
         expiryDate: DateTime.now().subtract(const Duration(days: 1)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 90)),
       );
       expect(sub.isActive, false);
@@ -229,7 +233,7 @@ void main() {
         status: SubscriptionStatus.cancelled,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
         expiryDate: DateTime.now().add(const Duration(days: 80)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       );
       expect(sub.isActive, false);
@@ -245,21 +249,22 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 10)),
         expiryDate: DateTime.now().add(const Duration(days: 80)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       );
-      expect(sub.calculateDiscount(const Money(5000)), const Money(500));
+      // 7% of 5000 = 350
+      expect(sub.calculateDiscount(const Money(5000)), const Money(350));
     });
 
     test('returns zero for inactive subscription', () {
       final sub = CustomerSubscription(
         id: 'sub',
         userId: 'user',
-        plan: SubscriptionPlanType.premium,
+        plan: SubscriptionPlanType.vip,
         status: SubscriptionStatus.expired,
         startDate: DateTime.now().subtract(const Duration(days: 200)),
         expiryDate: DateTime.now().subtract(const Duration(days: 10)),
-        pricePaid: const Money(45000),
+        pricePaid: const Money(2500),
         createdAt: DateTime.now().subtract(const Duration(days: 200)),
       );
       expect(sub.calculateDiscount(const Money(10000)), const Money(0));

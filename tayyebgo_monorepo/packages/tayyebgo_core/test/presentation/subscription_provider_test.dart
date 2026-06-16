@@ -3,16 +3,16 @@ import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 void main() {
   group('SubscriptionPlanType', () {
-    test('basic has correct properties', () {
-      const plan = SubscriptionPlanType.basic;
-      expect(plan.value, 'basic');
-      expect(plan.displayName, 'Basic');
+    test('starter has correct properties', () {
+      const plan = SubscriptionPlanType.starter;
+      expect(plan.value, 'starter');
+      expect(plan.displayName, 'Starter');
       expect(plan.durationMonths, 1);
-      expect(plan.priceInCents, 10000);
-      expect(plan.discountPercent, 5.0);
-      expect(plan.priceDisplay, '\$100');
-      expect(plan.benefits, contains('free_delivery'));
-      expect(plan.benefits, contains('5_percent_discount'));
+      expect(plan.priceInCents, 500);
+      expect(plan.discountPercent, 3.0);
+      expect(plan.priceDisplay, '\$5');
+      expect(plan.benefits, contains('free_delivery_first_3_orders'));
+      expect(plan.benefits, contains('3_percent_discount'));
     });
 
     test('plus has correct properties', () {
@@ -20,33 +20,46 @@ void main() {
       expect(plan.value, 'plus');
       expect(plan.displayName, 'Plus');
       expect(plan.durationMonths, 3);
-      expect(plan.priceInCents, 25000);
-      expect(plan.discountPercent, 10.0);
-      expect(plan.priceDisplay, '\$250');
-      expect(plan.benefits, contains('10_percent_discount'));
+      expect(plan.priceInCents, 1000);
+      expect(plan.discountPercent, 7.0);
+      expect(plan.priceDisplay, '\$10');
+      expect(plan.benefits, contains('7_percent_discount'));
       expect(plan.benefits, contains('priority_support'));
     });
 
-    test('premium has correct properties', () {
-      const plan = SubscriptionPlanType.premium;
-      expect(plan.value, 'premium');
-      expect(plan.displayName, 'Premium');
+    test('pro has correct properties', () {
+      const plan = SubscriptionPlanType.pro;
+      expect(plan.value, 'pro');
+      expect(plan.displayName, 'Pro');
       expect(plan.durationMonths, 6);
-      expect(plan.priceInCents, 45000);
-      expect(plan.discountPercent, 15.0);
-      expect(plan.priceDisplay, '\$450');
+      expect(plan.priceInCents, 2000);
+      expect(plan.discountPercent, 12.0);
+      expect(plan.priceDisplay, '\$20');
       expect(plan.benefits, contains('exclusive_deals'));
       expect(plan.benefits, contains('early_access'));
     });
 
-    test('fromValue returns correct plan', () {
-      expect(SubscriptionPlanType.fromValue('basic'), SubscriptionPlanType.basic);
-      expect(SubscriptionPlanType.fromValue('plus'), SubscriptionPlanType.plus);
-      expect(SubscriptionPlanType.fromValue('premium'), SubscriptionPlanType.premium);
+    test('vip has correct properties', () {
+      const plan = SubscriptionPlanType.vip;
+      expect(plan.value, 'vip');
+      expect(plan.displayName, 'VIP');
+      expect(plan.durationMonths, 12);
+      expect(plan.priceInCents, 2500);
+      expect(plan.discountPercent, 15.0);
+      expect(plan.priceDisplay, '\$25');
+      expect(plan.benefits, contains('dedicated_support'));
+      expect(plan.benefits, contains('monthly_free_item'));
     });
 
-    test('fromValue defaults to basic for unknown value', () {
-      expect(SubscriptionPlanType.fromValue('unknown'), SubscriptionPlanType.basic);
+    test('fromValue returns correct plan', () {
+      expect(SubscriptionPlanType.fromValue('starter'), SubscriptionPlanType.starter);
+      expect(SubscriptionPlanType.fromValue('plus'), SubscriptionPlanType.plus);
+      expect(SubscriptionPlanType.fromValue('pro'), SubscriptionPlanType.pro);
+      expect(SubscriptionPlanType.fromValue('vip'), SubscriptionPlanType.vip);
+    });
+
+    test('fromValue defaults to starter for unknown value', () {
+      expect(SubscriptionPlanType.fromValue('unknown'), SubscriptionPlanType.starter);
     });
   });
 
@@ -85,8 +98,8 @@ void main() {
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.active,
         startDate: DateTime.now(),
-        expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(25000),
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now(),
       );
       expect(sub.isActive, isTrue);
@@ -101,7 +114,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 100)),
         expiryDate: DateTime.now().subtract(const Duration(days: 1)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 100)),
       );
       expect(sub.isActive, isFalse);
@@ -115,26 +128,27 @@ void main() {
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.cancelled,
         startDate: DateTime.now(),
-        expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(25000),
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now(),
       );
       expect(sub.isActive, isFalse);
     });
 
-    test('calculateDiscount returns correct amount', () {
+    test('calculateDiscount returns correct amount for plus plan', () {
       final sub = CustomerSubscription(
         id: 'test-id',
         userId: 'user-1',
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.active,
         startDate: DateTime.now(),
-        expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(25000),
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now(),
       );
       final discount = sub.calculateDiscount(const Money(10000));
-      expect(discount.amountInCents, 1000);
+      // 7% of 10000 = 700
+      expect(discount.amountInCents, 700);
     });
 
     test('calculateDiscount returns zero when inactive', () {
@@ -144,8 +158,8 @@ void main() {
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.cancelled,
         startDate: DateTime.now(),
-        expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(25000),
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now(),
       );
       final discount = sub.calculateDiscount(const Money(10000));
@@ -162,7 +176,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: now,
         expiryDate: expiry,
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: now,
       );
       expect(sub.daysRemaining, 15);
@@ -176,7 +190,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: DateTime.now().subtract(const Duration(days: 100)),
         expiryDate: DateTime.now().subtract(const Duration(days: 5)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now().subtract(const Duration(days: 100)),
       );
       expect(sub.daysRemaining, 0);
@@ -186,11 +200,11 @@ void main() {
       final sub = CustomerSubscription(
         id: 'test-id',
         userId: 'user-1',
-        plan: SubscriptionPlanType.basic,
+        plan: SubscriptionPlanType.starter,
         status: SubscriptionStatus.active,
         startDate: DateTime.now(),
         expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(10000),
+        pricePaid: const Money(500),
         createdAt: DateTime.now(),
       );
       expect(sub.hasFreeDelivery, isTrue);
@@ -200,11 +214,11 @@ void main() {
       final sub = CustomerSubscription(
         id: 'test-id',
         userId: 'user-1',
-        plan: SubscriptionPlanType.basic,
+        plan: SubscriptionPlanType.starter,
         status: SubscriptionStatus.cancelled,
         startDate: DateTime.now(),
         expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(10000),
+        pricePaid: const Money(500),
         createdAt: DateTime.now(),
       );
       expect(sub.hasFreeDelivery, isFalse);
@@ -219,7 +233,7 @@ void main() {
         status: SubscriptionStatus.active,
         startDate: now,
         expiryDate: now.add(const Duration(days: 90)),
-        pricePaid: const Money(25000),
+        pricePaid: const Money(1000),
         paymentTransactionId: 'txn-123',
         totalSavings: 42.50,
         ordersUsed: 7,
@@ -231,7 +245,7 @@ void main() {
       expect(restored.userId, 'user-1');
       expect(restored.plan, SubscriptionPlanType.plus);
       expect(restored.status, SubscriptionStatus.active);
-      expect(restored.pricePaid.amountInCents, 25000);
+      expect(restored.pricePaid.amountInCents, 1000);
       expect(restored.paymentTransactionId, 'txn-123');
       expect(restored.totalSavings, 42.50);
       expect(restored.ordersUsed, 7);
@@ -244,8 +258,8 @@ void main() {
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.active,
         startDate: DateTime.now(),
-        expiryDate: DateTime.now().add(const Duration(days: 30)),
-        pricePaid: const Money(25000),
+        expiryDate: DateTime.now().add(const Duration(days: 90)),
+        pricePaid: const Money(1000),
         createdAt: DateTime.now(),
       );
       final cancelled = sub.copyWith(
@@ -261,8 +275,8 @@ void main() {
 
   group('Money', () {
     test('format returns correct string', () {
-      const money = Money(10000);
-      expect(money.format(), '\$100.00');
+      const money = Money(500);
+      expect(money.format(), '\$5.00');
     });
 
     test('inDollars returns correct value', () {

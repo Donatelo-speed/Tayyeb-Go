@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 /// Animated container that fades and slides in on build.
 class AnimatedFadeSlide extends StatefulWidget {

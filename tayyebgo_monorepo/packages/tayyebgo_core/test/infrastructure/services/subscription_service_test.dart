@@ -20,7 +20,8 @@ void main() {
         orderSubtotal: const Money(10000),
         isDelivery: true,
       );
-      expect(result.discount.amountInCents, 500);
+      // starter plan: 3% discount = 300 cents
+      expect(result.discount.amountInCents, 300);
       expect(result.freeDelivery, isTrue);
     });
 
@@ -45,11 +46,12 @@ void main() {
         orderSubtotal: const Money(10000),
         isDelivery: false,
       );
-      expect(result.discount.amountInCents, 500);
+      // starter plan: 3% discount = 300 cents
+      expect(result.discount.amountInCents, 300);
       expect(result.freeDelivery, isFalse);
     });
 
-    test('plus plan applies 10% discount', () {
+    test('plus plan applies 7% discount', () {
       final sub = _makeSub(
         plan: SubscriptionPlanType.plus,
         status: SubscriptionStatus.active,
@@ -59,12 +61,13 @@ void main() {
         orderSubtotal: const Money(20000),
         isDelivery: true,
       );
-      expect(result.discount.amountInCents, 2000);
+      // 7% of 20000 = 1400
+      expect(result.discount.amountInCents, 1400);
     });
 
-    test('premium plan applies 15% discount', () {
+    test('vip plan applies 15% discount', () {
       final sub = _makeSub(
-        plan: SubscriptionPlanType.premium,
+        plan: SubscriptionPlanType.vip,
         status: SubscriptionStatus.active,
       );
       final result = service.applyBenefits(
@@ -72,6 +75,7 @@ void main() {
         orderSubtotal: const Money(10000),
         isDelivery: true,
       );
+      // 15% of 10000 = 1500
       expect(result.discount.amountInCents, 1500);
     });
   });
@@ -108,7 +112,7 @@ void main() {
 }
 
 CustomerSubscription _makeSub({
-  SubscriptionPlanType plan = SubscriptionPlanType.basic,
+  SubscriptionPlanType plan = SubscriptionPlanType.starter,
   SubscriptionStatus status = SubscriptionStatus.active,
   DateTime? expiryDate,
 }) {

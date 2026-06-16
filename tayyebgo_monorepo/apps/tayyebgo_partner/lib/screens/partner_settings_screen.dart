@@ -24,115 +24,177 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
-      appBar: AppBar(
-        title: Text('Settings', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-        backgroundColor: context.backgroundColor,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _profileHeader(context, initial, displayName, email),
-          const SizedBox(height: 20),
-
-          _section(context, 'Store', [
-            _row(context, Icons.store_rounded, 'Store Details', () {
-              _showStoreDetailsSheet(context, restaurantId);
-            }),
-            _row(context, Icons.access_time_rounded, 'Business Hours', () {
-              _showBusinessHoursSheet(context, restaurantId);
-            }),
-            _row(context, Icons.delivery_dining_rounded, 'Delivery Fee', () {
-              _showDeliveryFeeSheet(context, restaurantId);
-            }),
-          ]),
-
-          const SizedBox(height: 14),
-          _section(context, 'Quick Links', [
-            _row(context, Icons.restaurant_menu_rounded, 'Menu Management', () {
-              context.push('/menu-management');
-            }),
-            _row(context, Icons.local_offer_rounded, 'Promotions', () {
-              context.push('/marketing');
-            }),
-            _row(context, Icons.analytics_rounded, 'Analytics', () {
-              context.push('/analytics');
-            }),
-          ]),
-
-          const SizedBox(height: 14),
-          _section(context, 'Preferences', [
-            _row(context, Icons.notifications_outlined, 'Notifications', () {
-              _showNotificationsSettings(context);
-            }),
-            _row(context, Icons.language_rounded, 'Language', () {
-              final locale = context.read<LocaleProvider>();
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('Language', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      RadioListTile<String>(
-                        title: const Text('English'),
-                        value: 'en',
-                        groupValue: locale.locale.languageCode,
-                        onChanged: (v) { locale.setLocale(v!); Navigator.pop(ctx); },
-                      ),
-                      RadioListTile<String>(
-                        title: const Text('العربية'),
-                        value: 'ar',
-                        groupValue: locale.locale.languageCode,
-                        onChanged: (v) { locale.setLocale(v!); Navigator.pop(ctx); },
-                      ),
-                    ],
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Settings',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 28,
+                      color: context.textPrimaryColor,
+                      letterSpacing: 0,
+                    ),
                   ),
-                ),
-              );
-            }),
-          ]),
-
-          const SizedBox(height: 14),
-          _section(context, 'Account', [
-            _row(context, Icons.person_rounded, 'Personal Info', () {
-              _showPersonalInfoSheet(context, user);
-            }),
-          ]),
-
-          const SizedBox(height: 14),
-          _section(context, 'Support', [
-            _row(context, Icons.help_outline_rounded, 'Help Center', () {
-              context.push('/help-support');
-            }),
-            _row(context, Icons.info_outline_rounded, 'About', () {
-              showAboutDialog(
-                context: context,
-                applicationName: 'TayyebGo Partner',
-                applicationVersion: '1.0.0',
-                children: [Text('Restaurant partner management app', style: GoogleFonts.inter())],
-              );
-            }),
-          ]),
-
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: OutlinedButton(
-              onPressed: () async {
-                await context.read<AuthProvider>().logout();
-                if (context.mounted) context.go('/login');
-              },
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: context.errorColor),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Manage your store and account',
+                    style: GoogleFonts.inter(
+                      color: context.textMutedColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _profileHeader(context, initial, displayName, email),
+                ],
               ),
-              child: Text('Sign Out', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.errorColor)),
             ),
           ),
-          const SizedBox(height: 24),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: _section(context, 'Store', [
+                _row(context, Icons.store_rounded, 'Store Details', () {
+                  _showStoreDetailsSheet(context, restaurantId);
+                }),
+                _row(context, Icons.access_time_rounded, 'Business Hours', () {
+                  _showBusinessHoursSheet(context, restaurantId);
+                }),
+                _row(context, Icons.delivery_dining_rounded, 'Delivery Fee', () {
+                  _showDeliveryFeeSheet(context, restaurantId);
+                }),
+                _row(context, Icons.palette_rounded, 'Store Theme', () {
+                  context.push('/store-theme');
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'Management', [
+                _row(context, Icons.restaurant_menu_rounded, 'Menu Management', () {
+                  if (restaurantId != null) {
+                    context.push('/menu/$restaurantId');
+                  }
+                }),
+                _row(context, Icons.local_offer_rounded, 'Promotions', () {
+                  context.push('/marketing-center');
+                }),
+                _row(context, Icons.analytics_rounded, 'Analytics', () {
+                  context.push('/analytics');
+                }),
+                _row(context, Icons.delivery_dining_rounded, 'Dispatch Center', () {
+                  context.push('/dispatch-center');
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'Business', [
+                _row(context, Icons.description_rounded, 'Contracts', () {
+                  context.push('/contracts');
+                }),
+                _row(context, Icons.account_balance_wallet_rounded, 'Payouts', () {
+                  context.push('/payouts');
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'Preferences', [
+                _row(context, Icons.notifications_outlined, 'Notifications', () {
+                  _showNotificationsSettings(context);
+                }),
+                _row(context, Icons.language_rounded, 'Language', () {
+                  final locale = context.read<LocaleProvider>();
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text('Language', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RadioListTile<String>(
+                            title: const Text('English'),
+                            value: 'en',
+                            groupValue: locale.locale.languageCode,
+                            onChanged: (v) {
+                              locale.setLocale(v!);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                          RadioListTile<String>(
+                            title: const Text('العربية'),
+                            value: 'ar',
+                            groupValue: locale.locale.languageCode,
+                            onChanged: (v) {
+                              locale.setLocale(v!);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'Account', [
+                _row(context, Icons.person_rounded, 'Personal Info', () {
+                  _showPersonalInfoSheet(context, user);
+                }),
+                _row(context, Icons.help_outline_rounded, 'Help Center', () {
+                  context.push('/help-support');
+                }),
+                _row(context, Icons.info_outline_rounded, 'About', () {
+                  showAboutDialog(
+                    context: context,
+                    applicationName: 'TayyebGo Partner',
+                    applicationVersion: '1.0.0',
+                    children: [Text('Restaurant partner management app', style: GoogleFonts.inter())],
+                  );
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () async {
+                    await context.read<AuthProvider>().logout();
+                    if (context.mounted) context.go('/login');
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: context.errorColor),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    'Sign Out',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.errorColor),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
       ),
     );
@@ -140,17 +202,25 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
 
   void _showStoreDetailsSheet(BuildContext context, String? restaurantId) {
     if (restaurantId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No restaurant linked to this account')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No restaurant linked to this account')),
+      );
       return;
     }
     final nameCtrl = TextEditingController();
     final descCtrl = TextEditingController();
     final feeCtrl = TextEditingController();
     showModalBottomSheet(
-      context: context, isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.7, minChildSize: 0.5, maxChildSize: 0.9, expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        expand: false,
         builder: (ctx, scrollCtrl) => FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get(),
           builder: (context, snap) {
@@ -165,9 +235,21 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               child: ListView(
                 controller: scrollCtrl,
                 children: [
-                  Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16),
-                  Text('Store Details', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+                  Text(
+                    'Store Details',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+                  ),
                   const SizedBox(height: 20),
                   _inputField('Store Name', nameCtrl),
                   const SizedBox(height: 12),
@@ -177,17 +259,31 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                      await FirebaseFirestore.instance
+                          .collection('restaurants')
+                          .doc(restaurantId)
+                          .update({
                         'name': nameCtrl.text.trim(),
                         'description': descCtrl.text.trim(),
                         'deliveryFee': double.tryParse(feeCtrl.text) ?? 0,
                         'updatedAt': FieldValue.serverTimestamp(),
                       });
                       if (ctx.mounted) Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Store updated')));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Store updated')),
+                        );
+                      }
                     },
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
-                    child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.partnerAccent,
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text(
+                      'Save Changes',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ],
               ),
@@ -204,10 +300,16 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     showModalBottomSheet(
-      context: context, isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.8, minChildSize: 0.5, maxChildSize: 0.95, expand: false,
+        initialChildSize: 0.8,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
         builder: (ctx, scrollCtrl) => FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get(),
           builder: (context, snap) {
@@ -219,9 +321,21 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                 child: ListView(
                   controller: scrollCtrl,
                   children: [
-                    Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    Text('Business Hours', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+                    Text(
+                      'Business Hours',
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+                    ),
                     const SizedBox(height: 20),
                     ...days.map((day) {
                       final h = existing[day] as Map<String, dynamic>? ?? {};
@@ -232,22 +346,49 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
                           children: [
-                            SizedBox(width: 90, child: Text(day, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13))),
+                            SizedBox(
+                              width: 90,
+                              child: Text(
+                                day,
+                                style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+                              ),
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: closed
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor)),
-                                      child: Text('Closed', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
+                                      decoration: BoxDecoration(
+                                        color: context.surfaceColor,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: context.borderColor),
+                                      ),
+                                      child: Text(
+                                        'Closed',
+                                        style: GoogleFonts.inter(
+                                          color: AppColors.textMuted,
+                                          fontSize: 13,
+                                        ),
+                                      ),
                                     )
                                   : Row(
                                       children: [
-                                        Expanded(child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                                          decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor)),
-                                          child: Text('$open - $close', style: GoogleFonts.inter(fontSize: 13), textAlign: TextAlign.center),
-                                        )),
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: context.surfaceColor,
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(color: context.borderColor),
+                                            ),
+                                            child: Text(
+                                              '$open - $close',
+                                              style: GoogleFonts.inter(fontSize: 13),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
                             ),
@@ -266,15 +407,29 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () async {
-                        await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                        await FirebaseFirestore.instance
+                            .collection('restaurants')
+                            .doc(restaurantId)
+                            .update({
                           'businessHours': hours.isNotEmpty ? hours : existing,
                           'updatedAt': FieldValue.serverTimestamp(),
                         });
                         if (ctx.mounted) Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hours updated')));
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Hours updated')),
+                          );
+                        }
                       },
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
-                      child: const Text('Save Hours', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.partnerAccent,
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text(
+                        'Save Hours',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ],
                 ),
@@ -291,29 +446,55 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     final feeCtrl = TextEditingController();
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const SizedBox(height: 16),
-            Text('Delivery Fee', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            Text(
+              'Delivery Fee',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
             const SizedBox(height: 16),
             _inputField('Delivery Fee (\$)', feeCtrl, keyboardType: TextInputType.number),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                await FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).update({
+                await FirebaseFirestore.instance
+                    .collection('restaurants')
+                    .doc(restaurantId)
+                    .update({
                   'deliveryFee': double.tryParse(feeCtrl.text) ?? 0,
                   'updatedAt': FieldValue.serverTimestamp(),
                 });
                 if (ctx.mounted) Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delivery fee updated')));
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Delivery fee updated')),
+                  );
+                }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
-              child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.partnerAccent,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
             ),
             const SizedBox(height: 20),
           ],
@@ -323,19 +504,29 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
   }
 
   void _showNotificationsSettings(BuildContext context) {
-    final user = context.read<AuthProvider>().user;
-    if (user == null) return;
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const SizedBox(height: 16),
-            Text('Notification Settings', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            Text(
+              'Notification Settings',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
             const SizedBox(height: 16),
             SwitchListTile(
               title: Text('New Order Alerts', style: GoogleFonts.inter(fontSize: 14)),
@@ -346,6 +537,12 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
             SwitchListTile(
               title: Text('Order Status Updates', style: GoogleFonts.inter(fontSize: 14)),
               value: true,
+              onChanged: (v) {},
+              activeColor: AppColors.partnerAccent,
+            ),
+            SwitchListTile(
+              title: Text('Promotion Alerts', style: GoogleFonts.inter(fontSize: 14)),
+              value: false,
               onChanged: (v) {},
               activeColor: AppColors.partnerAccent,
             ),
@@ -360,16 +557,34 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     final nameCtrl = TextEditingController(text: user?.displayName ?? '');
     final phoneCtrl = TextEditingController(text: user?.phone ?? '');
     showModalBottomSheet(
-      context: context, isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 20, right: 20, top: 20),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const SizedBox(height: 16),
-            Text('Personal Info', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20)),
+            Text(
+              'Personal Info',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
             const SizedBox(height: 16),
             _inputField('Name', nameCtrl),
             const SizedBox(height: 12),
@@ -383,10 +598,21 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                   'updatedAt': FieldValue.serverTimestamp(),
                 });
                 if (ctx.mounted) Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated')));
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Profile updated')),
+                  );
+                }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.partnerAccent, minimumSize: const Size(double.infinity, 48)),
-              child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.partnerAccent,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
             ),
             const SizedBox(height: 20),
           ],
@@ -399,23 +625,70 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.borderColor),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.partnerAccent.withValues(alpha: 0.08),
+            AppColors.partnerAccent.withValues(alpha: 0.02),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.partnerAccent.withValues(alpha: 0.2),
+          width: 0.5,
+        ),
       ),
       child: Row(
         children: [
-          Container(width: 52, height: 52, decoration: BoxDecoration(color: context.warningColor, borderRadius: BorderRadius.circular(14)), child: Center(child: Text(initial, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 22, color: context.backgroundColor)))),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.partnerAccent, Color(0xFFFCD34D)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Center(
+              child: Text(
+                initial,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
+                Text(
+                  name,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: context.textPrimaryColor,
+                  ),
+                ),
                 if (email.isNotEmpty)
-                  Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                  Text(
+                    email,
+                    style: GoogleFonts.inter(
+                      color: context.textMutedColor,
+                      fontSize: 12,
+                    ),
+                  ),
               ],
             ),
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: context.textMutedColor,
+            size: 20,
           ),
         ],
       ),
@@ -427,15 +700,22 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.borderColor),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: context.textMutedColor)),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
+              title,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                color: context.textMutedColor,
+              ),
+            ),
           ),
           ...children,
         ],
@@ -452,7 +732,12 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
           children: [
             Icon(icon, size: 20, color: context.textMutedColor),
             const SizedBox(width: 14),
-            Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 14, color: context.textPrimaryColor))),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(fontSize: 14, color: context.textPrimaryColor),
+              ),
+            ),
             Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 20),
           ],
         ),
@@ -460,7 +745,12 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     );
   }
 
-  Widget _inputField(String label, TextEditingController ctrl, {TextInputType? keyboardType, int maxLines = 1}) {
+  Widget _inputField(
+    String label,
+    TextEditingController ctrl, {
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
     return TextField(
       controller: ctrl,
       keyboardType: keyboardType,

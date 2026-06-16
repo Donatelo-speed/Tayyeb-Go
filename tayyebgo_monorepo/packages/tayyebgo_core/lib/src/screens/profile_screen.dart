@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../../presentation/theme/app_colors.dart';
+import '../../presentation/theme/theme_provider.dart';
 import '../../ui/cached_image.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -92,18 +93,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = auth.user;
     if (user == null) {
       return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600)), backgroundColor: AppColors.background, elevation: 0, surfaceTintColor: Colors.transparent),
-        body: Center(child: Text('Please log in', style: GoogleFonts.inter(color: AppColors.textMuted))),
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600)), backgroundColor: context.backgroundColor, elevation: 0, surfaceTintColor: Colors.transparent),
+        body: Center(child: Text('Please log in', style: GoogleFonts.inter(color: context.textMutedColor))),
       );
     }
     final isAdmin = auth.isSuperAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-        backgroundColor: AppColors.background,
+        title: Text('Profile', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         actions: [
@@ -173,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.surface,
+                  color: context.surfaceColor,
                 ),
                 padding: const EdgeInsets.all(3),
                 child: ClipOval(
@@ -187,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : Center(
                           child: Text(
                             (user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : '?'),
-                            style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                            style: GoogleFonts.inter(fontSize: 36, fontWeight: FontWeight.w700, color: context.textPrimaryColor),
                           ),
                         ),
                 ),
@@ -201,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.background, width: 2.5),
+                  border: Border.all(color: context.backgroundColor, width: 2.5),
                   boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8)],
                 ),
                 child: _uploadingPhoto
@@ -219,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
       ),
@@ -238,9 +239,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Admin Access', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.textPrimary)),
+                Text('Admin Access', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimaryColor)),
                 const SizedBox(height: 2),
-                Text('Full platform management', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                Text('Full platform management', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
               ],
             ),
           ),
@@ -267,27 +268,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSection(String title) {
     return Text(
       title,
-      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textMuted, letterSpacing: 0.3),
+      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMutedColor, letterSpacing: 0.3),
     );
   }
 
   Widget _buildField(String label, IconData icon, TextEditingController ctrl, TextCapitalization? cap, {TextInputType? keyboardType, int maxLines = 1}) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+        border: Border.all(color: context.dividerColor.withValues(alpha: 0.5)),
       ),
       child: TextField(
         controller: ctrl,
         keyboardType: keyboardType,
         textCapitalization: cap ?? TextCapitalization.none,
         maxLines: maxLines,
-        style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+        style: GoogleFonts.inter(fontSize: 14, color: context.textPrimaryColor),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
-          prefixIcon: Icon(icon, size: 20, color: AppColors.textMuted),
+          labelStyle: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor),
+          prefixIcon: Icon(icon, size: 20, color: context.textMutedColor),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
@@ -299,15 +300,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.divider.withValues(alpha: 0.3))),
+        color: context.surfaceColor,
+        border: Border(bottom: BorderSide(color: context.dividerColor.withValues(alpha: 0.3))),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.textMuted),
+          Icon(icon, size: 18, color: context.textMutedColor),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted))),
-          Text(value, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: valueColor ?? AppColors.textPrimary)),
+          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 14, color: context.textMutedColor))),
+          Text(value, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: valueColor ?? context.textPrimaryColor)),
         ],
       ),
     );
@@ -319,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: isSubscription
             ? AppColors.premium.withValues(alpha: 0.06)
-            : AppColors.surface,
+            : context.surfaceColor,
         borderRadius: BorderRadius.circular(12),
         border: isSubscription
             ? Border.all(color: AppColors.premium.withValues(alpha: 0.15), width: 0.5)
@@ -329,17 +330,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: Icon(
           icon,
           size: 20,
-          color: isSubscription ? AppColors.premium : AppColors.textMuted,
+          color: isSubscription ? AppColors.premium : context.textMutedColor,
         ),
         title: Text(
           label,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: isSubscription ? FontWeight.w600 : FontWeight.w400,
-            color: isSubscription ? AppColors.premium : AppColors.textPrimary,
+            color: isSubscription ? AppColors.premium : context.textPrimaryColor,
           ),
         ),
-        trailing: Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.textMuted),
+        trailing: Icon(Icons.chevron_right_rounded, size: 20, color: context.textMutedColor),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onTap: () {
           if (isSubscription) {

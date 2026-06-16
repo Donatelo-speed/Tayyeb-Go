@@ -1,5 +1,4 @@
 import '../entities/customer_subscription.dart';
-import '../enums/subscription_plan.dart';
 
 abstract class ISubscriptionRepository {
   Stream<CustomerSubscription?> watchActiveSubscription(String userId);

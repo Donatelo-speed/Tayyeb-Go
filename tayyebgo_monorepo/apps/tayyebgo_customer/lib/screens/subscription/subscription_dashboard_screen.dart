@@ -24,12 +24,14 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
 
   Color _planColor(SubscriptionPlanType plan) {
     switch (plan) {
-      case SubscriptionPlanType.basic:
+      case SubscriptionPlanType.starter:
         return const Color(0xFF22C55E);
       case SubscriptionPlanType.plus:
         return AppColors.primary;
-      case SubscriptionPlanType.premium:
+      case SubscriptionPlanType.pro:
         return const Color(0xFF8B5CF6);
+      case SubscriptionPlanType.vip:
+        return const Color(0xFFF59E0B);
     }
   }
 
@@ -51,22 +53,40 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
     switch (benefit) {
       case 'free_delivery':
         return 'Free delivery on all orders';
+      case 'free_delivery_first_3_orders':
+        return 'Free delivery on first 3 orders';
+      case '3_percent_discount':
+        return '3% discount on every order';
       case '5_percent_discount':
         return '5% discount on every order';
+      case '7_percent_discount':
+        return '7% discount on every order';
       case '10_percent_discount':
         return '10% discount on every order';
+      case '12_percent_discount':
+        return '12% discount on every order';
       case '15_percent_discount':
         return '15% discount on every order';
       case 'priority_offers':
         return 'Priority access to offers';
       case 'monthly_offers':
         return 'Exclusive monthly offers';
+      case 'monthly_exclusive_offers':
+        return 'Monthly exclusive offers';
       case 'exclusive_deals':
         return 'Exclusive VIP deals';
       case 'early_access':
         return 'Early access to new features';
       case 'priority_support':
         return 'Priority customer support';
+      case 'vip_badge':
+        return 'VIP badge on your profile';
+      case 'dedicated_support':
+        return 'Dedicated account manager';
+      case 'monthly_free_item':
+        return 'One free premium item per month';
+      case 'double_rewards':
+        return 'Double rewards points';
       default:
         return benefit.replaceAll('_', ' ');
     }

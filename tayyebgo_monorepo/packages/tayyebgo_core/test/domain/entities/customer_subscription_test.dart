@@ -7,27 +7,30 @@ import 'package:tayyebgo_core/domain/value_objects/money.dart';
 void main() {
   group('CustomerSubscription', () {
     group('calculateDiscount', () {
-      test('basic plan gives 5% discount', () {
-        final sub = _makeSub(plan: SubscriptionPlanType.basic);
+      test('starter plan gives 3% discount', () {
+        final sub = _makeSub(plan: SubscriptionPlanType.starter);
         final discount = sub.calculateDiscount(const Money(10000));
-        expect(discount.amountInCents, 500);
+        // 3% of 10000 = 300
+        expect(discount.amountInCents, 300);
       });
 
-      test('plus plan gives 10% discount', () {
+      test('plus plan gives 7% discount', () {
         final sub = _makeSub(plan: SubscriptionPlanType.plus);
         final discount = sub.calculateDiscount(const Money(10000));
-        expect(discount.amountInCents, 1000);
+        // 7% of 10000 = 700
+        expect(discount.amountInCents, 700);
       });
 
-      test('premium plan gives 15% discount', () {
-        final sub = _makeSub(plan: SubscriptionPlanType.premium);
+      test('vip plan gives 15% discount', () {
+        final sub = _makeSub(plan: SubscriptionPlanType.vip);
         final discount = sub.calculateDiscount(const Money(10000));
+        // 15% of 10000 = 1500
         expect(discount.amountInCents, 1500);
       });
 
       test('returns 0 for inactive subscription', () {
         final sub = _makeSub(
-          plan: SubscriptionPlanType.basic,
+          plan: SubscriptionPlanType.starter,
           status: SubscriptionStatus.expired,
           expiryDate: DateTime.now().subtract(const Duration(days: 1)),
         );
@@ -36,10 +39,10 @@ void main() {
       });
 
       test('rounds to nearest cent', () {
-        final sub = _makeSub(plan: SubscriptionPlanType.basic);
+        final sub = _makeSub(plan: SubscriptionPlanType.starter);
         final discount = sub.calculateDiscount(const Money(333));
-        // 333 * 5 / 100 = 16.65 → rounds to 17
-        expect(discount.amountInCents, 17);
+        // 333 * 3 / 100 = 9.99 → rounds to 10
+        expect(discount.amountInCents, 10);
       });
     });
 
@@ -81,7 +84,8 @@ void main() {
 
     group('daysRemaining', () {
       test('returns correct days for future date', () {
-        final expiry = DateTime.now().add(const Duration(days: 15));
+        final now = DateTime.now();
+        final expiry = DateTime(now.year, now.month, now.day + 15, 23, 59, 59);
         final sub = _makeSub(expiryDate: expiry);
         expect(sub.daysRemaining, 15);
       });
@@ -152,26 +156,28 @@ void main() {
 
   group('SubscriptionPlanType', () {
     test('fromValue resolves known values', () {
-      expect(SubscriptionPlanType.fromValue('basic'), SubscriptionPlanType.basic);
+      expect(SubscriptionPlanType.fromValue('starter'), SubscriptionPlanType.starter);
       expect(SubscriptionPlanType.fromValue('plus'), SubscriptionPlanType.plus);
-      expect(
-          SubscriptionPlanType.fromValue('premium'), SubscriptionPlanType.premium);
+      expect(SubscriptionPlanType.fromValue('pro'), SubscriptionPlanType.pro);
+      expect(SubscriptionPlanType.fromValue('vip'), SubscriptionPlanType.vip);
     });
 
-    test('fromValue defaults to basic for unknown', () {
-      expect(SubscriptionPlanType.fromValue('unknown'), SubscriptionPlanType.basic);
+    test('fromValue defaults to starter for unknown', () {
+      expect(SubscriptionPlanType.fromValue('unknown'), SubscriptionPlanType.starter);
     });
 
     test('discountPercent matches plan', () {
-      expect(SubscriptionPlanType.basic.discountPercent, 5.0);
-      expect(SubscriptionPlanType.plus.discountPercent, 10.0);
-      expect(SubscriptionPlanType.premium.discountPercent, 15.0);
+      expect(SubscriptionPlanType.starter.discountPercent, 3.0);
+      expect(SubscriptionPlanType.plus.discountPercent, 7.0);
+      expect(SubscriptionPlanType.pro.discountPercent, 12.0);
+      expect(SubscriptionPlanType.vip.discountPercent, 15.0);
     });
 
     test('priceDisplay formats correctly', () {
-      expect(SubscriptionPlanType.basic.priceDisplay, '\$100');
-      expect(SubscriptionPlanType.plus.priceDisplay, '\$250');
-      expect(SubscriptionPlanType.premium.priceDisplay, '\$450');
+      expect(SubscriptionPlanType.starter.priceDisplay, '\$5');
+      expect(SubscriptionPlanType.plus.priceDisplay, '\$10');
+      expect(SubscriptionPlanType.pro.priceDisplay, '\$20');
+      expect(SubscriptionPlanType.vip.priceDisplay, '\$25');
     });
   });
 
@@ -206,7 +212,7 @@ void main() {
 CustomerSubscription _makeSub({
   String id = 'sub-1',
   String userId = 'user-1',
-  SubscriptionPlanType plan = SubscriptionPlanType.basic,
+  SubscriptionPlanType plan = SubscriptionPlanType.starter,
   SubscriptionStatus status = SubscriptionStatus.active,
   DateTime? expiryDate,
   double totalSavings = 0,

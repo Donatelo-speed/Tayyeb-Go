@@ -42,7 +42,7 @@ class DriverSafetyScreen extends StatelessWidget {
             iconColor: context.primaryColor,
             title: 'Identity Verification',
             subtitle: 'Verify your identity for safety',
-            onTap: () => context.push('/driver-profile'),
+            onTap: () => context.push('/profile'),
           ),
           const SizedBox(height: 10),
           _SafetyCard(
