@@ -7,6 +7,7 @@ class AnythingProvider extends ChangeNotifier {
   List<AnythingRequestModel> _myRequests = [];
   List<AnythingRequestModel> _availableRequests = [];
   bool _isLoading = false;
+  bool _disposed = false;
   String? _error;
   String? _lastDriverId;
 
@@ -144,11 +145,12 @@ class AnythingProvider extends ChangeNotifier {
     _myRequests = [];
     _availableRequests = [];
     _error = null;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     clear();
     super.dispose();
   }

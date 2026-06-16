@@ -14,10 +14,13 @@ class _AvailableRequestsScreenState extends State<AvailableRequestsScreen> {
   @override
   void initState() {
     super.initState();
-    final user = AuthProvider.instance?.user;
-    if (user != null) {
-      context.read<AnythingProvider>().loadAvailableRequests(user.id);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = AuthProvider.instance?.user;
+      if (user != null) {
+        context.read<AnythingProvider>().loadAvailableRequests(user.id);
+      }
+    });
   }
 
   @override

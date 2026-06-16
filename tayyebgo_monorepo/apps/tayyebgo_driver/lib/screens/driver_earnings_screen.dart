@@ -22,10 +22,13 @@ class _DriverEarningsScreenState extends State<DriverEarningsScreen> with Single
         setState(() => _selectedTab = _tabCtrl.index);
       }
     });
-    final user = AuthProvider.instance?.user;
-    if (user != null) {
-      context.read<DriverWalletProvider>().loadWallet(user.id);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = AuthProvider.instance?.user;
+      if (user != null) {
+        context.read<DriverWalletProvider>().loadWallet(user.id);
+      }
+    });
   }
 
   @override

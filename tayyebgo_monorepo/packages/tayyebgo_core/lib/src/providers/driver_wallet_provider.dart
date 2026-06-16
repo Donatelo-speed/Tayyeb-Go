@@ -6,6 +6,7 @@ class DriverWalletProvider extends ChangeNotifier {
   DriverWalletModel? _wallet;
   List<Map<String, dynamic>> _transactions = [];
   bool _isLoading = false;
+  bool _disposed = false;
   String? _error;
 
   DriverWalletModel? get wallet => _wallet;
@@ -90,11 +91,12 @@ class DriverWalletProvider extends ChangeNotifier {
     _wallet = null;
     _transactions = [];
     _error = null;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     clear();
     super.dispose();
   }

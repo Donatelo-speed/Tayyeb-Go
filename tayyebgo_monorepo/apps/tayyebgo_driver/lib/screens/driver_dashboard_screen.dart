@@ -42,17 +42,24 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
   Future<void> _loadInitialOnlineState() async {
     final userId = context.read<AuthProvider>().user?.id;
     if (userId == null) return;
-    final doc = await FirebaseFirestore.instance
-        .collection('driver_locations')
-        .doc(userId)
-        .get();
-    if (doc.exists && mounted) {
-      setState(() {
-        _isOnline = (doc.data()?['isOnline'] as bool?) ?? false;
-      });
-    }
-    if (_isOnline && mounted) {
-      DriverLocationService.instance.start(userId);
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('driver_locations')
+          .doc(userId)
+          .get();
+      if (doc.exists && mounted) {
+        setState(() {
+          _isOnline = (doc.data()?['isOnline'] as bool?) ?? false;
+        });
+      }
+      if (_isOnline && mounted) {
+        DriverLocationService.instance.start(userId);
+      }
+    } catch (e) {
+      debugPrint('[DriverDashboard] _loadInitialOnlineState error: $e');
+      if (mounted) {
+        DriverLocationService.instance.start(userId);
+      }
     }
   }
 
@@ -386,8 +393,14 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
     final userId = context.read<AuthProvider>().user?.id;
     if (userId == null) return const SizedBox.shrink();
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots(),
+      stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots()
+          .handleError((e) {
+        debugPrint('[DriverDashboard] users stream error: $e');
+      }),
       builder: (context, snapshot) {
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
         final data = snapshot.data?.data() as Map<String, dynamic>?;
         final rating = (data?['rating'] as num?)?.toDouble() ?? 0.0;
         final totalDeliveries = data?['totalDeliveries'] ?? 0;
@@ -541,9 +554,12 @@ class _ActiveOrdersSection extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('dispatch_requests')
           .where('driverId', isEqualTo: userId)
-          .where('status', whereIn: ['accepted', 'picked_up']).snapshots(),
+          .where('status', whereIn: ['accepted', 'picked_up']).snapshots()
+          .handleError((e) {
+        debugPrint('[DriverDashboard] dispatch_requests stream error: $e');
+      }),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(

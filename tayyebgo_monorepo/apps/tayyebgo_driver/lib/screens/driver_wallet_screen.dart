@@ -16,10 +16,13 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
   @override
   void initState() {
     super.initState();
-    final user = AuthProvider.instance?.user;
-    if (user != null) {
-      context.read<DriverWalletProvider>().loadWallet(user.id);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final user = AuthProvider.instance?.user;
+      if (user != null) {
+        context.read<DriverWalletProvider>().loadWallet(user.id);
+      }
+    });
   }
 
   @override

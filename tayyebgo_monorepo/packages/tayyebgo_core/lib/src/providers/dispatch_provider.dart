@@ -7,6 +7,7 @@ class DispatchProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _assignedDispatches = [];
   List<Map<String, dynamic>> _activeDeliveries = [];
   bool _isLoading = false;
+  bool _disposed = false;
   String? _error;
   String? _driverId;
   StreamSubscription<List<Map<String, dynamic>>>? _dispatchSub;
@@ -144,11 +145,12 @@ class DispatchProvider extends ChangeNotifier {
     _assignedDispatches = [];
     _activeDeliveries = [];
     _error = null;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     clear();
     super.dispose();
   }
