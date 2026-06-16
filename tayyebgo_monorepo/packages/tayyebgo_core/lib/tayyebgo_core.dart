@@ -2,6 +2,8 @@ export 'domain/enums/driver_type.dart';
 export 'domain/enums/fulfillment_type.dart';
 export 'domain/enums/order_status.dart';
 export 'domain/enums/pending_operation_type.dart';
+export 'domain/enums/subscription_plan.dart';
+export 'domain/enums/subscription_status.dart';
 export 'domain/enums/payment_method_type.dart';
 export 'domain/enums/user_role.dart';
 export 'domain/enums/skill_execution_status.dart';
@@ -14,6 +16,7 @@ export 'domain/value_objects/operating_hours.dart';
 export 'domain/value_objects/pending_operation.dart';
 export 'domain/value_objects/skill_input_schema.dart';
 
+export 'domain/entities/customer_subscription.dart';
 export 'domain/entities/brand.dart';
 export 'domain/entities/branch.dart';
 export 'domain/entities/dispatch_request.dart';
@@ -160,10 +163,12 @@ export 'domain/repositories/i_loyalty_repository.dart';
 export 'domain/repositories/i_anything_repository.dart';
 export 'domain/repositories/i_dispatch_repository.dart';
 export 'domain/repositories/i_promotion_lookup_repository.dart';
+export 'domain/repositories/i_subscription_repository.dart';
 
 export 'src/di/app_locator.dart';
 
 export 'domain/services/i_auto_dispatcher.dart';
+export 'domain/services/i_order_store.dart';
 export 'domain/services/i_payment_service.dart';
 export 'domain/services/i_skill_registry.dart';
 
@@ -182,6 +187,7 @@ export 'infrastructure/repositories/firebase_loyalty_repository.dart';
 export 'infrastructure/repositories/firebase_anything_repository.dart';
 export 'infrastructure/repositories/firebase_dispatch_repository.dart';
 export 'infrastructure/repositories/firebase_promotion_lookup_repository.dart';
+export 'infrastructure/repositories/firebase_subscription_repository.dart';
 
 export 'infrastructure/services/auto_dispatcher.dart';
 export 'infrastructure/services/connectivity_service.dart';
@@ -191,6 +197,7 @@ export 'infrastructure/services/offline_queue.dart';
 export 'infrastructure/services/payment_gateway.dart';
 export 'infrastructure/services/commission_calculator.dart';
 export 'infrastructure/services/stripe_checkout_service.dart';
+export 'infrastructure/services/subscription_service.dart';
 export 'infrastructure/services/sham_cash_service.dart';
 export 'infrastructure/services/eta_service.dart';
 export 'infrastructure/services/notification_templates.dart';

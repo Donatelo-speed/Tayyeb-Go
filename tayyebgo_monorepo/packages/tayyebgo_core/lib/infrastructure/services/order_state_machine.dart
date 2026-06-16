@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import '../../domain/enums/order_status.dart';
+import '../../domain/services/i_order_store.dart';
 import 'delivery_earnings_service.dart';
+import 'firebase_order_store.dart';
 import 'push_notification_service.dart';
 
 class OrderStateMachine {
@@ -63,18 +64,18 @@ class OrderStateMachine {
     double? latitude,
     double? longitude,
     String? note,
+    IOrderStore? store,
   }) async {
-    final ref = FirebaseFirestore.instance.collection('orders').doc(orderId);
+    final s = store ?? FirebaseOrderStore.instance;
     String? customerId;
     String? restaurantName;
     String? driverId;
     double? totalAmount;
     double? deliveryFee;
     double? commissionPercent;
-    await FirebaseFirestore.instance.runTransaction((txn) async {
-      final snap = await txn.get(ref);
-      if (!snap.exists) throw Exception('Order $orderId not found');
-      final data = snap.data() as Map<String, dynamic>;
+    await s.runTransaction((txn) async {
+      final data = await txn.readOrder(orderId);
+      if (data == null) throw Exception('Order $orderId not found');
       final currentStatus =
           OrderStatus.fromValue(data['status'] as String? ?? '');
 
@@ -83,7 +84,7 @@ class OrderStateMachine {
             'Invalid transition: ${currentStatus.value} → ${newStatus.value}');
       }
 
-      final transition = {
+      final transitionEntry = {
         'from': currentStatus.value,
         'to': newStatus.value,
         'timestamp': DateTime.now().toIso8601String(),
@@ -94,7 +95,7 @@ class OrderStateMachine {
       };
 
       final history = List<Map<String, dynamic>>.from(data['statusHistory'] ?? []);
-      history.add(transition);
+      history.add(transitionEntry);
 
       final updates = <String, dynamic>{
         'status': newStatus.value,
@@ -128,27 +129,33 @@ class OrderStateMachine {
         default:
       }
 
-      txn.update(ref, updates);
+      await txn.updateOrder(orderId, updates);
     });
 
     if (newStatus == OrderStatus.delivered && driverId != null && totalAmount != null) {
-      unawaited(DeliveryEarningsService.instance.creditEarnings(
-        driverId: driverId!,
-        orderId: orderId,
-        totalAmount: totalAmount!,
-        deliveryFee: deliveryFee,
-        commissionPercent: commissionPercent,
-      ));
+      unawaited(Future(() async {
+        try {
+          await DeliveryEarningsService.instance.creditEarnings(
+            driverId: driverId!,
+            orderId: orderId,
+            totalAmount: totalAmount!,
+            deliveryFee: deliveryFee,
+            commissionPercent: commissionPercent,
+          );
+        } catch (_) {}
+      }));
     }
 
     if (customerId != null) {
-      final notif = PushNotificationService();
-      await notif.sendOrderNotification(
-        orderId: orderId,
-        customerId: customerId!,
-        status: newStatus.value,
-        restaurantName: restaurantName ?? 'Restaurant',
-      );
+      try {
+        final notif = PushNotificationService();
+        await notif.sendOrderNotification(
+          orderId: orderId,
+          customerId: customerId!,
+          status: newStatus.value,
+          restaurantName: restaurantName ?? 'Restaurant',
+        );
+      } catch (_) {}
     }
   }
 
@@ -158,14 +165,14 @@ class OrderStateMachine {
     String? reason,
     double? latitude,
     double? longitude,
+    IOrderStore? store,
   }) async {
-    final ref = FirebaseFirestore.instance.collection('orders').doc(orderId);
+    final s = store ?? FirebaseOrderStore.instance;
     String? customerId;
     String? restaurantName;
-    await FirebaseFirestore.instance.runTransaction((txn) async {
-      final snap = await txn.get(ref);
-      if (!snap.exists) throw Exception('Order $orderId not found');
-      final data = snap.data() as Map<String, dynamic>;
+    await s.runTransaction((txn) async {
+      final data = await txn.readOrder(orderId);
+      if (data == null) throw Exception('Order $orderId not found');
       final currentStatus =
           OrderStatus.fromValue(data['status'] as String? ?? '');
 
@@ -188,7 +195,7 @@ class OrderStateMachine {
         if (longitude != null) 'longitude': longitude,
       });
 
-      txn.update(ref, {
+      await txn.updateOrder(orderId, {
         'status': 'cancelled',
         'statusHistory': history,
         'rejectionReason': reason,
@@ -197,13 +204,15 @@ class OrderStateMachine {
     });
 
     if (customerId != null) {
-      final notif = PushNotificationService();
-      await notif.sendOrderNotification(
-        orderId: orderId,
-        customerId: customerId!,
-        status: 'cancelled',
-        restaurantName: restaurantName ?? 'Restaurant',
-      );
+      try {
+        final notif = PushNotificationService();
+        await notif.sendOrderNotification(
+          orderId: orderId,
+          customerId: customerId!,
+          status: 'cancelled',
+          restaurantName: restaurantName ?? 'Restaurant',
+        );
+      } catch (_) {}
     }
   }
 
