@@ -231,6 +231,5 @@ export 'presentation/shared_widgets/tg_design_system.dart'
         TGOrderTimeline,
         TGTimelineStep,
         TGPrice,
-        TGRating,
         TGDeliveryBadge,
         TGUserAvatar;
