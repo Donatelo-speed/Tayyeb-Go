@@ -11,7 +11,7 @@
     "runtime": "nodejs20"
   },
   "hosting": {
-    "public": "apps/tayyebgo_customer/build/web",
+    "public": "apps/tayyebgo_web/build/web",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
