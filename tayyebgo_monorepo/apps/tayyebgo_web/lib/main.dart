@@ -9,7 +9,6 @@ import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
 // Customer screens
 import 'package:tayyebgo_customer/screens/customer_main_screen.dart';
-import 'package:tayyebgo_customer/screens/customer_splash_screen.dart';
 import 'package:tayyebgo_customer/screens/cart/cart_screen.dart';
 import 'package:tayyebgo_customer/screens/checkout/checkout_screen.dart';
 import 'package:tayyebgo_customer/screens/menu/restaurant_menu_screen.dart';
@@ -31,7 +30,6 @@ import 'package:tayyebgo_customer/screens/anything_tracking_screen.dart';
 import 'package:tayyebgo_customer/providers/subscription_provider.dart';
 // Partner screens
 import 'package:tayyebgo_partner/screens/partner_gatekeeper.dart';
-import 'package:tayyebgo_partner/screens/partner_splash_screen.dart';
 import 'package:tayyebgo_partner/screens/partner_settings_screen.dart';
 import 'package:tayyebgo_partner/screens/partner_menu_management_screen.dart';
 import 'package:tayyebgo_partner/screens/partner_dispatch_center_screen.dart';
@@ -48,7 +46,6 @@ import 'package:tayyebgo_partner/screens/modifier_builder_screen.dart';
 import 'package:tayyebgo_partner/providers/offline_queue_provider.dart';
 import 'package:tayyebgo_partner/providers/partner_role_controller.dart';
 // Driver screens
-import 'package:tayyebgo_driver/screens/driver_splash_screen.dart';
 import 'package:tayyebgo_driver/screens/driver_dashboard_screen.dart';
 import 'package:tayyebgo_driver/screens/driver_shell_screen.dart';
 import 'package:tayyebgo_driver/screens/available_requests_screen.dart';
@@ -63,7 +60,6 @@ import 'package:tayyebgo_driver/screens/driver_heatmap_screen.dart';
 import 'package:tayyebgo_driver/screens/active_delivery_screen.dart';
 import 'package:tayyebgo_driver/screens/driver_onboarding_screen.dart';
 // Admin screens
-import 'package:tayyebgo_admin/features/auth/admin_splash_screen.dart';
 import 'package:tayyebgo_admin/features/dashboard/admin_dashboard_screen.dart';
 
 void main() async {
