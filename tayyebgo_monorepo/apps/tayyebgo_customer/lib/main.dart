@@ -23,6 +23,9 @@ import 'screens/referral_screen.dart';
 import 'screens/gift_cards_screen.dart';
 import 'screens/points_rewards_screen.dart';
 import 'screens/tayyebgo_picks_screen.dart';
+import 'screens/subscription/subscription_plans_screen.dart';
+import 'screens/subscription/subscription_dashboard_screen.dart';
+import 'providers/subscription_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -146,6 +149,8 @@ class _CustomerAppState extends State<CustomerApp> {
         AppRouter.route('/settings', const SettingsScreen(), name: 'settings'),
         AppRouter.route('/notifications', const NotificationsScreen(), name: 'notifications'),
         AppRouter.route('/membership', const MembershipScreen(), name: 'membership'),
+        AppRouter.route('/subscription', const SubscriptionPlansScreen(), name: 'subscription'),
+        AppRouter.route('/subscription/dashboard', const SubscriptionDashboardScreen(), name: 'subscriptionDashboard'),
         AppRouter.route('/referral', const ReferralScreen(), name: 'referral'),
         AppRouter.route('/gift-cards', const GiftCardsScreen(), name: 'giftCards'),
         AppRouter.route('/points-rewards', const PointsRewardsScreen(), name: 'pointsRewards'),
@@ -211,6 +216,7 @@ class _CustomerAppState extends State<CustomerApp> {
         ChangeNotifierProvider(create: (_) => NotificationsProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => UserProfileProvider(), lazy: true),
         ChangeNotifierProvider(create: (_) => CustomerHomeProvider(), lazy: true),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider(), lazy: true),
       ],
       child: ErrorBoundary(
         child: Consumer<ThemeProvider>(

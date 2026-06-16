@@ -12,6 +12,15 @@ class SubscriptionService {
   ISubscriptionRepository get _repo =>
       FirebaseSubscriptionRepository.instance;
 
+  Stream<CustomerSubscription?> watchActiveSubscription(String userId) =>
+      _repo.watchActiveSubscription(userId);
+
+  Future<CustomerSubscription?> getActiveSubscription(String userId) =>
+      _repo.getActiveSubscription(userId);
+
+  Future<List<CustomerSubscription>> getSubscriptionHistory(String userId) =>
+      _repo.getSubscriptionHistory(userId);
+
   Future<CustomerSubscription?> subscribe({
     required String userId,
     required SubscriptionPlanType plan,

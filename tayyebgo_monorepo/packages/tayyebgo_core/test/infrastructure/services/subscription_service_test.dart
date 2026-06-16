@@ -91,9 +91,9 @@ void main() {
       expect(service.isExpiringSoon(sub), isTrue);
     });
 
-    test('returns false when 8 days remaining', () {
+    test('returns false when 10 days remaining', () {
       final sub = _makeSub(
-        expiryDate: DateTime.now().add(const Duration(days: 8)),
+        expiryDate: DateTime.now().add(const Duration(days: 10)),
       );
       expect(service.isExpiringSoon(sub), isFalse);
     });

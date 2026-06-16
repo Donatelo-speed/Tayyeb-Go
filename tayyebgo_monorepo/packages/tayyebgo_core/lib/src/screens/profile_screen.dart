@@ -147,6 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildSettingsRow(Icons.language_rounded, 'Language'),
           _buildSettingsRow(Icons.help_outline_rounded, 'Help & Support'),
           _buildSettingsRow(Icons.info_outline_rounded, 'About'),
+          _buildSettingsRow(Icons.star_rounded, 'TayyebGo Plus', isSubscription: true),
           const SizedBox(height: 20),
           _buildLogoutButton(),
           const SizedBox(height: 32),
@@ -312,19 +313,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingsRow(IconData icon, String label) {
+  Widget _buildSettingsRow(IconData icon, String label, {bool isSubscription = false}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: isSubscription
+            ? AppColors.premium.withValues(alpha: 0.06)
+            : AppColors.surface,
         borderRadius: BorderRadius.circular(12),
+        border: isSubscription
+            ? Border.all(color: AppColors.premium.withValues(alpha: 0.15), width: 0.5)
+            : null,
       ),
       child: ListTile(
-        leading: Icon(icon, size: 20, color: AppColors.textMuted),
-        title: Text(label, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary)),
+        leading: Icon(
+          icon,
+          size: 20,
+          color: isSubscription ? AppColors.premium : AppColors.textMuted,
+        ),
+        title: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: isSubscription ? FontWeight.w600 : FontWeight.w400,
+            color: isSubscription ? AppColors.premium : AppColors.textPrimary,
+          ),
+        ),
         trailing: Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.textMuted),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        onTap: () {},
+        onTap: () {
+          if (isSubscription) {
+            context.push('/subscription');
+          }
+        },
       ),
     );
   }

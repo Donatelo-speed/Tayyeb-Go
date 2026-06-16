@@ -18,6 +18,7 @@ import 'views/notifications_view.dart';
 import 'views/marketing_view.dart';
 import 'views/settlements_view.dart';
 import 'views/operations_center_view.dart';
+import 'views/subscriptions_view.dart';
 import '../../../core/widgets/app_command_bar.dart' as cmdbar_impl;
 import '../../../core/widgets/responsive_builder.dart' as resp;
 
@@ -33,8 +34,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<int> _navHistory = [0];
 
-  // Total tabs = 16 (Operations + Dashboard + 14 others).
-  static const int _kTabCount = 16;
+  // Total tabs = 17 (Operations + Dashboard + 15 others).
+  static const int _kTabCount = 17;
 
   // 6+6 grouped sidebar: indices 0..5 in MENU, 6..11 in MORE.
   // 12..15 are Operations, System Health, Settings, Profile (deep-linkable aliases).
@@ -93,6 +94,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     TabItem('Operations', Icons.monitor_heart_rounded, activeIcon: Icons.monitor_heart),
     TabItem('System Health', Icons.health_and_safety_outlined, activeIcon: Icons.health_and_safety),
     TabItem('Settings', Icons.settings_rounded, activeIcon: Icons.settings),
+    TabItem('Subscriptions', Icons.card_membership_rounded, activeIcon: Icons.card_membership),
     TabItem('Profile', Icons.person_rounded, activeIcon: Icons.person),
   ];
 
@@ -308,6 +310,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         OperationsCenterView(),
         SystemHealthView(),
         SettingsView(),
+        SubscriptionsView(),
         ProfileView(),
       ],
     );

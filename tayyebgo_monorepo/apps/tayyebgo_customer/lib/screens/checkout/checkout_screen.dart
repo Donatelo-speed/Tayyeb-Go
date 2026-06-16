@@ -24,12 +24,45 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   PaymentMethodType? _selectedPaymentMethod;
   bool _isExpress = false;
   DateTime? _scheduledTime;
+  CustomerSubscription? _activeSubscription;
+  double _subscriptionDiscount = 0;
+  bool _subscriptionFreeDelivery = false;
 
   @override
   void dispose() {
     _addressCtrl.dispose();
     _instructionsCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkSubscription());
+  }
+
+  Future<void> _checkSubscription() async {
+    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
+    final userId = auth.user?.id;
+    if (userId == null) return;
+    try {
+      final sub = await SubscriptionService.instance.getActiveSubscription(userId);
+      if (sub != null && mounted) {
+        final cart = context.read<CartProvider>();
+        final subtotalCents = (cart.subtotal * 100).round();
+        final benefits = SubscriptionService.instance.applyBenefits(
+          subscription: sub,
+          orderSubtotal: Money(subtotalCents),
+          isDelivery: _fulfillment == FulfillmentType.delivery,
+        );
+        setState(() {
+          _activeSubscription = sub;
+          _subscriptionDiscount = benefits.discount.inDollars;
+          _subscriptionFreeDelivery = benefits.freeDelivery;
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -116,12 +149,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           instructionsCtrl: _instructionsCtrl,
           fulfillment: _fulfillment,
           cart: cart,
-          onFulfillmentChanged: (v) => setState(() => _fulfillment = v),
+          onFulfillmentChanged: (v) {
+            setState(() => _fulfillment = v);
+            _checkSubscription();
+          },
           onPlaceOrder: () => _placeOrder(context, cart, auth),
           isExpress: _isExpress,
           onExpressChanged: (v) => setState(() => _isExpress = v),
           scheduledTime: _scheduledTime,
           onScheduledTimeChanged: (v) => setState(() => _scheduledTime = v),
+          activeSubscription: _activeSubscription,
+          subscriptionDiscount: _subscriptionDiscount,
+          subscriptionFreeDelivery: _subscriptionFreeDelivery,
         );
     }
   }
@@ -145,14 +184,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     });
 
     try {
-      final totalInCents = (cart.grandTotal * 100).round();
+      final effectiveDeliveryFee = _subscriptionFreeDelivery && _fulfillment == FulfillmentType.delivery
+          ? 0.0
+          : cart.deliveryFee;
+      final totalBeforeDiscount = cart.subtotal + effectiveDeliveryFee + cart.tax;
+      final totalInCents = ((totalBeforeDiscount - cart.promoDiscount - _subscriptionDiscount).clamp(0.0, double.infinity) * 100).round();
       final result = await showModalBottomSheet<PaymentMethodType>(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (_) => PaymentSelectionSheet(
           totalAmount: Money(totalInCents),
-          deliveryFee: Money((cart.deliveryFee * 100).round()),
+          deliveryFee: Money((effectiveDeliveryFee * 100).round()),
           onSelected: (method) => setState(() => _selectedPaymentMethod = method),
         ),
       );
@@ -179,7 +222,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         promoCode: cart.appliedCoupon,
         promoDiscount: cart.promoDiscount > 0 ? cart.promoDiscount : null,
         subtotalCents: (cart.subtotal * 100).round(),
-        deliveryFeeCents: (cart.deliveryFee * 100).round(),
+        deliveryFeeCents: (effectiveDeliveryFee * 100).round(),
         taxCents: (cart.tax * 100).round(),
       );
 
@@ -293,6 +336,9 @@ class _CheckoutForm extends StatefulWidget {
   final ValueChanged<bool> onExpressChanged;
   final DateTime? scheduledTime;
   final ValueChanged<DateTime?> onScheduledTimeChanged;
+  final CustomerSubscription? activeSubscription;
+  final double subscriptionDiscount;
+  final bool subscriptionFreeDelivery;
 
   const _CheckoutForm({
     required this.addressCtrl,
@@ -305,6 +351,9 @@ class _CheckoutForm extends StatefulWidget {
     required this.onExpressChanged,
     this.scheduledTime,
     required this.onScheduledTimeChanged,
+    this.activeSubscription,
+    this.subscriptionDiscount = 0,
+    this.subscriptionFreeDelivery = false,
   });
 
   @override
@@ -313,6 +362,14 @@ class _CheckoutForm extends StatefulWidget {
 
 class _CheckoutFormState extends State<_CheckoutForm> {
   String? _selectedTip;
+
+  double _effectiveTotal() {
+    final deliveryFee = widget.subscriptionFreeDelivery && widget.fulfillment == FulfillmentType.delivery
+        ? 0.0
+        : widget.cart.deliveryFee;
+    final total = widget.cart.subtotal + deliveryFee + widget.cart.tax - widget.cart.promoDiscount - widget.subscriptionDiscount;
+    return total.clamp(0.0, double.infinity);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,6 +428,14 @@ class _CheckoutFormState extends State<_CheckoutForm> {
           ),
         ],
         const SizedBox(height: 28),
+        if (widget.activeSubscription != null && widget.activeSubscription!.isActive)
+          AnimatedFadeSlide(
+            delay: 340,
+            duration: const Duration(milliseconds: 500),
+            child: _buildSubscriptionBanner(context),
+          ),
+        if (widget.activeSubscription != null && widget.activeSubscription!.isActive)
+          const SizedBox(height: 12),
         AnimatedFadeSlide(
           delay: 350,
           duration: const Duration(milliseconds: 500),
@@ -415,7 +480,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               ),
               child: Center(
                 child: Text(
-                  'Place Order — \$${widget.cart.grandTotal.toStringAsFixed(2)}',
+                  'Place Order — \$${_effectiveTotal().toStringAsFixed(2)}',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
@@ -858,6 +923,13 @@ class _CheckoutFormState extends State<_CheckoutForm> {
   }
 
   Widget _buildSummaryCard(BuildContext context) {
+    final effectiveDeliveryFee = widget.subscriptionFreeDelivery && widget.fulfillment == FulfillmentType.delivery
+        ? 0.0
+        : widget.cart.deliveryFee;
+    final effectiveSubtotal = widget.cart.subtotal;
+    final totalBeforeDiscount = effectiveSubtotal + effectiveDeliveryFee + widget.cart.tax;
+    final effectiveTotal = (totalBeforeDiscount - widget.cart.promoDiscount - widget.subscriptionDiscount).clamp(0.0, double.infinity);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -877,16 +949,39 @@ class _CheckoutFormState extends State<_CheckoutForm> {
       ),
       child: Column(
         children: [
-          _summaryRow(context, 'Items (${widget.cart.totalQuantity})', '\$${widget.cart.subtotal.toStringAsFixed(2)}'),
-          _summaryRow(context, 'Delivery Fee', widget.fulfillment == FulfillmentType.pickup ? 'Free' : '\$${widget.cart.deliveryFee.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Items (${widget.cart.totalQuantity})', '\$${effectiveSubtotal.toStringAsFixed(2)}'),
+          if (widget.subscriptionFreeDelivery && widget.fulfillment == FulfillmentType.delivery)
+            _summaryRow(context, 'Delivery Fee', 'Free (Plus)', valueColor: context.successColor)
+          else
+            _summaryRow(context, 'Delivery Fee', widget.fulfillment == FulfillmentType.pickup ? 'Free' : '\$${effectiveDeliveryFee.toStringAsFixed(2)}'),
           _summaryRow(context, 'Tax', '\$${widget.cart.tax.toStringAsFixed(2)}'),
           if (widget.cart.promoDiscount > 0)
-            _summaryRow(context, 'Discount', '-\$${widget.cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
+            _summaryRow(context, 'Promo Discount', '-\$${widget.cart.promoDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
+          if (widget.subscriptionDiscount > 0)
+            _summaryRow(context, 'Plus Discount (${widget.activeSubscription!.plan.discountPercent.round()}% off)', '-\$${widget.subscriptionDiscount.toStringAsFixed(2)}', valueColor: context.successColor),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: context.borderColor.withValues(alpha: 0.4)),
           ),
-          _summaryRow(context, 'Total', '\$${widget.cart.grandTotal.toStringAsFixed(2)}', bold: true),
+          _summaryRow(context, 'Total', '\$${effectiveTotal.toStringAsFixed(2)}', bold: true),
+          if (widget.subscriptionDiscount > 0 || widget.subscriptionFreeDelivery)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.savings_rounded, size: 14, color: context.successColor),
+                  const SizedBox(width: 4),
+                  Text(
+                    'You saved \$${(widget.subscriptionDiscount + (widget.subscriptionFreeDelivery ? widget.cart.deliveryFee : 0)).toStringAsFixed(2)} with TayyebGo Plus',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: context.successColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -915,6 +1010,67 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               letterSpacing: 0,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionBanner(BuildContext context) {
+    final planName = widget.activeSubscription!.plan.displayName;
+    final discountPct = widget.activeSubscription!.plan.discountPercent.round();
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            context.primaryColor.withValues(alpha: 0.1),
+            context.primaryColor.withValues(alpha: 0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.primaryColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.8)],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.card_membership_rounded, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TayyebGo $planName Benefits Applied',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: context.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$discountPct% discount${widget.subscriptionFreeDelivery ? ' + Free delivery' : ''}',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: context.textMutedColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.check_circle_rounded, color: context.successColor, size: 22),
         ],
       ),
     );
