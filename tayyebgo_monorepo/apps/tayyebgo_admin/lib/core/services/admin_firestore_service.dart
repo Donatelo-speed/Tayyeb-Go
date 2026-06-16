@@ -84,7 +84,7 @@ class AdminFirestoreService {
 
   CollectionReference get _stores => _db.collection('restaurants');
   CollectionReference get _orders => _db.collection('orders');
-  CollectionReference get _drivers => _db.collection('drivers');
+  CollectionReference get _drivers => _db.collection('users');
   CollectionReference get _users => _db.collection('users');
   CollectionReference get _contracts => _db.collection('contracts');
   CollectionReference get _zones => _db.collection('zones');
@@ -204,14 +204,14 @@ class AdminFirestoreService {
   }
 
   Stream<List<Map<String, dynamic>>> watchDriversRaw({DriverFilter? filter, int limit = 50}) {
-    Query q = _drivers.limit(limit);
+    Query q = _drivers.where('role', isEqualTo: 'driver').limit(limit);
     if (filter?.status != null) q = q.where('status', isEqualTo: filter!.status);
     if (filter?.isActive != null) q = q.where('isActive', isEqualTo: filter!.isActive);
     return q.snapshots().map((s) => s.docs.map((d) => {...(d.data() as Map<String, dynamic>), 'id': d.id}).toList());
   }
 
   Stream<int> watchDriverCount({String? status, bool? isActive}) {
-    Query q = _drivers;
+    Query q = _drivers.where('role', isEqualTo: 'driver');
     if (status != null) q = q.where('status', isEqualTo: status);
     if (isActive != null) q = q.where('isActive', isEqualTo: isActive);
     return q.snapshots().map((s) => s.docs.length);

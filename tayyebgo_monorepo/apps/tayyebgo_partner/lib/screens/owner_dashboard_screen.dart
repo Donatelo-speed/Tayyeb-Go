@@ -237,47 +237,6 @@ class _OverviewTab extends StatelessWidget {
       },
     );
   }
-
-  Widget _kpiCard(BuildContext context, String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const Spacer(),
-          Text(value, style: GoogleFonts.inter(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: 0, color: context.textPrimaryColor)),
-          const SizedBox(height: 4),
-          Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textMuted)),
-        ],
-      ),
-    );
-  }
 }
 
 class _CommissionCards extends StatelessWidget {

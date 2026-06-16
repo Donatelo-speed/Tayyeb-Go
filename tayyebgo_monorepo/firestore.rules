@@ -16,11 +16,15 @@ service cloud.firestore {
     }
 
     function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : '';
     }
 
     function getUserRestaurantId() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId;
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId
+        : '';
     }
 
     function isAdmin() {
@@ -56,10 +60,11 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId)
+      allow update: if (isOwner(userId)
         && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['displayName', 'email', 'phone', 'photoUrl', 'address',
-                      'preferredLocale', 'fcmToken', 'updatedAt'])
+                      'preferredLocale', 'fcmToken', 'updatedAt',
+                      'lastSignInAt']))
         || isAdmin();
       allow delete: if isAdmin();
 
@@ -354,10 +359,11 @@ service cloud.firestore {
     // NOTIFICATIONS
     // ============================================================
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated()
-        && resource.data.recipientId == request.auth.uid;
+      allow read: if isAdmin()
+        || (isAuthenticated() && resource.data.recipientId == request.auth.uid);
       allow create: if isAdmin();
-      allow update: if isOwner(resource.data.recipientId);
+      allow update: if isAdmin()
+        || isOwner(resource.data.recipientId);
       allow delete: if isAdmin();
     }
 
