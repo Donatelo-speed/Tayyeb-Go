@@ -49,9 +49,9 @@ class DriverSafetyScreen extends StatelessWidget {
             icon: Icons.phone_rounded,
             iconColor: context.successColor,
             title: 'Emergency Contact',
-            subtitle: 'Call support: +963-XXX-XXX-XXXX',
+            subtitle: 'Call TayyebGo support',
             onTap: () async {
-              final uri = Uri.parse('tel:+9630000000000');
+              final uri = Uri.parse('tel:+963982118585');
               if (await canLaunchUrl(uri)) {
                 await launchUrl(uri);
               } else {

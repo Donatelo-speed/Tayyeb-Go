@@ -163,7 +163,7 @@ class DriverProfileScreen extends StatelessWidget {
             AnimatedFadeSlide(
               delay: 375,
               duration: const Duration(milliseconds: 500),
-              child: _menuItem(context, Icons.language_rounded, 'Language', () {}),
+              child: _menuItem(context, Icons.language_rounded, 'Language', () => context.push('/settings')),
             ),
             AnimatedFadeSlide(
               delay: 400,
@@ -173,7 +173,7 @@ class DriverProfileScreen extends StatelessWidget {
             AnimatedFadeSlide(
               delay: 425,
               duration: const Duration(milliseconds: 500),
-              child: _menuItem(context, Icons.lock_outline_rounded, 'Change Password', () {}),
+              child: _menuItem(context, Icons.lock_outline_rounded, 'Change Password', () => context.push('/forgot-password')),
             ),
             const SizedBox(height: 24),
             // Support Section
@@ -186,7 +186,7 @@ class DriverProfileScreen extends StatelessWidget {
             AnimatedFadeSlide(
               delay: 475,
               duration: const Duration(milliseconds: 500),
-              child: _menuItem(context, Icons.help_outline_rounded, 'Help Center', () {}),
+              child: _menuItem(context, Icons.help_outline_rounded, 'Help Center', () => context.push('/help-support')),
             ),
             AnimatedFadeSlide(
               delay: 500,
@@ -196,7 +196,7 @@ class DriverProfileScreen extends StatelessWidget {
             AnimatedFadeSlide(
               delay: 525,
               duration: const Duration(milliseconds: 500),
-              child: _menuItem(context, Icons.info_outline_rounded, 'About', () {}),
+              child: _menuItem(context, Icons.info_outline_rounded, 'About', () => context.push('/help-support')),
             ),
             const SizedBox(height: 24),
             // Sign Out
