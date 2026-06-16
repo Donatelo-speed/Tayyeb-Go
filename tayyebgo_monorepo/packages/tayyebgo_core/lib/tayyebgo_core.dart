@@ -140,7 +140,6 @@ export 'presentation/shared_widgets/order_success_animation.dart';
 export 'presentation/shared_widgets/skill_card.dart';
 export 'presentation/shared_widgets/skill_execution_view.dart';
 export 'presentation/shared_widgets/destructive_action_overlay.dart';
-export 'presentation/shared_widgets/tg_design_system.dart';
 export 'src/theme/tayyebgo_theme.dart';
 export 'src/firebase/firebase_options.dart';
 
@@ -222,3 +221,10 @@ export 'presentation/router/app_router.dart';
 export 'presentation/router/route_guards.dart';
 
 export 'ui/tayyebgo_ui.dart';
+export 'presentation/shared_widgets/tg_design_system.dart'
+    show
+        TGOrderTimeline,
+        TGTimelineStep,
+        TGPrice,
+        TGDeliveryBadge,
+        TGUserAvatar;

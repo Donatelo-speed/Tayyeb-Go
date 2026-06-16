@@ -67,6 +67,7 @@ class AuthProvider extends ChangeNotifier {
   StreamSubscription<fb.User?>? _authSubscription;
   bool _onboardingComplete = false;
   bool _loginInProgress = false;
+  bool _disposed = false;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
@@ -184,20 +185,14 @@ class AuthProvider extends ChangeNotifier {
         final now = DateTime.now();
 
         // ROLE RECONCILIATION: If the Firestore role doesn't match what this
-        // app expects, use the expected role locally. Try to persist it to
-        // Firestore but don't fail login if permissions deny the write.
+        // app expects, use the Firestore role as source of truth.
+        // Do NOT overwrite Firestore — that causes cross-app role conflicts.
+        // If a user logs into the wrong app, they get the correct role from
+        // Firestore and the UI should redirect them to the right app.
         final effectiveRole = _expectedRole ?? defaultExpectedRole;
         if (effectiveRole != null && _user!.role != effectiveRole) {
-          debugPrint('[AuthProvider] resolveUser: role mismatch — Firestore=${_user!.role.value} expected=${effectiveRole.value} → using ${effectiveRole.value} locally');
-          _user = _user!.copyWith(role: effectiveRole);
-          try {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(firebaseUser.uid)
-                .update({'role': effectiveRole.value});
-          } catch (e) {
-            debugPrint('[AuthProvider] resolveUser: could not persist role to Firestore (non-critical): $e');
-          }
+          debugPrint('[AuthProvider] resolveUser: role mismatch — Firestore=${_user!.role.value} expected=${effectiveRole.value} → using Firestore role');
+          // Keep Firestore role — do NOT overwrite
         }
 
         _user = _user!.copyWith(lastSignInAt: now, updatedAt: now);
@@ -253,6 +248,7 @@ class AuthProvider extends ChangeNotifier {
     String password,
     BuildContext context,
   ) async {
+    if (_disposed) return false;
     debugPrint('[AuthProvider] login: email=$email');
     _isLoading = true;
     _loginInProgress = true;
@@ -263,6 +259,7 @@ class AuthProvider extends ChangeNotifier {
       final credential = await fb.FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email.trim(), password: password);
       if (credential.user == null) {
+        if (_disposed) return false;
         _error = 'Authentication returned empty user';
         _isLoading = false;
         _loginInProgress = false;
@@ -271,6 +268,7 @@ class AuthProvider extends ChangeNotifier {
       }
       debugPrint('[AuthProvider] login: Firebase Auth success, uid=${credential.user!.uid}');
       await resolveUser(credential.user!);
+      if (_disposed) return false;
       if (_user == null) {
         debugPrint('[AuthProvider] login: resolveUser returned null');
         _isLoading = false;
@@ -293,6 +291,7 @@ class AuthProvider extends ChangeNotifier {
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      if (_disposed) return false;
       debugPrint('[AuthProvider] login: FirebaseAuthException ${e.code}');
       _error = _friendlyAuthError(e);
       _isLoading = false;
@@ -300,6 +299,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     } catch (e) {
+      if (_disposed) return false;
       debugPrint('[AuthProvider] login: error $e');
       _error = _friendlyAuthError(e);
       _isLoading = false;
@@ -317,6 +317,7 @@ class AuthProvider extends ChangeNotifier {
     String? photoUrl,
     String? address,
   }) async {
+    if (_disposed) return false;
     _isLoading = true;
     _loginInProgress = true;
     _error = null;
@@ -329,6 +330,7 @@ class AuthProvider extends ChangeNotifier {
             password: password,
           );
       if (credential.user == null) {
+        if (_disposed) return false;
         _error = 'Account creation returned empty user';
         _isLoading = false;
         _loginInProgress = false;
@@ -337,35 +339,54 @@ class AuthProvider extends ChangeNotifier {
       }
       await credential.user!.sendEmailVerification();
       await credential.user!.updateDisplayName(displayName);
-      final now = DateTime.now();
-      _user = UserModel(
-        id: credential.user!.uid,
-        email: email.trim(),
-        displayName: displayName,
-        phone: phone,
-        photoUrl: photoUrl,
-        role: _expectedRole ?? defaultExpectedRole ?? UserRole.customer,
-        address: address,
-        createdAt: now,
-        updatedAt: now,
-        lastSignInAt: now,
-      );
+
+      // Use resolveUser for consistent user creation flow
+      // This handles Firestore write and timestamp updates
+      _user = await resolveUser(credential.user!);
+
+      if (_disposed) return false;
+      if (_user == null) {
+        _error = 'Failed to create user profile';
+        _isLoading = false;
+        _loginInProgress = false;
+        notifyListeners();
+        return false;
+      }
+
+      // Update additional profile fields
+      final updates = <String, dynamic>{
+        'displayName': displayName,
+        if (phone != null) 'phone': phone,
+        if (photoUrl != null) 'photoUrl': photoUrl,
+        if (address != null) 'address': address,
+      };
       await FirebaseFirestore.instance
           .collection('users')
           .doc(credential.user!.uid)
-          .set(_user!.toFirestore());
+          .update(updates);
+
+      _user = _user!.copyWith(
+        displayName: displayName,
+        phone: phone,
+        photoUrl: photoUrl,
+        address: address,
+      );
+
+      if (_disposed) return false;
       _isLoading = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
     } catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -375,6 +396,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> loginWithGoogle() async {
+    if (_disposed) return false;
     _isLoading = true;
     _loginInProgress = true;
     _error = null;
@@ -392,6 +414,7 @@ class AuthProvider extends ChangeNotifier {
         );
       }
       if (result.user == null) {
+        if (_disposed) return false;
         _error = 'Google sign-in returned no user';
         _isLoading = false;
         _loginInProgress = false;
@@ -399,6 +422,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       await resolveUser(result.user!);
+      if (_disposed) return false;
       if (_user == null) {
         _isLoading = false;
         _loginInProgress = false;
@@ -419,12 +443,14 @@ class AuthProvider extends ChangeNotifier {
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
     } catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -434,6 +460,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> loginWithApple() async {
+    if (_disposed) return false;
     _isLoading = true;
     _loginInProgress = true;
     _error = null;
@@ -449,6 +476,7 @@ class AuthProvider extends ChangeNotifier {
         result = await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
       }
       if (result.user == null) {
+        if (_disposed) return false;
         _error = 'Apple sign-in returned no user';
         _isLoading = false;
         _loginInProgress = false;
@@ -456,6 +484,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       await resolveUser(result.user!);
+      if (_disposed) return false;
       if (_user == null) {
         _isLoading = false;
         _loginInProgress = false;
@@ -475,12 +504,14 @@ class AuthProvider extends ChangeNotifier {
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
     } catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -566,6 +597,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> verifyOtpCode(String otp) async {
     if (_verificationId == null) return false;
+    if (_disposed) return false;
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -583,6 +615,7 @@ class AuthProvider extends ChangeNotifier {
       if (result.user != null) {
         await resolveUser(result.user!);
       }
+      if (_disposed) return false;
       if (_user == null) {
         _isLoading = false;
         _loginInProgress = false;
@@ -602,8 +635,10 @@ class AuthProvider extends ChangeNotifier {
       _notifyRouter();
       return true;
     } on fb.FirebaseAuthException catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
     } catch (e) {
+      if (_disposed) return false;
       _error = _friendlyAuthError(e);
     }
     _isLoading = false;
@@ -716,6 +751,7 @@ class AuthProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _otpTimer?.cancel();
     _authSubscription?.cancel();
     if (_instance == this) {
