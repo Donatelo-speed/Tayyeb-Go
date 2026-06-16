@@ -21,7 +21,8 @@ class AppActivityFeed extends StatelessWidget {
         }
         final activities = snapshot.data!.docs;
         if (activities.isEmpty) return _buildEmpty(context);
-        return TGC.outlined(
+        return TGC(
+          variant: TGCVariant.outlined,
           padding: padding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

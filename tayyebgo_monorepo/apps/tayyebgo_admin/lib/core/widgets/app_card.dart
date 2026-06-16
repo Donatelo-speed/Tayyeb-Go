@@ -32,7 +32,7 @@ class AdminCard extends StatelessWidget {
       padding: padding,
       margin: margin,
       onTap: onTap,
-      color: backgroundColor,
+      backgroundColor: backgroundColor,
       child: child,
     );
   }

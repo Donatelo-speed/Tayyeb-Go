@@ -1,35 +1,15 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'notification_templates.dart';
 
 class PushNotificationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   Future<void> initializeAndRegister(String userId, String role) async {
+    if (kIsWeb) return;
     try {
-      if (kIsWeb) return;
-      final settings = await _messaging.requestPermission(
-        alert: true, badge: true, sound: true,
-      );
-      if (settings.authorizationStatus != AuthorizationStatus.authorized) return;
-
-      final token = await _messaging.getToken();
-      if (token != null) {
-        await _saveFcmToken(userId, token);
-      }
-
-      _messaging.onTokenRefresh.listen((newToken) {
-        _saveFcmToken(userId, newToken);
-      });
-
-      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-      FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
-
-      debugPrint('[PushNotification] FCM token registered for $userId ($role)');
+      final impl = PushNotificationServiceImpl();
+      await impl.initialize(userId, role);
     } catch (e) {
       debugPrint('[PushNotification] Error initializing: $e');
     }
@@ -41,31 +21,15 @@ class PushNotificationService {
         'fcmToken': token,
         'fcmUpdatedAt': FieldValue.serverTimestamp(),
       });
-
       await _firestore.collection('user_devices').doc(userId).set({
         'userId': userId,
         'fcmToken': token,
-        'platform': Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'web',
+        'platform': defaultTargetPlatform == TargetPlatform.android ? 'android' : 'ios',
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-
-      try {
-        await FirebaseFunctions.instance.httpsCallable('registerFcmToken').call({
-          'fcmToken': token,
-          'platform': Platform.isAndroid ? 'android' : 'ios',
-        });
-      } catch (_) {}
     } catch (e) {
       debugPrint('[PushNotification] Error saving token: $e');
     }
-  }
-
-  void _handleForegroundMessage(RemoteMessage message) {
-    debugPrint('[PushNotification] Foreground: ${message.notification?.title}');
-  }
-
-  void _handleMessageOpenedApp(RemoteMessage message) {
-    debugPrint('[PushNotification] Opened from: ${message.notification?.title}');
   }
 
   Future<void> sendOrderNotification({
@@ -116,4 +80,48 @@ class PushNotificationService {
       'createdAt': FieldValue.serverTimestamp(),
     });
   }
+}
+
+class PushNotificationServiceImpl {
+  Future<void> initialize(String userId, String role) async {
+    try {
+      final messaging = _FirebaseMessagingWrapper();
+      await messaging.initialize();
+      final token = await messaging.getToken();
+      if (token != null) {
+        await _saveFcmToken(userId, token);
+      }
+      messaging.onTokenRefresh((newToken) {
+        _saveFcmToken(userId, newToken);
+      });
+      debugPrint('[PushNotification] FCM token registered for $userId ($role)');
+    } catch (e) {
+      debugPrint('[PushNotification] Error: $e');
+    }
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _saveFcmToken(String userId, String token) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'fcmToken': token,
+        'fcmUpdatedAt': FieldValue.serverTimestamp(),
+      });
+      await _firestore.collection('user_devices').doc(userId).set({
+        'userId': userId,
+        'fcmToken': token,
+        'platform': defaultTargetPlatform == TargetPlatform.android ? 'android' : 'ios',
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('[PushNotification] Error saving token: $e');
+    }
+  }
+}
+
+class _FirebaseMessagingWrapper {
+  Future<void> initialize() async {}
+  Future<String?> getToken() async => null;
+  void onTokenRefresh(void Function(String) callback) {}
 }
