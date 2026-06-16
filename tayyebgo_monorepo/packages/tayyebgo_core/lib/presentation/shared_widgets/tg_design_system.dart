@@ -595,6 +595,7 @@ class TGStat extends StatelessWidget {
     return TGCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 44,
@@ -609,7 +610,7 @@ class TGStat extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 22),
           ),
-          const Spacer(),
+          const SizedBox(height: 16),
           Text(
             value,
             style: GoogleFonts.inter(
@@ -762,6 +763,7 @@ class TGStatSkeleton extends StatelessWidget {
     return TGCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 44, height: 44,
@@ -770,7 +772,7 @@ class TGStatSkeleton extends StatelessWidget {
               borderRadius: AppRadius.brMd,
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: 16),
           Container(
             width: 80, height: 24,
             decoration: BoxDecoration(
