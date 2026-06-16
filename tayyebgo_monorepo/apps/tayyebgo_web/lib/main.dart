@@ -325,19 +325,21 @@ class _TayyebGoWebAppState extends State<TayyebGoWebApp> {
     final fbUser = fb.FirebaseAuth.instance.currentUser;
     final isLoggedIn = fbUser != null;
 
-    // Always allow splash, onboarding, and auth routes
-    if (location == '/splash' || location == '/onboarding') return null;
+    // Always allow these routes
     if (location == '/login' || location == '/signup' || location == '/forgot-password') return null;
     if (location == '/privacy-policy' || location == '/terms-conditions' || location == '/help-support') return null;
     if (location == '/access-denied') return null;
 
-    // Not logged in → redirect to login
-    if (!isLoggedIn) return '/login';
+    // Not logged in → login page (including splash)
+    if (!isLoggedIn) {
+      if (location == '/splash') return null; // let splash show briefly
+      return '/login';
+    }
 
     // Auth still loading → stay on current page
     if (auth == null || auth.isLoading) return null;
 
-    // Logged in but no user model yet → stay on current page
+    // Logged in but no user model yet → wait
     if (auth.user == null) return null;
 
     // Account disabled → access denied
@@ -345,14 +347,19 @@ class _TayyebGoWebAppState extends State<TayyebGoWebApp> {
       return '/access-denied?reason=disabled&currentRole=${auth.user!.role.value}';
     }
 
-    // If at login page while logged in → redirect to role home
-    if (location == '/login') {
+    // Splash → redirect to role home
+    if (location == '/splash') {
+      return _roleHomePath(auth.user!.role);
+    }
+
+    // Login/signup while logged in → role home
+    if (location == '/login' || location == '/signup') {
       return _roleHomePath(auth.user!.role);
     }
 
     // Check if the route prefix matches the user's role
     final rolePrefix = _roleRoutePrefix(auth.user!.role);
-    if (!location.startsWith(rolePrefix) && location != '/login') {
+    if (!location.startsWith(rolePrefix)) {
       return '$rolePrefix/dashboard';
     }
 
@@ -442,8 +449,36 @@ class _TayyebGoWebAppState extends State<TayyebGoWebApp> {
   }
 }
 
-class _UnifiedSplashScreen extends StatelessWidget {
+class _UnifiedSplashScreen extends StatefulWidget {
   const _UnifiedSplashScreen();
+  @override
+  State<_UnifiedSplashScreen> createState() => _UnifiedSplashScreenState();
+}
+
+class _UnifiedSplashScreenState extends State<_UnifiedSplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        final auth = AuthProvider.instance;
+        final fbUser = fb.FirebaseAuth.instance.currentUser;
+        if (fbUser != null && auth != null && auth.user != null && auth.user!.isActive) {
+          final role = auth.user!.role;
+          final home = switch (role) {
+            UserRole.superAdmin => '/admin/dashboard',
+            UserRole.restaurantOwner || UserRole.cashier => '/partner/dashboard',
+            UserRole.driver => '/driver/dashboard',
+            UserRole.customer => '/customer/home',
+          };
+          context.go(home);
+        } else {
+          context.go('/login');
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
