@@ -16,41 +16,46 @@ service cloud.firestore {
     }
 
     function getUserRole() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-        : '';
+      return request.auth.token.role != null
+        ? request.auth.token.role
+        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+            ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+            : '');
     }
 
     function getUserRestaurantId() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId
-        : '';
+      return request.auth.token.restaurantId != null
+        ? request.auth.token.restaurantId
+        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+            ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId
+            : '');
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole() == role;
     }
 
     function isAdmin() {
-      return isAuthenticated()
-        && getUserRole() == 'superAdmin';
+      return hasRole('superAdmin');
     }
 
     function isDriver() {
-      return isAuthenticated()
-        && getUserRole() == 'driver';
+      return hasRole('driver');
     }
 
     function isCustomer() {
-      return isAuthenticated()
-        && getUserRole() == 'customer';
+      return hasRole('customer');
     }
 
     function isRestaurantOwner(restaurantId) {
       return isAuthenticated()
-        && getUserRole() == 'restaurantOwner'
+        && hasRole('restaurantOwner')
         && getUserRestaurantId() == restaurantId;
     }
 
     function isCashier(restaurantId) {
       return isAuthenticated()
-        && getUserRole() == 'cashier'
+        && hasRole('cashier')
         && getUserRestaurantId() == restaurantId;
     }
 

@@ -297,6 +297,11 @@ exports.setUserRole = functions.https.onCall(async (request) => {
   }
 
   try {
+    const claims = { role };
+    if (restaurantId) claims.restaurantId = restaurantId;
+
+    await admin.auth().setCustomUserClaims(uid, claims);
+
     const updates = {
       role,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
