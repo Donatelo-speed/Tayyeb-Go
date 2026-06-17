@@ -22,6 +22,8 @@ import 'screens/partner_payouts_screen.dart';
 import 'screens/partner_analytics_screen.dart';
 import 'screens/store_theme_screen.dart';
 import 'screens/modifier_builder_screen.dart';
+import 'screens/partner_orders_screen.dart';
+import 'screens/partner_employees_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +31,7 @@ void main() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     AuthProvider.defaultExpectedRole = UserRole.restaurantOwner;
     AuthGateService.instance.init();
+    TestAccountSeeder.instance.seedIfNeeded();
     SyncEngine.instance.start();
     AppLocator.instance.init();
     runApp(const PartnerApp());
@@ -122,6 +125,8 @@ class _PartnerAppState extends State<PartnerApp> {
         AppRouter.route('/contracts', const PartnerContractsScreen(), name: 'contracts'),
         AppRouter.route('/payouts', const PartnerPayoutsScreen(), name: 'payouts'),
         AppRouter.route('/analytics', const PartnerAnalyticsScreen(), name: 'analytics'),
+        AppRouter.route('/orders', const PartnerOrdersScreen(), name: 'orders'),
+        AppRouter.route('/employees', const PartnerEmployeesScreen(), name: 'employees'),
         AppRouter.route('/store-theme', const StoreThemeScreen(), name: 'storeTheme'),
         GoRoute(
           path: '/menu/:id',

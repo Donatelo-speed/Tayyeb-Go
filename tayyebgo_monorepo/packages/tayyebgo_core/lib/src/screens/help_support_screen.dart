@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,6 +38,22 @@ class HelpSupportScreen extends StatelessWidget {
               'At checkout, tap "Apply Promo Code" and enter your code. The discount will be applied to your order total.'),
           _faqItem(context, 'How do I become a driver?',
               'Download the TayyebGo Driver app, create an account, and complete the onboarding process. You\'ll need a valid driver\'s license and vehicle registration.'),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/create-ticket'),
+              icon: const Icon(Icons.support_agent_rounded, size: 20),
+              label: Text('Submit a Ticket', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
+              ),
+            ),
+          ),
           const SizedBox(height: 32),
           _header('Contact Us'),
           const SizedBox(height: 16),

@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectivityService {
   static final ConnectivityService instance = ConnectivityService._();
   ConnectivityService._();
-  final Connectivity _connectivity = Connectivity();
+  Connectivity? _connectivity;
   StreamSubscription<List<ConnectivityResult>>? _sub;
   final _controller = StreamController<bool>.broadcast();
 
@@ -14,13 +15,23 @@ class ConnectivityService {
   bool get isOnline => _isOnline;
 
   void init() {
-    _connectivity.checkConnectivity().then((results) {
-      _isOnline = results.any((r) => r != ConnectivityResult.none);
-    });
-    _sub = _connectivity.onConnectivityChanged.listen((results) {
-      _isOnline = results.any((r) => r != ConnectivityResult.none);
-      _controller.add(_isOnline);
-    });
+    if (kIsWeb) {
+      _isOnline = true;
+      return;
+    }
+    try {
+      _connectivity = Connectivity();
+      _connectivity!.checkConnectivity().then((results) {
+        _isOnline = results.any((r) => r != ConnectivityResult.none);
+      });
+      _sub = _connectivity!.onConnectivityChanged.listen((results) {
+        _isOnline = results.any((r) => r != ConnectivityResult.none);
+        _controller.add(_isOnline);
+      });
+    } catch (e) {
+      debugPrint('[ConnectivityService] init error: $e');
+      _isOnline = true;
+    }
   }
 
   void dispose() {

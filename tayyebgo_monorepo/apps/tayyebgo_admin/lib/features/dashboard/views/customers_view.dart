@@ -13,12 +13,22 @@ class CustomersView extends StatefulWidget {
 class _CustomersViewState extends State<CustomersView> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
+  String _roleFilter = 'all';
 
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
   }
+
+  static const _roles = [
+    ('all', 'All Roles'),
+    ('customer', 'Customer'),
+    ('driver', 'Driver'),
+    ('restaurantOwner', 'Restaurant Owner'),
+    ('cashier', 'Cashier'),
+    ('superAdmin', 'Super Admin'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +37,14 @@ class _CustomersViewState extends State<CustomersView> {
       child: Scaffold(
         backgroundColor: context.backgroundColor,
         appBar: AppBar(
-          title: Text('Customers', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+          title: Text('User Management', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
           backgroundColor: context.backgroundColor,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
         ),
         body: Column(children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Container(
               height: 44,
               decoration: BoxDecoration(
@@ -56,9 +66,32 @@ class _CustomersViewState extends State<CustomersView> {
               ),
             ),
           ),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: _roles.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (_, i) {
+                final (value, label) = _roles[i];
+                final selected = _roleFilter == value;
+                return ChoiceChip(
+                  label: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: selected ? FontWeight.w600 : FontWeight.w400)),
+                  selected: selected,
+                  onSelected: (_) => setState(() => _roleFilter = value),
+                  selectedColor: context.primaryColor.withValues(alpha: 0.15),
+                  side: BorderSide(color: selected ? context.primaryColor.withValues(alpha: 0.3) : context.borderColor),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'customer').limit(500).snapshots(),
+              stream: _roleFilter == 'all'
+                  ? FirebaseFirestore.instance.collection('users').limit(500).snapshots()
+                  : FirebaseFirestore.instance.collection('users').where('role', isEqualTo: _roleFilter).limit(500).snapshots(),
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator(color: context.primaryColor));
@@ -92,7 +125,7 @@ class _CustomersViewState extends State<CustomersView> {
                           child: Icon(Icons.people_outlined, size: 36, color: context.textMutedColor),
                         ),
                         const SizedBox(height: 16),
-                        Text('No customers yet', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
+                        Text('No users found', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 16, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   );
@@ -107,6 +140,7 @@ class _CustomersViewState extends State<CustomersView> {
                     final email = d['email'] as String? ?? '';
                     final phone = d['phone'] as String? ?? '-';
                     final isActive = d['isActive'] as bool? ?? true;
+                    final role = d['role'] as String? ?? 'customer';
                     final ordersCount = (d['ordersCount'] as num?)?.toInt() ?? 0;
                     final totalSpending = (d['totalSpending'] as num?)?.toDouble() ?? 0;
                     return _CustomerCard(
@@ -115,6 +149,7 @@ class _CustomersViewState extends State<CustomersView> {
                       email: email,
                       phone: phone,
                       isActive: isActive,
+                      role: role,
                       ordersCount: ordersCount,
                       totalSpending: totalSpending,
                       data: d,
@@ -136,6 +171,7 @@ class _CustomerCard extends StatelessWidget {
   final String email;
   final String phone;
   final bool isActive;
+  final String role;
   final int ordersCount;
   final double totalSpending;
   final Map<String, dynamic> data;
@@ -146,10 +182,31 @@ class _CustomerCard extends StatelessWidget {
     required this.email,
     required this.phone,
     required this.isActive,
+    required this.role,
     required this.ordersCount,
     required this.totalSpending,
     required this.data,
   });
+
+  Color _roleColor(BuildContext context) {
+    switch (role) {
+      case 'superAdmin': return const Color(0xFFEF4444);
+      case 'restaurantOwner': return const Color(0xFFF59E0B);
+      case 'cashier': return const Color(0xFF8B5CF6);
+      case 'driver': return const Color(0xFF10B981);
+      default: return context.primaryColor;
+    }
+  }
+
+  String _roleLabel() {
+    switch (role) {
+      case 'superAdmin': return 'Admin';
+      case 'restaurantOwner': return 'Owner';
+      case 'cashier': return 'Cashier';
+      case 'driver': return 'Driver';
+      default: return 'Customer';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +239,19 @@ class _CustomerCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(displayName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor), overflow: TextOverflow.ellipsis),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(color: _roleColor(context).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(4)),
+                          child: Text(_roleLabel(), style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: _roleColor(context))),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 2),
                     Text(email, style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
                   ],
@@ -199,9 +268,11 @@ class _CustomerCard extends StatelessWidget {
                 onSelected: (v) {
                   if (v == 'view') _showCustomerDetails(context, id, data);
                   if (v == 'suspend') _toggleCustomerStatus(id, !isActive, context);
+                  if (v == 'role') _showChangeRoleDialog(context, id, data);
                 },
                 itemBuilder: (_) => [
                   PopupMenuItem(value: 'view', child: Text('View Profile', style: GoogleFonts.inter(fontSize: 13))),
+                  PopupMenuItem(value: 'role', child: Text('Change Role', style: GoogleFonts.inter(fontSize: 13, color: context.primaryColor))),
                   PopupMenuItem(value: 'suspend', child: Text(isActive ? 'Suspend' : 'Activate', style: GoogleFonts.inter(fontSize: 13, color: isActive ? context.errorColor : context.successColor))),
                 ],
               ),
@@ -289,5 +360,84 @@ class _CustomerCard extends StatelessWidget {
         );
       }
     }
+  }
+
+  void _showChangeRoleDialog(BuildContext context, String uid, Map<String, dynamic> d) {
+    final currentRole = d['role'] as String? ?? 'customer';
+    String selectedRole = currentRole;
+
+    const roles = {
+      'customer': 'Customer',
+      'driver': 'Driver',
+      'restaurantOwner': 'Restaurant Owner',
+      'cashier': 'Cashier',
+      'superAdmin': 'Super Admin',
+    };
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: context.surfaceColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text('Change Role', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+          content: SizedBox(
+            width: 350,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${d['displayName'] ?? d['email'] ?? 'User'}', style: GoogleFonts.inter(fontSize: 14, color: context.textMutedColor)),
+                const SizedBox(height: 4),
+                Text('Current role: ${roles[currentRole] ?? currentRole}', style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor)),
+                const SizedBox(height: 16),
+                Text('Assign new role:', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: context.textPrimaryColor)),
+                const SizedBox(height: 8),
+                ...roles.entries.map((entry) => RadioListTile<String>(
+                  title: Text(entry.value, style: GoogleFonts.inter(fontSize: 14, color: context.textPrimaryColor)),
+                  value: entry.key,
+                  groupValue: selectedRole,
+                  onChanged: (v) => setDialogState(() => selectedRole = v!),
+                  activeColor: context.primaryColor,
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                )),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor))),
+            ElevatedButton(
+              onPressed: selectedRole == currentRole
+                  ? null
+                  : () async {
+                      Navigator.pop(ctx);
+                      try {
+                        await FirebaseFirestore.instance.collection('users').doc(uid).update({'role': selectedRole});
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Role changed to ${roles[selectedRole]}', style: GoogleFonts.inter()),
+                              backgroundColor: context.successColor,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      } catch (_) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to change role', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                          );
+                        }
+                      }
+                    },
+              style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: Colors.white),
+              child: Text('Save', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

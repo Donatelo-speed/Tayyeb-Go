@@ -15,6 +15,7 @@ export 'domain/value_objects/money.dart';
 export 'domain/value_objects/operating_hours.dart';
 export 'domain/value_objects/pending_operation.dart';
 export 'domain/value_objects/skill_input_schema.dart';
+export 'domain/value_objects/unit_economics.dart';
 
 export 'domain/entities/customer_subscription.dart';
 export 'domain/entities/brand.dart';
@@ -115,6 +116,7 @@ export 'src/screens/auth_state_redirector.dart';
 export 'src/screens/payment_selection_sheet.dart';
 export 'src/screens/notifications_screen.dart';
 export 'src/screens/dispute_screen.dart';
+export 'src/screens/create_ticket_screen.dart';
 export 'src/screens/chat_screen.dart';
 export 'src/screens/store_reviews_screen.dart';
 
@@ -221,6 +223,13 @@ export 'src/screens/loyalty_rewards_screen.dart';
 export 'infrastructure/services/sync_engine.dart';
 export 'infrastructure/services/delivery_earnings_service.dart';
 export 'infrastructure/services/pricing_engine.dart';
+export 'infrastructure/services/analytics_engine.dart';
+export 'infrastructure/services/city_expansion_service.dart';
+export 'infrastructure/services/support_service.dart';
+export 'infrastructure/services/multi_channel_notification_service.dart';
+export 'infrastructure/services/security_service.dart';
+export 'infrastructure/services/driver_safety_service.dart';
+export 'infrastructure/services/founder_dashboard_service.dart';
 
 export 'presentation/router/app_router.dart';
 export 'presentation/router/route_guards.dart';

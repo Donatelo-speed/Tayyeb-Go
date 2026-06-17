@@ -16,13 +16,21 @@ class _DriverSplashScreenState extends State<DriverSplashScreen> {
   void _onReady() {
     if (_ready || !mounted) return;
     setState(() => _ready = true);
-    _navigate();
+    _waitForAuth();
   }
 
-  Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
+  Future<void> _waitForAuth() async {
     final auth = context.read<AuthProvider>();
+    while (auth.isInitializing && mounted) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    if (!mounted) return;
+    _navigate(auth);
+  }
+
+  Future<void> _navigate(AuthProvider auth) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
     if (auth.user != null) {
       context.go('/dashboard');
     } else {

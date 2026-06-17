@@ -11,6 +11,7 @@ import 'screens/cart/cart_screen.dart';
 import 'screens/checkout/checkout_screen.dart';
 import 'screens/customer_main_screen.dart';
 import 'screens/menu/restaurant_menu_screen.dart';
+import 'screens/product_detail_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/address_management_screen.dart';
 import 'screens/reorder_screen.dart';
@@ -33,6 +34,7 @@ void main() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     AuthProvider.defaultExpectedRole = UserRole.customer;
     AuthGateService.instance.init();
+    TestAccountSeeder.instance.seedIfNeeded();
     AppLocator.instance.init();
     runApp(const CustomerApp());
   } catch (e, s) {
@@ -132,6 +134,7 @@ class _CustomerAppState extends State<CustomerApp> {
         AppRouter.route('/privacy-policy', const PrivacyPolicyScreen(), name: 'privacyPolicy'),
         AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
         AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
+        AppRouter.route('/create-ticket', const CreateTicketScreen(), name: 'createTicket'),
         AppRouter.route('/onboarding', const CustomerOnboardingScreen(), name: 'onboarding'),
         AppRouter.route('/home', const AuthStateRedirector(child: CustomerMainScreen()), name: 'home'),
         AppRouter.route('/checkout', const CheckoutScreen(), name: 'checkout'),
@@ -174,6 +177,20 @@ class _CustomerAppState extends State<CustomerApp> {
                 restaurantId: id,
                 restaurantName: extra['name'] as String? ?? 'Restaurant',
                 commissionPercent: (extra['commissionPercent'] as num?)?.toDouble() ?? 15.0,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/product/:restaurantId/:productId',
+          name: 'productDetail',
+          pageBuilder: (_, state) {
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            return SlideTransitionPage(
+              page: ProductDetailScreen(
+                productId: state.pathParameters['productId']!,
+                restaurantId: state.pathParameters['restaurantId']!,
+                restaurantName: extra['restaurantName'] as String? ?? 'Restaurant',
               ),
             );
           },

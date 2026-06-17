@@ -16,28 +16,22 @@ class _CustomerOnboardingScreenState extends State<CustomerOnboardingScreen> {
 
   final _pages = const [
     _OnboardingPage(
-      icon: Icons.restaurant_rounded,
-      title: 'Discover Local Restaurants',
-      subtitle: 'Browse hundreds of restaurants and cuisines near you. From shawarma to pizza, everything is just a tap away.',
-      color: Color(0xFFFF6B35),
-    ),
-    _OnboardingPage(
       icon: Icons.delivery_dining_rounded,
-      title: 'Fast & Reliable Delivery',
-      subtitle: 'Real-time tracking, accurate ETAs, and professional drivers bring your order to your door.',
+      title: 'Anything Delivered',
+      subtitle: 'Need medicine from the pharmacy? A package picked up? Anything you need, delivered to your door.',
       color: Color(0xFF2EC4B6),
     ),
     _OnboardingPage(
-      icon: Icons.storefront_rounded,
-      title: 'More Than Food',
-      subtitle: 'Order groceries, pharmacy items, and anything else you need. TayyebGo delivers it all.',
-      color: Color(0xFF9B5DE5),
+      icon: Icons.shopping_bag_rounded,
+      title: 'Order From Anywhere',
+      subtitle: 'Browse local stores, restaurants, and shops. Order food, groceries, or anything else — all in one app.',
+      color: Color(0xFFFF6B35),
     ),
     _OnboardingPage(
-      icon: Icons.payments_rounded,
-      title: 'Easy & Secure Payments',
-      subtitle: 'Pay with card, cash, or digital wallet. Split bills, tip drivers, and manage everything in one place.',
-      color: Color(0xFFF72585),
+      icon: Icons.gps_fixed_rounded,
+      title: 'Track Everything',
+      subtitle: 'Watch your delivery in real-time on the map. Know exactly when it arrives with accurate ETAs.',
+      color: Color(0xFF9B5DE5),
     ),
   ];
 

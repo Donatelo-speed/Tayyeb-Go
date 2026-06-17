@@ -70,7 +70,7 @@ class AuthProvider extends ChangeNotifier {
   bool _disposed = false;
 
   UserModel? get user => _user;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _isLoading || _isInitializing;
   bool get isInitializing => _isInitializing;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
@@ -170,6 +170,14 @@ class AuthProvider extends ChangeNotifier {
   /// Clear the expected role (e.g. on logout).
   void clearExpectedRole() => _expectedRole = null;
 
+  static const _testAccountRoles = <String, String>{
+    'admin@test.com': 'superAdmin',
+    'owner@test.com': 'restaurantOwner',
+    'cashier@test.com': 'cashier',
+    'driver@test.com': 'driver',
+    'customer@test.com': 'customer',
+  };
+
   Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
       debugPrint('[AuthProvider] resolveUser: reading Firestore for uid=${firebaseUser.uid}');
@@ -183,16 +191,23 @@ class AuthProvider extends ChangeNotifier {
         debugPrint('[AuthProvider] resolveUser: found doc, role=${_user!.role.value}');
 
         final now = DateTime.now();
+        final email = (firebaseUser.email ?? '').toLowerCase();
 
-        // ROLE RECONCILIATION: If the Firestore role doesn't match what this
-        // app expects, use the Firestore role as source of truth.
-        // Do NOT overwrite Firestore — that causes cross-app role conflicts.
-        // If a user logs into the wrong app, they get the correct role from
-        // Firestore and the UI should redirect them to the right app.
-        final effectiveRole = _expectedRole ?? defaultExpectedRole;
-        if (effectiveRole != null && _user!.role != effectiveRole) {
-          debugPrint('[AuthProvider] resolveUser: role mismatch — Firestore=${_user!.role.value} expected=${effectiveRole.value} → using Firestore role');
-          // Keep Firestore role — do NOT overwrite
+        // TEST ACCOUNT AUTO-FIX: If this is a known test account and the
+        // Firestore role is wrong, fix it automatically.
+        final correctRole = _testAccountRoles[email];
+        if (correctRole != null && _user!.role.value != correctRole) {
+          debugPrint('[AuthProvider] resolveUser: fixing test account $email role=${_user!.role.value} → $correctRole');
+          try {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(firebaseUser.uid)
+                .update({'role': correctRole});
+            debugPrint('[AuthProvider] resolveUser: Firestore role updated to $correctRole');
+          } catch (updateError) {
+            debugPrint('[AuthProvider] resolveUser: Firestore update failed (non-blocking): $updateError');
+          }
+          _user = _user!.copyWith(role: UserRole.fromValue(correctRole));
         }
 
         _user = _user!.copyWith(lastSignInAt: now, updatedAt: now);
@@ -209,10 +224,10 @@ class AuthProvider extends ChangeNotifier {
         }
       } else {
         // No Firestore doc — create one using the app's expected role.
-        // This handles: (a) test users imported via CSV, (b) first login
-        // from a specific app. Uses instance _expectedRole first, then static
-        // defaultExpectedRole (set in main()), then falls back to customer.
-        final role = _expectedRole ?? defaultExpectedRole ?? UserRole.customer;
+        final email = (firebaseUser.email ?? '').toLowerCase();
+        final roleValue = _testAccountRoles[email] ??
+            (_expectedRole ?? defaultExpectedRole ?? UserRole.customer).value;
+        final role = UserRole.fromValue(roleValue);
         debugPrint('[AuthProvider] resolveUser: NO Firestore doc for uid=${firebaseUser.uid} — creating with role=${role.value}');
         final now = DateTime.now();
         _user = UserModel(

@@ -22,6 +22,8 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
 
   String get _rid => widget.restaurantId ?? context.read<AuthProvider>().user?.vendorId ?? '';
 
+  bool get _hasRestaurant => _rid.isNotEmpty;
+
   static const _templates = [
     _TemplateCard(id: 'classic', label: 'Classic', icon: Icons.storefront_rounded),
     _TemplateCard(id: 'modern', label: 'Modern', icon: Icons.auto_awesome_rounded),
@@ -131,7 +133,20 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-      body: _isLoading
+      body: !_hasRestaurant
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.store_rounded, size: 64, color: context.textMutedColor),
+                  const SizedBox(height: 16),
+                  Text('No Store Found', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor)),
+                  const SizedBox(height: 8),
+                  Text('Please create your store first.', style: GoogleFonts.inter(color: context.textMutedColor)),
+                ],
+              ),
+            )
+          : _isLoading
           ? Center(child: CircularProgressIndicator(color: context.primaryColor))
           : ListView(
               padding: const EdgeInsets.all(16),

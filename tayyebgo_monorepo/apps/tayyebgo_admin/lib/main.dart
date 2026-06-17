@@ -18,6 +18,7 @@ void main() async {
     );
     AuthProvider.defaultExpectedRole = UserRole.superAdmin;
     AuthGateService.instance.init();
+    TestAccountSeeder.instance.seedIfNeeded();
     AppLocator.instance.init();
     runApp(const AdminApp());
   } catch (e, s) {

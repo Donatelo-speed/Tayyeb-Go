@@ -1,33 +1,12 @@
 {
   "projects": {
-    "default": "tayyebgo-dev",
-    "dev": "tayyebgo-dev",
-    "staging": "tayyebgo-staging",
-    "prod": "tayyebgo-prod"
+    "default": "tayyebgo"
   },
   "targets": {
-    "tayyebgo-dev": {
+    "tayyebgo": {
       "hosting": {
-        "customer": ["tayyebgo-customer-dev"],
-        "partner": ["tayyebgo-partner-dev"],
-        "driver": ["tayyebgo-driver-dev"],
-        "admin": ["tayyebgo-admin-dev"]
-      }
-    },
-    "tayyebgo-staging": {
-      "hosting": {
-        "customer": ["tayyebgo-customer-staging"],
-        "partner": ["tayyebgo-partner-staging"],
-        "driver": ["tayyebgo-driver-staging"],
-        "admin": ["tayyebgo-admin-staging"]
-      }
-    },
-    "tayyebgo-prod": {
-      "hosting": {
-        "customer": ["tayyebgo-customer"],
-        "partner": ["tayyebgo-partner"],
-        "driver": ["tayyebgo-driver"],
-        "admin": ["tayyebgo-admin"]
+        "website": ["tayyebgo"],
+        "portal": ["tayyebgo-app"]
       }
     }
   }

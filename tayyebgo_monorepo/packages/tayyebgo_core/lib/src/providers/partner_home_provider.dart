@@ -73,6 +73,7 @@ class PartnerHomeProvider extends ChangeNotifier {
   }
 
   Future<void> updateRestaurant(String restaurantId, Map<String, dynamic> data) async {
+    if (restaurantId.isEmpty) return;
     await FirebaseFirestore.instance
         .collection('restaurants')
         .doc(restaurantId)
@@ -80,6 +81,7 @@ class PartnerHomeProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>?> getRestaurant(String restaurantId) async {
+    if (restaurantId.isEmpty) return null;
     final doc = await FirebaseFirestore.instance
         .collection('restaurants')
         .doc(restaurantId)
@@ -88,6 +90,7 @@ class PartnerHomeProvider extends ChangeNotifier {
   }
 
   Future<void> addMenuItem(String restaurantId, Map<String, dynamic> data) async {
+    if (restaurantId.isEmpty) return;
     await FirebaseFirestore.instance.collection('menu_items').add({
       ...data,
       'restaurantId': restaurantId,

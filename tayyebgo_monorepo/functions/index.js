@@ -12,6 +12,12 @@ const {
 const { processPayouts } = require('./payouts');
 const { onSOSEmergency, validateOrderPricing } = require('./safety');
 const { validatePromo } = require('./promos');
+const {
+  logAuditEvent,
+  onUserSensitiveUpdate,
+  onOrderStatusChange,
+  getAuditLog,
+} = require('./audit');
 
 module.exports = {
   onNotificationCreated,
@@ -32,4 +38,8 @@ module.exports = {
   onSOSEmergency,
   validateOrderPricing,
   validatePromo,
+  logAuditEvent,
+  onUserSensitiveUpdate,
+  onOrderStatusChange,
+  getAuditLog,
 };

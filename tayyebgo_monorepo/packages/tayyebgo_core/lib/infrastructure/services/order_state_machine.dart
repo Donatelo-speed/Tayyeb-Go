@@ -1,6 +1,7 @@
 import 'dart:async';
 import '../../domain/enums/order_status.dart';
 import '../../domain/services/i_order_store.dart';
+import '../repositories/firebase_loyalty_repository.dart';
 import 'delivery_earnings_service.dart';
 import 'firebase_order_store.dart';
 import 'push_notification_service.dart';
@@ -144,6 +145,23 @@ class OrderStateMachine {
           );
         } catch (_) {}
       }));
+
+      if (customerId != null && totalAmount != null) {
+        final loyaltyPoints = (totalAmount! * 0.1).round();
+        if (loyaltyPoints > 0) {
+          unawaited(Future(() async {
+            try {
+              await FirebaseLoyaltyRepository.instance.awardPoints(
+                userId: customerId!,
+                points: loyaltyPoints,
+                type: 'earned',
+                description: 'Points for order',
+                orderId: orderId,
+              );
+            } catch (_) {}
+          }));
+        }
+      }
     }
 
     if (customerId != null) {

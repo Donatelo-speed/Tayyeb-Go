@@ -121,6 +121,8 @@ class OrderDetailView extends StatelessWidget {
               _infoRow(context, 'Created', _formatDateTime(createdAt.toDate())),
             ]),
           ],
+          const SizedBox(height: 20),
+          _adminActions(context, orderId: d['id'] as String? ?? orderId, status: status, customerId: d['customerId'] as String? ?? ''),
         ],
       ),
     );
@@ -240,5 +242,143 @@ class OrderDetailView extends StatelessWidget {
 
   String _formatDateTime(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  Widget _adminActions(BuildContext context, {required String orderId, required String status, required String customerId}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.admin_panel_settings_rounded, size: 16, color: context.primaryColor),
+              const SizedBox(width: 6),
+              Text('Admin Actions', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (status == 'pending' || status == 'accepted') ...[
+            _actionButton(
+              context,
+              label: 'Cancel & Refund',
+              icon: Icons.cancel_rounded,
+              color: context.errorColor,
+              onTap: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text('Cancel Order?', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                    content: Text('This will cancel the order and process a refund.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('No')),
+                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Yes', style: TextStyle(color: context.errorColor))),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  try {
+                    await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+                      'status': 'cancelled',
+                      'updatedAt': FieldValue.serverTimestamp(),
+                      'cancelledBy': 'admin',
+                    });
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Order cancelled'), backgroundColor: AppColors.success));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed'), backgroundColor: AppColors.error));
+                    }
+                  }
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (customerId.isNotEmpty) ...[
+            _actionButton(
+              context,
+              label: 'Block Customer',
+              icon: Icons.block_rounded,
+              color: context.errorColor,
+              onTap: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text('Block Customer?', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                    content: Text('This will block this customer from placing new orders.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('No')),
+                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Block', style: TextStyle(color: context.errorColor))),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  try {
+                    await FirebaseFirestore.instance.collection('users').doc(customerId).update({
+                      'isBlocked': true,
+                      'blockedAt': FieldValue.serverTimestamp(),
+                    });
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Customer blocked'), backgroundColor: AppColors.success));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed'), backgroundColor: AppColors.error));
+                    }
+                  }
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            _actionButton(
+              context,
+              label: 'Flag for Review',
+              icon: Icons.flag_rounded,
+              color: context.warningColor,
+              onTap: () async {
+                try {
+                  await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+                    'flaggedForReview': true,
+                    'flaggedAt': FieldValue.serverTimestamp(),
+                    'flaggedBy': 'admin',
+                  });
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Order flagged for review'), backgroundColor: AppColors.success));
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed'), backgroundColor: AppColors.error));
+                  }
+                }
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton(BuildContext context, {required String label, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 18, color: color),
+        label: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: color)),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: color.withValues(alpha: 0.3)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          alignment: Alignment.centerLeft,
+        ),
+      ),
+    );
   }
 }

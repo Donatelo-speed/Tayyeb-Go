@@ -26,6 +26,7 @@ void main() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     AuthProvider.defaultExpectedRole = UserRole.driver;
     AuthGateService.instance.init();
+    TestAccountSeeder.instance.seedIfNeeded();
     AppLocator.instance.init();
     runApp(const DriverApp());
   } catch (e, s) {
