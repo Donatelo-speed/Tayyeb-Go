@@ -36,6 +36,7 @@ export 'domain/entities/zone.dart';
 
 export 'src/providers/auth_provider.dart';
 export 'src/providers/cart_provider.dart';
+export 'src/providers/guest_mode_provider.dart';
 export 'src/providers/locale_provider.dart';
 export 'src/localization/app_localizations.dart';
 export 'src/localization/localization_extension.dart';
@@ -85,6 +86,7 @@ export 'infrastructure/services/order_state_machine.dart';
 export 'infrastructure/services/skill_execution_engine.dart';
 export 'src/services/auth_gate.dart';
 export 'src/services/auth_listenable.dart';
+export 'src/services/guest_mode_service.dart';
 export 'src/services/test_account_seeder.dart';
 export 'src/widgets/order_status_badge.dart';
 export 'src/widgets/shimmer_loading.dart';
@@ -208,6 +210,7 @@ export 'infrastructure/services/eta_service.dart';
 export 'infrastructure/services/notification_templates.dart';
 export 'infrastructure/services/order_placement_service.dart';
 export 'infrastructure/services/push_notification_service.dart';
+export 'infrastructure/services/notification_handler.dart';
 export 'infrastructure/services/fraud_scoring_service.dart';
 export 'infrastructure/services/promo_abuse_service.dart';
 export 'infrastructure/services/device_fingerprint_service.dart';
@@ -247,3 +250,26 @@ export 'presentation/shared_widgets/tg_design_system.dart'
         TGPrice,
         TGDeliveryBadge,
         TGUserAvatar;
+
+// Master Vision V1 - New Features
+export 'src/services/reorder_service.dart';
+export 'src/providers/reorder_provider.dart';
+export 'src/services/offline_sync_service.dart';
+export 'src/services/sync_queue.dart';
+export 'src/providers/offline_sync_provider.dart';
+export 'src/localization/l10n_en.dart';
+export 'src/localization/l10n_ar.dart';
+export 'src/theme/text_direction_helper.dart';
+export 'src/models/ad_campaign_model.dart';
+export 'src/services/ad_service.dart';
+export 'src/providers/ad_provider.dart';
+export 'src/models/driver_subscription_model.dart';
+export 'src/services/driver_subscription_service.dart';
+export 'src/providers/driver_subscription_provider.dart';
+export 'src/models/partner_subscription_model.dart';
+export 'src/services/partner_subscription_service.dart';
+export 'src/providers/partner_subscription_provider.dart';
+export 'src/services/customer_ai_service.dart';
+export 'src/providers/customer_ai_provider.dart';
+export 'src/services/delivery_fee_service.dart';
+export 'src/providers/delivery_fee_provider.dart';

@@ -1,246 +1,655 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'l10n_en.dart';
+import 'l10n_ar.dart';
 
-/// Comprehensive localization for TayyebGo — supports English and Arabic.
+enum AppLocale {
+  en,
+  ar,
+}
+
+extension AppLocaleExtension on AppLocale {
+  Locale get locale {
+    switch (this) {
+      case AppLocale.en:
+        return const Locale('en', 'US');
+      case AppLocale.ar:
+        return const Locale('ar', 'SA');
+    }
+  }
+
+  String get languageName {
+    switch (this) {
+      case AppLocale.en:
+        return 'English';
+      case AppLocale.ar:
+        return 'العربية';
+    }
+  }
+
+  bool get isRtl => this == AppLocale.ar;
+}
+
 class AppLocalizations {
-  final Locale locale;
-  AppLocalizations(this.locale);
+  AppLocalizations._();
+
+  static AppLocalizations? _current;
+  static AppLocale _currentLocale = AppLocale.en;
+
+  static AppLocalizations get current {
+    _current ??= AppLocalizations._();
+    return _current!;
+  }
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+    return Localizations.of<AppLocalizations>(context, AppLocalizations) ?? current;
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
-  static const List<Locale> supportedLocales = [
-    Locale('en'),
-    Locale('ar'),
-  ];
+  static void setLocale(AppLocale locale) {
+    _currentLocale = locale;
+    _current = null;
+  }
 
-  bool get isArabic => locale.languageCode == 'ar';
+  static AppLocale get currentLocale => _currentLocale;
 
-  // ─── Navigation ───
-  String get home => _t('Home', 'الرئيسية');
-  String get explore => _t('Explore', 'استكشف');
-  String get orders => _t('Orders', 'الطلبات');
-  String get profile => _t('Profile', 'الملف الشخصي');
-  String get settings => _t('Settings', 'الإعدادات');
-  String get wallet => _t('Wallet', 'المحفظة');
-  String get notifications => _t('Notifications', 'الإشعارات');
-  String get helpSupport => _t('Help & Support', 'المساعدة والدعم');
+  Object get _strings {
+    switch (_currentLocale) {
+      case AppLocale.en:
+        return L10nEn.instance;
+      case AppLocale.ar:
+        return L10nAr.instance;
+    }
+  }
 
-  // ─── Auth ───
-  String get login => _t('Login', 'تسجيل الدخول');
-  String get signup => _t('Sign Up', 'إنشاء حساب');
-  String get logout => _t('Logout', 'تسجيل الخروج');
-  String get email => _t('Email', 'البريد الإلكتروني');
-  String get password => _t('Password', 'كلمة المرور');
-  String get confirmPassword => _t('Confirm Password', 'تأكيد كلمة المرور');
-  String get phoneNumber => _t('Phone Number', 'رقم الهاتف');
-  String get fullName => _t('Full Name', 'الاسم الكامل');
-  String get forgotPassword => _t('Forgot Password', 'نسيت كلمة المرور');
-  String get orContinueWith => _t('Or continue with', 'أو تابع باستخدام');
-  String get google => _t('Google', 'جوجل');
-  String get apple => _t('Apple', 'آبل');
-  String get rememberMe => _t('Remember Me', 'تذكرني');
-  String get dontHaveAccount => _t("Don't have an account?", 'ليس لديك حساب؟');
-  String get alreadyHaveAccount => _t('Already have an account?', 'لديك حساب بالفعل؟');
-  String get signUpWith => _t('Sign up with', 'سجّل باستخدام');
-  String get createPassword => _t('Create a password', 'أنشئ كلمة مرور');
-  String get termsAgree => _t('I agree to the Terms & Conditions and Privacy Policy', 'أوافق على الشروط والأحكام وسياسة الخصوصية');
-  String get loginButton => _t('LOG IN', 'تسجيل الدخول');
-  String get signupButton => _t('SIGN UP', 'إنشاء حساب');
+  L10nEn get en => L10nEn.instance;
+  L10nAr get ar => L10nAr.instance;
 
-  // ─── Cart & Checkout ───
-  String get cart => _t('Cart', 'سلة التسوق');
-  String get checkout => _t('Checkout', 'الدفع');
-  String get addItem => _t('Add to Cart', 'أضف إلى السلة');
-  String get total => _t('Total', 'المجموع');
-  String get subtotal => _t('Subtotal', 'المجموع الفرعي');
-  String get deliveryFee => _t('Delivery Fee', 'رسوم التوصيل');
-  String get tip => _t('Tip', 'بقشيش');
-  String get promoCode => _t('Promo Code', 'كود الخصم');
-  String get apply => _t('Apply', 'تطبيق');
-  String get placeOrder => _t('Place Order', 'تأكيد الطلب');
-  String get paymentMethod => _t('Payment Method', 'طريقة الدفع');
-  String get cashOnDelivery => _t('Cash on Delivery', 'الدفع عند الاستلام');
-  String get creditCard => _t('Credit Card', 'بطاقة ائتمان');
-  String get walletPay => _t('Wallet', 'المحفظة');
-  String get orderPlaced => _t('Order Placed!', 'تم الطلب!');
-  String get orderConfirmed => _t('Order Confirmed', 'تم تأكيد الطلب');
-  String get preparing => _t('Preparing', 'جاري التحضير');
-  String get onTheWay => _t('On the Way', 'في الطريق');
-  String get delivered => _t('Delivered', 'تم التوصيل');
-  String get scheduleOrder => _t('Schedule Order', 'جدولة الطلب');
-  String get selectTime => _t('Select Time', 'اختر الوقت');
-  String get asap => _t('ASAP', 'في أسرع وقت');
-  String get scheduled => _t('Scheduled', 'مجدول');
+  String get appName => _strings.appName;
+  String get ok => _strings.ok;
+  String get cancel => _strings.cancel;
+  String get save => _strings.save;
+  String get delete => _strings.delete;
+  String get edit => _strings.edit;
+  String get close => _strings.close;
+  String get done => _strings.done;
+  String get yes => _strings.yes;
+  String get no => _strings.no;
+  String get back => _strings.back;
+  String get next => _strings.next;
+  String get continue_ => _strings.continue_;
+  String get confirm => _strings.confirm;
+  String get submit => _strings.submit;
+  String get retry => _strings.retry;
+  String get loading => _strings.loading;
+  String get noResults => _strings.noResults;
+  String get required_ => _strings.required_;
+  String get optional => _strings.optional;
+  String get search => _strings.search;
+  String get filter => _strings.filter;
+  String get sort => _strings.sort;
+  String get apply => _strings.apply;
+  String get reset => _strings.reset;
+  String get selectAll => _strings.selectAll;
+  String get deselectAll => _strings.deselectAll;
+  String get share => _strings.share;
+  String get copy => _strings.copy;
+  String get copied => _strings.copied;
+  String get viewAll => _strings.viewAll;
+  String get seeMore => _strings.seeMore;
+  String get seeLess => _strings.seeLess;
+  String get showMap => _strings.showMap;
+  String get hideMap => _strings.hideMap;
 
-  // ─── Delivery ───
-  String get trackOrder => _t('Track Order', 'تتبع الطلب');
-  String get driverArriving => _t('Driver is on the way', 'السائق في الطريق');
-  String get estimatedArrival => _t('Estimated Arrival', 'الوقت المتوقع للوصول');
-  String get callDriver => _t('Call Driver', 'اتصل بالسائق');
-  String get messageDriver => _t('Message Driver', 'راسل السائق');
-  String get cancelOrder => _t('Cancel Order', 'إلغاء الطلب');
-  String get rateDriver => _t('Rate Driver', 'قيّم السائق');
-  String get rateStore => _t('Rate Store', 'قيّم المتجر');
+  // Auth
+  String get login => _strings.login;
+  String get loginTitle => _strings.loginTitle;
+  String get loginSubtitle => _strings.loginSubtitle;
+  String get signup => _strings.signup;
+  String get signupTitle => _strings.signupTitle;
+  String get signupSubtitle => _strings.signupSubtitle;
+  String get logout => _strings.logout;
+  String get logoutConfirm => _strings.logoutConfirm;
+  String get email => _strings.email;
+  String get emailHint => _strings.emailHint;
+  String get password => _strings.password;
+  String get passwordHint => _strings.passwordHint;
+  String get confirmPassword => _strings.confirmPassword;
+  String get confirmPasswordHint => _strings.confirmPasswordHint;
+  String get forgotPassword => _strings.forgotPassword;
+  String get resetPassword => _strings.resetPassword;
+  String get resetPasswordSubtitle => _strings.resetPasswordSubtitle;
+  String get resetPasswordSent => _strings.resetPasswordSent;
+  String get orContinueWith => _strings.orContinueWith;
+  String get continueWithGoogle => _strings.continueWithGoogle;
+  String get continueWithApple => _strings.continueWithApple;
+  String get continueWithFacebook => _strings.continueWithFacebook;
+  String get dontHaveAccount => _strings.dontHaveAccount;
+  String get alreadyHaveAccount => _strings.alreadyHaveAccount;
+  String get createAccount => _strings.createAccount;
+  String get signIn => _strings.signIn;
+  String get phone => _strings.phone;
+  String get phoneHint => _strings.phoneHint;
+  String get phoneVerification => _strings.phoneVerification;
+  String get enterOtp => _strings.enterOtp;
+  String get resendCode => _strings.resendCode;
+  String get verify => _strings.verify;
+  String get invalidEmail => _strings.invalidEmail;
+  String get invalidPassword => _strings.invalidPassword;
+  String get passwordMismatch => _strings.passwordMismatch;
+  String get fieldRequired => _strings.fieldRequired;
+  String get invalidPhone => _strings.invalidPhone;
+  String get invalidOtp => _strings.invalidOtp;
+  String get accountCreated => _strings.accountCreated;
+  String get welcomeBack => _strings.welcomeBack;
 
-  // ─── Addresses ───
-  String get deliveryAddress => _t('Delivery Address', 'عنوان التوصيل');
-  String get addAddress => _t('Add Address', 'إضافة عنوان');
-  String get editAddress => _t('Edit Address', 'تعديل العنوان');
-  String get homeAddress => _t('Home', 'المنزل');
-  String get workAddress => _t('Work', 'العمل');
-  String get other => _t('Other', 'أخرى');
-  String get savedAddresses => _t('Saved Addresses', 'العناوين المحفوظة');
-  String get searchAddress => _t('Search address...', 'ابحث عن عنوان...');
+  // Navigation
+  String get home => _strings.home;
+  String get explore => _strings.explore;
+  String get categories => _strings.categories;
+  String get orders => _strings.orders;
+  String get cart => _strings.cart;
+  String get profile => _strings.profile;
+  String get settings => _strings.settings;
+  String get notifications => _strings.notifications;
+  String get messages => _strings.messages;
+  String get favorites => _strings.favorites;
+  String get addresses => _strings.addresses;
+  String get paymentMethods => _strings.paymentMethods;
+  String get helpSupport => _strings.helpSupport;
+  String get about => _strings.about;
+  String get terms => _strings.terms;
+  String get privacy => _strings.privacy;
 
-  // ─── Orders ───
-  String get currentOrders => _t('Current Orders', 'الطلبات الحالية');
-  String get pastOrders => _t('Past Orders', 'الطلبات السابقة');
-  String get orderDetails => _t('Order Details', 'تفاصيل الطلب');
-  String get reorder => _t('Reorder', 'إعادة الطلب');
-  String get noOrdersYet => _t('No orders yet', 'لا توجد طلبات بعد');
-  String get orderNumber => _t('Order Number', 'رقم الطلب');
-  String get orderDate => _t('Order Date', 'تاريخ الطلب');
+  // Home
+  String get homeTitle => _strings.homeTitle;
+  String get homeSubtitle => _strings.homeSubtitle;
+  String get nearbyRestaurants => _strings.nearbyRestaurants;
+  String get popularNearYou => _strings.popularNearYou;
+  String get trendingNow => _strings.trendingNow;
+  String get recommendedForYou => _strings.recommendedForYou;
+  String get recentlyOrdered => _strings.recentlyOrdered;
+  String get newOnTayyebGo => _strings.newOnTayyebGo;
+  String get featuredRestaurants => _strings.featuredRestaurants;
+  String get topPicks => _strings.topPicks;
+  String get deals => _strings.deals;
+  String get offers => _strings.offers;
+  String get coupons => _strings.coupons;
+  String get viewDeals => _strings.viewDeals;
+  String get promoCode => _strings.promoCode;
+  String get promoHint => _strings.promoHint;
+  String get applyPromo => _strings.applyPromo;
+  String get promoApplied => _strings.promoApplied;
+  String get promoInvalid => _strings.promoInvalid;
+  String get promoExpired => _strings.promoExpired;
+  String get whatsNew => _strings.whatsNew;
+  String get goodMorning => _strings.goodMorning;
+  String get goodAfternoon => _strings.goodAfternoon;
+  String get goodEvening => _strings.goodEvening;
 
-  // ─── Stores ───
-  String get restaurants => _t('Restaurants', 'المطاعم');
-  String get stores => _t('Stores', 'المتاجر');
-  String get menu => _t('Menu', 'القائمة');
-  String get categories => _t('Categories', 'الفئات');
-  String get popularItems => _t('Popular Items', 'الأصناف الشائعة');
-  String get allItems => _t('All Items', 'جميع الأصناف');
-  String get openNow => _t('Open Now', 'مفتوح الآن');
-  String get closed => _t('Closed', 'مغلق');
-  String get deliveryTime => _t('Delivery Time', 'وقت التوصيل');
-  String get minOrder => _t('Min. Order', 'الحد الأدنى للطلب');
-  String get rating => _t('Rating', 'التقييم');
-  String get reviews => _t('Reviews', 'التقييمات');
-  String get writeReview => _t('Write a Review', 'اكتب تقييم');
-  String get noReviewsYet => _t('No reviews yet', 'لا توجد تقييمات بعد');
+  // Categories
+  String get allCategories => _strings.allCategories;
+  String get food => _strings.food;
+  String get groceries => _strings.groceries;
+  String get drinks => _strings.drinks;
+  String get desserts => _strings.desserts;
+  String get snacks => _strings.snacks;
+  String get pizza => _strings.pizza;
+  String get burgers => _strings.burgers;
+  String get sushi => _strings.sushi;
+  String get chinese => _strings.chinese;
+  String get japanese => _strings.japanese;
+  String get korean => _strings.korean;
+  String get thai => _strings.thai;
+  String get indian => _strings.indian;
+  String get mexican => _strings.mexican;
+  String get italian => _strings.italian;
+  String get arabic => _strings.arabic;
+  String get american => _strings.american;
+  String get seafood => _strings.seafood;
+  String get chicken => _strings.chicken;
+  String get vegan => _strings.vegan;
+  String get vegetarian => _strings.vegetarian;
+  String get healthy => _strings.healthy;
+  String get fastfood => _strings.fastfood;
+  String get coffee => _strings.coffee;
+  String get breakfast => _strings.breakfast;
+  String get lunch => _strings.lunch;
+  String get dinner => _strings.dinner;
+  String get lateNight => _strings.lateNight;
 
-  // ─── Wallet ───
-  String get balance => _t('Balance', 'الرصيد');
-  String get topUp => _t('Top Up', 'شحن الرصيد');
-  String get sendMoney => _t('Send', 'إرسال');
-  String get receiveMoney => _t('Receive', 'استلام');
-  String get transactionHistory => _t('Transaction History', 'سجل المعاملات');
-  String get noTransactions => _t('No transactions yet', 'لا توجد معاملات بعد');
+  // Restaurant
+  String get restaurant => _strings.restaurant;
+  String get restaurants => _strings.restaurants;
+  String get viewMenu => _strings.viewMenu;
+  String get rating => _strings.rating;
+  String get ratings => _strings.ratings;
+  String get reviews => _strings.reviews;
+  String get deliveryFee => _strings.deliveryFee;
+  String get freeDelivery => _strings.freeDelivery;
+  String get deliveryTime => _strings.deliveryTime;
+  String get minOrder => _strings.minOrder;
+  String get openingHours => _strings.openingHours;
+  String get closed => _strings.closed;
+  String get openNow => _strings.openNow;
+  String get opensAt => _strings.opensAt;
+  String get closesAt => _strings.closesAt;
+  String get isOpen => _strings.isOpen;
+  String get isClosed => _strings.isClosed;
+  String get currentlyClosed => _strings.currentlyClosed;
+  String get openToday => _strings.openToday;
+  String get openUntil => _strings.openUntil;
+  String get viewAllReviews => _strings.viewAllReviews;
+  String get writeReview => _strings.writeReview;
+  String get noReviewsYet => _strings.noReviewsYet;
+  String get restaurantInfo => _strings.restaurantInfo;
+  String get description => _strings.description;
+  String get featured => _strings.featured;
+  String get popular => _strings.popular;
+  String get nearby => _strings.nearby;
+  String get topRated => _strings.topRated;
+  String get sortByName => _strings.sortByName;
+  String get sortByRating => _strings.sortByRating;
+  String get sortByDistance => _strings.sortByDistance;
+  String get sortByPrice => _strings.sortByPrice;
 
-  // ─── Profile ───
-  String get editProfile => _t('Edit Profile', 'تعديل الملف الشخصي');
-  String get savedCards => _t('Saved Cards', 'البطاقات المحفوظة');
-  String get language => _t('Language', 'اللغة');
-  String get english => _t('English', 'English');
-  String get arabic => _t('Arabic', 'العربية');
-  String get darkMode => _t('Dark Mode', 'الوضع الداكن');
-  String get about => _t('About', 'حول');
-  String get privacyPolicy => _t('Privacy Policy', 'سياسة الخصوصية');
-  String get termsConditions => _t('Terms & Conditions', 'الشروط والأحكام');
-  String get deleteAccount => _t('Delete Account', 'حذف الحساب');
+  // Menu
+  String get menu => _strings.menu;
+  String get allItems => _strings.allItems;
+  String get popularItems => _strings.popularItems;
+  String get specialOffers => _strings.specialOffers;
+  String get bestSellers => _strings.bestSellers;
+  String get newItems => _strings.newItems;
+  String get seasonal => _strings.seasonal;
+  String get comboMeals => _strings.comboMeals;
+  String get addOns => _strings.addOns;
+  String get sides => _strings.sides;
+  String get beverages => _strings.beverages;
+  String get viewDetails => _strings.viewDetails;
+  String get price => _strings.price;
+  String get perPerson => _strings.perPerson;
+  String get calories => _strings.calories;
+  String get prepTime => _strings.prepTime;
+  String get spiceLevel => _strings.spiceLevel;
+  String get mild => _strings.mild;
+  String get medium => _strings.medium;
+  String get spicy => _strings.spicy;
+  String get verySpicy => _strings.verySpicy;
+  String get ingredients => _strings.ingredients;
+  String get nutritionInfo => _strings.nutritionInfo;
+  String get allergens => _strings.allergens;
+  String get suitableFor => _strings.suitableFor;
+  String get glutenFree => _strings.glutenFree;
+  String get dairyFree => _strings.dairyFree;
+  String get halal => _strings.halal;
+  String get kosher => _strings.kosher;
+  String get noItemsAvailable => _strings.noItemsAvailable;
 
-  // ─── Driver ───
-  String get online => _t('Online', 'متصل');
-  String get offline => _t('Offline', 'غير متصل');
-  String get acceptOrder => _t('Accept Order', 'قبول الطلب');
-  String get rejectOrder => _t('Reject Order', 'رفض الطلب');
-  String get pickUp => _t('Pick Up', 'الاستلام');
-  String get dropOff => _t('Drop Off', 'التسليم');
-  String get earnings => _t('Earnings', 'الأرباح');
-  String get dailyEarnings => _t('Daily Earnings', 'الأرباح اليومية');
-  String get totalEarnings => _t('Total Earnings', 'إجمالي الأرباح');
-  String get completedDeliveries => _t('Completed Deliveries', 'التوصيلات المكتملة');
-  String get vehicleInfo => _t('Vehicle Info', 'معلومات المركبة');
-  String get documents => _t('Documents', 'الوثائق');
-  String get goOnline => _t('Go Online', 'اذهب لوضع الاتصال');
-  String get goOffline => _t('Go Offline', 'اذهب لوضع عدم الاتصال');
-  String get navigation => _t('Navigation', 'الملاحة');
-  String get arrived => _t('Arrived', 'وصلت');
+  // Cart
+  String get myCart => _strings.myCart;
+  String get emptyCart => _strings.emptyCart;
+  String get emptyCartSubtitle => _strings.emptyCartSubtitle;
+  String get browseMenu => _strings.browseMenu;
+  String get addItem => _strings.addItem;
+  String get removeItem => _strings.removeItem;
+  String get updateQuantity => _strings.updateQuantity;
+  String get quantity => _strings.quantity;
+  String get increaseQuantity => _strings.increaseQuantity;
+  String get decreaseQuantity => _strings.decreaseQuantity;
+  String get itemAdded => _strings.itemAdded;
+  String get itemRemoved => _strings.itemRemoved;
+  String get cartCleared => _strings.cartCleared;
+  String get clearCart => _strings.clearCart;
+  String get clearCartConfirm => _strings.clearCartConfirm;
+  String get specialInstructions => _strings.specialInstructions;
+  String get specialInstructionsHint => _strings.specialInstructionsHint;
+  String get addToCart => _strings.addToCart;
+  String get goToCart => _strings.goToCart;
+  String get continueBrowsing => _strings.continueBrowsing;
 
-  // ─── Partner ───
-  String get dashboard => _t('Dashboard', 'لوحة التحكم');
-  String get storeManagement => _t('Store Management', 'إدارة المتجر');
-  String get menuManagement => _t('Menu Management', 'إدارة القائمة');
-  String get activeOrders => _t('Active Orders', 'الطلبات النشطة');
-  String get orderHistory => _t('Order History', 'سجل الطلبات');
-  String get analytics => _t('Analytics', 'التحليلات');
-  String get promotions => _t('Promotions', 'الترويجات');
-  String get staff => _t('Staff', 'الموظفون');
-  String get storeSettings => _t('Store Settings', 'إعدادات المتجر');
-  String get storeStatus => _t('Store Status', 'حالة المتجر');
-  String get openStore => _t('Open Store', 'فتح المتجر');
-  String get closeStore => _t('Close Store', 'إغلاق المتجر');
+  // Checkout
+  String get checkout => _strings.checkout;
+  String get placeOrder => _strings.placeOrder;
+  String get orderSummary => _strings.orderSummary;
+  String get subtotal => _strings.subtotal;
+  String get deliveryFeeLabel => _strings.deliveryFeeLabel;
+  String get serviceFee => _strings.serviceFee;
+  String get tax => _strings.tax;
+  String get tip => _strings.tip;
+  String get addTip => _strings.addTip;
+  String get tipSuggested => _strings.tipSuggested;
+  String get total => _strings.total;
+  String get estimatedTotal => _strings.estimatedTotal;
+  String get payNow => _strings.payNow;
+  String get payOnDelivery => _strings.payOnDelivery;
+  String get paymentMethod => _strings.paymentMethod;
+  String get selectPaymentMethod => _strings.selectPaymentMethod;
+  String get addPaymentMethod => _strings.addPaymentMethod;
+  String get creditCard => _strings.creditCard;
+  String get debitCard => _strings.debitCard;
+  String get applePay => _strings.applePay;
+  String get googlePay => _strings.googlePay;
+  String get cashOnDelivery => _strings.cashOnDelivery;
+  String get cardNumber => _strings.cardNumber;
+  String get expiryDate => _strings.expiryDate;
+  String get cvv => _strings.cvv;
+  String get cardholderName => _strings.cardholderName;
+  String get billingAddress => _strings.billingAddress;
+  String get saveCard => _strings.saveCard;
+  String get deliveryAddress => _strings.deliveryAddress;
+  String get selectAddress => _strings.selectAddress;
+  String get addAddress => _strings.addAddress;
+  String get editAddress => _strings.editAddress;
+  String get deleteAddress => _strings.deleteAddress;
+  String get noAddresses => _strings.noAddresses;
+  String get setAsDefault => _strings.setAsDefault;
+  String get useCurrentLocation => _strings.useCurrentLocation;
+  String get addressLine1 => _strings.addressLine1;
+  String get addressLine2 => _strings.addressLine2;
+  String get city => _strings.city;
+  String get state => _strings.state;
+  String get zipCode => _strings.zipCode;
+  String get country => _strings.country;
+  String get deliveryInstructions => _strings.deliveryInstructions;
+  String get deliveryInstructionsHint => _strings.deliveryInstructionsHint;
+  String get deliveryAsap => _strings.deliveryAsap;
+  String get scheduleDelivery => _strings.scheduleDelivery;
+  String get selectDate => _strings.selectDate;
+  String get selectTime => _strings.selectTime;
+  String get asap => _strings.asap;
+  String get schedule => _strings.schedule;
+  String get orderPlaced => _strings.orderPlaced;
+  String get orderPlacedSubtitle => _strings.orderPlacedSubtitle;
+  String get orderConfirmation => _strings.orderConfirmation;
+  String get orderNumber => _strings.orderNumber;
+  String get estimatedDelivery => _strings.estimatedDelivery;
+  String get orderPreparing => _strings.orderPreparing;
+  String get orderAccepted => _strings.orderAccepted;
+  String get orderReady => _strings.orderReady;
 
-  // ─── Admin ───
-  String get finance => _t('Finance', 'المالية');
-  String get users => _t('Users', 'المستخدمون');
-  String get drivers => _t('Drivers', 'السائقون');
-  String get partners => _t('Partners', 'الشركاء');
-  String get campaigns => _t('Campaigns', 'الحملات');
-  String get zones => _t('Zones', 'المناطق');
-  String get coupons => _t('Coupons', 'الكوبونات');
-  String get reports => _t('Reports', 'التقارير');
-  String get grossRevenue => _t('Gross Revenue', 'الإيرادات الإجمالية');
-  String get platformCommission => _t('Platform Commission', 'عمولة المنصة');
-  String get refunds => _t('Refunds', 'المبالغ المستردة');
-  String get driverPayouts => _t('Driver Payouts', 'مدفوعات السائقين');
-  String get storePayouts => _t('Store Payouts', 'مدفوعات المتاجر');
+  // Orders
+  String get currentOrders => _strings.currentOrders;
+  String get pastOrders => _strings.pastOrders;
+  String get noOrders => _strings.noOrders;
+  String get noOrdersSubtitle => _strings.noOrdersSubtitle;
+  String get orderDetails => _strings.orderDetails;
+  String get orderStatus => _strings.orderStatus;
+  String get trackOrder => _strings.trackOrder;
+  String get orderReceived => _strings.orderReceived;
+  String get orderConfirmed => _strings.orderConfirmed;
+  String get preparing => _strings.preparing;
+  String get outForDelivery => _strings.outForDelivery;
+  String get delivered => _strings.delivered;
+  String get cancelled => _strings.cancelled;
+  String get refunded => _strings.refunded;
+  String get partiallyRefunded => _strings.partiallyRefunded;
+  String get orderCancelled => _strings.orderCancelled;
+  String get cancelOrder => _strings.cancelOrder;
+  String get cancelOrderConfirm => _strings.cancelOrderConfirm;
+  String get cancelReason => _strings.cancelReason;
+  String get reorder => _strings.reorder;
+  String get reorderConfirm => _strings.reorderConfirm;
+  String get rateOrder => _strings.rateOrder;
+  String get writeReviewHint => _strings.writeReviewHint;
+  String get deliveryRating => _strings.deliveryRating;
+  String get foodRating => _strings.foodRating;
+  String get serviceRating => _strings.serviceRating;
+  String get submitRating => _strings.submitRating;
+  String get thankYouForRating => _strings.thankYouForRating;
+  String get orderAgain => _strings.orderAgain;
+  String get downloadInvoice => _strings.downloadInvoice;
+  String get receipt => _strings.receipt;
+  String get itemizedReceipt => _strings.itemizedReceipt;
+  String get totalSaved => _strings.totalSaved;
+  String get youSaved => _strings.youSaved;
+  String get deliveryPartner => _strings.deliveryPartner;
+  String get callDeliveryPartner => _strings.callDeliveryPartner;
+  String get messageDeliveryPartner => _strings.messageDeliveryPartner;
+  String get tipDeliveryPartner => _strings.tipDeliveryPartner;
 
-  // ─── General ───
-  String get save => _t('Save', 'حفظ');
-  String get cancel => _t('Cancel', 'إلغاء');
-  String get confirm => _t('Confirm', 'تأكيد');
-  String get delete => _t('Delete', 'حذف');
-  String get edit => _t('Edit', 'تعديل');
-  String get add => _t('Add', 'إضافة');
-  String get search => _t('Search', 'بحث');
-  String get filter => _t('Filter', 'تصفية');
-  String get sort => _t('Sort', 'ترتيب');
-  String get loading => _t('Loading...', 'جاري التحميل...');
-  String get error => _t('Error', 'خطأ');
-  String get retry => _t('Retry', 'إعادة المحاولة');
-  String get noResults => _t('No results found', 'لم يتم العثور على نتائج');
-  String get tryAgain => _t('Try Again', 'حاول مرة أخرى');
-  String get somethingWentWrong => _t('Something went wrong', 'حدث خطأ ما');
-  String get required_ => _t('Required', 'مطلوب');
-  String get mandatory => _t('Mandatory', 'إلزامي');
-  String get optional => _t('Optional', 'اختياري');
-  String get next => _t('Next', 'التالي');
-  String get previous => _t('Previous', 'السابق');
-  String get done => _t('Done', 'تم');
-  String get yes => _t('Yes', 'نعم');
-  String get no => _t('No', 'لا');
-  String get ok => _t('OK', 'موافق');
-  String get share => _t('Share', 'مشاركة');
-  String get copy => _t('Copy', 'نسخ');
-  String get copied => _t('Copied', 'تم النسخ');
-  String get close => _t('Close', 'إغلاق');
-  String get back => _t('Back', 'رجوع');
-  String get refresh => _t('Refresh', 'تحديث');
-  String get send => _t('Send', 'إرسال');
-  String get typeMessage => _t('Type a message...', 'اكتب رسالة...');
-  String get today => _t('Today', 'اليوم');
-  String get yesterday => _t('Yesterday', 'أمس');
-  String get min => _t('min', 'دقيقة');
-  String get km => _t('km', 'كم');
-  String get free => _t('Free', 'مجاني');
-  String get comingSoon => _t('Coming Soon', 'قريباً');
-  String get underMaintenance => _t('Under Maintenance', 'تحت الصيانة');
-  String get noInternet => _t('No Internet Connection', 'لا يوجد اتصال بالإنترنت');
-  String get reconnecting => _t('Reconnecting...', 'جاري إعادة الاتصال...');
+  // Profile
+  String get editProfile => _strings.editProfile;
+  String get updateProfile => _strings.updateProfile;
+  String get profileUpdated => _strings.profileUpdated;
+  String get fullName => _strings.fullName;
+  String get nameHint => _strings.nameHint;
+  String get dateOfBirth => _strings.dateOfBirth;
+  String get gender => _strings.gender;
+  String get male => _strings.male;
+  String get female => _strings.female;
+  String get other => _strings.other;
+  String get preferNotToSay => _strings.preferNotToSay;
+  String get changePhoto => _strings.changePhoto;
+  String get removePhoto => _strings.removePhoto;
+  String get takePhoto => _strings.takePhoto;
+  String get chooseFromGallery => _strings.chooseFromGallery;
+  String get accountSettings => _strings.accountSettings;
+  String get changePassword => _strings.changePassword;
+  String get currentPassword => _strings.currentPassword;
+  String get newPassword => _strings.newPassword;
+  String get confirmNewPassword => _strings.confirmNewPassword;
+  String get passwordChanged => _strings.passwordChanged;
+  String get deleteAccount => _strings.deleteAccount;
+  String get deleteAccountConfirm => _strings.deleteAccountConfirm;
+  String get deactivateAccount => _strings.deactivateAccount;
+  String get linkedAccounts => _strings.linkedAccounts;
+  String get google => _strings.google;
+  String get facebook => _strings.facebook;
+  String get apple => _strings.apple;
 
-  String _t(String en, String ar) => locale.languageCode == 'ar' ? ar : en;
+  // Notifications
+  String get notificationPreferences => _strings.notificationPreferences;
+  String get pushNotifications => _strings.pushNotifications;
+  String get emailNotifications => _strings.emailNotifications;
+  String get smsNotifications => _strings.smsNotifications;
+  String get orderUpdates => _strings.orderUpdates;
+  String get promotions => _strings.promotions;
+  String get newRestaurants => _strings.newRestaurants;
+  String get dealsAndOffers => _strings.dealsAndOffers;
+  String get noNotifications => _strings.noNotifications;
+  String get markAllRead => _strings.markAllRead;
+  String get clearAll => _strings.clearAll;
+  String get deleteNotification => _strings.deleteNotification;
+  String get notificationsCleared => _strings.notificationsCleared;
+
+  // Addresses
+  String get homeAddress => _strings.homeAddress;
+  String get workAddress => _strings.workAddress;
+  String get otherAddress => _strings.otherAddress;
+  String get savedAddresses => _strings.savedAddresses;
+  String get addressSaved => _strings.addressSaved;
+  String get addressDeleted => _strings.addressDeleted;
+  String get setDefaultAddress => _strings.setDefaultAddress;
+  String get defaultAddress => _strings.defaultAddress;
+  String get selectOnMap => _strings.selectOnMap;
+  String get confirmLocation => _strings.confirmLocation;
+  String get locationServicesDisabled => _strings.locationServicesDisabled;
+  String get locationPermissionDenied => _strings.locationPermissionDenied;
+
+  // Settings
+  String get appSettings => _strings.appSettings;
+  String get language => _strings.language;
+  String get selectLanguage => _strings.selectLanguage;
+  String get english => _strings.english;
+  String get arabic => _strings.arabic;
+  String get currency => _strings.currency;
+  String get selectCurrency => _strings.selectCurrency;
+  String get usd => _strings.usd;
+  String get sar => _strings.sar;
+  String get aed => _strings.aed;
+  String get egp => _strings.egp;
+  String get theme => _strings.theme;
+  String get lightMode => _strings.lightMode;
+  String get darkMode => _strings.darkMode;
+  String get systemDefault => _strings.systemDefault;
+  String get units => _strings.units;
+  String get metric => _strings.metric;
+  String get imperial => _strings.imperial;
+  String get fontSize => _strings.fontSize;
+  String get small => _strings.small;
+  String get normal => _strings.normal;
+  String get large => _strings.large;
+
+  // Errors
+  String get errorGeneric => _strings.errorGeneric;
+  String get errorNetwork => _strings.errorNetwork;
+  String get errorServer => _strings.errorServer;
+  String get errorTimeout => _strings.errorTimeout;
+  String get errorNotFound => _strings.errorNotFound;
+  String get errorUnauthorized => _strings.errorUnauthorized;
+  String get errorForbidden => _strings.errorForbidden;
+  String get errorBadRequest => _strings.errorBadRequest;
+  String get errorTooManyRequests => _strings.errorTooManyRequests;
+  String get errorPaymentFailed => _strings.errorPaymentFailed;
+  String get errorLocationFailed => _strings.errorLocationFailed;
+  String get errorCamera => _strings.errorCamera;
+  String get errorStorage => _strings.errorStorage;
+  String get errorPhotoLibrary => _strings.errorPhotoLibrary;
+  String get errorUploadFailed => _strings.errorUploadFailed;
+  String get errorOrderFailed => _strings.errorOrderFailed;
+  String get errorReorderFailed => _strings.errorReorderFailed;
+  String get errorRatingFailed => _strings.errorRatingFailed;
+  String get errorProfileUpdateFailed => _strings.errorProfileUpdateFailed;
+  String get errorPasswordChangeFailed => _strings.errorPasswordChangeFailed;
+  String get errorAddressFailed => _strings.errorAddressFailed;
+  String get errorCouponInvalid => _strings.errorCouponInvalid;
+  String get errorCouponExpired => _strings.errorCouponExpired;
+  String get errorMinimumOrder => _strings.errorMinimumOrder;
+  String get errorRestaurantClosed => _strings.errorRestaurantClosed;
+  String get errorItemUnavailable => _strings.errorItemUnavailable;
+  String get errorCartEmpty => _strings.errorCartEmpty;
+  String get errorDeliveryArea => _strings.errorDeliveryArea;
+
+  // Food specific
+  String get popularDishes => _strings.popularDishes;
+  String get dailySpecials => _strings.dailySpecials;
+  String get weekendSpecials => _strings.weekendSpecials;
+  String get kidsMenu => _strings.kidsMenu;
+  String get familyDeals => _strings.familyDeals;
+  String get groupOrders => _strings.groupOrders;
+  String get catering => _strings.catering;
+  String get mealPlans => _strings.mealPlans;
+  String get subscription => _strings.subscription;
+  String get subscribeNow => _strings.subscribeNow;
+  String get manageSubscription => _strings.manageSubscription;
+  String get cancelSubscription => _strings.cancelSubscription;
+  String get subscriptionActive => _strings.subscriptionActive;
+  String get subscriptionCancelled => _strings.subscriptionCancelled;
+  String get pricePerWeek => _strings.pricePerWeek;
+  String get pricePerMonth => _strings.pricePerMonth;
+
+  // Delivery
+  String get deliveryOptions => _strings.deliveryOptions;
+  String get pickup => _strings.pickup;
+  String get pickupTime => _strings.pickupTime;
+  String get pickupReadyAt => _strings.pickupReadyAt;
+  String get selectPickupTime => _strings.selectPickupTime;
+  String get deliveryUnavailable => _strings.deliveryUnavailable;
+  String get pickupAvailable => _strings.pickupAvailable;
+  String get estimatedPickupTime => _strings.estimatedPickupTime;
+  String get deliveryAvailable => _strings.deliveryAvailable;
+  String get expressDelivery => _strings.expressDelivery;
+  String get scheduledDelivery => _strings.scheduledDelivery;
+
+  // Promotions
+  String get referralProgram => _strings.referralProgram;
+  String get referralCode => _strings.referralCode;
+  String get shareReferralCode => _strings.shareReferralCode;
+  String get referralBonus => _strings.referralBonus;
+  String get earnBonus => _strings.earnBonus;
+  String get loyaltyProgram => _strings.loyaltyProgram;
+  String get loyaltyPoints => _strings.loyaltyPoints;
+  String get earnPoints => _strings.earnPoints;
+  String get redeemPoints => _strings.redeemPoints;
+  String get pointsBalance => _strings.pointsBalance;
+  String get pointsExpiring => _strings.pointsExpiring;
+  String get memberSince => _strings.memberSince;
+
+  // General UI
+  String get comingSoon => _strings.comingSoon;
+  String get underMaintenance => _strings.underMaintenance;
+  String get maintenanceSubtitle => _strings.maintenanceSubtitle;
+  String get updateAvailable => _strings.updateAvailable;
+  String get updateNow => _strings.updateNow;
+  String get skipForNow => _strings.skipForNow;
+  String get givePermission => _strings.givePermission;
+  String get enableLocation => _strings.enableLocation;
+  String get selectLanguageTitle => _strings.selectLanguageTitle;
+  String get onboardingTitle1 => _strings.onboardingTitle1;
+  String get onboardingSubtitle1 => _strings.onboardingSubtitle1;
+  String get onboardingTitle2 => _strings.onboardingTitle2;
+  String get onboardingSubtitle2 => _strings.onboardingSubtitle2;
+  String get onboardingTitle3 => _strings.onboardingTitle3;
+  String get onboardingSubtitle3 => _strings.onboardingSubtitle3;
+  String get getStarted => _strings.getStarted;
+  String get swipeToSeeMore => _strings.swipeToSeeMore;
+  String get pullToRefresh => _strings.pullToRefresh;
+  String get tapToRetry => _strings.tapToRetry;
+  String get noInternetConnection => _strings.noInternetConnection;
+  String get tryAgain => _strings.tryAgain;
+  String get connectionRestored => _strings.connectionRestored;
+  String get offlineMode => _strings.offlineMode;
+  String get online => _strings.online;
+  String get offline => _strings.offline;
+  String get version => _strings.version;
+  String get developedBy => _strings.developedBy;
+  String get allRightsReserved => _strings.allRightsReserved;
+
+  // Date and Time
+  String get today => _strings.today;
+  String get yesterday => _strings.yesterday;
+  String get tomorrow => _strings.tomorrow;
+  String get thisWeek => _strings.thisWeek;
+  String get lastWeek => _strings.lastWeek;
+  String get thisMonth => _strings.thisMonth;
+  String get lastMonth => _strings.lastMonth;
+  String get justNow => _strings.justNow;
+  String get minutesAgo => _strings.minutesAgo;
+  String get hoursAgo => _strings.hoursAgo;
+  String get daysAgo => _strings.daysAgo;
+  String get weeksAgo => _strings.weeksAgo;
+  String get monthsAgo => _strings.monthsAgo;
+
+  // Misc
+  String get noFavorites => _strings.noFavorites;
+  String get noFavoritesSubtitle => _strings.noFavoritesSubtitle;
+  String get addToFavorites => _strings.addToFavorites;
+  String get removeFromFavorites => _strings.removeFromFavorites;
+  String get itemSaved => _strings.itemSaved;
+  String get itemRemovedFromFavorites => _strings.itemRemovedFromFavorites;
+  String get contactUs => _strings.contactUs;
+  String get faq => _strings.faq;
+  String get reportIssue => _strings.reportIssue;
+  String get feedback => _strings.feedback;
+  String get rateApp => _strings.rateApp;
+  String get shareApp => _strings.shareApp;
+  String get inviteFriends => _strings.inviteFriends;
+  String get legal => _strings.legal;
+  String get licenses => _strings.licenses;
+  String get openSourceLibraries => _strings.openSourceLibraries;
+  String get accessibility => _strings.accessibility;
+  String get darkModeToggle => _strings.darkModeToggle;
+  String get logoutSuccess => _strings.logoutSuccess;
+  String get accountDeleted => _strings.accountDeleted;
+  String get sessionExpired => _strings.sessionExpired;
+  String get welcomeBackMessage => _strings.welcomeBackMessage;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['en', 'ar'].contains(locale.languageCode);
+  bool isSupported(Locale locale) {
+    return ['en', 'ar'].contains(locale.languageCode);
+  }
 
   @override
-  Future<AppLocalizations> load(Locale locale) async => AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) async {
+    AppLocalizations.setLocale(
+      locale.languageCode == 'ar' ? AppLocale.ar : AppLocale.en,
+    );
+    return AppLocalizations.current;
+  }
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

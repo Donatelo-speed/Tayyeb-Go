@@ -8,6 +8,7 @@ import '../models/product.dart';
 import '../models/modifier.dart';
 import '../models/cart_line_item.dart';
 import '../di/app_locator.dart';
+import '../services/guest_mode_service.dart';
 import '../../domain/entities/zone.dart';
 import '../../domain/value_objects/geo_location.dart';
 import '../../infrastructure/services/pricing_engine.dart';
@@ -17,10 +18,22 @@ const _uuid = Uuid();
 class CartProvider extends ChangeNotifier {
   final Map<String, CartLineItem> _lines = {};
   static const String _prefsKey = 'cart_data';
+  static const String _guestPrefsKey = 'guest_cart';
+  final GuestModeService _guestModeService = GuestModeService();
+  bool _isGuest = false;
 
   CartProvider() {
     _loadFromPrefs();
   }
+
+  bool get isGuest => _isGuest;
+
+  void setGuest(bool value) {
+    _isGuest = value;
+    _loadFromPrefs();
+  }
+
+  String get _activePrefsKey => _isGuest ? _guestPrefsKey : _prefsKey;
 
   String? _restaurantId;
   String? _restaurantName;
@@ -92,13 +105,13 @@ class CartProvider extends ChangeNotifier {
       'delivery_lng': _deliveryLocation?.longitude,
       'is_subscriber': _isSubscriber,
     };
-    await prefs.setString(_prefsKey, jsonEncode(data));
+    await prefs.setString(_activePrefsKey, jsonEncode(data));
   }
 
   Future<void> _loadFromPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_prefsKey);
+      final raw = prefs.getString(_activePrefsKey);
       if (raw == null || raw.isEmpty) return;
       final data = jsonDecode(raw) as Map<String, dynamic>;
       final linesList = data['lines'] as List<dynamic>? ?? [];
@@ -207,6 +220,27 @@ class CartProvider extends ChangeNotifier {
     _commissionPercent = null;
     notifyListeners();
     await _saveToPrefs();
+  }
+
+  Future<String?> mergeGuestCartWithUser(String userId) async {
+    final guestItems = await _guestModeService.mergeGuestCartWithUser(userId);
+    for (final item in guestItems) {
+      final line = CartLineItem.fromJson(item);
+      final existing = _lines.values
+          .where((l) => l.hasSameConfigAs(line.product, line.selectedModifiers))
+          .firstOrNull;
+      if (existing != null) {
+        _lines[existing.lineId] = existing.copyWith(
+          quantity: existing.quantity + line.quantity,
+        );
+      } else {
+        _lines[line.lineId] = line;
+      }
+    }
+    _isGuest = false;
+    notifyListeners();
+    await _saveToPrefs();
+    return null;
   }
 
   Future<String?> applyCoupon(String code, {String? customerId, String? phone}) async {
