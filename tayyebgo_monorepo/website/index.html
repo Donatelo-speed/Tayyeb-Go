@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TayyebGo — Everything Delivered</title>
   <meta name="description" content="TayyebGo delivers food, groceries, pharmacy items, and anything you need — fast, reliable, and local.">
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,7 +18,7 @@
     <div class="container nav-container">
       <a href="/" class="logo">
         <div class="logo-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
         </div>
         <span>TayyebGo</span>
       </a>
@@ -26,12 +28,17 @@
         <a href="#for-drivers">Drivers</a>
         <a href="#for-partners">Partners</a>
         <a href="#pricing">Pricing</a>
+        <a href="#blog">Blog</a>
       </div>
       <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
         <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a>
-        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Create Account</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a>
       </div>
-      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -41,32 +48,145 @@
       <a href="#for-drivers">Drivers</a>
       <a href="#for-partners">Partners</a>
       <a href="#pricing">Pricing</a>
-      <a href="https://tayyebgo-app.web.app/login" class="btn btn-primary" style="margin-top:16px">Sign In</a>
+      <a href="#blog">Blog</a>
+      <div class="mobile-menu-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost btn-full">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-full">Get Started</a>
+      </div>
     </div>
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-badge">🟢 Live in your city</div>
-      <h1 class="hero-title">Everything<br>Delivered.</h1>
-      <p class="hero-subtitle">Food, groceries, pharmacy, and anything you need —<br>delivered to your door in minutes.</p>
-      <div class="hero-actions">
-        <a href="#for-customers" class="btn btn-primary btn-lg">Order Now</a>
-        <a href="#for-partners" class="btn btn-outline btn-lg">Partner With Us</a>
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+    </div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Live in Damascus & beyond
+        </div>
+        <h1 class="hero-title">
+          <span class="hero-line">Everything</span>
+          <span class="hero-line hero-line-gradient">Delivered.</span>
+        </h1>
+        <p class="hero-subtitle">Food, groceries, pharmacy, and anything you need — delivered to your door in minutes.</p>
+        <div class="hero-actions">
+          <a href="#for-customers" class="btn btn-primary btn-lg btn-glow ripple">
+            <span>Order Now</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#for-partners" class="btn btn-glass btn-lg ripple">Partner With Us</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat" data-count="10000">
+            <span class="stat-number">10K+</span>
+            <span class="stat-label">Orders Delivered</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat" data-count="500">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Partner Stores</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat" data-count="200">
+            <span class="stat-number">200+</span>
+            <span class="stat-label">Active Drivers</span>
+          </div>
+        </div>
       </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-number">10K+</span>
-          <span class="stat-label">Orders Delivered</span>
+      <div class="hero-visual">
+        <div class="phone-float">
+          <div class="phone-mockup-hero">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar">
+                <span>9:41</span>
+                <span>●●●</span>
+              </div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">Good evening 👋</div>
+                <div class="mockup-hero-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <span>What do you need?</span>
+                </div>
+                <div class="mockup-hero-cats">
+                  <div class="mockup-cat"><div class="mockup-cat-icon">🍔</div><span>Food</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">🛒</div><span>Grocery</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">💊</div><span>Pharmacy</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">📦</div><span>Any Item</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info">
+                    <strong>Pizza House</strong>
+                    <span>25-35 min · ⭐ 4.8</span>
+                  </div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info">
+                    <strong>Burger King</strong>
+                    <span>15-25 min · ⭐ 4.6</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stat">
-          <span class="stat-number">500+</span>
-          <span class="stat-label">Partner Stores</span>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BADGES -->
+  <section class="trust-section">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Secure Payments</strong>
+            <span>Encrypted & safe</span>
+          </div>
         </div>
-        <div class="stat">
-          <span class="stat-number">200+</span>
-          <span class="stat-label">Active Drivers</span>
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Fast Delivery</strong>
+            <span>Average 20 min</span>
+          </div>
+        </div>
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="trust-text">
+            <strong>24/7 Support</strong>
+            <span>Always here for you</span>
+          </div>
+        </div>
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="trust-text">
+            <strong>Top Rated</strong>
+            <span>4.9 average rating</span>
+          </div>
         </div>
       </div>
     </div>
@@ -77,24 +197,37 @@
     <div class="container">
       <div class="section-header">
         <span class="section-tag">How It Works</span>
-        <h2>Order in 3 simple steps</h2>
-        <p>From your phone to your door in minutes.</p>
+        <h2 class="section-title">Order in 3 simple steps</h2>
+        <p class="section-subtitle">From your phone to your door in minutes.</p>
       </div>
       <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-number">1</div>
+        <div class="step-card glass-card">
+          <div class="step-number">01</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
           <h3>Browse & Choose</h3>
           <p>Explore restaurants, stores, and services near you. Find exactly what you want.</p>
         </div>
-        <div class="step-connector">→</div>
-        <div class="step-card">
-          <div class="step-number">2</div>
+        <div class="step-connector">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-number">02</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          </div>
           <h3>Place Your Order</h3>
           <p>Checkout with cash, Sham Cash, or card. Schedule for later or order now.</p>
         </div>
-        <div class="step-connector">→</div>
-        <div class="step-card">
-          <div class="step-number">3</div>
+        <div class="step-connector">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-number">03</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
           <h3>Track & Receive</h3>
           <p>Watch your driver in real-time. Get notified at every step. Enjoy your order.</p>
         </div>
@@ -102,30 +235,175 @@
     </div>
   </section>
 
+  <!-- APP SHOWCASE -->
+  <section class="section section-dark app-showcase" id="app-showcase">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">The App</span>
+        <h2 class="section-title">See TayyebGo in action</h2>
+        <p class="section-subtitle">A beautifully designed app built for speed and simplicity.</p>
+      </div>
+      <div class="app-screens">
+        <div class="app-screen-wrapper active" data-screen="1">
+          <div class="app-phone">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="app-screen-content">
+                <div class="mockup-hero-greeting">Good evening 👋</div>
+                <div class="mockup-hero-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <span>What do you need?</span>
+                </div>
+                <div class="mockup-hero-cats">
+                  <div class="mockup-cat"><div class="mockup-cat-icon">🍔</div><span>Food</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">🛒</div><span>Grocery</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">💊</div><span>Pharmacy</span></div>
+                  <div class="mockup-cat"><div class="mockup-cat-icon">📦</div><span>Any Item</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info"><strong>Pizza House</strong><span>25-35 min · ⭐ 4.8</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>Burger King</strong><span>15-25 min · ⭐ 4.6</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app-screen-label">Browse Restaurants</div>
+        </div>
+        <div class="app-screen-wrapper" data-screen="2">
+          <div class="app-phone">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="app-screen-content">
+                <div class="mockup-hero-greeting">📍 Order #4521</div>
+                <div class="mockup-hero-card" style="border-left: 3px solid #22C55E;">
+                  <div class="mockup-hero-card-img">👨‍🚀</div>
+                  <div class="mockup-hero-card-info"><strong>Ahmed K.</strong><span>On the way · 1.2 km away</span></div>
+                </div>
+                <div class="track-progress">
+                  <div class="track-bar"><div class="track-fill" style="width:65%"></div></div>
+                  <div class="track-steps">
+                    <span class="active">Confirmed</span>
+                    <span class="active">Preparing</span>
+                    <span class="active">Picked up</span>
+                    <span>Delivered</span>
+                  </div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info"><strong>1x Margherita Pizza</strong><span>SYP 12,000</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>2x Classic Burger</strong><span>SYP 18,000</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app-screen-label">Real-Time Tracking</div>
+        </div>
+        <div class="app-screen-wrapper" data-screen="3">
+          <div class="app-phone">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="app-screen-content">
+                <div class="mockup-hero-greeting">💰 Wallet</div>
+                <div class="wallet-balance">
+                  <span class="wallet-amount">12,500</span>
+                  <span class="wallet-currency">SYP</span>
+                </div>
+                <div class="wallet-actions">
+                  <div class="wallet-btn">Add Funds</div>
+                  <div class="wallet-btn">Withdraw</div>
+                </div>
+                <div class="mockup-hero-greeting" style="font-size:11px;margin-top:12px;">Recent Activity</div>
+                <div class="mockup-hero-card" style="padding:10px 14px;">
+                  <div class="mockup-hero-card-img" style="font-size:18px;">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>-4,500 SYP</strong><span>Burger King · Today</span></div>
+                </div>
+                <div class="mockup-hero-card" style="padding:10px 14px;">
+                  <div class="mockup-hero-card-img" style="font-size:18px;">💳</div>
+                  <div class="mockup-hero-card-info"><strong>+10,000 SYP</strong><span>Top-up · Yesterday</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app-screen-label">Driver Wallet</div>
+        </div>
+      </div>
+      <div class="app-dots">
+        <button class="app-dot active" data-screen="1" aria-label="Screen 1"></button>
+        <button class="app-dot" data-screen="2" aria-label="Screen 2"></button>
+        <button class="app-dot" data-screen="3" aria-label="Screen 3"></button>
+      </div>
+    </div>
+  </section>
+
   <!-- FOR CUSTOMERS -->
-  <section class="section section-dark" id="for-customers">
+  <section class="section" id="for-customers">
     <div class="container">
       <div class="split-layout">
         <div class="split-content">
           <span class="section-tag">For Customers</span>
-          <h2>Your city,<br>your way.</h2>
-          <p>Order from your favorite restaurants or ask us to pick up anything — medicine, documents, gifts. TayyebGo delivers it all.</p>
+          <h2 class="split-title">Your city, your way.</h2>
+          <p class="split-desc">Order from your favorite restaurants or ask us to pick up anything — medicine, documents, gifts. TayyebGo delivers it all.</p>
           <ul class="feature-list">
-            <li>✅ Real-time order tracking</li>
-            <li>✅ Anything Delivery — we buy it for you</li>
-            <li>✅ Multiple payment options</li>
-            <li>✅ Loyalty points & rewards</li>
-            <li>✅ Subscription plans with free delivery</li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Real-time order tracking
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Anything Delivery — we buy it for you
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Multiple payment options
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Loyalty points & rewards
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Subscription plans with free delivery
+            </li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg" style="margin-top:24px">Start Ordering</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg ripple" style="margin-top:28px">
+            <span>Start Ordering</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
         </div>
         <div class="split-visual">
-          <div class="phone-mockup">
+          <div class="phone-mockup glass-card">
+            <div class="phone-notch"></div>
             <div class="mockup-screen">
-              <div class="mockup-header">TayyebGo</div>
-              <div class="mockup-card">🍔 Burger King</div>
-              <div class="mockup-card">🍕 Pizza House</div>
-              <div class="mockup-card">💊 Al-Shifa Pharmacy</div>
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">Your Favorites ❤️</div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>Burger King</strong><span>15-25 min · ⭐ 4.6</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info"><strong>Pizza House</strong><span>25-35 min · ⭐ 4.8</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">💊</div>
+                  <div class="mockup-hero-card-info"><strong>Al-Shifa Pharmacy</strong><span>20-30 min · ⭐ 4.9</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍣</div>
+                  <div class="mockup-hero-card-info"><strong>Sushi Master</strong><span>30-40 min · ⭐ 4.7</span></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -134,29 +412,70 @@
   </section>
 
   <!-- FOR DRIVERS -->
-  <section class="section" id="for-drivers">
+  <section class="section section-dark" id="for-drivers">
     <div class="container">
       <div class="split-layout reverse">
         <div class="split-content">
           <span class="section-tag">For Drivers</span>
-          <h2>Earn on<br>your schedule.</h2>
-          <p>Drive when you want, earn what you need. Join hundreds of drivers already earning with TayyebGo.</p>
+          <h2 class="split-title">Earn on your schedule.</h2>
+          <p class="split-desc">Drive when you want, earn what you need. Join hundreds of drivers already earning with TayyebGo.</p>
           <ul class="feature-list">
-            <li>✅ Flexible hours — work when you want</li>
-            <li>✅ Instant earnings tracking</li>
-            <li>✅ Driver wallet & instant payouts</li>
-            <li>✅ Smart route optimization</li>
-            <li>✅ Safety features & SOS alerts</li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Flexible hours — work when you want
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Instant earnings tracking
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Driver wallet & instant payouts
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Smart route optimization
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Safety features & SOS alerts
+            </li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg" style="margin-top:24px">Become a Driver</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg ripple" style="margin-top:28px">
+            <span>Become a Driver</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
         </div>
         <div class="split-visual">
-          <div class="driver-mockup">
+          <div class="phone-mockup glass-card">
+            <div class="phone-notch"></div>
             <div class="mockup-screen">
-              <div class="mockup-header">Driver Dashboard</div>
-              <div class="mockup-stat">📍 23 deliveries today</div>
-              <div class="mockup-stat">💰 45,000 SYP earned</div>
-              <div class="mockup-stat">⭐ 4.9 rating</div>
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">Driver Dashboard 🚗</div>
+                <div class="driver-stats-grid">
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">23</span>
+                    <span class="driver-stat-lbl">Deliveries</span>
+                  </div>
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">45K</span>
+                    <span class="driver-stat-lbl">Earned</span>
+                  </div>
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">4.9</span>
+                    <span class="driver-stat-lbl">Rating</span>
+                  </div>
+                </div>
+                <div class="mockup-hero-card" style="border-left: 3px solid var(--primary);">
+                  <div class="mockup-hero-card-img">📦</div>
+                  <div class="mockup-hero-card-info"><strong>New Order Available</strong><span>0.8 km away · SYP 3,500</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">📍</div>
+                  <div class="mockup-hero-card-info"><strong>Delivering to</strong><span>Mezzeh, Damascus</span></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -165,29 +484,149 @@
   </section>
 
   <!-- FOR PARTNERS -->
-  <section class="section section-dark" id="for-partners">
+  <section class="section" id="for-partners">
     <div class="container">
       <div class="split-layout">
         <div class="split-content">
           <span class="section-tag">For Partners</span>
-          <h2>Grow your<br>business.</h2>
-          <p>Reach thousands of customers. Manage orders, menu, and analytics — all in one place.</p>
+          <h2 class="split-title">Grow your business.</h2>
+          <p class="split-desc">Reach thousands of customers. Manage orders, menu, and analytics — all in one place.</p>
           <ul class="feature-list">
-            <li>✅ Online store & menu management</li>
-            <li>✅ Real-time order notifications</li>
-            <li>✅ Analytics & sales insights</li>
-            <li>✅ Marketing tools & promotions</li>
-            <li>✅ Automated payouts</li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Online store & menu management
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Real-time order notifications
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Analytics & sales insights
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Marketing tools & promotions
+            </li>
+            <li>
+              <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+              Automated payouts
+            </li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg" style="margin-top:24px">Partner With Us</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg ripple" style="margin-top:28px">
+            <span>Partner With Us</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
         </div>
         <div class="split-visual">
-          <div class="partner-mockup">
+          <div class="phone-mockup glass-card">
+            <div class="phone-notch"></div>
             <div class="mockup-screen">
-              <div class="mockup-header">Partner Dashboard</div>
-              <div class="mockup-stat">📦 156 orders this week</div>
-              <div class="mockup-stat">📈 Revenue: 2.3M SYP</div>
-              <div class="mockup-stat">⭐ Store rating: 4.7</div>
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">Partner Dashboard 📊</div>
+                <div class="driver-stats-grid">
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">156</span>
+                    <span class="driver-stat-lbl">Orders/Week</span>
+                  </div>
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">2.3M</span>
+                    <span class="driver-stat-lbl">Revenue</span>
+                  </div>
+                  <div class="driver-stat-box">
+                    <span class="driver-stat-num">4.7</span>
+                    <span class="driver-stat-lbl">Rating</span>
+                  </div>
+                </div>
+                <div class="mockup-hero-card" style="border-left: 3px solid #22C55E;">
+                  <div class="mockup-hero-card-img">📦</div>
+                  <div class="mockup-hero-card-info"><strong>New Order #782</strong><span>3 items · SYP 28,500</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">📈</div>
+                  <div class="mockup-hero-card-info"><strong>Revenue Today</strong><span>SYP 320,000 · +12%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section section-dark" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Testimonials</span>
+        <h2 class="section-title">Loved by thousands</h2>
+        <p class="section-subtitle">See what our customers, drivers, and partners say.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"TayyebGo changed how I order food. The delivery is incredibly fast and the app is so easy to use. Love the Anything Delivery feature!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#F97316,#8B5CF6)">L</div>
+            <div>
+              <strong>Lina M.</strong>
+              <span>Customer · Damascus</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"I've been driving for TayyebGo for 6 months. The flexible hours let me work around my schedule and the earnings are great."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#22C55E,#06B6D4)">A</div>
+            <div>
+              <strong>Ahmed K.</strong>
+              <span>Driver · Damascus</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Since joining TayyebGo as a partner, our orders increased by 40%. The analytics dashboard helps us understand our customers better."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">S</div>
+            <div>
+              <strong>Sara H.</strong>
+              <span>Restaurant Owner · Damascus</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Best delivery app in Syria! The real-time tracking gives me peace of mind and the subscription saves me a lot on delivery fees."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">O</div>
+            <div>
+              <strong>Omar R.</strong>
+              <span>Subscriber · Aleppo</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The driver wallet feature is amazing — instant payouts mean I get my money right away. No more waiting days for transfers."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#06B6D4,#3B82F6)">M</div>
+            <div>
+              <strong>Mohammed F.</strong>
+              <span>Driver · Homs</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card glass-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"TayyebGo's marketing tools helped us reach customers we never could before. The partnership has been a game-changer for our business."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#EC4899,#8B5CF6)">N</div>
+            <div>
+              <strong>Nour A.</strong>
+              <span>Store Owner · Lattakia</span>
             </div>
           </div>
         </div>
@@ -200,11 +639,14 @@
     <div class="container">
       <div class="section-header">
         <span class="section-tag">Pricing</span>
-        <h2>Simple, transparent pricing</h2>
-        <p>No hidden fees. You only pay for what you use.</p>
+        <h2 class="section-title">Simple, transparent pricing</h2>
+        <p class="section-subtitle">No hidden fees. You only pay for what you use.</p>
       </div>
       <div class="pricing-grid">
-        <div class="pricing-card">
+        <div class="pricing-card glass-card">
+          <div class="pricing-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <h3>Customer</h3>
           <div class="price">Free</div>
           <p>To download & use</p>
@@ -214,10 +656,13 @@
             <li>Real-time tracking</li>
             <li>Loyalty rewards</li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-outline btn-full">Get Started</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-outline btn-full ripple">Get Started</a>
         </div>
-        <div class="pricing-card featured">
+        <div class="pricing-card glass-card featured">
           <div class="featured-badge">Most Popular</div>
+          <div class="pricing-icon" style="background:linear-gradient(135deg,var(--primary),#8B5CF6)">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
           <h3>Subscription</h3>
           <div class="price">4,999 <span>SYP/mo</span></div>
           <p>Free delivery + discounts</p>
@@ -227,9 +672,12 @@
             <li>Priority support</li>
             <li>Exclusive deals</li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-full">Subscribe Now</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-full ripple btn-glow">Subscribe Now</a>
         </div>
-        <div class="pricing-card">
+        <div class="pricing-card glass-card">
+          <div class="pricing-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
           <h3>Partner</h3>
           <div class="price">10%</div>
           <p>Commission per order</p>
@@ -239,41 +687,183 @@
             <li>Analytics dashboard</li>
             <li>Marketing support</li>
           </ul>
-          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-outline btn-full">Join as Partner</a>
+          <a href="https://tayyebgo-app.web.app/signup" class="btn btn-outline btn-full ripple">Join as Partner</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNER LOGOS -->
+  <section class="section section-dark" id="partners">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Our Partners</span>
+        <h2 class="section-title">Trusted by top brands</h2>
+        <p class="section-subtitle">Leading restaurants and stores choose TayyebGo.</p>
+      </div>
+      <div class="partner-logos-grid">
+        <div class="partner-logo-item"><span>🍔</span> Burger King</div>
+        <div class="partner-logo-item"><span>🍕</span> Pizza House</div>
+        <div class="partner-logo-item"><span>🍣</span> Sushi Master</div>
+        <div class="partner-logo-item"><span>🌮</span> Tacos & Co</div>
+        <div class="partner-logo-item"><span>☕</span> Coffee Bean</div>
+        <div class="partner-logo-item"><span>🧁</span> Sweet Dreams</div>
+        <div class="partner-logo-item"><span>💊</span> Al-Shifa</div>
+        <div class="partner-logo-item"><span>🛒</span> Fresh Market</div>
+        <div class="partner-logo-item"><span>🍗</span> Chicken Bros</div>
+        <div class="partner-logo-item"><span>🥗</span> Green Life</div>
+        <div class="partner-logo-item"><span>🍰</span> Cake House</div>
+        <div class="partner-logo-item"><span>🧃</span> Juice Bar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG / NEWS -->
+  <section class="section" id="blog">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Blog</span>
+        <h2 class="section-title">Latest updates</h2>
+        <p class="section-subtitle">News, tips, and stories from TayyebGo.</p>
+      </div>
+      <div class="blog-grid">
+        <div class="blog-card glass-card">
+          <div class="blog-img" style="background:linear-gradient(135deg,#F97316,#F59E0B)">
+            <span class="blog-category">Product Update</span>
+          </div>
+          <div class="blog-content">
+            <time>Jan 15, 2026</time>
+            <h3>TayyebGo 3.0: A Faster, Smarter Experience</h3>
+            <p>We've completely redesigned the app with faster load times, smarter routing, and a more intuitive interface.</p>
+            <a href="#" class="blog-link">Read more →</a>
+          </div>
+        </div>
+        <div class="blog-card glass-card">
+          <div class="blog-img" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">
+            <span class="blog-category">Expansion</span>
+          </div>
+          <div class="blog-content">
+            <time>Dec 28, 2025</time>
+            <h3>TayyebGo Now Available in 5 New Cities</h3>
+            <p>We're expanding across Syria! TayyebGo is now live in Aleppo, Homs, Lattakia, Tartous, and Deir ez-Zor.</p>
+            <a href="#" class="blog-link">Read more →</a>
+          </div>
+        </div>
+        <div class="blog-card glass-card">
+          <div class="blog-img" style="background:linear-gradient(135deg,#22C55E,#06B6D4)">
+            <span class="blog-category">Community</span>
+          </div>
+          <div class="blog-content">
+            <time>Dec 10, 2025</time>
+            <h3>Supporting Local: Our Partner Success Stories</h3>
+            <p>Meet the restaurants and stores that grew their business with TayyebGo's tools and reach.</p>
+            <a href="#" class="blog-link">Read more →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAREERS -->
+  <section class="section section-dark" id="careers">
+    <div class="container">
+      <div class="split-layout">
+        <div class="split-content">
+          <span class="section-tag">Careers</span>
+          <h2 class="split-title">Join our team.</h2>
+          <p class="split-desc">We're building the future of delivery in the Middle East. We're looking for passionate people who want to make an impact.</p>
+          <div class="careers-perks">
+            <div class="career-perk">
+              <div class="career-perk-icon">🚀</div>
+              <div>
+                <strong>Grow fast</strong>
+                <span>Rapid career progression in a scaling startup</span>
+              </div>
+            </div>
+            <div class="career-perk">
+              <div class="career-perk-icon">🌍</div>
+              <div>
+                <strong>Work remotely</strong>
+                <span>Flexible remote-first culture</span>
+              </div>
+            </div>
+            <div class="career-perk">
+              <div class="career-perk-icon">💰</div>
+              <div>
+                <strong>Competitive pay</strong>
+                <span>Top-of-market salaries & equity</span>
+              </div>
+            </div>
+            <div class="career-perk">
+              <div class="career-perk-icon">🏥</div>
+              <div>
+                <strong>Health benefits</strong>
+                <span>Full medical & dental coverage</span>
+              </div>
+            </div>
+          </div>
+          <a href="#" class="btn btn-primary btn-lg ripple" style="margin-top:28px">
+            <span>View Open Positions</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="split-visual">
+          <div class="careers-visual">
+            <div class="career-dept-card glass-card">
+              <span class="career-dept-icon">💻</span>
+              <strong>Engineering</strong>
+              <span>8 open roles</span>
+            </div>
+            <div class="career-dept-card glass-card">
+              <span class="career-dept-icon">🎨</span>
+              <strong>Design</strong>
+              <span>3 open roles</span>
+            </div>
+            <div class="career-dept-card glass-card">
+              <span class="career-dept-icon">📈</span>
+              <strong>Marketing</strong>
+              <span>4 open roles</span>
+            </div>
+            <div class="career-dept-card glass-card">
+              <span class="career-dept-icon">🤝</span>
+              <strong>Operations</strong>
+              <span>5 open roles</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="section section-dark" id="faq">
+  <section class="section" id="faq">
     <div class="container">
       <div class="section-header">
         <span class="section-tag">FAQ</span>
-        <h2>Frequently asked questions</h2>
+        <h2 class="section-title">Frequently asked questions</h2>
       </div>
       <div class="faq-grid">
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>What is TayyebGo?</h4>
           <p>TayyebGo is a delivery platform that connects customers with local restaurants, stores, and services. We deliver food, groceries, pharmacy items, and anything you need.</p>
         </div>
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>How do I become a driver?</h4>
           <p>Download the TayyebGo Driver app, create an account, submit your documents, and start earning once approved.</p>
         </div>
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>What payment methods are accepted?</h4>
           <p>We accept cash on delivery, Sham Cash, and credit/debit cards. More payment options coming soon.</p>
         </div>
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>How long does delivery take?</h4>
           <p>Most orders are delivered within 15-30 minutes. You can track your driver in real-time.</p>
         </div>
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>Can I schedule orders for later?</h4>
           <p>Yes! You can schedule orders for a specific date and time.</p>
         </div>
-        <div class="faq-item">
+        <div class="faq-item glass-card">
           <h4>What is Anything Delivery?</h4>
           <p>Need something but can't go out? Request Anything Delivery and a driver will pick it up and deliver it to you — medicine, documents, gifts, anything.</p>
         </div>
@@ -283,12 +873,16 @@
 
   <!-- CTA -->
   <section class="section cta-section">
-    <div class="container">
+    <div class="cta-bg">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+    </div>
+    <div class="container" style="position:relative;z-index:1">
       <h2>Ready to get started?</h2>
       <p>Join thousands of people already using TayyebGo.</p>
       <div class="cta-actions">
-        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-lg">Create Account</a>
-        <a href="https://tayyebgo-app.web.app/login" class="btn btn-outline btn-lg">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-white btn-lg ripple">Create Account</a>
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-glass-dark btn-lg ripple">Sign In</a>
       </div>
     </div>
   </section>
@@ -298,19 +892,21 @@
     <div class="container">
       <div class="section-header">
         <span class="section-tag">Contact</span>
-        <h2>Get in Touch</h2>
-        <p>Have questions? We'd love to hear from you.</p>
+        <h2 class="section-title">Get in Touch</h2>
+        <p class="section-subtitle">Have questions? We'd love to hear from you.</p>
       </div>
       <div class="contact-grid">
-        <div class="contact-form">
+        <div class="contact-form glass-card">
           <form id="contactForm">
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="Your name" required>
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="you@example.com" required>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+              </div>
             </div>
             <div class="form-group">
               <label for="subject">Subject</label>
@@ -326,11 +922,11 @@
               <label for="message">Message</label>
               <textarea id="message" name="message" placeholder="Tell us how we can help..." required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-full">Send Message</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-full ripple">Send Message</button>
           </form>
         </div>
         <div class="contact-info">
-          <div class="info-card">
+          <div class="info-card glass-card">
             <h4>Contact Info</h4>
             <div class="info-item">
               <div class="info-icon">
@@ -351,7 +947,7 @@
               <span>Damascus, Syria</span>
             </div>
           </div>
-          <div class="info-card">
+          <div class="info-card glass-card">
             <h4>Follow Us</h4>
             <div class="social-links">
               <a href="#" class="social-link" aria-label="Facebook">
@@ -376,46 +972,83 @@
   <!-- DOWNLOAD -->
   <section class="section" id="download">
     <div class="container">
-      <div class="download-content">
-        <span class="section-tag">Download</span>
-        <h2 style="font-size:40px;font-weight:800;letter-spacing:-1px;margin-bottom:16px">Get TayyebGo Today</h2>
-        <p style="font-size:17px;color:var(--text-secondary)">Available on iOS and Android</p>
-        <div class="store-badges">
-          <a href="#" class="store-badge">
-            <svg class="store-badge-icon" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            <div class="store-badge-text">
-              <small>Download on the</small>
-              <span>App Store</span>
-            </div>
-          </a>
-          <a href="#" class="store-badge">
-            <svg class="store-badge-icon" viewBox="0 0 24 24" fill="white"><path d="M3.18 23.77c.43.27.95.23 1.34-.09l12.8-7.38-3.24-3.24L3.18 23.77zm-.82-1.15V1.38c0-.38.16-.74.44-.99l10.77 10.77-10.43 10.48zm14.96-10.46l-2.8-2.8 2.8-2.8 3.2 1.84c.86.5.86 1.78 0 2.28l-3.2 1.84v-.36zm-3.62-3.62L2.36.39C1.93.12 1.41.16 1.02.48L13.7 12.16 13.7 12.16z"/></svg>
-            <div class="store-badge-text">
-              <small>Get it on</small>
-              <span>Google Play</span>
-            </div>
-          </a>
-        </div>
-      </div>
-      <div class="download-phones">
-        <div class="download-phone">
-          <div class="mockup-screen">
-            <div class="mockup-header">🍔 TayyebGo</div>
-            <div class="mockup-card">Featured Restaurants</div>
-            <div class="mockup-card">🍕 Pizza House</div>
-            <div class="mockup-card">🍔 Burger King</div>
-            <div class="mockup-card">🍣 Sushi Master</div>
-            <div class="mockup-card" style="margin-top:auto;background:var(--primary);color:white;text-align:center;font-weight:600">Order Now</div>
+      <div class="download-layout">
+        <div class="download-content">
+          <span class="section-tag">Download</span>
+          <h2 class="section-title" style="text-align:left">Get TayyebGo Today</h2>
+          <p class="section-subtitle" style="text-align:left">Available on iOS and Android. Start ordering in minutes.</p>
+          <div class="store-badges">
+            <a href="#" class="store-badge glass-card ripple">
+              <svg class="store-badge-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              <div class="store-badge-text">
+                <small>Download on the</small>
+                <span>App Store</span>
+              </div>
+            </a>
+            <a href="#" class="store-badge glass-card ripple">
+              <svg class="store-badge-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.77c.43.27.95.23 1.34-.09l12.8-7.38-3.24-3.24L3.18 23.77zm-.82-1.15V1.38c0-.38.16-.74.44-.99l10.77 10.77-10.43 10.48zm14.96-10.46l-2.8-2.8 2.8-2.8 3.2 1.84c.86.5.86 1.78 0 2.28l-3.2 1.84v-.36zm-3.62-3.62L2.36.39C1.93.12 1.41.16 1.02.48L13.7 12.16 13.7 12.16z"/></svg>
+              <div class="store-badge-text">
+                <small>Get it on</small>
+                <span>Google Play</span>
+              </div>
+            </a>
           </div>
         </div>
-        <div class="download-phone">
-          <div class="mockup-screen">
-            <div class="mockup-header">📦 Track Order</div>
-            <div class="mockup-card">Driver: Ahmed K.</div>
-            <div class="mockup-card">📍 1.2 km away</div>
-            <div class="mockup-card">ETA: 8 minutes</div>
-            <div class="mockup-card">🍕 1x Margherita Pizza</div>
-            <div class="mockup-card">🍔 2x Classic Burger</div>
+        <div class="download-phones">
+          <div class="download-phone phone-float" style="--float-delay: 0s">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">🍔 TayyebGo</div>
+                <div class="mockup-hero-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <span>What do you need?</span>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info"><strong>Pizza House</strong><span>25-35 min</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>Burger King</strong><span>15-25 min</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍣</div>
+                  <div class="mockup-hero-card-info"><strong>Sushi Master</strong><span>30-40 min</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="download-phone phone-float" style="--float-delay: 0.5s">
+            <div class="phone-notch"></div>
+            <div class="mockup-screen">
+              <div class="mockup-statusbar"><span>9:41</span><span>●●●</span></div>
+              <div class="mockup-hero-app">
+                <div class="mockup-hero-greeting">📦 Track Order</div>
+                <div class="mockup-hero-card" style="border-left:3px solid #22C55E">
+                  <div class="mockup-hero-card-img">👨‍🚀</div>
+                  <div class="mockup-hero-card-info"><strong>Ahmed K. is on the way</strong><span>1.2 km away</span></div>
+                </div>
+                <div class="track-progress">
+                  <div class="track-bar"><div class="track-fill" style="width:75%"></div></div>
+                  <div class="track-steps">
+                    <span class="active">Confirmed</span>
+                    <span class="active">Preparing</span>
+                    <span class="active">Picked up</span>
+                    <span>Delivered</span>
+                  </div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍕</div>
+                  <div class="mockup-hero-card-info"><strong>1x Margherita Pizza</strong><span>SYP 12,000</span></div>
+                </div>
+                <div class="mockup-hero-card">
+                  <div class="mockup-hero-card-img">🍔</div>
+                  <div class="mockup-hero-card-info"><strong>2x Classic Burger</strong><span>SYP 18,000</span></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -434,6 +1067,11 @@
             <span>TayyebGo</span>
           </div>
           <p>Everything delivered. Fast, reliable, and local.</p>
+          <div class="social-links" style="margin-top:16px">
+            <a href="#" class="social-link" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+            <a href="#" class="social-link" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></a>
+            <a href="#" class="social-link" aria-label="Twitter/X"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          </div>
         </div>
         <div class="footer-links">
           <h4>Product</h4>
@@ -441,13 +1079,14 @@
           <a href="#for-drivers">For Drivers</a>
           <a href="#for-partners">For Partners</a>
           <a href="#pricing">Pricing</a>
+          <a href="#download">Download</a>
         </div>
         <div class="footer-links">
           <h4>Company</h4>
           <a href="#">About Us</a>
-          <a href="#">Careers</a>
-          <a href="#">Blog</a>
-          <a href="#">Contact</a>
+          <a href="#careers">Careers</a>
+          <a href="#blog">Blog</a>
+          <a href="#contact">Contact</a>
         </div>
         <div class="footer-links">
           <h4>Legal</h4>

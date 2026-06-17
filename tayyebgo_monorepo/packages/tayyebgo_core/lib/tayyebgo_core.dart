@@ -147,6 +147,9 @@ export 'presentation/shared_widgets/skill_card.dart';
 export 'presentation/shared_widgets/skill_execution_view.dart';
 export 'presentation/shared_widgets/destructive_action_overlay.dart';
 export 'src/theme/tayyebgo_theme.dart';
+export 'src/theme/premium_theme.dart';
+export 'src/theme/premium_components.dart';
+export 'src/theme/premium_animations.dart';
 export 'src/firebase/firebase_options.dart';
 
 export 'src/constants/route_names.dart' show Routes;
