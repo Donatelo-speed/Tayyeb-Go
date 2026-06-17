@@ -40,9 +40,9 @@ class PushNotificationService {
       });
       FirebaseMessaging.onMessage.listen(_messageController.add);
       FirebaseMessaging.onMessageOpenedApp.listen(_messageController.add);
-      debugPrint('[PushNotification] Initialized for $userId ($role)');
+      if (kDebugMode) debugPrint('[PushNotification] Initialized for $userId ($role)');
     } catch (e) {
-      debugPrint('[PushNotification] Init error: $e');
+      if (kDebugMode) debugPrint('[PushNotification] Init error: $e');
     }
   }
 
@@ -61,20 +61,20 @@ class PushNotificationService {
       provisional: false,
       criticalAlert: true,
     );
-    debugPrint('[PushNotification] Permission: ${settings.authorizationStatus}');
+    if (kDebugMode) debugPrint('[PushNotification] Permission: ${settings.authorizationStatus}');
     return settings;
   }
 
   /// Subscribe to a topic for broadcast notifications.
   Future<void> subscribeToTopic(String topic) async {
     await _messaging.subscribeToTopic(topic);
-    debugPrint('[PushNotification] Subscribed to $topic');
+    if (kDebugMode) debugPrint('[PushNotification] Subscribed to $topic');
   }
 
   /// Unsubscribe from a topic.
   Future<void> unsubscribeFromTopic(String topic) async {
     await _messaging.unsubscribeFromTopic(topic);
-    debugPrint('[PushNotification] Unsubscribed from $topic');
+    if (kDebugMode) debugPrint('[PushNotification] Unsubscribed from $topic');
   }
 
   /// Store the FCM token under users/{userId}/deviceTokens/{tokenId}.
@@ -110,7 +110,7 @@ class PushNotificationService {
         'fcmUpdatedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      debugPrint('[PushNotification] Error saving token: $e');
+      if (kDebugMode) debugPrint('[PushNotification] Error saving token: $e');
     }
   }
 
@@ -130,10 +130,10 @@ class PushNotificationService {
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
       });
-      debugPrint('[PushNotification] Queued for $userId: $title');
+      if (kDebugMode) debugPrint('[PushNotification] Queued for $userId: $title');
       return true;
     } catch (e) {
-      debugPrint('[PushNotification] Error queuing: $e');
+      if (kDebugMode) debugPrint('[PushNotification] Error queuing: $e');
       return false;
     }
   }
@@ -163,9 +163,9 @@ class PushNotificationService {
 
     try {
       await batch.commit();
-      debugPrint('[PushNotification] Bulk queued $sent notifications');
+      if (kDebugMode) debugPrint('[PushNotification] Bulk queued $sent notifications');
     } catch (e) {
-      debugPrint('[PushNotification] Bulk error: $e');
+      if (kDebugMode) debugPrint('[PushNotification] Bulk error: $e');
       sent = 0;
     }
     return sent;

@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_radius.dart';
 import '../../presentation/theme/app_typography.dart';
@@ -394,7 +395,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      // TODO: Open Terms & Conditions URL
+                      launchUrl(Uri.parse('https://tayyebgo.web.app/terms'));
                     },
                 ),
                 const TextSpan(text: ' and '),
@@ -403,7 +404,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      // TODO: Open Privacy Policy URL
+                      launchUrl(Uri.parse('https://tayyebgo.web.app/privacy'));
                     },
                 ),
               ],

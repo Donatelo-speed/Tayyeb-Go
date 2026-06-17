@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
@@ -661,18 +663,76 @@ class _MembershipScreenState extends State<MembershipScreen> {
     }
   }
 
-  void _subscribe() {
-    // TODO: Implement subscription logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Subscription feature coming soon!',
-          style: GoogleFonts.inter(),
+  void _subscribe() async {
+    final price = _getMonthlyPrice();
+    final months = _selectedCycle == BillingCycle.monthly
+        ? 1
+        : _selectedCycle == BillingCycle.twoMonths
+            ? 2
+            : 3;
+    final totalCents = (price * months * 100).round();
+    final orderId = 'sub_${DateTime.now().millisecondsSinceEpoch}';
+
+    try {
+      final result = await FirebasePaymentRepository.instance.processPayment(
+        orderId: orderId,
+        amountInCents: totalCents,
+        currency: 'usd',
+        paymentMethodId: '',
+      );
+
+      final clientSecret = result['clientSecret'] as String?;
+      if (clientSecret == null || !context.mounted) return;
+
+      final stripe = CoreStripeWrapper();
+      await stripe.initPaymentSheet(
+        clientSecret: clientSecret,
+        merchantDisplayName: 'TayyebGo',
+      );
+      await stripe.presentPaymentSheet();
+
+      await FirebaseFirestore.instance.collection('subscriptions').add({
+        'userId': FirebaseAuth.instance.currentUser?.uid ?? '',
+        'plan': _selectedPlan,
+        'billingCycle': _selectedCycle.name,
+        'amountInCents': totalCents,
+        'currency': 'usd',
+        'orderId': orderId,
+        'status': 'active',
+        'startDate': DateTime.now().toIso8601String(),
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Welcome to TayyebGo ${_selectedPlan[0].toUpperCase()}${_selectedPlan.substring(1)}!',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: context.successColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      final msg = e.toString().contains('cancelled')
+          ? 'Payment was cancelled'
+          : 'Subscription failed. Please try again.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg, style: GoogleFonts.inter()),
+          backgroundColor: context.errorColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
-        backgroundColor: context.primaryColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-    );
+      );
+    }
   }
 }

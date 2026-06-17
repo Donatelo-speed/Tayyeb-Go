@@ -31,7 +31,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           _section('5. Your Rights', 'You have the right to:\n\n• Access your personal data\n• Request correction of inaccurate data\n• Request deletion of your data\n• Opt out of marketing communications\n• Export your data'),
           _section('6. Children\'s Privacy', 'TayyebGo is not intended for children under 13. We do not knowingly collect personal information from children.'),
           _section('7. Changes to This Policy', 'We may update this policy from time to time. We will notify you of significant changes via email or in-app notification.'),
-          _section('8. Contact Us', 'For privacy-related inquiries, contact us at:\n\nEmail: privacy@tayyebgo.com\nPhone: +963-XXX-XXX-XXX'),
+          _section('8. Contact Us', 'For privacy-related inquiries, contact us at:\n\nEmail: privacy@tayyebgo.com\nPhone: +963 11 234 5678'),
         ],
       ),
     );

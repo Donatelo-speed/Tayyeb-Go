@@ -34,7 +34,7 @@ class TermsConditionsScreen extends StatelessWidget {
           _section('8. Intellectual Property', 'All content, trademarks, and technology in TayyebGo are owned by TayyebGo and protected by applicable intellectual property laws.'),
           _section('9. Limitation of Liability', 'TayyebGo provides the platform "as is" and is not liable for the quality of food, actions of third-party restaurants or drivers, or indirect damages.'),
           _section('10. Governing Law', 'These terms are governed by the laws of the Syrian Arab Republic. Any disputes shall be resolved in the courts of Homs, Syria.'),
-          _section('11. Contact', 'For questions about these terms:\n\nEmail: legal@tayyebgo.com\nPhone: +963-XXX-XXX-XXX'),
+          _section('11. Contact', 'For questions about these terms:\n\nEmail: legal@tayyebgo.com\nPhone: +963 11 234 5678'),
         ],
       ),
     );
