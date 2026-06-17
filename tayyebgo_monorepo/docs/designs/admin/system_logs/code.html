@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Logs - Tayyeb Go Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d8dbd6",
+                      "on-primary-fixed": "#001849",
+                      "on-primary-container": "#f8f7ff",
+                      "tertiary-fixed": "#dae5dd",
+                      "surface-bright": "#f7faf5",
+                      "tertiary": "#515c55",
+                      "surface-container": "#ecefea",
+                      "primary-fixed-dim": "#b3c5ff",
+                      "primary-container": "#0066ff",
+                      "on-tertiary-container": "#effaf2",
+                      "secondary": "#ab3500",
+                      "inverse-surface": "#2d312e",
+                      "status-error": "#EF4444",
+                      "on-secondary-fixed-variant": "#832600",
+                      "surface": "#f7faf5",
+                      "secondary-container": "#fe6a34",
+                      "inverse-primary": "#b3c5ff",
+                      "status-completed": "#22C55E",
+                      "status-pending": "#FFB800",
+                      "on-primary-fixed-variant": "#003fa4",
+                      "outline-variant": "#c2c6d8",
+                      "on-surface": "#191c1a",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#191c1a",
+                      "outline": "#727687",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#69746d",
+                      "status-active": "#0066FF",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f4ef",
+                      "on-secondary-fixed": "#390c00",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#141e19",
+                      "inverse-on-surface": "#eff2ec",
+                      "surface-container-high": "#e6e9e4",
+                      "primary-fixed": "#dae1ff",
+                      "surface-variant": "#e0e3de",
+                      "surface-dark": "#141E19",
+                      "surface-tint": "#0054d6",
+                      "surface-container-highest": "#e0e3de",
+                      "surface-light": "#FFFFFF",
+                      "secondary-fixed": "#ffdbd0",
+                      "on-surface-variant": "#424656",
+                      "primary": "#0050cb",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#ffb59d",
+                      "on-secondary-container": "#5d1900",
+                      "tertiary-fixed-dim": "#bec9c1",
+                      "background": "#f7faf5",
+                      "on-tertiary-fixed-variant": "#3f4943",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "16px",
+                      "stack-sm": "4px",
+                      "stack-md": "12px",
+                      "stack-lg": "24px",
+                      "margin-desktop": "32px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Hanken Grotesk"],
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "label-md": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-sm": ["JetBrains Mono"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                      "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                      "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                      "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                      "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                      "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for log area */
+        .log-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .log-scroll::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-low');
+            border-radius: 4px;
+        }
+        .log-scroll::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: 4px;
+        }
+        .log-scroll::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md text-body-md h-screen w-full flex overflow-hidden">
+<!-- Shared Component: NavigationDrawer -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex-col p-stack-md z-20">
+<!-- Header -->
+<div class="flex items-center gap-3 mb-stack-lg px-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md text-headline-md font-bold">
+                C
+            </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">Command Center</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Global Oversight</span>
+</div>
+</div>
+<!-- Links -->
+<ul class="flex flex-col gap-stack-sm w-full">
+<li>
+<a class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="group">group</span>
+<span class="font-label-md text-label-md">User Directory</span>
+</a>
+</li>
+<li>
+<a class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-md text-label-md">Fleet Monitor</span>
+</a>
+</li>
+<li>
+<!-- Active State Applied Here based on JSON logic -->
+<a class="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-container text-on-primary-container font-bold transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px] icon-fill" data-icon="terminal">terminal</span>
+<span class="font-label-md text-label-md">System Logs</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto">
+<div class="w-full bg-surface-container-high rounded-lg p-3 border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-status-completed">check_circle</span>
+<span class="font-label-sm text-label-sm text-on-surface">Systems Nominal</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-64 w-full h-full overflow-hidden bg-background relative">
+<!-- Shared Component: TopAppBar -->
+<header class="w-full top-0 sticky bg-surface-light border-b border-outline-variant flex justify-between items-center px-margin-desktop py-4 z-10">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[28px]" data-icon="grid_view">grid_view</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Tayyeb Go</h1>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-status-error rounded-full border-2 border-surface-light"></span>
+</button>
+<div class="w-9 h-9 rounded-full bg-surface-container border border-outline-variant overflow-hidden cursor-pointer active:opacity-80 transition-opacity">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a professional male administrator in a modern office setting. He is wearing a crisp white shirt and looking confidently away from the camera. The lighting is soft and natural, emphasizing a high-key, modern corporate aesthetic. The background is slightly blurred, showcasing a bright, minimalist workspace with subtle architectural lines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcHguV5wj2Fjqrx4jyNQNR0XXWcKx5sHpkPqMvQvnS41O43mBkwClplD-jb7gbAVrq8pX79_Sg-J5QuzPpeDXkq6GxT8JaSB7fXLqJwMdFEjLK8Dxd-1gN32ZhOu5eG_R4m08MaMjTJfiVrl8eID4wdPU3IgJev9JCDYRLrwNPpTApxNKyiu0z4irg6XpuG232I_h1Y3T71z9H4tFh2Y1xA7XWHd6FK9s6-H5KKi2Mh1f6EhXQymeNKxAPqRUL2G_F1jyEfpw_W2I"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Log Content -->
+<div class="flex-1 overflow-y-auto p-margin-desktop log-scroll flex flex-col gap-stack-lg">
+<!-- Page Header & Metrics -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-stack-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-stack-sm">System Logs</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time telemetry and operational events across the logistics engine.</p>
+</div>
+<div class="flex items-center gap-stack-md">
+<div class="bg-surface-light border border-outline-variant rounded-lg px-4 py-2 flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-status-completed animate-pulse"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">API: <span class="text-on-surface font-bold">12ms</span></span>
+</div>
+<div class="bg-surface-light border border-outline-variant rounded-lg px-4 py-2 flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-status-completed"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">DB: <span class="text-on-surface font-bold">8ms</span></span>
+</div>
+</div>
+</div>
+<!-- Dashboard Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Stat 1 -->
+<div class="bg-surface-light border border-outline-variant rounded-xl p-stack-md shadow-sm relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-110 transition-transform"></div>
+<div class="flex justify-between items-start mb-stack-md relative z-10">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Events (24h)</span>
+<span class="material-symbols-outlined text-outline" data-icon="data_usage">data_usage</span>
+</div>
+<div class="flex items-end gap-2 relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">1.2M</span>
+<span class="font-label-sm text-label-sm text-status-completed flex items-center mb-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> 12%
+                        </span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface-light border border-outline-variant rounded-xl p-stack-md shadow-sm">
+<div class="flex justify-between items-start mb-stack-md">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Error Rate</span>
+<span class="material-symbols-outlined text-status-error" data-icon="warning">warning</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-display-lg text-display-lg text-on-surface">0.04%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-2">/ 10k reqs</span>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-surface-light border border-outline-variant rounded-xl p-stack-md shadow-sm bg-gradient-to-br from-surface-light to-surface-container-low">
+<div class="flex justify-between items-start mb-stack-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Alerts</span>
+<span class="material-symbols-outlined text-status-pending" data-icon="notifications_active">notifications_active</span>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface">Auth Latency Spikes</span>
+<span class="bg-status-pending/20 text-status-pending px-2 py-0.5 rounded-full font-label-sm text-label-sm text-[10px]">WARN</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface">DB Connection Pool</span>
+<span class="bg-status-error/20 text-status-error px-2 py-0.5 rounded-full font-label-sm text-label-sm text-[10px]">ERR</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Controls (Search & Filter) -->
+<div class="bg-surface-light border border-outline-variant rounded-xl p-stack-sm flex flex-col md:flex-row gap-stack-md items-center justify-between shadow-sm sticky top-0 z-10">
+<!-- Search -->
+<div class="relative w-full md:w-96 flex-shrink-0">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface border-none text-body-sm font-body-sm text-on-surface rounded-lg pl-10 pr-10 py-2.5 focus:ring-2 focus:ring-primary focus:bg-surface-light transition-all placeholder:text-outline-variant" placeholder="Search by Event ID, IP, or message..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant mr-2 whitespace-nowrap">Filter by:</span>
+<button class="bg-surface-container-low hover:bg-surface-container border border-outline-variant text-on-surface px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="filter_list">filter_list</span>
+                        All Events
+                    </button>
+<button class="bg-status-error/10 hover:bg-status-error/20 border border-status-error/30 text-status-error px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+                        Error
+                    </button>
+<button class="bg-status-pending/10 hover:bg-status-pending/20 border border-status-pending/30 text-[#B38000] px-3 py-1.5 rounded-full font-label-sm text-label-sm transition-colors flex items-center gap-1">
+                        Warning
+                    </button>
+<div class="h-6 w-px bg-outline-variant mx-1"></div>
+<select class="bg-surface border-none text-body-sm font-body-sm text-on-surface rounded-lg py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-primary cursor-pointer border border-outline-variant">
+<option>All Categories</option>
+<option>API Requests</option>
+<option>Database</option>
+<option>Auth</option>
+<option>Logistics Engine</option>
+</select>
+</div>
+</div>
+<!-- Log Data Table (Stylized List) -->
+<div class="bg-surface-light border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Table Header -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-3 border-b border-outline-variant bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+<div class="hidden md:block">Timestamp</div>
+<div>Status / ID</div>
+<div>Message / Category</div>
+<div class="text-right">Action</div>
+</div>
+<!-- Log Entries -->
+<div class="flex flex-col divide-y divide-outline-variant/50">
+<!-- Entry 1: Error -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-4 hover:bg-surface-container-lowest transition-colors items-center group cursor-pointer">
+<div class="hidden md:flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">14:32:05</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2024-10-27</span>
+</div>
+<div class="flex flex-col gap-1.5 items-start">
+<div class="bg-status-error/10 text-status-error border border-status-error/20 px-2 py-0.5 rounded flex items-center gap-1 font-label-sm text-label-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-status-error"></div> Error
+                            </div>
+<span class="font-label-sm text-label-sm text-outline font-mono">#EV-9021A</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">Connection timeout acquiring pool block</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm text-[11px]">Database</span>
+<span class="font-label-sm text-label-sm text-outline-variant">Node: db-cluster-us-east-1a</span>
+</div>
+</div>
+<div class="flex justify-end items-center">
+<button class="text-primary hover:bg-primary/10 p-2 rounded transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Entry 2: Warning -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-4 hover:bg-surface-container-lowest transition-colors items-center group cursor-pointer">
+<div class="hidden md:flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">14:30:12</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2024-10-27</span>
+</div>
+<div class="flex flex-col gap-1.5 items-start">
+<div class="bg-status-pending/10 text-[#996B00] border border-status-pending/20 px-2 py-0.5 rounded flex items-center gap-1 font-label-sm text-label-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-status-pending"></div> Warn
+                            </div>
+<span class="font-label-sm text-label-sm text-outline font-mono">#EV-9020B</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">High latency detected on route calculation</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm text-[11px]">Logistics Engine</span>
+<span class="font-label-sm text-label-sm text-outline-variant">Task: routing_v2</span>
+</div>
+</div>
+<div class="flex justify-end items-center">
+<button class="text-primary hover:bg-primary/10 p-2 rounded transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Entry 3: Success -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-4 hover:bg-surface-container-lowest transition-colors items-center group cursor-pointer">
+<div class="hidden md:flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">14:28:45</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2024-10-27</span>
+</div>
+<div class="flex flex-col gap-1.5 items-start">
+<div class="bg-status-completed/10 text-status-completed border border-status-completed/20 px-2 py-0.5 rounded flex items-center gap-1 font-label-sm text-label-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-status-completed"></div> Ok
+                            </div>
+<span class="font-label-sm text-label-sm text-outline font-mono">#EV-9019C</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">Fleet synchronization batch completed</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm text-[11px]">Logistics Engine</span>
+<span class="font-label-sm text-label-sm text-outline-variant">Records: 4,502</span>
+</div>
+</div>
+<div class="flex justify-end items-center">
+<button class="text-primary hover:bg-primary/10 p-2 rounded transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Entry 4: Info -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-4 hover:bg-surface-container-lowest transition-colors items-center group cursor-pointer">
+<div class="hidden md:flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">14:25:10</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2024-10-27</span>
+</div>
+<div class="flex flex-col gap-1.5 items-start">
+<div class="bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded flex items-center gap-1 font-label-sm text-label-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div> Info
+                            </div>
+<span class="font-label-sm text-label-sm text-outline font-mono">#EV-9018D</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">Admin user logged in successfully</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm text-[11px]">Auth</span>
+<span class="font-label-sm text-label-sm text-outline-variant">IP: 192.168.1.45</span>
+</div>
+</div>
+<div class="flex justify-end items-center">
+<button class="text-primary hover:bg-primary/10 p-2 rounded transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Entry 5: Success -->
+<div class="grid grid-cols-[100px_1fr_120px] md:grid-cols-[140px_120px_1fr_120px] gap-4 px-6 py-4 hover:bg-surface-container-lowest transition-colors items-center group cursor-pointer">
+<div class="hidden md:flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">14:22:01</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2024-10-27</span>
+</div>
+<div class="flex flex-col gap-1.5 items-start">
+<div class="bg-status-completed/10 text-status-completed border border-status-completed/20 px-2 py-0.5 rounded flex items-center gap-1 font-label-sm text-label-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-status-completed"></div> Ok
+                            </div>
+<span class="font-label-sm text-label-sm text-outline font-mono">#EV-9017E</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors line-clamp-1">POST /api/v1/orders/create 201 Created</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm text-[11px]">API Requests</span>
+<span class="font-label-sm text-label-sm text-outline-variant">Duration: 45ms</span>
+</div>
+</div>
+<div class="flex justify-end items-center">
+<button class="text-primary hover:bg-primary/10 p-2 rounded transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-surface-light border-t border-outline-variant px-6 py-4 flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 5 of 1.2M entries</span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container disabled:opacity-50 font-label-sm text-label-sm" disabled="">Previous</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold">1</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded text-on-surface hover:bg-surface-container font-label-sm text-label-sm">2</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded text-on-surface hover:bg-surface-container font-label-sm text-label-sm">3</button>
+<span class="text-on-surface-variant">...</span>
+<button class="px-3 py-1.5 border border-outline-variant rounded text-on-surface hover:bg-surface-container font-label-sm text-label-sm">Next</button>
+</div>
+</div>
+</div>
+<!-- Spacing at bottom for scrolling -->
+<div class="h-8"></div>
+</div>
+</main>
+</body></html>

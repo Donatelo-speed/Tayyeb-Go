@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Directory - Tayyeb Go Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#b22c00",
+                        "on-surface-variant": "#5b403a",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d7d9e6",
+                        "primary-fixed-dim": "#ffb5a1",
+                        "secondary-fixed": "#70fcb7",
+                        "background": "#f9f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ebedfa",
+                        "on-secondary-fixed": "#002112",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-container": "#70fcb7",
+                        "inverse-on-surface": "#eef0fd",
+                        "tertiary": "#825500",
+                        "surface-variant": "#dfe2ef",
+                        "surface-container-high": "#e5e8f5",
+                        "tertiary-fixed": "#ffddb4",
+                        "primary-fixed": "#ffdbd1",
+                        "secondary": "#006c45",
+                        "on-surface": "#181c25",
+                        "primary-container": "#ff5a2c",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f1f3ff",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "outline-variant": "#e4beb5",
+                        "inverse-surface": "#2c303a",
+                        "on-tertiary-fixed": "#291800",
+                        "on-tertiary-container": "#3e2600",
+                        "surface-tint": "#b22c00",
+                        "outline": "#8f7068",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#c88400",
+                        "inverse-primary": "#ffb5a1",
+                        "on-secondary-fixed-variant": "#005233",
+                        "on-primary-fixed-variant": "#881f00",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb953",
+                        "on-primary-fixed": "#3b0800",
+                        "surface-container-highest": "#dfe2ef",
+                        "on-secondary-container": "#00734a",
+                        "on-background": "#181c25",
+                        "secondary-fixed-dim": "#50df9d",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#571100",
+                        "surface": "#f9f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "48px",
+                        "md": "16px",
+                        "max-width-desktop": "1200px",
+                        "unit": "8px",
+                        "xxs": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "sm": "12px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-md": ["Inter"],
+                        "price": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", { "lineHeight": "18.9px", "fontWeight": "700" }],
+                        "display-lg": ["42px", { "lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-lg": ["24px", { "lineHeight": "28.3px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "15.6px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16.8px", "fontWeight": "400" }],
+                        "display-md": ["34px", { "lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "price": ["16px", { "lineHeight": "19.2px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24.8px", "fontWeight": "400" }],
+                        "stat-value": ["32px", { "lineHeight": "33.6px", "fontWeight": "800" }],
+                        "title-md": ["18px", { "lineHeight": "23px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen pb-24 md:pb-0 md:pt-14">
+<!-- TopAppBar (Web) -->
+<header class="hidden md:flex fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-14 bg-surface-bright dark:bg-inverse-surface shadow-sm">
+<div class="flex items-center gap-sm cursor-pointer transition-all duration-120 active:scale-95 text-primary dark:text-primary-fixed-dim">
+<span class="material-symbols-outlined text-xl">menu</span>
+<span class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed-dim">Command Center</span>
+</div>
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden cursor-pointer transition-all duration-120 active:scale-95">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a professional system administrator in a brightly lit modern office. The lighting is soft and neutral, enhancing a clean, high-efficiency corporate aesthetic. The color palette leans towards pristine whites and warm slate grays, subtly reflecting a high-end software platform environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdrRstsgEju0V6KvmNE2I0QQcs9XD0dk_qljAXRwEX4Xzd6iJdvp2Em0eVCyFQxDM_n5Zj6Mrt-k_ZGglRskKsdVjzDT0UGGh7UJd9kGNjfcqLxWlGoy6fOI8IbV8KWNYKFPBK-_YOSeNXSQIUwWTNIUk5i05L15SFv989wTFZVOiXkQXiHFMvFiKbKz3xD_GCK0K_4Hy1IV6_BTxOAZFEcWhZTN5J5JRRBMSz-7qDErWtS2fDKcjUBHDLLnyEYHGrQqjpMvKgQ1U"/>
+</div>
+</div>
+</header>
+<!-- NavigationDrawer (Web Sidebar) -->
+<aside class="hidden md:block fixed left-0 top-0 h-full z-[60] py-lg bg-surface-container-low dark:bg-inverse-surface shadow-lg h-full w-72 rounded-r-xl pt-20">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-variant shrink-0">
+<img alt="System Administrator" class="w-full h-full object-cover" data-alt="Close up portrait of a professional system administrator in a brightly lit modern office. The lighting is soft and neutral, enhancing a clean, high-efficiency corporate aesthetic. The color palette leans towards pristine whites and warm slate grays, subtly reflecting a high-end software platform environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmc61FyhH05teIHBYOusNIO9gRR59ynUICn0hnZISbRwyFkR9AQW3iV2VpzpEGMgJxtxhy8Ha8sSPE-PuGPg2rUJuLjPXjlXxv8_8Mb_61dZdm8TMXkgNSVr0qwgVYhNDuzK24gOgh-hWrvSscrj_Bg14e-cAdADsIKeU4WDgvrzzrCR8PpvYndXM-Dy2s2EuyyBcZxis-O1iQHR1LdjiMS2hCJWutKpdRbO6xYhP_2yCt5hUD0UbL5P8_GuBykkz8njQO2VD9ceo"/>
+</div>
+<div>
+<h2 class="font-title-md text-title-md font-black text-primary">Admin Console</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Delivery Ecosystem</p>
+<p class="font-label-md text-label-md text-outline mt-1">v2.4.0</p>
+</div>
+</div>
+</div>
+<nav class="flex flex-col gap-xs px-sm">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-md py-sm hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-transform duration-120 active:scale-[0.98] rounded-xl font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-md py-sm hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-transform duration-120 active:scale-[0.98] font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+                User Directory
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-md py-sm hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-transform duration-120 active:scale-[0.98] rounded-xl font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                Fleet Monitor
+            </a>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-on-surface-variant px-md py-sm hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-transform duration-120 active:scale-[0.98] rounded-xl font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+                System Settings
+            </a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-72 max-w-max-width-desktop mx-auto px-md py-md md:py-xl">
+<!-- Mobile Header (Visible only on mobile) -->
+<div class="md:hidden flex justify-between items-center mb-lg">
+<h1 class="font-display-md text-display-md text-on-surface">User Directory</h1>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a professional system administrator in a brightly lit modern office. The lighting is soft and neutral, enhancing a clean, high-efficiency corporate aesthetic. The color palette leans towards pristine whites and warm slate grays, subtly reflecting a high-end software platform environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPGFJS9G-RnOkrdB-0eRbaKwgnJizI1PJ3TLikux8L35rQYMflbHgAz3XVAL6P-PI4tf1U1_T9MJSXF4OtIIpHojiGX86OjQ4wwTACgfxOkuR23CQK0VFnSGAKa_FV5b_MvnFrEY_s7krlUAaqdWkLVVw4FSvUvD1ny5r6OzddcmprxG26EG8XCqclKkC2azatl1SOF_TDy3U6xpZS44yo53I1kIjGwQkEUaUASR_1zc1nqRMLc_27EKgLothk7Un8K4cTR1tfH6s"/>
+</div>
+</div>
+<div class="hidden md:block mb-xl">
+<h1 class="font-display-lg text-display-lg text-on-surface">User Directory</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-xs">Manage all ecosystem participants.</p>
+</div>
+<!-- Search & Filter Controls -->
+<section class="mb-xl flex flex-col md:flex-row gap-md">
+<!-- Search Bar -->
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-12 pl-xl pr-md rounded-xl bg-surface-container border border-surface-variant focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 shadow-sm" placeholder="Search users by name, email, or ID..." type="text"/>
+</div>
+</section>
+<!-- Role Filters -->
+<section class="mb-lg overflow-x-auto no-scrollbar">
+<div class="flex gap-sm min-w-max pb-1">
+<button class="px-lg py-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[0_4px_12px_rgba(178,44,0,0.2)] transition-transform duration-120 active:scale-95">All Users</button>
+<button class="px-lg py-sm rounded-full bg-surface-container text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-highest transition-all duration-120 active:scale-95 border border-surface-variant">Customers</button>
+<button class="px-lg py-sm rounded-full bg-surface-container text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-highest transition-all duration-120 active:scale-95 border border-surface-variant">Drivers</button>
+<button class="px-lg py-sm rounded-full bg-surface-container text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-highest transition-all duration-120 active:scale-95 border border-surface-variant">Partners</button>
+</div>
+</section>
+<!-- User List (Bento-ish Grid on Desktop, List on Mobile) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- User Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-200 border border-surface-variant/50 cursor-pointer group">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-variant relative">
+<img alt="Sarah Jenkins" class="w-full h-full object-cover" data-alt="Close up portrait of a young woman, smiling warmly, in a bright, modern setting. The lighting highlights a clean, fresh light-mode aesthetic, utilizing warm cream tones and soft natural light indicative of a contemporary corporate or app platform style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtUQfxcS1wyoM9dDq2dgGS8CGyS-vygfdyfEmTCGmZNAfyiYZdHNlTxwkipKV6NdfFs5Xf7bG3kCcUDhp4bXpPMKnjESXLJKYALXyXeVuauv79W-HTUBWw-C0m4IGHHVHQFAtBkstdfZHucfEhBvE_HA8ioEP23Q5gWcsvAllvLGno0ByuFEH4LEv5Y4j1naMhYTuPkx0pTpEyHXsANMU5VndwhV2HwqfH5BdAWnl37U0Bx7wseB08laMHrz79240g-8jzfsDd908"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-title-md text-title-md text-on-surface truncate group-hover:text-primary transition-colors">Sarah Jenkins</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">sarah.j@example.com</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-xxs">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-secondary/10 text-secondary font-label-md text-label-md">Customer</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active</span>
+</div>
+</div>
+<!-- User Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-200 border border-surface-variant/50 cursor-pointer group">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-variant relative">
+<div class="w-full h-full flex items-center justify-center bg-tertiary-container text-on-tertiary-container font-title-lg text-title-lg">MR</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-title-md text-title-md text-on-surface truncate group-hover:text-primary transition-colors">Marcus Rodriguez</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">m.rodriguez@fleet.co</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-xxs">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-tertiary/10 text-tertiary font-label-md text-label-md">Driver</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active</span>
+</div>
+</div>
+<!-- User Card 3 (Suspended) -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-200 border border-error-container bg-error-container/10 cursor-pointer group">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-variant relative opacity-70">
+<img alt="David Chen" class="w-full h-full object-cover grayscale" data-alt="Portrait of a man in his 30s looking serious, captured in a clean, brightly lit environment. The overall aesthetic aligns with a modern, high-efficiency corporate directory, utilizing a neutral, light-mode palette with stark contrasts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApZLupW0itoBOgyktLsA4XK0cuNGGV7DN5PDfXSCrvoIv6XOQaTYSAfsBzbqd3e4PfvzUPqDJ89w0LWWMgVG8vDF6Kshv2yiFdhP68WI91YIgx47Qv3FcColWQv-Iu1QLtOy834DsVvjP-7q_eMo-txf8g-8TUbGJXzkU3CH-2CrjcTTuI9P7Un5VMovjjoWz4pFbiL_MkQTopR5YjAUn7fjr9JeRqPc-SQsa4mwbMNIJw7_bAkkWVYODgHDoTtm1Npc2TFhFn7Xo"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-error rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-title-md text-title-md text-on-surface truncate group-hover:text-error transition-colors">David Chen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">david.chen@partner.com</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-xxs">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-primary-container/20 text-primary-container font-label-md text-label-md">Partner</span>
+<span class="font-body-sm text-body-sm text-error">Suspended</span>
+</div>
+</div>
+<!-- User Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-md flex items-center gap-md shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-200 border border-surface-variant/50 cursor-pointer group">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-variant relative">
+<img alt="Elena V." class="w-full h-full object-cover" data-alt="Portrait of an older woman looking friendly and approachable in a bright, modern indoor space. The lighting emphasizes a clean, wholesome light-mode design language, characterized by crisp whites and subtle warm undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdlKbWGuGOoOJOFRdNJcG5-JE9D24Aauv1jyClwPu3KcnvlH-cIGr-afJmGtfN1WnLTw3HxQ8S0qv8F_KnrVuP42to6F5ymsvCBa9qGVBMymCTzuArw6ziDV4eTDIQaIYZkpl9mdIvf7o06U9djAZCixA3zczukXxAIJ4rsWwAWlZDzUuMfWeJCCcHBZZ0G4W-en0DVZxNkuPREtfVjXPAGwtzwBpUCFhHfT-8JJUH7zO2niG-Cgiqf899V-i-tgbCExPjek9UYZA"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-title-md text-title-md text-on-surface truncate group-hover:text-primary transition-colors">Elena V.</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">elena.v@example.com</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-xxs">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-secondary/10 text-secondary font-label-md text-label-md">Customer</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Active</span>
+</div>
+</div>
+<!-- Load More Skeleton/Button -->
+<div class="bg-surface-container-low border border-dashed border-surface-variant rounded-xl p-md flex items-center justify-center cursor-pointer hover:bg-surface-container transition-colors duration-200">
+<span class="font-label-lg text-label-lg text-primary">Load More Users</span>
+</div>
+</section>
+</main>
+<!-- FAB for adding user (Contextual) -->
+<button class="fixed bottom-24 md:bottom-xl right-md md:right-xl w-14 h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-container text-on-primary shadow-[0_8px_20px_rgba(178,44,0,0.3)] flex items-center justify-center transition-transform duration-120 active:scale-95 hover:shadow-[0_12px_28px_rgba(178,44,0,0.4)] z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs py-xs pb-safe bg-surface-container dark:bg-inverse-surface shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-t-xl h-20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-120 active:scale-90 w-1/4" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-120 active:scale-90 w-1/4" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_search</span>
+<span class="font-label-md text-label-md mt-1">Users</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-120 active:scale-90 w-1/4" href="#">
+<span class="material-symbols-outlined">delivery_dining</span>
+<span class="font-label-md text-label-md mt-1">Drivers</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed-dim transition-all duration-120 active:scale-90 w-1/4" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-md text-label-md mt-1">Alerts</span>
+</a>
+</nav>
+</body></html>

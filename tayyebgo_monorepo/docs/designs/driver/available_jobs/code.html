@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Job Feed - Driver App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "tertiary": "#515c55",
+                            "surface-light": "#FFFFFF",
+                            "status-active": "#0066FF",
+                            "error": "#ba1a1a",
+                            "surface-dim": "#d8dbd6",
+                            "on-tertiary-fixed-variant": "#3f4943",
+                            "inverse-on-surface": "#eff2ec",
+                            "primary-fixed-dim": "#b3c5ff",
+                            "inverse-primary": "#b3c5ff",
+                            "primary-fixed": "#dae1ff",
+                            "secondary-fixed": "#ffdbd0",
+                            "surface-variant": "#e0e3de",
+                            "tertiary-fixed": "#dae5dd",
+                            "secondary-fixed-dim": "#ffb59d",
+                            "status-pending": "#FFB800",
+                            "on-tertiary": "#ffffff",
+                            "surface-container-high": "#e6e9e4",
+                            "primary-container": "#0066ff",
+                            "surface-dark": "#141E19",
+                            "on-primary": "#ffffff",
+                            "on-error": "#ffffff",
+                            "surface-bright": "#f7faf5",
+                            "surface": "#f7faf5",
+                            "on-surface": "#191c1a",
+                            "on-tertiary-container": "#effaf2",
+                            "on-primary-fixed": "#001849",
+                            "on-secondary": "#ffffff",
+                            "error-container": "#ffdad6",
+                            "on-error-container": "#93000a",
+                            "on-secondary-fixed-variant": "#832600",
+                            "status-completed": "#22C55E",
+                            "secondary-container": "#fe6a34",
+                            "surface-container-lowest": "#ffffff",
+                            "surface-container": "#ecefea",
+                            "tertiary-container": "#69746d",
+                            "on-secondary-container": "#5d1900",
+                            "surface-container-low": "#f2f4ef",
+                            "on-tertiary-fixed": "#141e19",
+                            "surface-container-highest": "#e0e3de",
+                            "tertiary-fixed-dim": "#bec9c1",
+                            "outline-variant": "#c2c6d8",
+                            "on-secondary-fixed": "#390c00",
+                            "primary": "#0050cb",
+                            "status-error": "#EF4444",
+                            "inverse-surface": "#2d312e",
+                            "surface-tint": "#0054d6",
+                            "secondary": "#ab3500",
+                            "on-background": "#191c1a",
+                            "outline": "#727687",
+                            "on-primary-container": "#f8f7ff",
+                            "background": "#f7faf5",
+                            "on-primary-fixed-variant": "#003fa4",
+                            "on-surface-variant": "#424656"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-lg": "24px",
+                            "gutter": "16px",
+                            "stack-sm": "4px",
+                            "base": "8px",
+                            "margin-desktop": "32px",
+                            "stack-md": "12px",
+                            "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                            "label-sm": ["JetBrains Mono"],
+                            "headline-md": ["Hanken Grotesk"],
+                            "body-lg": ["Inter"],
+                            "headline-lg-mobile": ["Hanken Grotesk"],
+                            "label-md": ["JetBrains Mono"],
+                            "body-md": ["Inter"],
+                            "display-lg": ["Hanken Grotesk"],
+                            "headline-lg": ["Hanken Grotesk"],
+                            "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                            "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                            "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #E6E9E4; } /* Level 0 Floor */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .map-gradient { background: linear-gradient(180deg, rgba(230,233,228,0) 0%, rgba(230,233,228,1) 80%); pointer-events: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background font-body-md antialiased min-h-screen pb-24 relative overflow-x-hidden">
+<!-- Top App Bar (From Shared Components JSON) -->
+<header class="bg-surface dark:bg-surface-dark fixed top-0 w-full z-50 border-b border-surface-variant dark:border-on-surface-variant shadow-sm dark:shadow-none flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container dark:hover:bg-surface-dark/50 transition-colors active:scale-95 duration-150 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary dark:text-primary-fixed-dim tracking-tight">Tayyeb Go</h1>
+<div class="hover:bg-surface-container dark:hover:bg-surface-dark/50 transition-colors active:scale-95 duration-150 rounded-full cursor-pointer h-10 w-10 overflow-hidden border border-surface-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPnwFGsbQQHI8w4R-paLTYbeGtA2_GNjGUR1DaVkyNS7vZ5C2qEnR4gUtBqEqWcKus-hh0ImPuyV5AYD7Pk73r8nrthnZbSd626eKRhXJRdab9FXzgPea-o6bkfyCI9v5-G5tm1Bpcogy_7S-8AlUL2zFgjqmjWFrJe_-kaqzsy2f1JWgDSOtDVbwMjTaJvuy53bGxFfBHWlLOlhJOIE0Kr-VFMPzCVRI1Gl-CCU-X2852wd10HK6P1m17aWBAG3AZYUDHIr6q58s"/>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-stack-lg relative z-10">
+<!-- Status & Map Header Area -->
+<section class="flex flex-col gap-stack-md relative rounded-xl overflow-hidden bg-surface-light border border-surface-variant shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+<!-- Simulated Map Background -->
+<div class="h-48 w-full bg-surface-variant relative overflow-hidden" data-location="City Streets" style="">
+<!-- Decorative map-like shapes -->
+<div class="absolute inset-0 opacity-20">
+<svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0,50 Q100,10 200,60 T400,30 T600,80 T800,20" fill="none" stroke="#0066FF" stroke-linecap="round" stroke-width="4"></path>
+<path d="M50,150 L150,120 L250,180 L350,90" fill="none" stroke="#727687" stroke-dasharray="4,4" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Overlay controls -->
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<button class="bg-surface-light text-on-surface p-2 rounded-full shadow-sm hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+<!-- Online Toggle Overlay -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 glass-panel rounded-full px-6 py-3 flex items-center gap-4 shadow-lg">
+<span class="text-label-md font-label-md text-on-surface">Offline</span>
+<!-- Custom Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-surface-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-status-active"></div>
+</label>
+<span class="text-label-md font-label-md text-status-active font-bold">Online</span>
+</div>
+</div>
+<div class="p-4 flex justify-between items-end border-t border-surface-variant">
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface">Available Tasks</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Searching near your location...</p>
+</div>
+<div class="text-right">
+<span class="block text-label-sm font-label-sm text-on-surface-variant uppercase">Earning Goal</span>
+<span class="text-headline-md font-headline-md text-primary">$124.50</span>
+</div>
+</div>
+</section>
+<!-- Job Feed List -->
+<section class="flex flex-col gap-stack-md pb-8">
+<!-- Job Card 1 -->
+<article class="bg-surface-light rounded-xl border border-surface-variant p-4 flex flex-col gap-stack-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex gap-3 items-center">
+<div class="bg-primary-container text-on-primary-container p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h3 class="text-body-lg font-body-lg text-on-surface font-semibold">Burger Joint</h3>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 14px;">schedule</span>
+<span>Est. 15 mins</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-headline-md font-headline-md text-primary">$8.50</span>
+<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full border border-status-pending text-status-pending bg-status-pending/10 text-label-sm font-label-sm">High Demand</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 flex flex-col gap-2 relative">
+<!-- Route visualization line -->
+<div class="absolute left-[23px] top-6 bottom-6 w-0.5 bg-outline-variant"></div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-2 h-2 rounded-full bg-status-active ml-[11px] ring-4 ring-surface-container-low"></div>
+<p class="text-body-sm font-body-sm text-on-surface flex-1 truncate">123 Main St, Downtown</p>
+<span class="text-label-sm font-label-sm text-on-surface-variant">1.2 mi</span>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-3 h-3 rounded-full bg-secondary ml-[9px] ring-4 ring-surface-container-low"></div>
+<p class="text-body-sm font-body-sm text-on-surface flex-1 truncate">456 Elm St, Westside</p>
+<span class="text-label-sm font-label-sm text-on-surface-variant">3.5 mi</span>
+</div>
+</div>
+<div class="flex gap-gutter pt-2">
+<button class="flex-1 bg-surface-light border border-outline-variant text-on-surface py-3 rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors active:scale-95">Decline</button>
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg text-label-md font-label-md hover:bg-surface-tint transition-colors active:scale-95 shadow-sm">Accept Job</button>
+</div>
+</article>
+<!-- Job Card 2 -->
+<article class="bg-surface-light rounded-xl border border-surface-variant p-4 flex flex-col gap-stack-md shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow">
+<div class="flex justify-between items-start">
+<div class="flex gap-3 items-center">
+<div class="bg-secondary-container text-on-secondary-container p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="local_mall">local_mall</span>
+</div>
+<div>
+<h3 class="text-body-lg font-body-lg text-on-surface font-semibold">Grocery Mart</h3>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-size: 14px;">inventory_2</span>
+<span>3 Items</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-headline-md font-headline-md text-primary">$12.00</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 flex flex-col gap-2 relative">
+<div class="absolute left-[23px] top-6 bottom-6 w-0.5 bg-outline-variant"></div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-2 h-2 rounded-full bg-status-active ml-[11px] ring-4 ring-surface-container-low"></div>
+<p class="text-body-sm font-body-sm text-on-surface flex-1 truncate">789 Market Ave</p>
+<span class="text-label-sm font-label-sm text-on-surface-variant">0.5 mi</span>
+</div>
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-3 h-3 rounded-full bg-secondary ml-[9px] ring-4 ring-surface-container-low"></div>
+<p class="text-body-sm font-body-sm text-on-surface flex-1 truncate">101 Suburb Ln</p>
+<span class="text-label-sm font-label-sm text-on-surface-variant">5.2 mi</span>
+</div>
+</div>
+<div class="flex gap-gutter pt-2">
+<button class="flex-1 bg-surface-light border border-outline-variant text-on-surface py-3 rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors active:scale-95">Decline</button>
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg text-label-md font-label-md hover:bg-surface-tint transition-colors active:scale-95 shadow-sm">Accept Job</button>
+</div>
+</article>
+</section>
+</main>
+<!-- Bottom Nav Bar (From Shared Components JSON) - active state on 'Tasks' -->
+<nav class="bg-surface dark:bg-surface-dark fixed bottom-0 w-full z-50 border-t border-surface-variant dark:border-on-surface-variant shadow-lg dark:shadow-none fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-4 md:hidden">
+<!-- Home: Inactive -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</button>
+<!-- Orders: Inactive -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100">
+<span class="material-symbols-outlined mb-1" data-icon="package_2">package_2</span>
+<span class="text-label-sm font-label-sm">Orders</span>
+</button>
+<!-- Tasks: ACTIVE -->
+<button class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-full px-4 py-1 hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100">
+<span class="material-symbols-outlined mb-1" data-icon="local_shipping" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<span class="text-label-sm font-label-sm">Tasks</span>
+</button>
+<!-- Profile: Inactive -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="text-label-sm font-label-sm">Profile</span>
+</button>
+</nav>
+<!-- Desktop Sidebar (Hidden on Mobile) - active state on Dashboard (closest semantic match to job feed/tasks for a driver) -->
+<aside class="hidden md:flex h-full w-80 fixed left-0 top-16 z-40 bg-surface dark:bg-surface-dark bg-surface-container dark:bg-surface-container-high shadow-xl dark:shadow-none flex flex-col py-4 gap-2 border-r border-surface-variant">
+<div class="px-6 py-4 border-b border-surface-variant mb-2 flex items-center gap-4">
+<div class="h-12 w-12 rounded-full overflow-hidden border border-surface-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKq68rLYDNHlP1EgZrgbr7cmYRqBw_-8v9AwLAe2YqQFk0YrQtC9H0HVL_OJWxWUxIpKa6UsH0s96KXXJsnM0KVYHYKRJkP8ErzYpkfE5JGnk-5j-rwHLpAvEHEgT962Age6Q_LKadNa1pA-P2COsMXYZMBgcn3Bv5DDJBWdt0ByaeCwbX-5RCbhkOoK-U5C_dYaqSpr7kDmmJ-hCkSc90DS62ixbjRbrJaTZzMmb9ib-Vz7V4y79yTrAd4Ke3utlC4aOW72DAK_0"/>
+</div>
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface text-lg">Tayyeb Admin</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">System Controller</p>
+</div>
+</div>
+<button class="flex items-center gap-4 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-lg mx-2 p-3 active:opacity-80">
+<span class="material-symbols-outlined" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-body-md font-body-md font-medium">Dashboard</span>
+</button>
+<button class="flex items-center gap-4 text-on-surface-variant dark:text-surface-variant mx-2 p-3 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="text-body-md font-body-md">Inventory</span>
+</button>
+<button class="flex items-center gap-4 text-on-surface-variant dark:text-surface-variant mx-2 p-3 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="text-body-md font-body-md">Analytics</span>
+</button>
+<button class="flex items-center gap-4 text-on-surface-variant dark:text-surface-variant mx-2 p-3 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="text-body-md font-body-md">Fleet</span>
+</button>
+<button class="flex items-center gap-4 text-on-surface-variant dark:text-surface-variant mx-2 p-3 hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all active:opacity-80 mt-auto">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</button>
+</aside>
+<script>
+        // Adjust main content margin for desktop sidebar
+        if (window.innerWidth >= 768) {
+            document.querySelector('main').style.marginLeft = '320px';
+        }
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                document.querySelector('main').style.marginLeft = '320px';
+            } else {
+                document.querySelector('main').style.marginLeft = '0px';
+            }
+        });
+    </script>
+</body></html>

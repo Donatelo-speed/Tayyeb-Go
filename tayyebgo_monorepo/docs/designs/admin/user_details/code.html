@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin - User Details &amp; Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#b22c00",
+                        "on-surface-variant": "#5b403a",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d7d9e6",
+                        "primary-fixed-dim": "#ffb5a1",
+                        "secondary-fixed": "#70fcb7",
+                        "background": "#f9f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ebedfa",
+                        "on-secondary-fixed": "#002112",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-container": "#70fcb7",
+                        "inverse-on-surface": "#eef0fd",
+                        "tertiary": "#825500",
+                        "surface-variant": "#dfe2ef",
+                        "surface-container-high": "#e5e8f5",
+                        "tertiary-fixed": "#ffddb4",
+                        "primary-fixed": "#ffdbd1",
+                        "secondary": "#006c45",
+                        "on-surface": "#181c25",
+                        "primary-container": "#ff5a2c",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f1f3ff",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "outline-variant": "#e4beb5",
+                        "inverse-surface": "#2c303a",
+                        "on-tertiary-fixed": "#291800",
+                        "on-tertiary-container": "#3e2600",
+                        "surface-tint": "#b22c00",
+                        "outline": "#8f7068",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#c88400",
+                        "inverse-primary": "#ffb5a1",
+                        "on-secondary-fixed-variant": "#005233",
+                        "on-primary-fixed-variant": "#881f00",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb953",
+                        "on-primary-fixed": "#3b0800",
+                        "surface-container-highest": "#dfe2ef",
+                        "on-secondary-container": "#00734a",
+                        "on-background": "#181c25",
+                        "secondary-fixed-dim": "#50df9d",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#571100",
+                        "surface": "#f9f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xxl": "48px",
+                        "md": "16px",
+                        "max-width-desktop": "1200px",
+                        "unit": "8px",
+                        "xxs": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "sm": "12px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-md": ["Inter"],
+                        "price": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", { "lineHeight": "18.9px", "fontWeight": "700" }],
+                        "display-lg": ["42px", { "lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-lg": ["24px", { "lineHeight": "28.3px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "15.6px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16.8px", "fontWeight": "400" }],
+                        "display-md": ["34px", { "lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "price": ["16px", { "lineHeight": "19.2px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24.8px", "fontWeight": "400" }],
+                        "stat-value": ["32px", { "lineHeight": "33.6px", "fontWeight": "800" }],
+                        "title-md": ["18px", { "lineHeight": "23px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(249, 249, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(223, 226, 239, 0.5);
+        }
+        .glow-shadow-primary {
+            box-shadow: 0 4px 24px -6px rgba(178, 44, 0, 0.4);
+        }
+        .glow-shadow-error {
+            box-shadow: 0 4px 24px -6px rgba(186, 26, 26, 0.4);
+        }
+        .ambient-shadow {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+        .button-press {
+            transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .button-press:active {
+            transform: scale(0.97);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen antialiased flex flex-col md:flex-row">
+<!-- Mobile Top App Bar -->
+<header class="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md h-14 bg-surface-bright shadow-sm transition-all duration-120">
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-title-lg">menu</span>
+</div>
+<div class="font-title-lg text-title-lg font-bold text-primary">Command Center</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="Admin User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjzH6Z6G9BYj67sNA6EZWrVRdZi5SP27wX37HyVYBuiagiukcTydJwaBy3vUZwWd4O9Up6ZwWUM6qj5sr0u8qFPl_SVLOf5JyUWEfjkOMO6nD3HMcO9E537CPIjX_eb4vUWLHiu85PxQNN7BKFesB1JEVdjPUzxUXvsjQ_0PS7ns8MXjA9GaIuhBKTMtzLsq9HMa4NV_VL8-fMllkTc2q3SATidsOu4b7ZZw32fA9n6P7dCtAifStvUEugaBSwhOVmUdDLJGy9kBQ"/>
+</div>
+</header>
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full z-[60] py-lg w-72 rounded-r-xl bg-surface-container-low shadow-lg">
+<div class="px-lg pb-lg mb-md border-b border-surface-variant">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container/20">
+<img alt="System Administrator" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfc2iaN47J5uB7Jso_YcLZ3G_L8KbVu0ip58eNPzW85pJA_FVntqiRVIaSVssb_JDyleT_v7v3G3kHy6dU-cwdYEQMK2t7XVIsMLnGmv0wNKSKCqCCVZDUA8vyS-ZRHv0lz6FXgx6ohMUphqhbAh9juOP179Wt6BqZwgKWPXii3kfdcnr4YORWcADdrLOdDXH63duw3T0Jokmnuinixlzpy098UVeyW5jcWDw_lPLtD8Bazk7dTZnT-uTKE-2xXnfhoJUYDf9-0PA"/>
+</div>
+<div>
+<h2 class="font-title-md text-title-md font-black text-primary">Admin Console</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Delivery Ecosystem</p>
+</div>
+</div>
+<div class="mt-sm font-label-md text-label-md text-outline">v2.4.0</div>
+</div>
+<div class="flex-1 px-sm space-y-xs overflow-y-auto">
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm rounded-full hover:bg-surface-variant transition-transform duration-120 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-full px-md py-sm transition-transform duration-120 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined fill-icon">group</span>
+<span class="font-label-lg text-label-lg">User Directory</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm rounded-full hover:bg-surface-variant transition-transform duration-120 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-label-lg text-label-lg">Fleet Monitor</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm rounded-full hover:bg-surface-variant transition-transform duration-120 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg">System Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto md:ml-72 pt-16 md:pt-lg pb-24 md:pb-lg px-md md:px-lg overflow-x-hidden">
+<!-- Breadcrumbs & Header -->
+<div class="mb-lg">
+<div class="flex items-center gap-xs font-label-md text-label-md text-on-surface-variant mb-xs">
+<span>User Directory</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary">Driver Profile</span>
+</div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
+<h1 class="font-display-md text-display-md text-on-surface">User Details</h1>
+<div class="flex items-center gap-sm w-full sm:w-auto">
+<span class="px-sm py-xxs rounded-full bg-secondary-container/30 text-on-secondary-container font-label-md text-label-md border border-secondary-container/50">Active Account</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md md:gap-lg">
+<!-- Left Column: Identity & Contact (Spans 4) -->
+<div class="lg:col-span-4 flex flex-col gap-md md:gap-lg">
+<!-- Profile Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg ambient-shadow flex flex-col items-center text-center relative overflow-hidden">
+<div class="absolute top-0 w-full h-24 bg-gradient-to-br from-primary-container/20 to-tertiary-container/10"></div>
+<div class="relative w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-sm mb-md mt-sm bg-surface-variant">
+<img alt="Marcus Johnson" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrxuX68jc4Nbsd8geOCi39DYJc6Bi3-m23iTlltAFvC7Woy4CMUFBGRpNj3xD0EUAhuJAWjfywd40ObEcQGFKq0YOCpNK2D-Tb4Ft8indB-1CKbIBqvV7IgZEaK3N9L741JEWESMEbbf1jRP5MHWFVt28AI56KgpXKiU4_U5qmaCxQJG7FZaBekvULRcBIA1m4Dqyc5DDnrTW4OUubv5k3drRGRmYQcT9wthO_-OoABH874TP-8XlNCfkndU3szReraWf1tsyJ3ZY"/>
+</div>
+<h2 class="font-title-lg text-title-lg text-on-surface mb-xxs">Marcus Johnson</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">ID: USR-8842-DRV</p>
+<div class="flex items-center gap-xs bg-surface-container py-xs px-sm rounded-lg mb-lg w-full justify-center">
+<span class="material-symbols-outlined text-primary text-[18px] fill-icon">verified_user</span>
+<span class="font-label-md text-label-md text-on-surface">Driver Partner</span>
+</div>
+<div class="w-full space-y-sm text-left">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface-variant">Email</p>
+<p class="font-body-md text-body-md text-on-surface truncate">marcus.j@example.com</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">phone</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface-variant">Phone</p>
+<p class="font-body-md text-body-md text-on-surface truncate">+1 (555) 019-8472</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface-variant">Joined</p>
+<p class="font-body-md text-body-md text-on-surface truncate">October 12, 2022</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Admin Controls Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg ambient-shadow border border-error-container/30">
+<h3 class="font-title-md text-title-md text-on-surface mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-error">admin_panel_settings</span>
+                        Administrative Actions
+                    </h3>
+<div class="space-y-md">
+<!-- Role Dropdown -->
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant block mb-xs">Change Role</label>
+<div class="relative">
+<select class="w-full bg-surface-variant border border-outline-variant text-on-surface font-body-md rounded-lg h-12 px-sm appearance-none focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none bg-no-repeat bg-[right_12px_center] bg-[url('data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%235b403a%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22&gt;&lt;polyline points=%226 9 12 15 18 9%22&gt;&lt;/polyline&gt;&lt;/svg&gt;')] pr-10">
+<option selected="" value="driver">Driver Partner</option>
+<option value="consumer">Consumer</option>
+<option value="vendor">Vendor Partner</option>
+</select>
+</div>
+</div>
+<!-- Reset Password -->
+<button class="w-full h-12 bg-primary/10 text-primary font-label-lg text-label-lg rounded-lg border border-primary/20 hover:bg-primary/20 transition-colors flex items-center justify-center gap-xs button-press">
+<span class="material-symbols-outlined text-[20px]">key</span>
+                            Reset Password
+                        </button>
+<div class="h-px bg-surface-variant w-full my-sm"></div>
+<!-- Suspend Toggle -->
+<div class="flex items-center justify-between">
+<div>
+<p class="font-label-lg text-label-lg text-error">Suspend Account</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Temporarily disable access</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-error"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Metrics & Activity (Spans 8) -->
+<div class="lg:col-span-8 flex flex-col gap-md md:gap-lg">
+<!-- KPI Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<!-- Rating -->
+<div class="bg-surface-container-lowest rounded-xl p-md ambient-shadow flex flex-col justify-between">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 text-on-secondary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined fill-icon">star</span>
+</div>
+<div>
+<div class="font-stat-value text-stat-value text-on-surface">4.8</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Average Rating</div>
+</div>
+</div>
+<!-- Deliveries -->
+<div class="bg-surface-container-lowest rounded-xl p-md ambient-shadow flex flex-col justify-between">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 text-primary flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<div class="font-stat-value text-stat-value text-on-surface">124</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Total Deliveries</div>
+</div>
+</div>
+<!-- On Time -->
+<div class="bg-surface-container-lowest rounded-xl p-md ambient-shadow flex flex-col justify-between">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 text-tertiary flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">timer</span>
+</div>
+<div>
+<div class="font-stat-value text-stat-value text-on-surface">94%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">On-Time Rate</div>
+</div>
+</div>
+<!-- Earnings -->
+<div class="bg-surface-container-lowest rounded-xl p-md ambient-shadow flex flex-col justify-between">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 text-on-secondary-container flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<div class="font-stat-value text-stat-value text-on-surface">$3.2k</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">YTD Earnings</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity -->
+<div class="bg-surface-container-lowest rounded-xl p-lg ambient-shadow flex-1">
+<div class="flex justify-between items-center mb-md border-b border-surface-variant pb-sm">
+<h3 class="font-title-lg text-title-lg text-on-surface">Recent Activity</h3>
+<button class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors">View Full Log</button>
+</div>
+<div class="relative pl-sm">
+<!-- Timeline Line -->
+<div class="absolute left-[23px] top-4 bottom-4 w-px bg-surface-variant"></div>
+<div class="space-y-lg">
+<!-- Activity Item 1 -->
+<div class="flex gap-md relative">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest border-2 border-primary z-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-primary">route</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-start mb-xxs">
+<p class="font-label-lg text-label-lg text-on-surface">Completed Route #TR-992</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">2h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Delivered 3 packages in Downtown zone. Earned 5-star rating.</p>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-md relative">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest border-2 border-surface-variant z-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">directions_car</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-start mb-xxs">
+<p class="font-label-lg text-label-lg text-on-surface">Vehicle Updated</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Uploaded new insurance documents for Toyota Prius (2019).</p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex gap-md relative">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest border-2 border-error/50 z-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-error">gavel</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-start mb-xxs">
+<p class="font-label-lg text-label-lg text-on-surface">Policy Warning Issued</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Oct 24</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Automated warning for late delivery adherence (&lt; 80% daily avg).</p>
+</div>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex gap-md relative">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest border-2 border-surface-variant z-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">login</span>
+</div>
+<div class="flex-1 pt-1">
+<div class="flex justify-between items-start mb-xxs">
+<p class="font-label-lg text-label-lg text-on-surface">Session Started</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Oct 23</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Logged in from new device (iOS 17.2, IP: 192.168.1.1).</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs py-xs pb-safe bg-surface-container shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-t-xl transition-all duration-120">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all duration-120 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-xxs">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-all duration-120 active:scale-90" href="#">
+<span class="material-symbols-outlined fill-icon mb-xxs">person_search</span>
+<span class="font-label-md text-label-md">Users</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all duration-120 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-xxs">delivery_dining</span>
+<span class="font-label-md text-label-md">Drivers</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all duration-120 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-xxs">notifications</span>
+<span class="font-label-md text-label-md">Alerts</span>
+</a>
+</nav>
+</body></html>

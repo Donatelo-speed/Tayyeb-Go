@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go - Everything you need, delivered now</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#ffddb4",
+                    "primary": "#b22c00",
+                    "surface-tint": "#b22c00",
+                    "surface-bright": "#f9f9ff",
+                    "secondary": "#006c45",
+                    "surface": "#f9f9ff",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#70fcb7",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f1f3ff",
+                    "secondary-container": "#70fcb7",
+                    "on-tertiary-container": "#3e2600",
+                    "on-error": "#ffffff",
+                    "on-background": "#181c25",
+                    "inverse-primary": "#ffb5a1",
+                    "outline-variant": "#e4beb5",
+                    "on-primary-container": "#571100",
+                    "on-secondary-fixed": "#002112",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#c88400",
+                    "primary-container": "#ff5a2c",
+                    "surface-container": "#ebedfa",
+                    "background": "#f9f9ff",
+                    "on-secondary-fixed-variant": "#005233",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#ffdbd1",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#291800",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#181c25",
+                    "on-primary-fixed": "#3b0800",
+                    "on-primary-fixed-variant": "#881f00",
+                    "on-surface-variant": "#5b403a",
+                    "primary-fixed-dim": "#ffb5a1",
+                    "on-secondary-container": "#00734a",
+                    "inverse-surface": "#2c303a",
+                    "inverse-on-surface": "#eef0fd",
+                    "tertiary": "#825500",
+                    "surface-container-high": "#e5e8f5",
+                    "on-tertiary-fixed-variant": "#633f00",
+                    "surface-dim": "#d7d9e6",
+                    "secondary-fixed-dim": "#50df9d",
+                    "surface-container-highest": "#dfe2ef",
+                    "outline": "#8f7068",
+                    "surface-variant": "#dfe2ef",
+                    "tertiary-fixed-dim": "#ffb953"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "xs": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "max-width-desktop": "1200px",
+                    "xxl": "48px",
+                    "md": "16px",
+                    "sm": "12px",
+                    "xxs": "4px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "price": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "title-md": ["Inter"],
+                    "stat-value": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "display-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "title-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}],
+                    "price": ["16px", {"lineHeight": "19.2px", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24.8px", "fontWeight": "400"}],
+                    "title-md": ["18px", {"lineHeight": "23px", "fontWeight": "600"}],
+                    "stat-value": ["32px", {"lineHeight": "33.6px", "fontWeight": "800"}],
+                    "label-lg": ["14px", {"lineHeight": "18.9px", "fontWeight": "700"}],
+                    "display-md": ["34px", {"lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["12px", {"lineHeight": "16.8px", "fontWeight": "400"}],
+                    "display-lg": ["42px", {"lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "15.6px", "fontWeight": "600"}],
+                    "title-lg": ["24px", {"lineHeight": "28.3px", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #FFEFE8 0%, #fff 100%);
+        }
+        .primary-btn-gradient {
+            background: linear-gradient(90deg, #ff5a2c 0%, #b22c00 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col pt-16">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface shadow-sm fixed top-0 w-full z-50 flex items-center justify-between px-md h-16">
+<div class="flex items-center gap-xs">
+<button class="md:hidden text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors duration-150 p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<img alt="Tayyeb Go Logo" class="h-8 w-8 object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLuV1nomiPSZeACrOo49PG6uyB1Ic78Ei3cPIDVHP_ew75q-tCJRG7Ach1BLErt1N8S7hTj7rQp4sRrroAREctlEw7XQz_-CwttFWAxozvnp7znmDtYDWZDfXjmh1WySjeeLt2sAWtMSj-E_jHg3wL_bouvM5FA8MoQG2G75HbeqfoDEjQImAQ5oTt5WMHmzmJCjVZVempFCzbfX4bfZngW9IvUA3mcShEMX8h08EwL_zbDhgPOKsHTmaQ"/>
+<span class="font-title-lg text-title-lg text-primary dark:text-primary-fixed-dim font-bold tracking-tight hidden sm:block">Tayyeb Go</span>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-primary font-bold text-title-md hover:bg-primary-container/10 transition-colors duration-150 px-3 py-2 rounded-lg" href="#">Home</a>
+<a class="text-on-surface-variant text-title-md hover:bg-primary-container/10 transition-colors duration-150 px-3 py-2 rounded-lg" href="#how-it-works">How it Works</a>
+<a class="text-on-surface-variant text-title-md hover:bg-primary-container/10 transition-colors duration-150 px-3 py-2 rounded-lg" href="#partner">Partners</a>
+</nav>
+<div class="flex items-center">
+<button class="primary-btn-gradient text-on-primary font-label-lg text-label-lg px-4 py-2 rounded-full shadow-[0_4px_14px_0_rgba(255,90,44,0.39)] hover:scale-95 transition-transform duration-120">
+                Get the App
+            </button>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1200px] mx-auto">
+<!-- Hero Section -->
+<section class="hero-gradient w-full min-h-[80vh] flex flex-col md:flex-row items-center justify-center px-md py-xl md:px-lg gap-xl overflow-hidden relative">
+<div class="z-10 flex-1 flex flex-col items-center md:items-start text-center md:text-left gap-md max-w-2xl mt-8 md:mt-0">
+<div class="inline-flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full shadow-sm mb-4">
+<span class="material-symbols-outlined text-primary text-sm">local_shipping</span>
+<span class="font-label-md text-label-md text-primary">Fastest delivery in town</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Everything you need, <br/><span class="text-primary">delivered now.</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mt-2">
+                    From your favorite local restaurants to daily groceries, Tayyeb Go brings the city to your doorstep in minutes. Experience the freshest way to get what you want.
+                </p>
+<div class="flex flex-col sm:flex-row gap-sm mt-6 w-full sm:w-auto">
+<button class="primary-btn-gradient text-on-primary h-[52px] px-8 rounded-full font-label-lg text-label-lg shadow-[0_8px_24px_-4px_rgba(255,90,44,0.5)] hover:scale-97 transition-transform duration-120 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">download</span> Get the App
+                    </button>
+<button class="bg-[#FFEFE8] text-primary h-[52px] px-8 rounded-full font-label-lg text-label-lg border border-primary-fixed shadow-sm hover:scale-97 transition-transform duration-120 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">storefront</span> Become a Partner
+                    </button>
+</div>
+</div>
+<div class="flex-1 relative w-full max-w-lg md:max-w-none mt-8 md:mt-0 flex justify-center z-10">
+<div class="relative w-full aspect-square max-w-[400px] rounded-full overflow-hidden shadow-[0_20px_40px_-10px_rgba(178,44,0,0.15)] border-4 border-surface">
+<img alt="Delivery driver handing over fresh food" class="w-full h-full object-cover" data-alt="A vibrant, high-quality lifestyle shot of a smiling delivery driver handing over a fresh, warm paper bag of food to a happy customer at a modern apartment door. The scene is brightly lit with warm, natural sunlight, emphasizing a wholesome, modern corporate aesthetic. Subtle orange brand accents are visible on the driver's uniform, tying into the fresh, efficient logistics platform narrative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeWOWGpSETojChEWjAyzZrWLadn5IWYQrEEGvvTViENvOt-euYU-6HNpEV_J1OWHngFJ-rpJ3Zd_smrVfepinTN_c4FltSs6qTbQ0glLe7hW90a2xawDNxpJ2iyz2zayaAOv3RqUKcjCpZz2tTh2WeSecJlCFA3CPy3Y0A6Y4h6FtxcuYugbbYUHvN8vLytcAfB2RaZpNkpuUJXwefU32vB9_QoAn_ZIfTYLxOXjxItVBiy1N2Et43XjDY1ibFEW3ZOsjo9MdxW5M"/>
+</div>
+<!-- Floating Elements -->
+<div class="absolute top-10 -left-4 bg-surface p-3 rounded-xl shadow-lg border border-surface-dim flex items-center gap-3 animate-bounce" style="animation-duration: 3s;">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Hot Meals</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Under 30 mins</p>
+</div>
+</div>
+<div class="absolute bottom-20 -right-4 bg-surface p-3 rounded-xl shadow-lg border border-surface-dim flex items-center gap-3 animate-bounce" style="animation-duration: 4s; animation-delay: 1s;">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">shopping_basket</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Groceries</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fresh &amp; Daily</p>
+</div>
+</div>
+</div>
+<!-- Abstract Background Shapes -->
+<div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-fixed rounded-full blur-[100px] opacity-50 z-0"></div>
+<div class="absolute -bottom-40 -left-40 w-96 h-96 bg-tertiary-fixed rounded-full blur-[100px] opacity-40 z-0"></div>
+</section>
+<!-- How It Works Section (Bento Grid) -->
+<section class="py-xxl px-md md:px-lg w-full" id="how-it-works">
+<div class="text-center mb-xl">
+<h2 class="font-display-md text-display-md text-on-surface">Built for Everyone</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl mx-auto">Seamless experiences tailored for customers, drivers, and partners.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md auto-rows-[minmax(300px,auto)]">
+<!-- Customers Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-low rounded-[24px] p-lg md:p-xl relative overflow-hidden group shadow-[0_8px_24px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_16px_32px_-12px_rgba(178,44,0,0.1)] transition-shadow duration-300 flex flex-col justify-between">
+<div class="z-10 relative">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined">person</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface">For Customers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-sm">Cravings satisfied. Essentials delivered. Track your order in real-time from store to door.</p>
+</div>
+<div class="mt-8 relative h-48 w-full z-0 overflow-hidden rounded-xl border border-surface-dim">
+<img alt="Customer using app" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A modern lifestyle close-up of a person holding a smartphone, actively browsing a food delivery app. The screen glow lightly illuminates their face in a warm, inviting setting, perhaps a cozy living room. The aesthetic is modern minimal, with high-quality soft focus in the background to emphasize the seamless, easy user experience of ordering fresh meals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBggLGgQiiCBY83vP67It2E07dR8hz7E0EHsv2BlmI0Od4G8fjlTSEN2uSUNIucDhpu7fZUXZs2fXkGoIZSF8AdOg-PRVfBuOyXHw0WndQ9j2itQNigm81vMvMjPoqaWSsk_JQMwldWp5Iu7zhyCvePM0Fzuoi8T3i9Xa_pHZ820h5-AParSfDMIwlw4yZ3xAMd-Amyi9VsrsmPPEjUteWXcrrOCEXdSGYir8leVdch7Fi61cOXUWxVcWOkSkdA05DhwT7z9m1Rt-M"/>
+</div>
+</div>
+<!-- Drivers Card -->
+<div class="col-span-1 bg-surface-container-low rounded-[24px] p-lg relative overflow-hidden group shadow-[0_8px_24px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_16px_32px_-12px_rgba(0,108,69,0.1)] transition-shadow duration-300 flex flex-col justify-between border-t-4 border-secondary">
+<div class="z-10 relative">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary mb-4">
+<span class="material-symbols-outlined">two_wheeler</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-on-surface">For Drivers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Earn on your terms. Flexible hours and fast payouts.</p>
+</div>
+<div class="mt-6 flex justify-end">
+<button class="bg-secondary/10 text-secondary font-label-md px-4 py-2 rounded-full hover:bg-secondary/20 transition-colors">Join the Fleet</button>
+</div>
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-secondary-fixed-dim rounded-full blur-[40px] opacity-20 z-0 pointer-events-none"></div>
+</div>
+<!-- Partners Card -->
+<div class="col-span-1 md:col-span-3 bg-inverse-surface rounded-[24px] p-lg md:p-xl relative overflow-hidden group flex flex-col md:flex-row items-center gap-lg">
+<div class="flex-1 z-10 relative">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary-fixed mb-4">
+<span class="material-symbols-outlined">store</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-inverse-on-surface">For Partners</h3>
+<p class="font-body-md text-body-md text-surface-variant mt-2 max-w-lg">Grow your business beyond your physical walls. Reach thousands of hungry customers and manage orders with our powerful dashboard.</p>
+<button class="mt-6 bg-tertiary-fixed text-on-tertiary-fixed h-12 px-6 rounded-full font-label-md text-label-md hover:bg-tertiary-fixed-dim transition-colors flex items-center gap-2 w-fit">
+                            Start Selling <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="flex-1 w-full h-64 md:h-full relative rounded-xl overflow-hidden border border-outline">
+<img alt="Restaurant partner" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" data-alt="A professional, well-lit shot of an organized restaurant kitchen counter or cafe counter. A tablet displaying a modern, clean dashboard interface is prominently featured, signaling a smooth operational flow. The environment looks bustling but efficient, utilizing warm organic tones mixed with a crisp, corporate professionalism that highlights the reliability of the logistics platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArRNOBD2kf41OCyepOX_z_e61DH0jlma34TZi-bEBvvRLtD290WmJZvuOd5ClZJpOfU8QCSlG7ecPwAEm33Ga8GageRFldXD81TFFc1jOKYUvELd4_5Wnk-N8cljHkMtcRdr_LJweqYIv71pJlIX33GAXxjVC95bBLjad8irTSP_twlQZpOIUdF447SsdpcTtADc6DUsWqiZ9Uw1lmHREDuy90rQf94XhVcCOT3pL8x8zRdFqfuj4QYScceQhdDaVJcjfg21LjLYU"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-md bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant mt-auto">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-title-md text-title-md text-primary flex items-center gap-2">
+<img alt="Logo" class="h-6 w-6" src="https://lh3.googleusercontent.com/aida/AP1WRLuV1nomiPSZeACrOo49PG6uyB1Ic78Ei3cPIDVHP_ew75q-tCJRG7Ach1BLErt1N8S7hTj7rQp4sRrroAREctlEw7XQz_-CwttFWAxozvnp7znmDtYDWZDfXjmh1WySjeeLt2sAWtMSj-E_jHg3wL_bouvM5FA8MoQG2G75HbeqfoDEjQImAQ5oTt5WMHmzmJCjVZVempFCzbfX4bfZngW9IvUA3mcShEMX8h08EwL_zbDhgPOKsHTmaQ"/> Tayyeb Go
+            </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Tayyeb Go. All rights reserved.</span>
+</div>
+<div class="flex flex-wrap justify-center gap-md">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-opacity duration-200 hover:underline" href="#">About Us</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-opacity duration-200 hover:underline" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-opacity duration-200 hover:underline" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-opacity duration-200 hover:underline" href="#">Become a Partner</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go Partner - Shop Owner Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed-dim": "#ffb5a1",
+                      "secondary-fixed-dim": "#50df9d",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#c88400",
+                      "tertiary-fixed": "#ffddb4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#00734a",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#70fcb7",
+                      "tertiary": "#825500",
+                      "surface-dim": "#d7d9e6",
+                      "secondary-fixed": "#70fcb7",
+                      "primary-fixed": "#ffdbd1",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dfe2ef",
+                      "surface-container": "#ebedfa",
+                      "on-secondary-fixed": "#002112",
+                      "on-primary-container": "#571100",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#005233",
+                      "on-tertiary-fixed": "#291800",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "inverse-surface": "#2c303a",
+                      "surface-container-high": "#e5e8f5",
+                      "outline": "#8f7068",
+                      "inverse-on-surface": "#eef0fd",
+                      "tertiary-fixed-dim": "#ffb953",
+                      "on-primary-fixed": "#3b0800",
+                      "on-surface-variant": "#5b403a",
+                      "surface-container-low": "#f1f3ff",
+                      "on-tertiary-container": "#3e2600",
+                      "background": "#f9f9ff",
+                      "on-surface": "#181c25",
+                      "secondary": "#006c45",
+                      "surface-tint": "#b22c00",
+                      "on-primary-fixed-variant": "#881f00",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#dfe2ef",
+                      "primary": "#b22c00",
+                      "inverse-primary": "#ffb5a1",
+                      "surface-bright": "#f9f9ff",
+                      "primary-container": "#ff5a2c",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f9f9ff",
+                      "outline-variant": "#e4beb5",
+                      "on-background": "#181c25"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxs": "4px",
+                      "xl": "32px",
+                      "max-width-desktop": "1200px",
+                      "xxl": "48px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xs": "8px",
+                      "unit": "8px"
+              },
+              "fontFamily": {
+                      "title-lg": ["Inter"],
+                      "stat-value": ["Inter"],
+                      "display-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "price": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "title-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "title-lg": ["24px", {"lineHeight": "28.3px", "fontWeight": "700"}],
+                      "stat-value": ["32px", {"lineHeight": "33.6px", "fontWeight": "800"}],
+                      "display-md": ["34px", {"lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-sm": ["12px", {"lineHeight": "16.8px", "fontWeight": "400"}],
+                      "display-lg": ["42px", {"lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "15.6px", "fontWeight": "600"}],
+                      "price": ["16px", {"lineHeight": "19.2px", "fontWeight": "700"}],
+                      "label-lg": ["14px", {"lineHeight": "18.9px", "fontWeight": "700"}],
+                      "title-md": ["18px", {"lineHeight": "23px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24.8px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.surface-variant'); border-radius: theme('borderRadius.full'); }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+        
+        .card-shadow { box-shadow: 0 4px 16px -4px rgba(178, 44, 0, 0.08); }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked { right: 0; border-color: theme('colors.secondary'); }
+        .toggle-checkbox:checked + .toggle-label { background-color: theme('colors.secondary'); }
+        
+        /* Interaction */
+        .btn-press:active { transform: scale(0.97); transition: transform 120ms ease-in-out; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col md:flex-row pb-24 md:pb-0 font-body-md text-body-md">
+<!-- TopAppBar (Mobile Only) -->
+<header class="md:hidden fixed top-0 w-full z-50 flex items-center justify-between px-md h-16 bg-surface shadow-sm transition-transform duration-120">
+<button class="text-on-surface-variant hover:bg-primary-container/10 p-xs rounded-full transition-colors duration-150 btn-press">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-display-md text-display-md text-primary tracking-tight">Tayyeb Go</h1>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface shadow-sm btn-press">
+<img alt="Owner Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-eastern shop owner in their 40s. They are wearing a clean, branded apron over a collared shirt. The background is a slightly blurred, warm and inviting bakery interior. The lighting is soft and natural, emphasizing a trustworthy and experienced demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3w922VXRILKWI3phD9QmV2bYnfzbj4eTSeWIgVWN-JGBnp3POxcxPTQgixeaGE1JRL1CmhT9W2r-wcQaUaKbFzKP8UnLv6Ycu-FKdHJheZB_XYQBWee620k2Hag4VhASrX1NOg5E1QjkvlU2yc7dBGsRPauavf-mDEFK34zNbyfeQg_kMoCHAOo2WiQol7mgC3hR4bv8uQo-WT_aQPh9t_qZZtOEF7l2rez7n8CayXAd7G07sEycSWTs7lzBh0spn2Be2TVRO50Q"/>
+</button>
+</header>
+<!-- NavigationDrawer (Web Desktop) -->
+<nav class="hidden md:flex flex-col py-lg pr-md fixed left-0 top-0 h-full w-[280px] bg-surface shadow-xl z-40">
+<div class="px-lg mb-xl flex items-center gap-sm">
+<h1 class="font-title-lg text-title-lg text-primary">Tayyeb Go</h1>
+</div>
+<!-- Header Type: Profile -->
+<div class="px-lg mb-xl flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-surface shadow-sm">
+<img alt="Driver Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-eastern shop owner in their 40s. They are wearing a clean, branded apron over a collared shirt. The background is a slightly blurred, warm and inviting bakery interior. The lighting is soft and natural, emphasizing a trustworthy and experienced demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDat-6K0XvUbMk621SEBMfcM4VfIwoTNiyeIgDJdWSDMhLqKmFkjp1Hl1fYQcVYtHIko2rDiRE-cFMPzuM6-YIjI-fENMKIb7q_-Xb213zZBHT2vCFELHDzC3dXck5g_aqebNfUqxacwwDJ4Orfs-U4j34eQglOF6FLiWd7c8WXloawbzYGORS3x5XJN0kpTj6_uI6fSIDbazv_DFR_K8tI2N5BJsgsr3J2TUA9ouN-oA3a8L-Oe3-J-dwlPdyvvna4YypCF5LAVF0"/>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Ahmed Khan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tayyeb Go Partner</span>
+<span class="font-body-sm text-body-sm text-secondary mt-xxs flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span> Active Now</span>
+</div>
+</div>
+<ul class="flex flex-col gap-xs font-body-lg text-body-lg text-secondary">
+<li>
+<a class="flex items-center gap-md px-lg py-sm bg-secondary-container text-on-secondary-container rounded-r-full font-bold transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                    Deliveries
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+                    Earnings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">delivery_dining</span>
+                    Vehicles
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<div class="mt-auto px-lg pb-lg">
+<!-- Store Toggle Component inside Nav for Desktop -->
+<div class="bg-surface-container-lowest p-sm rounded-lg shadow-sm border border-surface-variant flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Store Status</span>
+<span class="font-body-sm text-body-sm text-secondary" id="nav-store-status-text">Accepting Orders</span>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out transform translate-x-6 border-secondary" id="nav-store-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-secondary cursor-pointer transition-colors duration-200 ease-in-out" for="nav-store-toggle"></label>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] w-full max-w-max-width-desktop mx-auto px-md md:px-lg pt-20 md:pt-lg pb-lg flex flex-col gap-lg">
+<!-- Header Section (Mobile Store Status & Greeting) -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md">
+<div>
+<h2 class="font-display-md text-display-md text-on-surface mb-xxs">Good Morning, Ahmed</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Here's a look at your store's performance today.</p>
+</div>
+<!-- Mobile Store Status Toggle -->
+<div class="md:hidden bg-surface p-sm rounded-xl shadow-sm border border-surface-variant w-full sm:w-auto flex items-center justify-between sm:justify-start sm:gap-lg">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" id="mobile-store-icon" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Store is Open</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Accepting orders</span>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out transform translate-x-6 border-secondary" id="mobile-store-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-secondary cursor-pointer transition-colors duration-200 ease-in-out" for="mobile-store-toggle"></label>
+</div>
+</div>
+</div>
+<!-- Bento Grid: High-Level Metrics -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Revenue Card -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-variant flex flex-col justify-between hover:shadow-md transition-shadow duration-300 col-span-1 sm:col-span-2 lg:col-span-2 relative overflow-hidden">
+<!-- Decorative background glow -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Today's Revenue</h3>
+</div>
+<span class="px-sm py-xxs rounded-full bg-secondary/10 text-secondary font-label-md text-label-md flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12.5%
+                    </span>
+</div>
+<div class="relative z-10">
+<div class="font-stat-value text-stat-value text-on-surface mb-xxs">SAR 1,245.50</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">vs. SAR 1,100 yesterday</p>
+</div>
+</div>
+<!-- Orders Card -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-variant flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+</div>
+<span class="px-sm py-xxs rounded-full bg-secondary/10 text-secondary font-label-md text-label-md flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5%
+                    </span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-xxs">Total Orders</h3>
+<div class="font-stat-value text-stat-value text-on-surface">42</div>
+</div>
+</div>
+<!-- Avg Prep Time Card -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-variant flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
+<div class="flex justify-between items-start mb-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+<span class="px-sm py-xxs rounded-full bg-error/10 text-error font-label-md text-label-md flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +2m
+                    </span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm text-on-surface-variant mb-xxs">Avg. Prep Time</h3>
+<div class="font-stat-value text-stat-value text-on-surface">14<span class="text-title-md font-title-md text-on-surface-variant ml-xxs">min</span></div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md lg:gap-lg flex-1">
+<!-- Left Column: Live Orders List -->
+<section class="lg:col-span-2 flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<h2 class="font-title-lg text-title-lg text-on-surface">Live Orders</h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Order Item: Preparing -->
+<div class="bg-surface rounded-xl p-md border border-surface-variant card-shadow flex flex-col sm:flex-row gap-md sm:items-center justify-between btn-press cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary-container shrink-0">
+<span class="material-symbols-outlined text-title-lg">soup_kitchen</span>
+</div>
+<div>
+<div class="flex items-center gap-xs mb-xxs">
+<span class="font-title-md text-title-md text-on-surface">#ORD-8821</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary-container font-label-md text-label-md">Preparing</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">3 items • SAR 85.00</p>
+</div>
+</div>
+<div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center mt-sm sm:mt-0 pt-sm sm:pt-0 border-t sm:border-t-0 border-surface-variant">
+<span class="font-label-md text-label-md text-error flex items-center gap-xxs"><span class="material-symbols-outlined text-[16px]">timer</span> 5m left</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Driver waiting</span>
+</div>
+</div>
+<!-- Order Item: Ready -->
+<div class="bg-surface rounded-xl p-md border border-surface-variant card-shadow flex flex-col sm:flex-row gap-md sm:items-center justify-between btn-press cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-title-lg">check_circle</span>
+</div>
+<div>
+<div class="flex items-center gap-xs mb-xxs">
+<span class="font-title-md text-title-md text-on-surface">#ORD-8820</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary font-label-md text-label-md">Ready for Pickup</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1 item • SAR 24.00</p>
+</div>
+</div>
+<div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center mt-sm sm:mt-0 pt-sm sm:pt-0 border-t sm:border-t-0 border-surface-variant">
+<span class="font-label-md text-label-md text-secondary flex items-center gap-xxs"><span class="material-symbols-outlined text-[16px]">person</span> Driver arrived</span>
+</div>
+</div>
+<!-- Order Item: New -->
+<div class="bg-surface rounded-xl p-md border border-primary/30 card-shadow flex flex-col sm:flex-row gap-md sm:items-center justify-between btn-press cursor-pointer relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex items-center gap-md pl-xs">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 animate-pulse">
+<span class="material-symbols-outlined text-title-lg">notifications_active</span>
+</div>
+<div>
+<div class="flex items-center gap-xs mb-xxs">
+<span class="font-title-md text-title-md text-on-surface">#ORD-8822</span>
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-md text-label-md">New Order</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">5 items • SAR 142.50</p>
+</div>
+</div>
+<div class="flex mt-sm sm:mt-0 gap-sm w-full sm:w-auto">
+<button class="flex-1 sm:flex-none h-10 px-md rounded-lg bg-[#FFEFE8] text-primary font-label-md text-label-md flex items-center justify-center btn-press">Decline</button>
+<button class="flex-1 sm:flex-none h-10 px-md rounded-lg bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center shadow-[0_4px_12px_rgba(178,44,0,0.3)] btn-press">Accept</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Goals & Insights -->
+<section class="flex flex-col gap-md">
+<h2 class="font-title-lg text-title-lg text-on-surface">Weekly Goals</h2>
+<div class="bg-surface rounded-xl p-md border border-surface-variant card-shadow flex flex-col gap-md">
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between items-end">
+<span class="font-label-lg text-label-lg text-on-surface">Revenue Target</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">SAR 4,500 / 5,000</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 90%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Almost there! 90% completed.</p>
+</div>
+<hr class="border-surface-variant"/>
+<div class="flex flex-col gap-sm">
+<div class="flex justify-between items-end">
+<span class="font-label-lg text-label-lg text-on-surface">Perfect Orders</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">120 / 150</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container rounded-full" style="width: 80%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Maintain rating above 4.8 to unlock bonus.</p>
+</div>
+</div>
+<!-- Promotional / Informational Card -->
+<div class="mt-sm bg-primary-container rounded-xl p-md text-on-primary-container relative overflow-hidden btn-press cursor-pointer">
+<div class="absolute right-0 bottom-0 opacity-20 transform translate-x-1/4 translate-y-1/4">
+<span class="material-symbols-outlined text-[120px]">campaign</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-title-md text-title-md mb-xxs">Boost Your Sales</h3>
+<p class="font-body-sm text-body-sm mb-md max-w-[80%]">Join the weekend mega-sale campaign to increase visibility.</p>
+<span class="font-label-md text-label-md flex items-center gap-xxs uppercase tracking-wider">Opt-in Now <span class="material-symbols-outlined text-[16px]">arrow_forward</span></span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-sm bg-surface rounded-t-xl border-t border-outline-variant shadow-[0_-4px_16px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-120 ease-out btn-press" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 hover:text-primary transition-all duration-120 ease-out scale-90 btn-press" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">reorder</span>
+<span class="font-label-md text-label-md mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-120 ease-out btn-press" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-120 ease-out btn-press" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple toggle logic for visual feedback
+        const mobileToggle = document.getElementById('mobile-store-toggle');
+        const navToggle = document.getElementById('nav-store-toggle');
+        const mobileIcon = document.getElementById('mobile-store-icon');
+        
+        function updateStoreStatus(isOpen) {
+            if(mobileToggle) mobileToggle.checked = isOpen;
+            if(navToggle) navToggle.checked = isOpen;
+            
+            // Update mobile text
+            const mobileTextContainer = mobileToggle?.closest('.bg-surface')?.querySelector('.flex-col');
+            if(mobileTextContainer) {
+                if(isOpen) {
+                    mobileTextContainer.innerHTML = `<span class="font-label-lg text-label-lg text-on-surface">Store is Open</span><span class="font-body-sm text-body-sm text-on-surface-variant">Accepting orders</span>`;
+                    if(mobileIcon) mobileIcon.style.color = "theme('colors.secondary')";
+                } else {
+                    mobileTextContainer.innerHTML = `<span class="font-label-lg text-label-lg text-on-surface">Store is Closed</span><span class="font-body-sm text-body-sm text-error">Not accepting orders</span>`;
+                    if(mobileIcon) mobileIcon.style.color = "theme('colors.on-surface-variant')";
+                }
+            }
+
+            // Update nav text
+            const navText = document.getElementById('nav-store-status-text');
+            if(navText) {
+                if(isOpen) {
+                    navText.textContent = "Accepting Orders";
+                    navText.className = "font-body-sm text-body-sm text-secondary";
+                } else {
+                    navText.textContent = "Offline";
+                    navText.className = "font-body-sm text-body-sm text-error";
+                }
+            }
+        }
+
+        if(mobileToggle) {
+            mobileToggle.addEventListener('change', (e) => updateStoreStatus(e.target.checked));
+        }
+        if(navToggle) {
+            navToggle.addEventListener('change', (e) => updateStoreStatus(e.target.checked));
+        }
+    </script>
+</body></html>

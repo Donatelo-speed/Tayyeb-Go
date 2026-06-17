@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics Overview - Tayyeb Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary-container": "#571100",
+                "primary": "#b22c00",
+                "inverse-on-surface": "#eef0fd",
+                "surface": "#f9f9ff",
+                "on-error-container": "#93000a",
+                "error": "#ba1a1a",
+                "tertiary-container": "#c88400",
+                "surface-variant": "#dfe2ef",
+                "on-surface": "#181c25",
+                "outline-variant": "#e4beb5",
+                "secondary-fixed-dim": "#50df9d",
+                "primary-fixed-dim": "#ffb5a1",
+                "inverse-primary": "#ffb5a1",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#8f7068",
+                "on-secondary-fixed-variant": "#005233",
+                "surface-dim": "#d7d9e6",
+                "surface-bright": "#f9f9ff",
+                "surface-container-highest": "#dfe2ef",
+                "on-primary-fixed-variant": "#881f00",
+                "on-tertiary": "#ffffff",
+                "surface-container-low": "#f1f3ff",
+                "on-secondary": "#ffffff",
+                "secondary": "#006c45",
+                "on-secondary-fixed": "#002112",
+                "on-primary-fixed": "#3b0800",
+                "on-surface-variant": "#5b403a",
+                "on-tertiary-fixed-variant": "#633f00",
+                "on-background": "#181c25",
+                "surface-container": "#ebedfa",
+                "primary-fixed": "#ffdbd1",
+                "primary-container": "#ff5a2c",
+                "on-tertiary-fixed": "#291800",
+                "on-secondary-container": "#00734a",
+                "surface-tint": "#b22c00",
+                "surface-container-high": "#e5e8f5",
+                "error-container": "#ffdad6",
+                "on-error": "#ffffff",
+                "secondary-container": "#70fcb7",
+                "on-primary": "#ffffff",
+                "tertiary": "#825500",
+                "background": "#f9f9ff",
+                "tertiary-fixed": "#ffddb4",
+                "tertiary-fixed-dim": "#ffb953",
+                "inverse-surface": "#2c303a",
+                "secondary-fixed": "#70fcb7",
+                "on-tertiary-container": "#3e2600",
+                "status-active": "#0066FF",
+                "status-pending": "#FFB800",
+                "status-completed": "#22C55E",
+                "status-error": "#EF4444"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xl": "32px",
+                "sm": "12px",
+                "xxl": "48px",
+                "max-width-desktop": "1200px",
+                "xxs": "4px",
+                "xs": "8px",
+                "md": "16px",
+                "unit": "8px",
+                "lg": "24px"
+        },
+        "fontFamily": {
+                "price": [
+                        "Inter"
+                ],
+                "display-lg": [
+                        "Inter"
+                ],
+                "title-lg": [
+                        "Inter"
+                ],
+                "stat-value": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "title-md": [
+                        "Inter"
+                ],
+                "label-lg": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "body-sm": [
+                        "Inter"
+                ],
+                "display-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "price": [
+                        "16px",
+                        {
+                                "lineHeight": "19.2px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-lg": [
+                        "42px",
+                        {
+                                "lineHeight": "44.5px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "title-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "28.3px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "stat-value": [
+                        "32px",
+                        {
+                                "lineHeight": "33.6px",
+                                "fontWeight": "800"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "15.6px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "title-md": [
+                        "18px",
+                        {
+                                "lineHeight": "23px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "18.9px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "21px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16.8px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "display-md": [
+                        "34px",
+                        {
+                                "lineHeight": "37.4px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24.8px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body {
+            background-color: #ebedfa; /* Level 0 Floor */
+            color: #181c25;
+        }
+        .card-level-1 {
+            background-color: #ffffff;
+            border: 1px solid #dfe2ef;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Diffused shadow for lift */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex font-body-md text-body-md bg-surface-container">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-full w-80 fixed left-0 top-0 z-50 bg-surface shadow-xl">
+<div class="p-4 border-b border-surface-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div>
+<div class="text-title-lg font-title-lg text-primary">Tayyeb Admin</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">System Controller</div>
+</div>
+</div>
+<div class="flex flex-col h-full py-4 gap-2 px-2">
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-body-md font-body-md">Inventory</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg p-3 active:opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="text-body-md font-body-md font-semibold">Analytics</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-body-md font-body-md">Fleet</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Top App Bar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 bg-surface text-primary border-b border-surface-variant shadow-sm h-16 flex justify-between items-center px-md">
+<button class="p-2 text-primary active:scale-95 duration-150 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-title-lg font-title-lg tracking-tight">Tayyeb Go</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">person</span>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-80 pt-20 md:pt-8 p-md md:p-xl bg-surface-container min-h-screen">
+<div class="max-w-7xl mx-auto space-y-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-display-md font-display-md text-on-surface">Analytics Overview</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant">Real-time system monitoring and fleet performance.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-2 px-3 py-1 bg-surface-container-lowest rounded-full border border-outline-variant text-label-md font-label-md text-on-surface">
+<span class="w-2 h-2 rounded-full bg-status-active animate-pulse"></span>
+                        Live
+                    </span>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                        Filters
+                    </button>
+</div>
+</div>
+<!-- Top Stats - Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Stat Card 1: Active Deliveries -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Active Deliveries</span>
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">package_2</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">1,284</div>
+<div class="flex items-center gap-1 mt-2 text-status-completed text-label-md font-label-md">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+12% from last hour</span>
+</div>
+</div>
+</div>
+<!-- Stat Card 2: Total Drivers Online -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Drivers Online</span>
+<span class="material-symbols-outlined text-secondary bg-secondary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">856</div>
+<div class="flex items-center gap-1 mt-2 text-on-surface-variant text-label-md font-label-md">
+<span class="material-symbols-outlined text-[16px]">trending_flat</span>
+<span>Stable capacity</span>
+</div>
+</div>
+</div>
+<!-- Stat Card 3: Total Revenue -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Revenue (Today)</span>
+<span class="material-symbols-outlined text-tertiary bg-tertiary-fixed p-2 rounded-lg">payments</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface font-label-md">$45.2k</div>
+<div class="flex items-center gap-1 mt-2 text-status-completed text-label-md font-label-md">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+5.4% vs yesterday</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Area: Map & Alerts -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md h-[600px]">
+<!-- Fleet Distribution Map (Spans 8 cols on desktop) -->
+<div class="lg:col-span-8 card-level-1 rounded-xl overflow-hidden relative flex flex-col h-full">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest z-10">
+<h2 class="text-title-lg font-title-lg text-on-surface">Fleet Distribution</h2>
+<div class="flex gap-2">
+<button class="p-1 rounded bg-surface-container text-on-surface hover:bg-surface-variant"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="p-1 rounded bg-surface-container text-on-surface hover:bg-surface-variant"><span class="material-symbols-outlined">zoom_out</span></button>
+</div>
+</div>
+<div class="relative flex-1 bg-surface-variant w-full h-full">
+<!-- Simulated Map Background -->
+<div class="absolute inset-0 bg-cover bg-center opacity-50" data-alt="A highly detailed, top-down view of a modern city grid rendered in a minimalist, light-mode aesthetic. The streets form complex, geometric patterns in soft whites and light grays, resembling a high-tech logistics map. Subtle blue and orange glowing nodes indicate delivery points and moving vehicles, contrasting against the clean, pale background. The mood is efficient, organized, and technologically advanced, suitable for a corporate dashboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCeKoY9tSM0SXzE3SRPLekvZ3tnaGUQupz2KlwWszdSElmJehWugRM-_KJBKwM0uvo4L_tCfWFvOX6O3-vcxQOkud3ybz53_28w6TnKuOzQVbqjFyr-qcqlsl8aR7NjZna9rE3mrSsvJb4BybZA82zqyhjnA543Ob0LK_IyFOgz2iQ0qRjIl3wCnoe9-6SlwpUJQW8sORu5K3BpajK9g5w0s7FE4Nf_bMap0qb5JgkSTCeMRYfTwAuNpfKQRCkxYvho04fIq1b5zAc');"></div>
+<!-- Map Overlay Controls (Glassmorphism) -->
+<div class="absolute bottom-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md border border-outline-variant rounded-lg p-3 flex flex-col gap-2 shadow-lg">
+<div class="flex items-center gap-2 text-label-md font-label-md">
+<span class="w-3 h-3 rounded-full bg-status-active"></span> High Density
+                             </div>
+<div class="flex items-center gap-2 text-label-md font-label-md">
+<span class="w-3 h-3 rounded-full bg-status-pending"></span> Medium
+                             </div>
+<div class="flex items-center gap-2 text-label-md font-label-md">
+<span class="w-3 h-3 rounded-full bg-surface-variant border border-outline"></span> Low Density
+                             </div>
+</div>
+<!-- FAB on Map -->
+<button class="absolute top-4 right-4 w-12 h-12 rounded-full bg-surface-container-lowest shadow-xl border border-outline-variant flex items-center justify-center text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+</div>
+<!-- System Alerts List (Spans 4 cols on desktop) -->
+<div class="lg:col-span-4 card-level-1 rounded-xl flex flex-col h-full overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+<h2 class="text-title-lg font-title-lg text-on-surface">System Alerts</h2>
+<span class="bg-error-container text-on-error-container text-label-md font-label-md px-2 py-0.5 rounded-full">3 New</span>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-2 bg-surface-container-lowest">
+<!-- Alert Item: Critical -->
+<div class="p-3 rounded-lg border border-error-container bg-error-container/10 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-error mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<div class="text-body-lg font-body-lg font-semibold text-on-surface">Traffic Delay: Zone North</div>
+<div class="text-body-md font-body-md text-on-surface-variant mt-1">Major accident reported on Hwy 4. Expect 20m delays for 15 drivers.</div>
+<div class="text-label-md font-label-md text-on-surface-variant mt-2">Just now</div>
+</div>
+</div>
+<!-- Alert Item: Warning -->
+<div class="p-3 rounded-lg border border-status-pending/30 bg-status-pending/5 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-pending mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<div class="text-body-lg font-body-lg font-semibold text-on-surface">Low Fleet Availability</div>
+<div class="text-body-md font-body-md text-on-surface-variant mt-1">Driver ratio to active orders dropping below threshold in Sector 7.</div>
+<div class="text-label-md font-label-md text-on-surface-variant mt-2">12 mins ago</div>
+</div>
+</div>
+<!-- Alert Item: Info -->
+<div class="p-3 rounded-lg border border-outline-variant bg-surface-container-low flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<div>
+<div class="text-body-lg font-body-lg font-semibold text-on-surface">System Update Complete</div>
+<div class="text-body-md font-body-md text-on-surface-variant mt-1">Routing algorithm v2.4 deployed successfully.</div>
+<div class="text-label-md font-label-md text-on-surface-variant mt-2">1 hour ago</div>
+</div>
+</div>
+<!-- Alert Item: Warning -->
+<div class="p-3 rounded-lg border border-status-pending/30 bg-status-pending/5 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-pending mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<div class="text-body-lg font-body-lg font-semibold text-on-surface">Weather Advisory</div>
+<div class="text-body-md font-body-md text-on-surface-variant mt-1">Heavy rain expected in East District. Delivery times may be impacted.</div>
+<div class="text-label-md font-label-md text-on-surface-variant mt-2">2 hours ago</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-outline-variant bg-surface-container-lowest text-center">
+<button class="text-primary text-label-lg font-label-lg hover:underline">View All Alerts</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

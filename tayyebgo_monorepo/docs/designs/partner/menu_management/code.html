@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go - Menu Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#8f7068",
+                      "inverse-on-surface": "#eef0fd",
+                      "inverse-primary": "#ffb5a1",
+                      "on-primary-fixed": "#3b0800",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "outline-variant": "#e4beb5",
+                      "tertiary": "#825500",
+                      "on-tertiary-fixed": "#291800",
+                      "tertiary-container": "#c88400",
+                      "primary-fixed-dim": "#ffb5a1",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#005233",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f1f3ff",
+                      "on-surface": "#181c25",
+                      "on-primary-fixed-variant": "#881f00",
+                      "surface-variant": "#dfe2ef",
+                      "tertiary-fixed-dim": "#ffb953",
+                      "primary": "#b22c00",
+                      "surface-container-highest": "#dfe2ef",
+                      "surface-dim": "#d7d9e6",
+                      "on-background": "#181c25",
+                      "secondary-container": "#70fcb7",
+                      "on-secondary": "#ffffff",
+                      "inverse-surface": "#2c303a",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "tertiary-fixed": "#ffddb4",
+                      "primary-container": "#ff5a2c",
+                      "on-tertiary-container": "#3e2600",
+                      "secondary-fixed": "#70fcb7",
+                      "secondary": "#006c45",
+                      "primary-fixed": "#ffdbd1",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container": "#ebedfa",
+                      "surface": "#f9f9ff",
+                      "surface-tint": "#b22c00",
+                      "background": "#f9f9ff",
+                      "on-secondary-fixed": "#002112",
+                      "secondary-fixed-dim": "#50df9d",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-surface-variant": "#5b403a",
+                      "on-error-container": "#93000a",
+                      "surface-container-high": "#e5e8f5",
+                      "on-secondary-container": "#00734a",
+                      "on-primary-container": "#571100"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "8px",
+                      "lg": "24px",
+                      "xxs": "4px",
+                      "xl": "32px",
+                      "unit": "8px",
+                      "xxl": "48px",
+                      "max-width-desktop": "1200px",
+                      "sm": "12px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "stat-value": ["Inter"],
+                      "body-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "title-md": ["Inter"],
+                      "price": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["12px", {"lineHeight": "16.8px", "fontWeight": "400"}],
+                      "label-lg": ["14px", {"lineHeight": "18.9px", "fontWeight": "700"}],
+                      "stat-value": ["32px", {"lineHeight": "33.6px", "fontWeight": "800"}],
+                      "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}],
+                      "title-lg": ["24px", {"lineHeight": "28.3px", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "15.6px", "fontWeight": "600"}],
+                      "title-md": ["18px", {"lineHeight": "23px", "fontWeight": "600"}],
+                      "price": ["16px", {"lineHeight": "19.2px", "fontWeight": "700"}],
+                      "display-lg": ["42px", {"lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24.8px", "fontWeight": "400"}],
+                      "display-md": ["34px", {"lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Custom Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #006c45; /* secondary color */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #006c45; /* secondary color */
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #dfe2ef; /* surface-variant */
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            background-color: #dfe2ef; /* surface-variant */
+            transition: all 0.3s;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 md:pl-[280px]">
+<!-- NavigationDrawer (Desktop) -->
+<nav class="hidden md:flex flex-col py-lg pr-md bg-surface shadow-xl fixed left-0 top-0 h-full w-[280px] z-40">
+<div class="px-md mb-xl flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary font-display-md text-display-md">storefront</span>
+<span class="font-title-lg text-title-lg text-primary tracking-tight">Tayyeb Go</span>
+</div>
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="Partner Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPq4u_jb-AIZUi_k4m0fpCZg0xDaXLe5ZyLj0s8xpKdTdQrJWQtXVfMawfC15W-OAKy51RlcpPm_gSeKgeD2vl7qrDivy6AfD8imjOxo5uLdr9nH7ozxiOZoBrwoOz5XCT8ibe6pKfCvpQZypB10o2oXij_EBsgTEJSfWOKGRx4KU4ZJRGLK3qvW-A0oOfRiJ--yQgz0RVG3hm7O130bw0X0V1DZrtJN8wvH9pQWejZGt2YHnsbU7B6D4bBGJcVof75FVMgr4_oVg"/>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Burger Haven</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Active Now</p>
+</div>
+</div>
+</div>
+<ul class="flex flex-col gap-xs flex-1">
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full font-body-lg text-body-lg hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-r-full font-bold font-body-lg text-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+                    Menu Management
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full font-body-lg text-body-lg hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Earnings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full font-body-lg text-body-lg hover:bg-secondary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopAppBar (Mobile & Desktop Header) -->
+<header class="fixed top-0 w-full md:w-[calc(100%-280px)] md:left-[280px] z-30 flex items-center justify-between px-md h-16 bg-surface shadow-sm">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-xs text-on-surface-variant hover:bg-primary-container/10 transition-colors duration-150 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-title-lg text-title-lg text-primary md:hidden">Menu</h1>
+<h1 class="font-title-lg text-title-lg text-on-surface hidden md:block">Menu Management</h1>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-xs text-on-surface-variant hover:bg-primary-container/10 transition-colors duration-150 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 px-md md:px-lg max-w-max-width-desktop mx-auto">
+<!-- Search and Filter Bar -->
+<div class="flex flex-col md:flex-row gap-sm mb-lg">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-[52px] pl-[40px] pr-sm rounded-lg bg-surface border border-outline-variant text-body-lg font-body-lg focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_12px_rgba(255,90,44,0.3)] transition-all outline-none" placeholder="Search menu items..." type="text"/>
+</div>
+<div class="flex gap-sm overflow-x-auto pb-sm md:pb-0 scrollbar-hide">
+<button class="whitespace-nowrap px-md py-sm bg-primary-container text-on-primary-container rounded-full font-label-lg text-label-lg transition-transform active:scale-95 duration-120">All Items</button>
+<button class="whitespace-nowrap px-md py-sm bg-surface text-on-surface border border-outline-variant rounded-full font-label-lg text-label-lg hover:bg-surface-container-high transition-transform active:scale-95 duration-120">Burgers</button>
+<button class="whitespace-nowrap px-md py-sm bg-surface text-on-surface border border-outline-variant rounded-full font-label-lg text-label-lg hover:bg-surface-container-high transition-transform active:scale-95 duration-120">Sides</button>
+<button class="whitespace-nowrap px-md py-sm bg-surface text-on-surface border border-outline-variant rounded-full font-label-lg text-label-lg hover:bg-surface-container-high transition-transform active:scale-95 duration-120">Drinks</button>
+</div>
+</div>
+<!-- Menu Categories Section -->
+<div class="space-y-xl">
+<!-- Category: Burgers -->
+<section>
+<div class="flex items-center justify-between mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface">Burgers</h2>
+<span class="font-body-md text-body-md text-on-surface-variant">3 Items</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Item Card -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-200">
+<div class="flex gap-md mb-md">
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-surface-container-high">
+<img alt="Classic Cheeseburger" class="w-full h-full object-cover" data-alt="A juicy, perfectly assembled classic cheeseburger on a clean, modern white plate, well-lit to highlight freshness, embodying a warm, organic food-forward visual style with high-contrast utility typical of a premium food delivery platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAkWPaetJoUDQNdFL7a8FyiDOAJzqmvA3EewtDMyLpU5H7W1kB6RVv6iO7Q70nJhhz42uQMqte-4oJNKjaLD_YTmYvD5qbw47le1gZ1m8Yrfx7ufmnE8_2LlxffabFRwr3oPJr0FojTnfyp-mjz3p-90kF5F_dwHp61zH24lGKeEN_8C6sGGE-Z63PnuFzE7sGCKdL5D8arrVVrE8hxxfnw8cjgAF2nem2nnfENI4pOoqA1bu-2p2rwwuNIZGtw7dtsxFKs4se7-o"/>
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-title-md text-on-surface mb-xxs">Classic Cheeseburger</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Beef patty, cheddar, lettuce, tomato, house sauce.</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-outline-variant/50">
+<div class="flex items-center gap-xs">
+<span class="font-price text-price text-on-surface">SAR</span>
+<input class="w-[80px] h-8 px-xs border-b border-outline-variant bg-transparent font-price text-price text-on-surface focus:border-primary focus:outline-none focus:shadow-[0_2px_0_rgba(255,90,44,0.3)]" type="number" value="35.00"/>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-label-md text-secondary">Available</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer" for="toggle1"></label>
+</div>
+</div>
+</div>
+</div>
+<!-- Item Card (Sold Out) -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_4px_16px_rgba(0,0,0,0.08)] opacity-75">
+<div class="flex gap-md mb-md">
+<div class="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-surface-container-high grayscale">
+<img alt="Double Smash Burger" class="w-full h-full object-cover" data-alt="A double smash burger presented on a minimal background, slightly desaturated, maintaining the corporate modern food delivery aesthetic while signaling unavailability in a sophisticated manner." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdHxOpT_kUOqUH5-hNIhIUaakM1V3B3KV6JMqC5gUsb2lX8-ifxXUvOqllWW3m4_YDQ1ltFXpbGq7Yba2bKflCCkRgXjFIf8l0evjeK5qFEsIE2JKi5LSnoPMUKfQC6HAPQNydVu3eDrmY8RiSyu_rf2ej2Vyqb1L-iwVO-nrrXUC29gKad2ia35e3V9YLE5R6hA2C8nAIdlO8hre7TRl1r20FYXWGA6H46luphfPdznXWmpCmx4eQl2CgdKUF5hBiBtDUrTKFg0I"/>
+</div>
+<div class="flex-1">
+<h3 class="font-title-md text-title-md text-on-surface mb-xxs">Double Smash Burger</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Two smashed patties, double cheese, caramelized onions.</p>
+</div>
+</div>
+<div class="flex items-center justify-between mt-sm pt-sm border-t border-outline-variant/50">
+<div class="flex items-center gap-xs">
+<span class="font-price text-price text-on-surface">SAR</span>
+<input class="w-[80px] h-8 px-xs border-b border-outline-variant bg-transparent font-price text-price text-on-surface focus:border-primary focus:outline-none focus:shadow-[0_2px_0_rgba(255,90,44,0.3)]" type="number" value="45.00"/>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">Sold Out</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer" for="toggle2"></label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Button (Add New Item) -->
+<button class="fixed bottom-24 md:bottom-lg right-md md:right-lg z-40 bg-primary text-on-primary w-14 h-14 rounded-full shadow-[0_4px_16px_rgba(178,44,0,0.4)] flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container hover:scale-105 active:scale-95 transition-all duration-200 group">
+<span class="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-sm bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dash</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-md text-label-md mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-120 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+<span class="font-label-md text-label-md mt-1">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple script to handle toggle visual state changes (optional, mostly handled by CSS)
+        document.querySelectorAll('.toggle-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const label = e.target.closest('.flex').querySelector('span.font-label-md');
+                if(e.target.checked) {
+                    label.textContent = 'Available';
+                    label.classList.remove('text-on-surface-variant');
+                    label.classList.add('text-secondary');
+                    e.target.closest('.bg-surface-container-lowest').classList.remove('opacity-75');
+                    e.target.closest('.bg-surface-container-lowest').querySelector('.grayscale')?.classList.remove('grayscale');
+                } else {
+                    label.textContent = 'Sold Out';
+                    label.classList.remove('text-secondary');
+                    label.classList.add('text-on-surface-variant');
+                    e.target.closest('.bg-surface-container-lowest').classList.add('opacity-75');
+                    e.target.closest('.bg-surface-container-lowest').querySelector('.w-20.h-20').classList.add('grayscale');
+                }
+            });
+        });
+    </script>
+</body></html>

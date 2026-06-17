@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics Overview - Tayyeb Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#515c55",
+                        "surface-light": "#FFFFFF",
+                        "status-active": "#0066FF",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dbd6",
+                        "on-tertiary-fixed-variant": "#3f4943",
+                        "inverse-on-surface": "#eff2ec",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "inverse-primary": "#b3c5ff",
+                        "primary-fixed": "#dae1ff",
+                        "secondary-fixed": "#ffdbd0",
+                        "surface-variant": "#e0e3de",
+                        "tertiary-fixed": "#dae5dd",
+                        "secondary-fixed-dim": "#ffb59d",
+                        "status-pending": "#FFB800",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e9e4",
+                        "primary-container": "#0066ff",
+                        "surface-dark": "#141E19",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f7faf5",
+                        "surface": "#f7faf5",
+                        "on-surface": "#191c1a",
+                        "on-tertiary-container": "#effaf2",
+                        "on-primary-fixed": "#001849",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#832600",
+                        "status-completed": "#22C55E",
+                        "secondary-container": "#fe6a34",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ecefea",
+                        "tertiary-container": "#69746d",
+                        "on-secondary-container": "#5d1900",
+                        "surface-container-low": "#f2f4ef",
+                        "on-tertiary-fixed": "#141e19",
+                        "surface-container-highest": "#e0e3de",
+                        "tertiary-fixed-dim": "#bec9c1",
+                        "outline-variant": "#c2c6d8",
+                        "on-secondary-fixed": "#390c00",
+                        "primary": "#0050cb",
+                        "status-error": "#EF4444",
+                        "inverse-surface": "#2d312e",
+                        "surface-tint": "#0054d6",
+                        "secondary": "#ab3500",
+                        "on-background": "#191c1a",
+                        "outline": "#727687",
+                        "on-primary-container": "#f8f7ff",
+                        "background": "#f7faf5",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "on-surface-variant": "#424656"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "24px",
+                        "gutter": "16px",
+                        "stack-sm": "4px",
+                        "base": "8px",
+                        "margin-desktop": "32px",
+                        "stack-md": "12px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #E6E9E4; /* Level 0 Floor */
+            color: #191c1a;
+        }
+        .card-level-1 {
+            background-color: #FFFFFF;
+            border: 1px solid #e0e3de;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Diffused shadow for lift */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex font-body-md text-body-md">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-full w-80 fixed left-0 top-0 z-50 bg-surface bg-surface-container shadow-xl">
+<div class="p-4 border-b border-surface-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div>
+<div class="text-headline-md font-headline-md text-primary">Tayyeb Admin</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">System Controller</div>
+</div>
+</div>
+<div class="flex flex-col h-full py-4 gap-2 px-2">
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-body-md font-body-md">Inventory</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-4 bg-primary-container text-on-primary-container rounded-lg p-3 active:opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="text-body-md font-body-md font-semibold">Analytics</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-body-md font-body-md">Fleet</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:opacity-80 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Top App Bar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 bg-surface text-primary border-b border-surface-variant shadow-sm h-16 flex justify-between items-center px-margin-mobile">
+<button class="p-2 text-primary active:scale-95 duration-150 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-headline-lg-mobile font-headline-lg-mobile tracking-tight">Tayyeb Go</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">person</span>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-80 pt-20 md:pt-8 p-margin-mobile md:p-margin-desktop bg-surface-container-high min-h-screen">
+<div class="max-w-7xl mx-auto space-y-stack-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface">Analytics Overview</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Real-time system monitoring and fleet performance.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-2 px-3 py-1 bg-surface-light rounded-full border border-outline-variant text-label-md font-label-md text-on-surface">
+<span class="w-2 h-2 rounded-full bg-status-active animate-pulse"></span>
+                        Live
+                    </span>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-light border border-outline-variant rounded-lg text-body-md font-body-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                        Filters
+                    </button>
+</div>
+</div>
+<!-- Top Stats - Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Stat Card 1: Active Deliveries -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Active Deliveries</span>
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">package_2</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">1,284</div>
+<div class="flex items-center gap-1 mt-2 text-status-completed text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+12% from last hour</span>
+</div>
+</div>
+</div>
+<!-- Stat Card 2: Total Drivers Online -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Drivers Online</span>
+<span class="material-symbols-outlined text-secondary bg-secondary-fixed p-2 rounded-lg" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">856</div>
+<div class="flex items-center gap-1 mt-2 text-on-surface-variant text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_flat</span>
+<span>Stable capacity</span>
+</div>
+</div>
+</div>
+<!-- Stat Card 3: Total Revenue -->
+<div class="card-level-1 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Revenue (Today)</span>
+<span class="material-symbols-outlined text-status-pending bg-surface-container-highest p-2 rounded-lg">payments</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface font-label-md">$45.2k</div>
+<div class="flex items-center gap-1 mt-2 text-status-completed text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+5.4% vs yesterday</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Area: Map & Alerts -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter h-[600px]">
+<!-- Fleet Distribution Map (Spans 8 cols on desktop) -->
+<div class="lg:col-span-8 card-level-1 rounded-xl overflow-hidden relative flex flex-col h-full">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-light z-10">
+<h2 class="text-headline-md font-headline-md text-on-surface">Fleet Distribution</h2>
+<div class="flex gap-2">
+<button class="p-1 rounded bg-surface-container text-on-surface hover:bg-surface-variant"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="p-1 rounded bg-surface-container text-on-surface hover:bg-surface-variant"><span class="material-symbols-outlined">zoom_out</span></button>
+</div>
+</div>
+<div class="relative flex-1 bg-surface-variant w-full h-full">
+<!-- Simulated Map Background -->
+<div class="absolute inset-0 bg-cover bg-center opacity-50" data-alt="A highly detailed, top-down view of a modern city grid rendered in a minimalist, light-mode aesthetic. The streets form complex, geometric patterns in soft whites and light grays, resembling a high-tech logistics map. Subtle blue and orange glowing nodes indicate delivery points and moving vehicles, contrasting against the clean, pale background. The mood is efficient, organized, and technologically advanced, suitable for a corporate dashboard." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCeKoY9tSM0SXzE3SRPLekvZ3tnaGUQupz2KlwWszdSElmJehWugRM-_KJBKwM0uvo4L_tCfWFvOX6O3-vcxQOkud3ybz53_28w6TnKuOzQVbqjFyr-qcqlsl8aR7NjZna9rE3mrSsvJb4BybZA82zqyhjnA543Ob0LK_IyFOgz2iQ0qRjIl3wCnoe9-6SlwpUJQW8sORu5K3BpajK9g5w0s7FE4Nf_bMap0qb5JgkSTCeMRYfTwAuNpfKQRCkxYvho04fIq1b5zAc');"></div>
+<!-- Map Overlay Controls (Glassmorphism) -->
+<div class="absolute bottom-4 right-4 bg-surface-light/80 backdrop-blur-md border border-outline-variant rounded-lg p-3 flex flex-col gap-2 shadow-lg">
+<div class="flex items-center gap-2 text-label-sm font-label-sm">
+<span class="w-3 h-3 rounded-full bg-status-active"></span> High Density
+                             </div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm">
+<span class="w-3 h-3 rounded-full bg-status-pending"></span> Medium
+                             </div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm">
+<span class="w-3 h-3 rounded-full bg-surface-variant border border-outline"></span> Low Density
+                             </div>
+</div>
+<!-- FAB on Map -->
+<button class="absolute top-4 right-4 w-12 h-12 rounded-full bg-surface-light shadow-xl border border-outline-variant flex items-center justify-center text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+</div>
+<!-- System Alerts List (Spans 4 cols on desktop) -->
+<div class="lg:col-span-4 card-level-1 rounded-xl flex flex-col h-full overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-light flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-surface">System Alerts</h2>
+<span class="bg-error-container text-on-error-container text-label-sm font-label-sm px-2 py-0.5 rounded-full">3 New</span>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-2 bg-surface-light">
+<!-- Alert Item: Critical -->
+<div class="p-3 rounded-lg border border-error-container bg-error-container/10 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-error mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Traffic Delay: Zone North</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-1">Major accident reported on Hwy 4. Expect 20m delays for 15 drivers.</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-2">Just now</div>
+</div>
+</div>
+<!-- Alert Item: Warning -->
+<div class="p-3 rounded-lg border border-status-pending/30 bg-status-pending/5 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-pending mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Low Fleet Availability</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-1">Driver ratio to active orders dropping below threshold in Sector 7.</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-2">12 mins ago</div>
+</div>
+</div>
+<!-- Alert Item: Info -->
+<div class="p-3 rounded-lg border border-outline-variant bg-surface-container-low flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">System Update Complete</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-1">Routing algorithm v2.4 deployed successfully.</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-2">1 hour ago</div>
+</div>
+</div>
+<!-- Alert Item: Warning -->
+<div class="p-3 rounded-lg border border-status-pending/30 bg-status-pending/5 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-pending mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Weather Advisory</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant mt-1">Heavy rain expected in East District. Delivery times may be impacted.</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-2">2 hours ago</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-outline-variant bg-surface-light text-center">
+<button class="text-primary text-label-md font-label-md hover:underline">View All Alerts</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

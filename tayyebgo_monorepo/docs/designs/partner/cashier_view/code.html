@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go Partner - Cashier View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed-dim": "#ffb5a1",
+                      "secondary-fixed-dim": "#50df9d",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#c88400",
+                      "tertiary-fixed": "#ffddb4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#00734a",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#70fcb7",
+                      "tertiary": "#825500",
+                      "surface-dim": "#d7d9e6",
+                      "secondary-fixed": "#70fcb7",
+                      "primary-fixed": "#ffdbd1",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dfe2ef",
+                      "surface-container": "#ebedfa",
+                      "on-secondary-fixed": "#002112",
+                      "on-primary-container": "#571100",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#005233",
+                      "on-tertiary-fixed": "#291800",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "inverse-surface": "#2c303a",
+                      "surface-container-high": "#e5e8f5",
+                      "outline": "#8f7068",
+                      "inverse-on-surface": "#eef0fd",
+                      "tertiary-fixed-dim": "#ffb953",
+                      "on-primary-fixed": "#3b0800",
+                      "on-surface-variant": "#5b403a",
+                      "surface-container-low": "#f1f3ff",
+                      "on-tertiary-container": "#3e2600",
+                      "background": "#f9f9ff",
+                      "on-surface": "#181c25",
+                      "secondary": "#006c45",
+                      "surface-tint": "#b22c00",
+                      "on-primary-fixed-variant": "#881f00",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#dfe2ef",
+                      "primary": "#b22c00",
+                      "inverse-primary": "#ffb5a1",
+                      "surface-bright": "#f9f9ff",
+                      "primary-container": "#ff5a2c",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f9f9ff",
+                      "outline-variant": "#e4beb5",
+                      "on-background": "#181c25"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxs": "4px",
+                      "xl": "32px",
+                      "max-width-desktop": "1200px",
+                      "xxl": "48px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xs": "8px",
+                      "unit": "8px"
+              },
+              "fontFamily": {
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "stat-value": [
+                              "Inter"
+                      ],
+                      "display-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "price": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "title-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "28.3px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "stat-value": [
+                              "32px",
+                              {
+                                      "lineHeight": "33.6px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "display-md": [
+                              "34px",
+                              {
+                                      "lineHeight": "37.4px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16.8px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "42px",
+                              {
+                                      "lineHeight": "44.5px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "15.6px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "price": [
+                              "16px",
+                              {
+                                      "lineHeight": "19.2px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "18.9px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "23px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24.8px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "21px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Elastic scale down for buttons */
+        .btn-elastic:active {
+            transform: scale(0.97);
+        }
+        /* Custom scrollbar for order list */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-low');
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline-variant');
+            border-radius: 20px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-surface dark:bg-inverse-surface fixed top-0 w-full z-50 flex items-center justify-between px-md h-16 shadow-sm dark:bg-surface-container-low shrink-0">
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-primary-container/10 transition-colors duration-150 rounded-full btn-elastic">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<h1 class="font-display-md text-display-md text-primary dark:text-primary-fixed-dim tracking-tight">Tayyeb Go</h1>
+</div>
+<div class="flex items-center gap-lg">
+<!-- Search Quick Action (Desktop) -->
+<div class="hidden md:flex relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary focus:outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant transition-shadow" placeholder="Search Order ID..." type="text"/>
+</div>
+<!-- Profile Action -->
+<button class="flex items-center gap-xs hover:bg-primary-container/10 transition-colors duration-150 p-2 rounded-full btn-elastic">
+<img alt="Cashier Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A professional headshot of a cashier, wearing a clean uniform, smiling slightly, set against a blurred, bright cafe background. Warm, inviting lighting emphasizing a friendly service role." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlvNBMC0Dhcowp0sq_OkH1dHr-81hoE__94bx_VQBqzReGSAGsVCk6IhL7fKyg1K18xwlMUV6GkVOP4NXa0x8AK5ATHNgqfeC9a_ReU_HZuFX5eCUuDK0bNxTni-5MckjFe4g_jDbitPFyyYjgJNYJhvXGSMhLSsY9MJFsNu-dmLdujLqI7Y0X5ieVt0kHFMs6wx0KshwGDfzCXw1E_f47-9TjMMU0EN3DqzwVVeQjLJ1w1ahTzUrhXqMHUdBw-jQ4_kijmb-XcQM"/>
+<div class="hidden sm:flex flex-col items-start mr-2">
+<span class="font-label-lg text-label-lg text-on-surface">Sarah J.</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cashier</span>
+</div>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-16 flex flex-col md:flex-row overflow-hidden w-full max-w-[max-width-desktop] mx-auto pb-20 md:pb-0">
+<!-- Left Side: Active Queue -->
+<section class="flex-1 flex flex-col h-full bg-surface-container-lowest border-r border-outline-variant relative">
+<!-- Queue Header & Filters -->
+<div class="p-md border-b border-outline-variant bg-surface shrink-0 z-10 flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<div>
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+                            Active Queue
+                            <span class="bg-primary text-on-primary font-label-md text-label-md px-2 py-0.5 rounded-full">5</span>
+</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Orders requiring immediate action.</p>
+</div>
+<!-- Mobile Search Trigger -->
+<button class="md:hidden p-2 bg-surface-container rounded-full text-on-surface-variant btn-elastic">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<!-- Quick Tabs -->
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar mt-2">
+<button class="px-4 py-2 bg-primary text-on-primary font-label-lg text-label-lg rounded-full shrink-0 shadow-[0_0_12px_rgba(178,44,0,0.3)] btn-elastic">
+                        New (3)
+                    </button>
+<button class="px-4 py-2 bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-lg text-label-lg rounded-full shrink-0 transition-colors btn-elastic">
+                        Preparing (2)
+                    </button>
+<button class="px-4 py-2 bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-lg text-label-lg rounded-full shrink-0 transition-colors btn-elastic">
+                        Ready (1)
+                    </button>
+</div>
+</div>
+<!-- Order List (Scrollable) -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-md flex flex-col gap-md bg-surface-container-lowest">
+<!-- Order Card: NEW (Requires Acceptance) -->
+<article class="bg-surface rounded-xl border border-primary p-md flex flex-col gap-sm shadow-[0_4px_20px_rgba(178,44,0,0.08)] relative overflow-hidden group">
+<!-- Urgency Indicator -->
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start pl-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-on-surface">#ORD-8942</span>
+<span class="bg-error-container text-on-error-container font-label-md text-label-md px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+                                    02:14
+                                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Dine-in • Table 12</p>
+</div>
+<span class="font-price text-price text-primary">$42.50</span>
+</div>
+<!-- Items List -->
+<div class="bg-surface-container-low rounded-lg p-sm mt-2">
+<ul class="font-body-md text-body-md text-on-surface flex flex-col gap-2">
+<li class="flex justify-between"><span>2x Classic Burger (No Onions)</span></li>
+<li class="flex justify-between"><span>1x Large Fries</span></li>
+<li class="flex justify-between"><span>2x Vanilla Shake</span></li>
+</ul>
+</div>
+<!-- Actions -->
+<div class="flex gap-sm mt-2">
+<button class="flex-1 h-[52px] bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-[0_4px_12px_rgba(178,44,0,0.25)] flex items-center justify-center gap-2 btn-elastic transition-transform">
+<span class="material-symbols-outlined">check_circle</span>
+                            Accept Order
+                        </button>
+<button class="w-[52px] h-[52px] bg-[#FFEFE8] text-primary rounded-lg flex items-center justify-center border border-outline-variant btn-elastic hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined">print</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- Right Side: Recent Activity (Hidden on Mobile, visible on Desktop) -->
+<aside class="hidden md:flex w-[320px] lg:w-[400px] flex-col h-full bg-surface-container-low border-l border-outline-variant shrink-0">
+<div class="p-md border-b border-outline-variant bg-surface">
+<h3 class="font-title-md text-title-md text-on-surface">Recent Activity</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Completed &amp; Ready orders</p>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-md flex flex-col gap-sm">
+<!-- Activity Item -->
+<div class="bg-surface rounded-lg p-sm border border-outline-variant flex gap-sm items-start hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">done_all</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg text-on-surface">#ORD-8940</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">10m ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Marked as Ready. Waiting for runner.</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="bg-surface rounded-lg p-sm border border-outline-variant flex gap-sm items-start hover:bg-surface-container transition-colors cursor-pointer opacity-70">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<span class="font-label-lg text-label-lg text-on-surface">#ORD-8939</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">25m ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Order Completed.</p>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Shared Component - Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-surface-container-lowest fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-sm rounded-t-xl border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform duration-120 ease-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">reorder</span>
+<span class="font-label-md text-label-md mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple JS for interactive feel
+        document.querySelectorAll('.btn-elastic').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.style.transform = 'scale(0.97)');
+            btn.addEventListener('mouseup', () => btn.style.transform = 'scale(1)');
+            btn.addEventListener('mouseleave', () => btn.style.transform = 'scale(1)');
+            
+            // For touch devices
+            btn.addEventListener('touchstart', () => btn.style.transform = 'scale(0.97)', {passive: true});
+            btn.addEventListener('touchend', () => btn.style.transform = 'scale(1)');
+        });
+    </script>
+</body></html>

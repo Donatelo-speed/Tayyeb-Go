@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go - Order Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary-container": "#571100",
+                "primary": "#b22c00",
+                "inverse-on-surface": "#eef0fd",
+                "surface": "#f9f9ff",
+                "on-error-container": "#93000a",
+                "error": "#ba1a1a",
+                "tertiary-container": "#c88400",
+                "surface-variant": "#dfe2ef",
+                "on-surface": "#181c25",
+                "outline-variant": "#e4beb5",
+                "secondary-fixed-dim": "#50df9d",
+                "primary-fixed-dim": "#ffb5a1",
+                "inverse-primary": "#ffb5a1",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#8f7068",
+                "on-secondary-fixed-variant": "#005233",
+                "surface-dim": "#d7d9e6",
+                "surface-bright": "#f9f9ff",
+                "surface-container-highest": "#dfe2ef",
+                "on-primary-fixed-variant": "#881f00",
+                "on-tertiary": "#ffffff",
+                "surface-container-low": "#f1f3ff",
+                "on-secondary": "#ffffff",
+                "secondary": "#006c45",
+                "on-secondary-fixed": "#002112",
+                "on-primary-fixed": "#3b0800",
+                "on-surface-variant": "#5b403a",
+                "on-tertiary-fixed-variant": "#633f00",
+                "on-background": "#181c25",
+                "surface-container": "#ebedfa",
+                "primary-fixed": "#ffdbd1",
+                "primary-container": "#ff5a2c",
+                "on-tertiary-fixed": "#291800",
+                "on-secondary-container": "#00734a",
+                "surface-tint": "#b22c00",
+                "surface-container-high": "#e5e8f5",
+                "error-container": "#ffdad6",
+                "on-error": "#ffffff",
+                "secondary-container": "#70fcb7",
+                "on-primary": "#ffffff",
+                "tertiary": "#825500",
+                "background": "#f9f9ff",
+                "tertiary-fixed": "#ffddb4",
+                "tertiary-fixed-dim": "#ffb953",
+                "inverse-surface": "#2c303a",
+                "secondary-fixed": "#70fcb7",
+                "on-tertiary-container": "#3e2600"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "xl": "32px",
+                "sm": "12px",
+                "xxl": "48px",
+                "max-width-desktop": "1200px",
+                "xxs": "4px",
+                "xs": "8px",
+                "md": "16px",
+                "unit": "8px",
+                "lg": "24px"
+        },
+        "fontFamily": {
+                "price": [
+                        "Inter"
+                ],
+                "display-lg": [
+                        "Inter"
+                ],
+                "title-lg": [
+                        "Inter"
+                ],
+                "stat-value": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "title-md": [
+                        "Inter"
+                ],
+                "label-lg": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "body-sm": [
+                        "Inter"
+                ],
+                "display-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "price": [
+                        "16px",
+                        {
+                                "lineHeight": "19.2px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-lg": [
+                        "42px",
+                        {
+                                "lineHeight": "44.5px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "title-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "28.3px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "stat-value": [
+                        "32px",
+                        {
+                                "lineHeight": "33.6px",
+                                "fontWeight": "800"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "15.6px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "title-md": [
+                        "18px",
+                        {
+                                "lineHeight": "23px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "18.9px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "21px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16.8px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "display-md": [
+                        "34px",
+                        {
+                                "lineHeight": "37.4px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24.8px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+      }
+    }
+  }
+</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-high text-on-surface antialiased h-screen overflow-hidden flex justify-center">
+<!-- Mobile Device Container -->
+<div class="w-full max-w-md h-full relative bg-surface-container-lowest shadow-2xl overflow-hidden flex flex-col">
+<!-- Header (Floating over Map) -->
+<header class="absolute top-0 left-0 w-full z-20 px-md py-4 flex items-center justify-between pointer-events-none">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm shadow-sm flex items-center justify-center pointer-events-auto text-on-surface border border-surface-variant">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm pointer-events-auto border border-surface-variant">
+<span class="font-label-lg text-label-lg text-primary-container">#9942</span>
+</div>
+</header>
+<!-- Map Background Area -->
+<div class="h-[45%] w-full bg-surface-variant relative overflow-hidden flex-shrink-0">
+<img alt="Map showing delivery route" class="w-full h-full object-cover object-center opacity-90" data-alt="A clean, modern digital map interface displayed in a light mode theme. The map shows city streets with a subtle, minimalist color palette primarily consisting of pale grays and soft whites. A thick, vibrant blue line indicates a delivery route winding through the streets. The lighting is flat and even, typical of a high-end UI map component, ensuring clarity and functional aesthetics." data-location="City Streets Map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFq48iT_45z3KSLfVWLMidmpgjvpG7WWatjTei3oimoyM06ffWcY44nbM01uAgsrpMHNtBMS9fuARw0uAbJB0K1_x_AzEXNqx5d6pJYeVYFZpaqnk3B4fJSEjx53AU3slXIt8XTfvPwuS-9ySMRUGOLsXUJHCf2-g9zyuBNIoPqx46zow7CO8G4eprj2Exbqt7-DvYukrS_BoI-VfXW7CcAYPwYtsF54jIix1xIcG439ZnFcTC08SnoitNCjZl3EgUNyDCyV83a2M"/>
+<!-- Map Overlay Gradient for smooth transition -->
+<div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+</div>
+<!-- Tracking Details Bottom Sheet -->
+<div class="flex-1 bg-surface-container-lowest w-full rounded-t-xl -mt-6 z-10 relative flex flex-col shadow-[0_-8px_24px_rgba(0,0,0,0.05)]">
+<!-- Drag Handle Indicator -->
+<div class="w-full flex justify-center pt-3 pb-1 shrink-0">
+<div class="w-12 h-1.5 rounded-full bg-surface-variant"></div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-md pb-8">
+<!-- ETA Section -->
+<div class="text-center py-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface">12 mins</h2>
+<p class="font-body-lg text-body-lg text-primary-container mt-1">Arriving at your location</p>
+</div>
+<!-- Status Timeline -->
+<div class="mt-sm mb-lg bg-surface-container-lowest border border-surface-variant rounded-lg p-sm shadow-sm">
+<div class="relative pl-4 py-2">
+<!-- Connecting Line Background -->
+<div class="absolute left-[23px] top-6 bottom-6 w-[2px] bg-surface-variant"></div>
+<!-- Active Connecting Line (Progress) -->
+<div class="absolute left-[23px] top-6 h-[50%] w-[2px] bg-primary-container"></div>
+<!-- Step 1: Placed -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-4 h-4 rounded-full bg-primary-container ring-4 ring-surface-container-lowest mt-1 shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-primary-container font-bold">check</span>
+</div>
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface">Order Placed</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">10:42 AM</p>
+</div>
+</div>
+<!-- Step 2: Preparing -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-4 h-4 rounded-full bg-primary-container ring-4 ring-surface-container-lowest mt-1 shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-on-primary-container font-bold">check</span>
+</div>
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface">Preparing</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">10:45 AM</p>
+</div>
+</div>
+<!-- Step 3: Out for Delivery (Active) -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-4 h-4 rounded-full bg-primary-container ring-4 ring-primary-fixed mt-1 shadow-sm animate-pulse"></div>
+<div>
+<h3 class="font-label-lg text-label-lg text-primary-container font-bold">Out for Delivery</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Heading your way</p>
+</div>
+</div>
+<!-- Step 4: Delivered -->
+<div class="flex items-start gap-4 relative z-10">
+<div class="w-4 h-4 rounded-full bg-surface-variant ring-4 ring-surface-container-lowest mt-1"></div>
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant">Delivered</h3>
+<p class="font-body-md text-body-md text-outline">Pending</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Driver Info Card -->
+<div class="bg-surface-container-low rounded-lg p-sm flex items-center justify-between mb-lg border border-surface-variant shadow-sm">
+<div class="flex items-center gap-sm">
+<div class="relative">
+<img alt="Driver Profile" class="w-12 h-12 rounded-full object-cover border-2 border-surface-container-lowest shadow-sm" data-alt="A professional headshot of a friendly delivery driver wearing a clean, modern uniform. The lighting is soft and natural, suggesting a bright daytime environment. The background is slightly blurred to keep focus on the subject. The overall mood is approachable, reliable, and consistent with a high-quality service brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxZwfAs8vyn6RuAGHZqkc0TDc--mcow2_cAYq5vnbq5bDMBS50yjCpcLzwAEYmmuFbzRGcOaz1ptsejuDAXr-umafxOgrzZ8BW5rTO-qccdQ51vmlHy-OmXpVDvyIXxgjEekRS65bgoqpb6saVmCU8Od4zRHfxCbpkdM6bCQu8WQwNPrnfM33QbmWV7E0REtO2Hzcfr3lve3gh85FcVEEEjNZziWaIZMHh231OeqhLQBj3bcAzHC1Zyf4RD6MU1WoG32-WftZaYzs"/>
+<div class="absolute -bottom-1 -right-1 bg-surface-container-lowest rounded-full p-0.5 shadow-sm">
+<div class="w-3 h-3 bg-secondary rounded-full"></div>
+</div>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Alex M.</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Toyota Prius • AB12 3CD</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined fill-icon text-[20px]">chat</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined fill-icon text-[20px]">call</span>
+</button>
+</div>
+</div>
+<!-- Order Summary -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm mb-lg shadow-sm">
+<div class="flex items-center gap-2 mb-sm pb-xxs border-b border-surface-variant">
+<span class="material-symbols-outlined text-primary-container text-[20px]">restaurant</span>
+<h3 class="font-title-lg text-title-lg text-on-surface text-[18px]">Luigi's Pizza</h3>
+</div>
+<div class="flex flex-col gap-xxs mb-sm">
+<div class="flex justify-between items-start">
+<div class="flex gap-2">
+<span class="font-label-lg text-label-lg text-on-surface-variant">1x</span>
+<span class="font-body-lg text-body-lg text-on-surface">Pepperoni Pizza</span>
+</div>
+<span class="font-body-lg text-body-lg text-on-surface">$18.00</span>
+</div>
+<div class="flex justify-between items-start">
+<div class="flex gap-2">
+<span class="font-label-lg text-label-lg text-on-surface-variant">1x</span>
+<span class="font-body-lg text-body-lg text-on-surface">Garlic Bread</span>
+</div>
+<span class="font-body-lg text-body-lg text-on-surface">$4.50</span>
+</div>
+</div>
+<div class="flex justify-between items-center pt-xxs border-t border-surface-variant">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Total</span>
+<span class="font-title-lg text-title-lg text-on-surface text-[20px]">$24.50</span>
+</div>
+</div>
+<!-- Support Link -->
+<div class="text-center mt-lg pb-4">
+<button class="font-label-lg text-label-lg text-primary-container hover:underline flex items-center justify-center gap-1 mx-auto">
+<span class="material-symbols-outlined text-[16px]">help</span>
+                        Help &amp; Support
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

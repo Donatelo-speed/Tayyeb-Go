@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#515c55",
+                        "surface-light": "#FFFFFF",
+                        "status-active": "#0066FF",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dbd6",
+                        "on-tertiary-fixed-variant": "#3f4943",
+                        "inverse-on-surface": "#eff2ec",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "inverse-primary": "#b3c5ff",
+                        "primary-fixed": "#dae1ff",
+                        "secondary-fixed": "#ffdbd0",
+                        "surface-variant": "#e0e3de",
+                        "tertiary-fixed": "#dae5dd",
+                        "secondary-fixed-dim": "#ffb59d",
+                        "status-pending": "#FFB800",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e9e4",
+                        "primary-container": "#0066ff",
+                        "surface-dark": "#141E19",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f7faf5",
+                        "surface": "#f7faf5",
+                        "on-surface": "#191c1a",
+                        "on-tertiary-container": "#effaf2",
+                        "on-primary-fixed": "#001849",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#832600",
+                        "status-completed": "#22C55E",
+                        "secondary-container": "#fe6a34",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ecefea",
+                        "tertiary-container": "#69746d",
+                        "on-secondary-container": "#5d1900",
+                        "surface-container-low": "#f2f4ef",
+                        "on-tertiary-fixed": "#141e19",
+                        "surface-container-highest": "#e0e3de",
+                        "tertiary-fixed-dim": "#bec9c1",
+                        "outline-variant": "#c2c6d8",
+                        "on-secondary-fixed": "#390c00",
+                        "primary": "#0050cb",
+                        "status-error": "#EF4444",
+                        "inverse-surface": "#2d312e",
+                        "surface-tint": "#0054d6",
+                        "secondary": "#ab3500",
+                        "on-background": "#191c1a",
+                        "outline": "#727687",
+                        "on-primary-container": "#f8f7ff",
+                        "background": "#f7faf5",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "on-surface-variant": "#424656"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "24px",
+                        "gutter": "16px",
+                        "stack-sm": "4px",
+                        "base": "8px",
+                        "margin-desktop": "32px",
+                        "stack-md": "12px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-md": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background pb-24 md:pb-0 pt-16">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dark fixed top-0 w-full z-50 border-b border-surface-variant dark:border-on-surface-variant shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container dark:hover:bg-surface-dark/50 transition-colors active:scale-95 duration-150 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="text-headline-lg font-headline-lg text-primary dark:text-primary-fixed-dim tracking-tight">Tayyeb Go</h1>
+<button class="w-10 h-10 rounded-full overflow-hidden hover:bg-surface-container dark:hover:bg-surface-dark/50 transition-colors active:scale-95 duration-150 focus:outline-none focus:ring-2 focus:ring-primary border border-surface-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbpiaTGgFks5yU3MCs1CysJyKxdHvug950aYMfIQ0Q7arjnRVWTmi41PEhuIvq-qBJzLO4Xdor0eXZ_OQ13zyZePV20tMwjLY2QeEKcY0ORmu6NF8MH7u9qIc4_Ib8Ocd_Cv-D0I8vSOyJl84Gbjlq_0iLYrEJMw7VrHCFzFiZVZ6OUG2QRW2TMd0o_Th1helBpftFZ-fKI7zQYJaJv8VCkq24q7h6aGgR0_1BWOsTtxdm-AggkKmjXWNkK8IoGXzGK1yrSlGYx68"/>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col gap-stack-lg">
+<!-- Search Section -->
+<section class="w-full">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+</div>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-light border border-surface-variant rounded-xl text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-shadow" placeholder="Search for stores, items, or categories..." type="text"/>
+<button class="absolute inset-y-0 right-0 pr-4 flex items-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</section>
+<!-- Categories (Bento Style) -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-headline-md font-headline-md text-on-background">Explore Categories</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="bg-surface-light border border-surface-variant rounded-xl p-4 flex flex-col items-center justify-center gap-stack-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all active:scale-95 group">
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center group-hover:bg-primary-container/30 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Food</span>
+</div>
+<div class="bg-surface-light border border-surface-variant rounded-xl p-4 flex flex-col items-center justify-center gap-stack-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all active:scale-95 group">
+<div class="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center group-hover:bg-secondary-container/30 transition-colors">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Grocery</span>
+</div>
+<div class="bg-surface-light border border-surface-variant rounded-xl p-4 flex flex-col items-center justify-center gap-stack-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all active:scale-95 group">
+<div class="w-16 h-16 rounded-full bg-status-completed/20 flex items-center justify-center group-hover:bg-status-completed/30 transition-colors">
+<span class="material-symbols-outlined text-status-completed text-3xl" style="font-variation-settings: 'FILL' 1;">local_pharmacy</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">Pharmacy</span>
+</div>
+<div class="bg-surface-light border border-surface-variant rounded-xl p-4 flex flex-col items-center justify-center gap-stack-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all active:scale-95 group">
+<div class="w-16 h-16 rounded-full bg-tertiary-container/20 flex items-center justify-center group-hover:bg-tertiary-container/30 transition-colors">
+<span class="material-symbols-outlined text-tertiary text-3xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface font-semibold">More</span>
+</div>
+</div>
+</section>
+<!-- Featured Stores Carousel -->
+<section class="flex flex-col gap-stack-md">
+<div class="flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-background">Featured Stores</h2>
+<button class="text-label-md font-label-md text-primary hover:underline">See All</button>
+</div>
+<div class="flex overflow-x-auto gap-gutter pb-4 no-scrollbar -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<!-- Store Card 1 -->
+<div class="min-w-[280px] md:min-w-[320px] bg-surface-light rounded-xl border border-surface-variant overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer flex-shrink-0">
+<div class="h-32 w-full bg-surface-variant relative">
+<img alt="Restaurant Interior" class="w-full h-full object-cover" data-alt="A brightly lit, modern gourmet burger restaurant interior. The space features industrial-chic decor with exposed brick, warm pendant lighting, and sleek wooden tables. The overall aesthetic is clean, inviting, and vibrant, fitting a premium corporate delivery app style. High contrast lighting accentuates the fresh, appetizing atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9qkvC6k15HEMhtEKXQhfVZxwrlvMfbRf4wljcPlb61g21KMCgItAn9FZ-fgfrK1NV4xO8T_a_z96a0P7RWp4q8-oJqXOmWD5LEgWqSsf-DCijcjWZZ1uE_3JvUX1v2sPRch3fJEJH1RWhkYW0JnQcAC1_fGMUGjVtef-SJmiQLR4lri9GPLMKpV9nbR8KK86Kap1DZwJUtJ7rNNcDOYudcfyphojzp9e2nwOoFYWqvQVif7W80tMhdTNDwfQGWkMMn7l9sc1HvgA"/>
+<div class="absolute top-2 right-2 bg-surface-light/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 text-label-sm font-label-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-status-pending" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.8
+                        </div>
+</div>
+<div class="p-4 flex flex-col gap-stack-sm">
+<div class="flex justify-between items-start">
+<h3 class="text-body-lg font-body-lg font-semibold text-on-surface">Burger Haven</h3>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">American • Fast Food • Burgers</p>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                20-30 min
+                            </div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                                Free
+                            </div>
+</div>
+</div>
+</div>
+<!-- Store Card 2 -->
+<div class="min-w-[280px] md:min-w-[320px] bg-surface-light rounded-xl border border-surface-variant overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer flex-shrink-0">
+<div class="h-32 w-full bg-surface-variant relative">
+<img alt="Fresh Produce Grocery" class="w-full h-full object-cover" data-alt="A pristine, well-organized organic grocery store aisle focusing on fresh produce. Vibrant green vegetables and colorful fruits are neatly arranged in wooden crates under bright, natural-looking daylight. The scene conveys freshness, health, and premium quality, aligning with a clean, modern UI aesthetic. The lighting is crisp and even." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSyphAhVzpv24WvwABXLrh3KznsFrCQKD36BDVqi1ggE-AdBaeHJhVQN_R4ql0g3_dyD6DnqPrno2I2P7T5OJyV0urtD-UImgOaPGb8xwWwA_T9VTYhlkFrPdUuQjfqYg5v7wOZQoBdYgZiLqBvVHLlqMQLGY4Zjqulnd37wNhM4GaeeTafZlSqcx0oyis_NywNupgF5azDQ7umtUPiOJ5xYV9XLbGTDkuV9kI6rW5IPsjyclm1eQDOycN6g_1DmWgnEos0AM5CxA"/>
+<div class="absolute top-2 right-2 bg-surface-light/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 text-label-sm font-label-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-status-pending" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.9
+                        </div>
+</div>
+<div class="p-4 flex flex-col gap-stack-sm">
+<div class="flex justify-between items-start">
+<h3 class="text-body-lg font-body-lg font-semibold text-on-surface">Green Valley Market</h3>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Grocery • Organic • Fresh Produce</p>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                45-60 min
+                            </div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                                $2.99
+                            </div>
+</div>
+</div>
+</div>
+<!-- Store Card 3 -->
+<div class="min-w-[280px] md:min-w-[320px] bg-surface-light rounded-xl border border-surface-variant overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer flex-shrink-0">
+<div class="h-32 w-full bg-surface-variant relative">
+<img alt="Sushi Restaurant" class="w-full h-full object-cover" data-alt="An elegant, minimalist sushi restaurant setting. A beautiful wooden platter holds perfectly crafted sushi rolls. The lighting is soft and sophisticated, creating a serene, high-end dining atmosphere. The color palette features warm woods, crisp whites, and the vibrant colors of fresh fish. Designed to fit perfectly within a sleek, modern corporate delivery interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6yReT3iOngljrna1QU0rG2FHsKDh7qg-e4v92v7LWlXfN7SB0aH8Zwh_NP0iJPeL8ahoyQld4RyADhs-W7UlLBgBNUCdwSzJLUqOUom82KEnBwH5jdYP6gosQZe99vQsR0XaVo97EvXfpg1O9baL9ozWKwOerI8cgtQWu_JQ0bU_dv-KTTkrNgXWVfY4hgI_ZyjvN16LbkPdr3dKoD7paeUlhYM4Xv8b2z6oCOhgNiq1UTQ9t1w6jNXGn4rW0Yl4OF3TYTI59m4E"/>
+<div class="absolute top-2 right-2 bg-surface-light/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 text-label-sm font-label-sm font-bold text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-status-pending" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.7
+                        </div>
+</div>
+<div class="p-4 flex flex-col gap-stack-sm">
+<div class="flex justify-between items-start">
+<h3 class="text-body-lg font-body-lg font-semibold text-on-surface">Sakura Sushi</h3>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Japanese • Sushi • Seafood</p>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                30-45 min
+                            </div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                                $1.49
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Orders (List/Glassmorphism) -->
+<section class="flex flex-col gap-stack-md">
+<h2 class="text-headline-md font-headline-md text-on-background">Recent Orders</h2>
+<div class="flex flex-col gap-stack-sm">
+<!-- Order Item -->
+<div class="bg-surface-light/80 backdrop-blur-md border border-surface-variant rounded-xl p-4 flex items-center justify-between hover:bg-surface-light transition-colors cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden flex-shrink-0">
+<img alt="Pizza Order" class="w-full h-full object-cover" data-alt="A close-up shot of a delicious, hot pepperoni pizza in a cardboard delivery box. The cheese is perfectly melted and slightly browned. The lighting is warm and inviting, highlighting the appetizing texture of the food. The background is simple and unobtrusive, focusing entirely on the meal. Modern, clean aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5TOPIWuu77ez9BaiweMC6QvtNdk5mxUrnEFm7ao6_7TE7eTQuOdZGDYbYdA2xCyf3yy57KSvYmIYxZG5FI-2Rij_miyRQsVZtlX34tQZ3-HV1L0kHPRMmymkKlUjsjcDtQ4o3nF2yFPHUDkTVY7iYuejt_EH-kzNNETjk0fiPXv0HBp084h6jrtKRWa4c5fsVOa6U3W1dZ5cVFNB6CAL0ZwiFyYd7UHhVX1jruG_zvU-zj4ri3mIq9OwaRfODaBxvYnjd-HewYhQ"/>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md font-semibold text-on-surface">Luigi's Pizza</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">1x Pepperoni Pizza, 1x Garlic Bread</span>
+<span class="text-label-sm font-label-sm text-status-completed mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> Delivered yesterday</span>
+</div>
+</div>
+<button class="bg-primary/10 text-primary px-4 py-2 rounded-lg text-label-md font-label-md font-semibold hover:bg-primary/20 transition-colors">Reorder</button>
+</div>
+<!-- Order Item -->
+<div class="bg-surface-light/80 backdrop-blur-md border border-surface-variant rounded-xl p-4 flex items-center justify-between hover:bg-surface-light transition-colors cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+</div>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md font-semibold text-on-surface">City Supermarket</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Weekly Groceries (12 items)</span>
+<span class="text-label-sm font-label-sm text-status-completed mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> Delivered on Oct 24</span>
+</div>
+</div>
+<button class="bg-primary/10 text-primary px-4 py-2 rounded-lg text-label-md font-label-md font-semibold hover:bg-primary/20 transition-colors">Reorder</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden bg-surface dark:bg-surface-dark fixed bottom-0 w-full z-50 border-t border-surface-variant dark:border-on-surface-variant shadow-lg dark:shadow-none pb-safe px-4 h-20 flex justify-around items-center">
+<!-- Active: Home -->
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-full px-4 py-1 active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-label-sm font-label-sm mt-1">Home</span>
+</a>
+<!-- Inactive: Orders -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">package_2</span>
+<span class="text-label-sm font-label-sm mt-1">Orders</span>
+</a>
+<!-- Inactive: Tasks -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">local_shipping</span>
+<span class="text-label-sm font-label-sm mt-1">Tasks</span>
+</a>
+<!-- Inactive: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-100 px-4 py-1" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-label-sm font-label-sm mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

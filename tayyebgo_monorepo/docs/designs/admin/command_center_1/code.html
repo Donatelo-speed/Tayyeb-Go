@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go Admin Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f9f9ff",
+                        "tertiary-fixed": "#ffddb4",
+                        "secondary-fixed-dim": "#50df9d",
+                        "outline": "#8f7068",
+                        "on-secondary-fixed-variant": "#005233",
+                        "on-surface-variant": "#5b403a",
+                        "inverse-on-surface": "#eef0fd",
+                        "outline-variant": "#e4beb5",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "secondary-fixed": "#70fcb7",
+                        "surface-container-high": "#e5e8f5",
+                        "primary-fixed-dim": "#ffb5a1",
+                        "surface-container": "#ebedfa",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#002112",
+                        "on-tertiary-fixed": "#291800",
+                        "on-surface": "#181c25",
+                        "on-primary-fixed": "#3b0800",
+                        "primary-container": "#ff5a2c",
+                        "primary": "#b22c00",
+                        "surface-container-low": "#f1f3ff",
+                        "primary-fixed": "#ffdbd1",
+                        "on-primary-container": "#571100",
+                        "on-error": "#ffffff",
+                        "secondary": "#006c45",
+                        "on-background": "#181c25",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#881f00",
+                        "surface-dim": "#d7d9e6",
+                        "inverse-surface": "#2c303a",
+                        "on-tertiary-container": "#3e2600",
+                        "inverse-primary": "#ffb5a1",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#825500",
+                        "surface-variant": "#dfe2ef",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#dfe2ef",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-container": "#70fcb7",
+                        "error-container": "#ffdad6",
+                        "surface": "#f9f9ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb953",
+                        "on-secondary-container": "#00734a",
+                        "tertiary-container": "#c88400",
+                        "surface-tint": "#b22c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-width-desktop": "1200px",
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "xs": "8px",
+                        "unit": "8px",
+                        "lg": "24px",
+                        "sm": "12px",
+                        "xxs": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "price": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "display-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24.8px", "fontWeight": "400" }],
+                        "title-lg": ["24px", { "lineHeight": "28.3px", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "15.6px", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16.8px", "fontWeight": "400" }],
+                        "label-lg": ["14px", { "lineHeight": "18.9px", "fontWeight": "700" }],
+                        "price": ["16px", { "lineHeight": "19.2px", "fontWeight": "700" }],
+                        "display-lg": ["42px", { "lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "stat-value": ["32px", { "lineHeight": "33.6px", "fontWeight": "800" }],
+                        "display-md": ["34px", { "lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "23px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(228, 190, 181, 0.3);
+        }
+        .stat-glow {
+            box-shadow: 0 4px 24px -6px rgba(178, 44, 0, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    
+    @keyframes slideInFromLeft {
+      0% { transform: translateX(-20px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeRevealUp {
+      0% { transform: translateY(15px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .animate-sidebar {
+      animation: slideInFromLeft 0.4s ease-out forwards;
+    }
+    .animate-widget {
+      opacity: 0;
+      animation: fadeRevealUp 0.5s ease-out forwards;
+    }
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col md:flex-row font-body-lg text-body-lg bg-background text-on-background">
+<!-- NavigationDrawer (Desktop SideNav) -->
+<nav class="hidden md:flex flex-col gap-xs py-md w-full fixed left-0 top-0 h-full w-[280px] z-40 bg-surface border-r border-outline-variant/30 shadow-lg animate-sidebar">
+<div class="px-md pb-md border-b border-outline-variant/20 mb-md flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-primary/20">
+<img alt="Partner Logo" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male executive wearing a tailored dark suit and light blue tie. He has short, neatly styled graying hair and a confident, warm smile. The background is a slightly blurred, modern corporate office environment with bright, natural lighting reflecting off glass walls, aligning with a clean, light-mode corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhu_Aa_uK18muj6wHZ-IRuYcrJ0NjrUhH33RbgEQZI-Qb44lyzuR7uqY0tTesKeG-QzZRPYDm5Yrx9vRT15zL5DwScZFuxHOHDke3vDeBoAPf0M0itlWx0RctkyIoeyLQLSIHhP7x5BUYpau3CMe6BV1UVCYqr2rrdk-PJb464KOhV5shcASFFSRoeegh0t0k0zqvFzqId9cLASjKrcStTZ6VK006DwAL5vxVRTb7UNYGmp5QZT7NltDEsZ7M8f9XC4gUR09jZgrg"/>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-primary">Tayyeb Kitchen</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Partner ID: 8829</p>
+<span class="inline-flex items-center gap-1 mt-1 text-secondary font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Online
+                </span>
+</div>
+</div>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg mx-xs px-md py-sm font-bold shadow-sm transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            Dashboard
+        </a>
+<a class="flex items-center gap-md text-on-surface-variant mx-xs px-md py-sm hover:bg-surface-variant/50 transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+            Inventory
+        </a>
+<a class="flex items-center gap-md text-on-surface-variant mx-xs px-md py-sm hover:bg-surface-variant/50 transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+            Orders
+        </a>
+<a class="flex items-center gap-md text-on-surface-variant mx-xs px-md py-sm hover:bg-surface-variant/50 transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+            Earnings
+        </a>
+<a class="flex items-center gap-md text-on-surface-variant mx-xs px-md py-sm hover:bg-surface-variant/50 transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+            Analytics
+        </a>
+<a class="flex items-center gap-md text-on-surface-variant mx-xs px-md py-sm hover:bg-surface-variant/50 transition-all rounded-lg active:translate-x-1 duration-150 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+            Settings
+        </a>
+</nav>
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl shadow-sm h-16">
+<div class="flex items-center justify-between px-md h-full w-full">
+<button class="text-primary active:scale-95 duration-150 hover:bg-primary/5 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-display-md text-title-lg font-bold text-primary tracking-tight">Tayyeb Go</h1>
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-outline-variant">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male executive wearing a tailored dark suit and light blue tie. He has short, neatly styled graying hair and a confident, warm smile. The background is a slightly blurred, modern corporate office environment with bright, natural lighting reflecting off glass walls, aligning with a clean, light-mode corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCtFwCH4zRwmiBeb-4z9iL_R_zT9-25XfLr3ttPbwz4Z6Hgcw_VWYmJ-gNPf5nCbc4TbmbYI70BO4EUe96T8gjm9vgqYD6mCms3sHoMrA3OTPkkPtP5GMZ3oHmwTFSWCcmoM251yLsOM2_Ncbg3A6cZ3JuV6UB1Q8LrR0BW6E8-zjh6NT5JVdxbcRRDA-al19TaByY2LsJIX5mVohbuuAhr12_IiPiLn3cQX8UOxIKZgTMl1QMXZCfyik7vroAAm8ZfbH-6TLywYQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] pt-16 md:pt-0 pb-24 md:pb-0 px-md md:px-lg max-w-max-width-desktop mx-auto w-full flex flex-col gap-lg py-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-sm mt-md md:mt-xl">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-xxs">Command Center</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">System operations overview for Central Metro region.</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary font-label-md text-label-md">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+                    System Optimal
+                </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Last updated: Just now</span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md md:gap-lg auto-rows-min">
+<!-- Key Metrics Row (Spans full width, 3 columns) -->
+<div class="md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-md md:gap-lg">
+<!-- Metric 1: Active Orders -->
+<div class="glass-card rounded-xl p-md md:p-lg flex flex-col stat-glow transition-transform hover:-translate-y-1 duration-300 animate-widget delay-100">
+<div class="flex justify-between items-start mb-xl">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">local_shipping</span>
+</div>
+<span class="flex items-center text-secondary font-label-md text-label-md bg-secondary/10 px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span> +12%
+                        </span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Active Orders</p>
+<h3 class="font-stat-value text-stat-value text-on-surface">1,492</h3>
+</div>
+</div>
+<!-- Metric 2: Online Drivers -->
+<div class="glass-card rounded-xl p-md md:p-lg flex flex-col stat-glow transition-transform hover:-translate-y-1 duration-300 animate-widget delay-200">
+<div class="flex justify-between items-start mb-xl">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-2xl">two_wheeler</span>
+</div>
+<span class="flex items-center text-on-surface-variant font-label-md text-label-md bg-surface-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-sm mr-1">trending_flat</span> 0%
+                        </span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Online Drivers</p>
+<h3 class="font-stat-value text-stat-value text-on-surface">384</h3>
+</div>
+</div>
+<!-- Metric 3: Store Status -->
+<div class="glass-card rounded-xl p-md md:p-lg flex flex-col stat-glow transition-transform hover:-translate-y-1 duration-300 animate-widget delay-300">
+<div class="flex justify-between items-start mb-xl">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">storefront</span>
+</div>
+<span class="flex items-center text-error font-label-md text-label-md bg-error/10 px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-sm mr-1">warning</span> 3 Offline
+                        </span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-1">Active Stores</p>
+<h3 class="font-stat-value text-stat-value text-on-surface">89<span class="text-body-lg text-on-surface-variant font-normal">/92</span></h3>
+</div>
+</div>
+</div>
+<!-- Main Map Area (Spans 8 cols on desktop) -->
+<div class="md:col-span-8 glass-card rounded-xl overflow-hidden flex flex-col h-[500px] border border-outline-variant/30 relative animate-widget delay-100">
+<div class="p-md md:p-lg border-b border-outline-variant/20 flex justify-between items-center bg-surface/50 absolute top-0 w-full z-10 backdrop-blur-md">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">map</span>
+                        Fleet Distribution
+                    </h3>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-variant text-on-surface font-label-md text-label-md hover:bg-surface-variant/80 transition-colors">Filters</button>
+</div>
+</div>
+<!-- Map Placeholder Image with realistic mapping style -->
+<div class="w-full h-full relative bg-surface-container-low mt-16">
+<img alt="City Map" class="w-full h-full object-cover opacity-80" data-alt="A clean, modern top-down digital map view of a dense metropolitan city layout. The map features warm cream and light gray tones representing land blocks, with crisp white lines for major arterial roads and highways. Subtle orange and green glowing dots are scattered across the grid, indicating active logistical units or vehicles in a high-tech tracking interface. The lighting is soft and flat, emphasizing operational clarity in a light-mode corporate dashboard aesthetic." data-location="Metropolitan City Layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsR2oH7b-UNP7FKA3MRv0qqdF4oUF3DVegpmhU3oGucqCfPP3i1n2MOm6helhq_2z3j-c6vR4X_imreqsmkLK36TbhtJCvo7Zkz9NfZ5tdDqlcJ9KwQ6iYUFK6uS8GazjbUNKc4sCZycdIqd8QsIAi-BBBvKR79OJBX065PpdkwPJkNUfwnSp0JIi5hA3Qu4sY_6-qM_cGwDnk7zmLzLWmkbj9pHkHuqmC6O-3uHbsIb4MF3EjJmmpmeAm8fWjZab9Qfh_1Q4O9JU"/>
+<!-- Interactive Map Pins (CSS simulated) -->
+<div class="absolute top-[30%] left-[45%] w-4 h-4 bg-primary rounded-full border-2 border-white shadow-[0_0_12px_rgba(178,44,0,0.6)] animate-pulse"></div>
+<div class="absolute top-[45%] left-[60%] w-4 h-4 bg-primary rounded-full border-2 border-white shadow-[0_0_12px_rgba(178,44,0,0.6)]"></div>
+<div class="absolute top-[60%] left-[35%] w-4 h-4 bg-secondary rounded-full border-2 border-white shadow-[0_0_12px_rgba(0,108,69,0.6)]"></div>
+</div>
+</div>
+<!-- Sidebar / Alerts & Actions (Spans 4 cols on desktop) -->
+<div class="md:col-span-4 flex flex-col gap-md md:gap-lg h-full">
+<!-- Critical Alerts Panel -->
+<div class="glass-card rounded-xl p-md flex flex-col flex-1 border border-outline-variant/30 animate-widget delay-200">
+<div class="flex justify-between items-center mb-md pb-xs border-b border-outline-variant/20">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-error">notifications_active</span>
+                            Critical Alerts
+                        </h3>
+<span class="bg-error text-on-error font-label-md text-label-md px-2 py-0.5 rounded-full">2</span>
+</div>
+<div class="flex flex-col gap-sm overflow-y-auto">
+<!-- Alert Item -->
+<div class="p-sm rounded-lg bg-error-container/40 border border-error/20 flex gap-sm items-start">
+<span class="material-symbols-outlined text-error mt-0.5">timer</span>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface mb-0.5">Delayed Order #4921</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Courier stationary for &gt;15 mins at pickup location.</p>
+<button class="mt-2 text-primary font-label-md text-label-md hover:underline">View Details</button>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="p-sm rounded-lg bg-tertiary/10 border border-tertiary/20 flex gap-sm items-start">
+<span class="material-symbols-outlined text-tertiary mt-0.5">wifi_off</span>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface mb-0.5">Downtown Hub Offline</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Connection lost to local dispatch server.</p>
+<button class="mt-2 text-primary font-label-md text-label-md hover:underline">Run Diagnostics</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Panel -->
+<div class="glass-card rounded-xl p-md flex flex-col border border-outline-variant/30 animate-widget delay-300">
+<h3 class="font-title-md text-title-md text-on-surface mb-md">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-sm">
+<button class="flex flex-col items-center justify-center p-md rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors border border-outline-variant/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary mb-xs">manage_accounts</span>
+<span class="font-label-md text-label-md text-on-surface">User Mgmt</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors border border-outline-variant/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary mb-xs">list_alt</span>
+<span class="font-label-md text-label-md text-on-surface">Order Logs</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors border border-outline-variant/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary mb-xs">support_agent</span>
+<span class="font-label-md text-label-md text-on-surface">Support Desk</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md rounded-lg bg-surface-container-low hover:bg-surface-variant transition-colors border border-outline-variant/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary mb-xs">campaign</span>
+<span class="font-label-md text-label-md text-on-surface">Broadcast</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface border-t border-outline-variant/20 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-around items-center h-20 px-sm w-full">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 font-label-md text-label-md active:scale-90 transition-transform duration-120" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Home
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 font-label-md text-label-md hover:bg-surface-container-high rounded-xl active:scale-90 transition-transform duration-120" href="#">
+<span class="material-symbols-outlined">reorder</span>
+                Orders
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 font-label-md text-label-md hover:bg-surface-container-high rounded-xl active:scale-90 transition-transform duration-120" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                Tasks
+            </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 font-label-md text-label-md hover:bg-surface-container-high rounded-xl active:scale-90 transition-transform duration-120" href="#">
+<span class="material-symbols-outlined">person</span>
+                Profile
+            </a>
+</div>
+</nav>
+</body></html>

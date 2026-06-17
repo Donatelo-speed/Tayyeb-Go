@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Burger Haven - Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#e4beb5",
+                      "primary-fixed-dim": "#ffb5a1",
+                      "on-tertiary-fixed": "#291800",
+                      "secondary-fixed": "#70fcb7",
+                      "surface-dim": "#d7d9e6",
+                      "surface-container": "#ebedfa",
+                      "on-secondary-fixed-variant": "#005233",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "surface-bright": "#f9f9ff",
+                      "on-primary-fixed": "#3b0800",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#dfe2ef",
+                      "surface-tint": "#b22c00",
+                      "secondary-container": "#70fcb7",
+                      "inverse-on-surface": "#eef0fd",
+                      "on-tertiary-container": "#3e2600",
+                      "outline": "#8f7068",
+                      "primary": "#b22c00",
+                      "tertiary-container": "#c88400",
+                      "tertiary-fixed-dim": "#ffb953",
+                      "error": "#ba1a1a",
+                      "tertiary": "#825500",
+                      "secondary-fixed-dim": "#50df9d",
+                      "primary-fixed": "#ffdbd1",
+                      "on-surface": "#181c25",
+                      "on-error": "#ffffff",
+                      "surface-container-highest": "#dfe2ef",
+                      "inverse-primary": "#ffb5a1",
+                      "on-primary": "#ffffff",
+                      "background": "#f9f9ff",
+                      "surface-container-low": "#f1f3ff",
+                      "tertiary-fixed": "#ffddb4",
+                      "on-primary-container": "#571100",
+                      "on-background": "#181c25",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#002112",
+                      "inverse-surface": "#2c303a",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#00734a",
+                      "surface-container-high": "#e5e8f5",
+                      "surface": "#f9f9ff",
+                      "on-error-container": "#93000a",
+                      "secondary": "#006c45",
+                      "primary-container": "#ff5a2c",
+                      "on-surface-variant": "#5b403a",
+                      "on-primary-fixed-variant": "#881f00",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "xs": "8px",
+                      "sm": "12px",
+                      "max-width-desktop": "1200px",
+                      "xxl": "48px",
+                      "xl": "32px",
+                      "unit": "8px",
+                      "lg": "24px",
+                      "xxs": "4px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "title-md": ["Inter"],
+                      "display-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "stat-value": ["Inter"],
+                      "label-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "price": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["12px", {"lineHeight": "16.8px", "fontWeight": "400"}],
+                      "title-md": ["18px", {"lineHeight": "23px", "fontWeight": "600"}],
+                      "display-md": ["34px", {"lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24.8px", "fontWeight": "400"}],
+                      "stat-value": ["32px", {"lineHeight": "33.6px", "fontWeight": "800"}],
+                      "label-md": ["12px", {"lineHeight": "15.6px", "fontWeight": "600"}],
+                      "title-lg": ["24px", {"lineHeight": "28.3px", "fontWeight": "700"}],
+                      "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}],
+                      "price": ["16px", {"lineHeight": "19.2px", "fontWeight": "700"}],
+                      "label-lg": ["14px", {"lineHeight": "18.9px", "fontWeight": "700"}],
+                      "display-lg": ["42px", {"lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(to top, rgba(24, 28, 37, 0.9) 0%, rgba(24, 28, 37, 0.4) 50%, rgba(24, 28, 37, 0.1) 100%);
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .btn-press:active {
+            transform: scale(0.97);
+            transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md antialiased pb-32">
+<!-- Top Navigation Container (Desktop & Tablet) -->
+<header class="hidden md:flex fixed top-0 w-full z-50 items-center justify-between px-md h-16 bg-surface/80 backdrop-blur-xl shadow-sm border-b border-surface-variant transition-colors duration-150">
+<div class="flex items-center gap-sm">
+<button aria-label="Menu" class="p-xs rounded-full hover:bg-surface-variant transition-colors flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-display-md text-display-md text-primary tracking-tight">Tayyeb Go</span>
+</div>
+<nav class="flex items-center gap-md">
+<a class="text-on-surface-variant hover:bg-primary-container/10 px-sm py-xs rounded-full transition-colors duration-150 font-label-lg text-label-lg flex items-center gap-xxs" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="home">home</span>
+                Home
+            </a>
+<a class="text-primary font-bold bg-primary-container/10 px-sm py-xs rounded-full transition-colors duration-150 font-label-lg text-label-lg flex items-center gap-xxs" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="restaurant" data-weight="fill">restaurant</span>
+                Order
+            </a>
+<button class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden shadow-sm flex-shrink-0 border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a young professional user in a well-lit modern environment. Soft, natural lighting highlights the face, conveying an approachable and friendly mood. The background is slightly blurred, maintaining focus on the subject. Designed for a pristine light-mode profile avatar setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZGH4FfYpXzm_G2Yc1t4sZ5apy3T6MPeDC4R1FwaJvBB1n-cblX4iMQ4tb9-3t8tAK9ILgfrKSnFT-1whaB_SBa38ScIZMKlPPePzfdNm8AoeJQFMY-3cCOofRNdy1vWtK1ff6aKRbi6CkZQjd9JdTCXWLLpT1fVZLhY7iO9F2qwdKzf40gTWD-h_VHqf3W5AmZELAJ-IXza9Ub_x38vmn2r02rPzn4UpclehbF6fclWf7CGxZXmhSN7J6lIn1Sa8_WVjyXTPqCLM"/>
+</button>
+</nav>
+</header>
+<!-- Mobile Top Header (Transparent, overlaid on hero) -->
+<header class="md:hidden absolute top-0 w-full z-20 flex items-center justify-between px-md py-sm">
+<button aria-label="Back" class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-on-surface shadow-sm btn-press">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex gap-sm">
+<button aria-label="Search" class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-on-surface shadow-sm btn-press">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button aria-label="More options" class="w-10 h-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-on-surface shadow-sm btn-press">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="md:pt-16 max-w-max-width-desktop mx-auto pb-safe">
+<!-- Hero Section -->
+<section class="relative w-full h-[280px] md:h-[400px] md:mt-lg md:rounded-xl overflow-hidden md:mx-lg w-[calc(100%-48px)]">
+<img alt="Burger Haven Restaurant" class="w-full h-full object-cover" data-alt="A wide, appetizing shot of a gourmet burger joint's signature dish. A massive, juicy double cheeseburger sits on a rustic wooden board, accompanied by golden crispy fries. Warm, inviting lighting emphasizes the melted cheese and fresh ingredients. The background hints at a lively, modern restaurant atmosphere with subtle bokeh, perfectly suited for a food delivery app hero image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiyVC-xdVTWEAGx3q4VeLR9C43qSrZHaPOYWZXCMjekRmuXGs1khxUrD9jpNwBBoA2rvl2LsAJnohUbX-WygA3s-yobXwhXTUzqDPioE0eLA5JqJKGoFiAXBn_qJ_Gvy2-BUS-VMyDh9K3CZgFU-ujlckhq-6hFDkR9OBeoNZ-O_9Ktu2zRe35H0kW_aGkdpHaiAPPfkW53Eng0UcApihDB3Rd99SxO-DiJI2Yo7AP4W2HgnWb6D6n50DMZyKwhkmeMdIdeuUXBcQ"/>
+<div class="absolute inset-0 hero-gradient flex flex-col justify-end p-md md:p-xl">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-primary mb-xxs shadow-sm">Burger Haven</h1>
+<p class="font-body-lg text-body-lg text-surface-variant flex items-center gap-xxs">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" data-icon="star" data-weight="fill">star</span>
+                            4.8 (2k+ reviews) • Burgers, American
+                        </p>
+</div>
+<div class="hidden md:flex bg-surface-container-lowest rounded-lg p-sm shadow-lg items-center gap-md">
+<div class="text-center">
+<span class="block font-label-md text-label-md text-on-surface-variant">Delivery Time</span>
+<span class="font-title-md text-title-md text-on-surface">25-35 min</span>
+</div>
+<div class="w-px h-8 bg-surface-variant"></div>
+<div class="text-center">
+<span class="block font-label-md text-label-md text-on-surface-variant">Delivery Fee</span>
+<span class="font-title-md text-title-md text-on-surface">$2.99</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Mobile Info Strip -->
+<div class="md:hidden flex bg-surface border-b border-surface-variant px-md py-sm items-center justify-between text-center sticky top-0 z-30 shadow-sm">
+<div class="flex flex-col items-center flex-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Delivery Time</span>
+<span class="font-title-md text-title-md text-on-surface">25-35 min</span>
+</div>
+<div class="w-px h-6 bg-surface-variant"></div>
+<div class="flex flex-col items-center flex-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Delivery Fee</span>
+<span class="font-title-md text-title-md text-on-surface">$2.99</span>
+</div>
+</div>
+<!-- Sticky Category Navigation -->
+<nav class="sticky top-0 md:top-16 z-30 bg-surface/90 backdrop-blur-md border-b border-surface-variant pt-sm px-md md:px-lg mt-md">
+<div class="flex gap-sm overflow-x-auto scrollbar-hide pb-sm snap-x">
+<button class="snap-start shrink-0 px-md py-xs rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[0_4px_12px_rgba(178,44,0,0.3)] transition-all">Popular</button>
+<button class="snap-start shrink-0 px-md py-xs rounded-full bg-surface-container-low text-on-surface hover:bg-surface-variant font-label-lg text-label-lg transition-all">Signature Burgers</button>
+<button class="snap-start shrink-0 px-md py-xs rounded-full bg-surface-container-low text-on-surface hover:bg-surface-variant font-label-lg text-label-lg transition-all">Sides &amp; Shares</button>
+<button class="snap-start shrink-0 px-md py-xs rounded-full bg-surface-container-low text-on-surface hover:bg-surface-variant font-label-lg text-label-lg transition-all">Drinks &amp; Shakes</button>
+<button class="snap-start shrink-0 px-md py-xs rounded-full bg-surface-container-low text-on-surface hover:bg-surface-variant font-label-lg text-label-lg transition-all">Desserts</button>
+</div>
+</nav>
+<!-- Menu Content -->
+<div class="px-md md:px-lg py-lg space-y-xl">
+<!-- Category: Popular -->
+<section id="category-popular">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-md">Popular Items</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Menu Item Card 1 -->
+<article class="flex bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group">
+<div class="flex-1 p-md flex flex-col justify-between">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xxs">The Classic Haven</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-sm">Double beef patty, American cheese, lettuce, tomato, pickles, and our signature Haven sauce on a toasted brioche bun.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-price text-price text-primary">$12.99</span>
+<button aria-label="Add The Classic Haven to cart" class="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center btn-press group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="w-[120px] h-[120px] md:w-[140px] md:h-full p-sm">
+<img alt="The Classic Haven Burger" class="w-full h-full object-cover rounded-lg shadow-sm" data-alt="A close-up studio shot of a classic double cheeseburger. The glossy brioche bun sits atop melted American cheese, crisp lettuce, and a thick beef patty. The background is a clean, minimal light-mode cream color to emphasize the vibrant colors of the fresh ingredients. High-contrast lighting brings out the texture of the meat and bun." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt5Iux9nUn9P42sMVJJlVDZByUxdnpoIosrRcloEvf_JYi_iKKBX3E0wOy0DqxVFQoIInARealv6XdNAKsb9SO5vvyjhgmBD5cde5Pyf3tmQnQudyRRcXSQctzAmHr_MbeAZyJrXhE2WByqB6Oziwq-LGp26sw_plTTt07A0kJrnq9fi2MwKGfpt6Pzl18UjpIlGCY4yN_fh_kNqbmAwHR0I1DR-TIrhWzJEqtqwjw2V9MGF_KqB6AfbkUqA8XBqVAkSSDKCeeQig"/>
+</div>
+</article>
+<!-- Menu Item Card 2 -->
+<article class="flex bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group">
+<div class="flex-1 p-md flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-xs mb-xxs">
+<h3 class="font-title-md text-title-md text-on-surface">Truffle Parm Fries</h3>
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-sm">Crispy shoestring fries tossed in white truffle oil, dusted with parmesan cheese and fresh parsley.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-price text-price text-primary">$6.49</span>
+<button aria-label="Add Truffle Parm Fries to cart" class="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center btn-press group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="w-[120px] h-[120px] md:w-[140px] md:h-full p-sm">
+<img alt="Truffle Parm Fries" class="w-full h-full object-cover rounded-lg shadow-sm" data-alt="A top-down view of perfectly golden shoestring french fries in a modern ceramic bowl. The fries are glistening with truffle oil and generously sprinkled with grated parmesan and green parsley. The setting is bright and appetizing, against a soft, organic slate background that provides subtle depth without heavy shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvc3SW_O-covwo3S0HE9-FhHf2ywQapqweOy-sxEIgsL84_-rKpLJhUgbJfluLTqtiqvtDttRbsXlW2F-hOc842gm6HworMvhuyhq7TaqJ_exsjedsY7WqqPJpFhRICBkwDXwmOmTbT3Y7jHWmFf5uXhwtadkrURYHvD6N189OF3RuEQLBWLGeZX_Ae2aEHzwUfYkB5EIAlvtGj6d_dWfNdka5rBsU0VrZ2MNyloA3G5oDBisjK0jSOVPZbACCEdUaMBC9dpr31E4"/>
+</div>
+</article>
+<!-- Menu Item Card 3 -->
+<article class="flex bg-surface-container-lowest rounded-xl shadow-sm border border-surface-variant overflow-hidden hover:shadow-md transition-shadow group">
+<div class="flex-1 p-md flex flex-col justify-between">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xxs">Oreo Dream Shake</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-sm">Thick vanilla bean ice cream blended with crushed Oreos, topped with whipped cream and chocolate drizzle.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-price text-price text-primary">$5.99</span>
+<button aria-label="Add Oreo Dream Shake to cart" class="w-8 h-8 rounded-full bg-primary-container/20 text-primary flex items-center justify-center btn-press group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="w-[120px] h-[120px] md:w-[140px] md:h-full p-sm">
+<img alt="Oreo Dream Shake" class="w-full h-full object-cover rounded-lg shadow-sm" data-alt="A tall, frosted glass filled with a rich, thick cookies and cream milkshake. Generous mounds of whipped cream tower on top, heavily drizzled with glossy chocolate syrup and crushed cookie bits. Placed on a pristine white surface with a soft, warm ambient glow in the background, exuding a fresh, indulgent dessert aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmXXPHzXHVFw32xf3LfketCJ4cnVL6KQzfn-B72pA4-WATFEcc6yVvlCCRMSK4Z3sCMtlohJkjNVjUhC6R4fgg5JmHzV6SwSJq3PFZzHby7sK9aSgQ_bEyE9f1OvJRQ9cAYdf92Rj_9Rjvf_1WNxJjEFhiEra7Hao-HhO_H6AHLcNo-9ZamkTcczs2LPN4vQd4nv9GUaWMehnbu3UiTolgoiwEg3WoDlpUxZmWUtg4HaSJwdZeBU_jf9h-24YfCKRX5lAuXDjfbNk"/>
+</div>
+</article>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating View Cart Action Bar (Mobile & Desktop) -->
+<div class="fixed bottom-0 left-0 w-full z-40 p-md md:p-lg bg-gradient-to-t from-surface via-surface/90 to-transparent pb-safe">
+<div class="max-w-max-width-desktop mx-auto">
+<button class="w-full h-[52px] bg-gradient-to-r from-[#ff5a2c] to-[#b22c00] rounded-xl flex items-center justify-between px-md shadow-[0_8px_24px_rgba(178,44,0,0.3)] btn-press">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-on-primary/20 flex items-center justify-center font-label-lg text-label-lg text-on-primary border border-on-primary/30">
+                        3
+                    </div>
+<span class="font-title-md text-title-md text-on-primary">View Cart</span>
+</div>
+<span class="font-title-md text-title-md text-on-primary">$25.47</span>
+</button>
+</div>
+</div>
+</body></html>

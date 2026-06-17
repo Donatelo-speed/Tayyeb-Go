@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tayyeb Go - Live Orders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed-dim": "#ffb5a1",
+                      "secondary-fixed-dim": "#50df9d",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#c88400",
+                      "tertiary-fixed": "#ffddb4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#00734a",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#70fcb7",
+                      "tertiary": "#825500",
+                      "surface-dim": "#d7d9e6",
+                      "secondary-fixed": "#70fcb7",
+                      "primary-fixed": "#ffdbd1",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dfe2ef",
+                      "surface-container": "#ebedfa",
+                      "on-secondary-fixed": "#002112",
+                      "on-primary-container": "#571100",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#005233",
+                      "on-tertiary-fixed": "#291800",
+                      "on-tertiary-fixed-variant": "#633f00",
+                      "inverse-surface": "#2c303a",
+                      "surface-container-high": "#e5e8f5",
+                      "outline": "#8f7068",
+                      "inverse-on-surface": "#eef0fd",
+                      "tertiary-fixed-dim": "#ffb953",
+                      "on-primary-fixed": "#3b0800",
+                      "on-surface-variant": "#5b403a",
+                      "surface-container-low": "#f1f3ff",
+                      "on-tertiary-container": "#3e2600",
+                      "background": "#f9f9ff",
+                      "on-surface": "#181c25",
+                      "secondary": "#006c45",
+                      "surface-tint": "#b22c00",
+                      "on-primary-fixed-variant": "#881f00",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#dfe2ef",
+                      "primary": "#b22c00",
+                      "inverse-primary": "#ffb5a1",
+                      "surface-bright": "#f9f9ff",
+                      "primary-container": "#ff5a2c",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f9f9ff",
+                      "outline-variant": "#e4beb5",
+                      "on-background": "#181c25"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxs": "4px",
+                      "xl": "32px",
+                      "max-width-desktop": "1200px",
+                      "xxl": "48px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xs": "8px",
+                      "unit": "8px"
+              },
+              "fontFamily": {
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "stat-value": [
+                              "Inter"
+                      ],
+                      "display-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "price": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "title-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "28.3px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "stat-value": [
+                              "32px",
+                              {
+                                      "lineHeight": "33.6px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "display-md": [
+                              "34px",
+                              {
+                                      "lineHeight": "37.4px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16.8px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "42px",
+                              {
+                                      "lineHeight": "44.5px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "15.6px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "price": [
+                              "16px",
+                              {
+                                      "lineHeight": "19.2px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "18.9px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "23px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24.8px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "21px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #F7F4EF; /* Warm organic cream as per brand guidelines */
+        }
+        .card-shadow {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .glow-primary {
+            box-shadow: 0 0 12px rgba(255, 90, 44, 0.4); /* Primary orange glow */
+        }
+        .status-new {
+            background-color: rgba(186, 26, 26, 0.1);
+            color: #ba1a1a;
+        }
+        .status-preparing {
+            background-color: rgba(200, 132, 0, 0.1);
+            color: #c88400;
+        }
+        .status-ready {
+            background-color: rgba(0, 108, 69, 0.1);
+            color: #006c45;
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- Mobile Top App Bar -->
+<header class="md:hidden fixed top-0 w-full z-50 flex items-center justify-between px-md h-16 bg-surface shadow-sm">
+<div class="flex items-center gap-sm text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</div>
+<div class="font-display-md text-display-md text-primary tracking-tight font-bold">
+            Tayyeb Go
+        </div>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A close-up, high-quality portrait of a professional individual looking directly at the camera. The lighting is soft and natural, emphasizing approachability and trust. The person has a friendly expression. The background is slightly blurred to keep the focus on the subject, fitting a modern corporate or app profile picture style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApQldDpXwooNdUDt-lCgNzc0WzHTG5JsR4w11UXDarHs87oUoJVxWcKYbVEd1ADHygVe67NTnE-Zat46NlqQXmM348pFgClF_Hn6N_lNs1ccFCVbo7bJ8LkDzzTzBYRfJJB9fBFmRqnkDTTWBdXnZ10WydRKLZMNXw4xD8HtlsYuZg2OKojnE99dk90BL_nas1jFY7lpCmm2Guw9TtqFpPWExXRIDQ39PaCfj7PvaAY9aoQU-kQRNdBt30MLf8pSvM1fE3uI23WmQ"/>
+</div>
+</header>
+<!-- Desktop Navigation Drawer -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-[280px] bg-surface shadow-xl flex-col py-lg pr-md z-40">
+<div class="px-lg mb-xl">
+<div class="font-display-md text-display-md text-primary tracking-tight font-bold mb-lg">
+                Tayyeb Go
+            </div>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest shrink-0">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A close-up, high-quality portrait of a professional individual looking directly at the camera. The lighting is soft and natural, emphasizing approachability and trust. The person has a friendly expression. The background is slightly blurred to keep the focus on the subject, fitting a modern corporate or app profile picture style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtUqL0SzX5dxgnw4-QBtTX1aFhlgAjk5xkcE8THkk8JsQQN6-VTea4b3komYEpYVBy7Zx-DQBjEVGxXSJR82scRw4WkaBA-QsZ1lCMUmtgh4q66R093DZi9sGyEWVUAiBj1TCN5h_-14llib3mnA4D_YGc33YCX5FhVVU7Mih5d5k6nxlB-C8rLOcg3SN6nYIO4cF168nNrxwTl3-D7gsX3w_xOXNPtRVYGYTih33k8vxxJ-Rb6jagcjyiWRXyMrWucrpfPApa3qo"/>
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Ahmed Khan</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Tayyeb Go Partner</div>
+<div class="font-label-md text-label-md text-secondary mt-xxs">Active Now</div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-lg text-body-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-lg py-sm bg-secondary-container text-on-secondary-container rounded-r-full font-bold mt-xs transition-all duration-200 translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<span class="font-body-lg text-body-lg">Deliveries</span>
+</a>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full mt-xs transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-lg text-body-lg">Earnings</span>
+</a>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full mt-xs transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="delivery_dining">delivery_dining</span>
+<span class="font-body-lg text-body-lg">Vehicles</span>
+</a>
+<a class="flex items-center gap-md px-lg py-sm text-on-surface-variant hover:bg-surface-container-high rounded-r-full mt-xs transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-lg text-body-lg">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full md:ml-[280px] pt-[80px] md:pt-lg px-md md:px-lg pb-[100px] md:pb-lg max-w-desktop mx-auto">
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Live Orders</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-xs">Manage incoming and active orders efficiently.</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container-high text-on-surface font-label-lg text-label-lg px-md py-xs rounded-full flex items-center gap-xs hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                    Filter
+                 </button>
+</div>
+</div>
+<!-- Kanban Board Layout -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md items-start">
+<!-- Column: New -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-container-highest">
+<div class="flex items-center justify-between mb-md border-b border-surface-container-highest pb-xs">
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<h2 class="font-title-md text-title-md text-on-surface">New</h2>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant font-label-md text-label-md px-xs py-xxs rounded-full">3</span>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Order Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">#ORD-4921</span>
+<span class="status-new font-label-md text-label-md px-2 py-1 rounded-full">Just Now</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-sm">
+                            2x Spicy Chicken Burger<br/>
+                            1x Large Fries
+                        </div>
+<div class="flex justify-between items-center mt-sm pt-xs border-t border-surface-container-highest">
+<span class="font-price text-price text-on-surface">$24.50</span>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded-full group-hover:scale-105 transition-transform">Accept</button>
+</div>
+</div>
+<!-- Order Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">#ORD-4922</span>
+<span class="status-new font-label-md text-label-md px-2 py-1 rounded-full">2 min ago</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-sm">
+                            1x Veggie Wrap<br/>
+                            1x Iced Latte
+                        </div>
+<div class="flex justify-between items-center mt-sm pt-xs border-t border-surface-container-highest">
+<span class="font-price text-price text-on-surface">$14.00</span>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded-full group-hover:scale-105 transition-transform">Accept</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Preparing -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-container-highest">
+<div class="flex items-center justify-between mb-md border-b border-surface-container-highest pb-xs">
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-tertiary-container"></span>
+<h2 class="font-title-md text-title-md text-on-surface">Preparing</h2>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant font-label-md text-label-md px-xs py-xxs rounded-full">2</span>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Order Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">#ORD-4918</span>
+<span class="status-preparing font-label-md text-label-md px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span>
+                                8 min
+                            </span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-sm">
+                            3x Pepperoni Pizza (M)
+                        </div>
+<div class="w-full bg-surface-container-high rounded-full h-1.5 mb-sm overflow-hidden">
+<div class="bg-tertiary-container h-1.5 rounded-full" style="width: 60%"></div>
+</div>
+<div class="flex justify-between items-center mt-sm pt-xs border-t border-surface-container-highest">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="moped">moped</span>
+<span class="font-body-sm text-body-sm">Driver assigned</span>
+</div>
+<button class="bg-surface-container-high text-on-surface font-label-md text-label-md px-sm py-xs rounded-full hover:bg-surface-container-highest transition-colors">Mark Ready</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Ready for Pickup -->
+<div class="bg-surface rounded-xl p-md card-shadow border border-surface-container-highest">
+<div class="flex items-center justify-between mb-md border-b border-surface-container-highest pb-xs">
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<h2 class="font-title-md text-title-md text-on-surface">Ready</h2>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant font-label-md text-label-md px-xs py-xxs rounded-full">1</span>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Order Card -->
+<div class="bg-surface-container-lowest border-2 border-secondary/30 rounded-lg p-sm shadow-sm relative overflow-hidden">
+<!-- Driver Arriving Banner -->
+<div class="absolute top-0 left-0 w-full bg-secondary text-on-secondary font-label-sm text-[10px] uppercase tracking-wider text-center py-0.5 font-bold flex justify-center items-center gap-1">
+<span class="material-symbols-outlined text-[12px] animate-pulse" data-icon="directions_car">directions_car</span>
+                            Driver Arriving in 2 min
+                        </div>
+<div class="flex justify-between items-start mb-xs mt-4">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">#ORD-4915</span>
+<span class="status-ready font-label-md text-label-md px-2 py-1 rounded-full">Waiting</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-sm">
+                            1x Family Sushi Platter<br/>
+                            2x Miso Soup
+                        </div>
+<div class="flex justify-between items-center mt-sm pt-xs border-t border-surface-container-highest">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-[10px] font-bold">DK</div>
+<span class="font-body-sm text-body-sm text-on-surface">David K.</span>
+</div>
+<button class="bg-[#FFEFE8] text-primary font-label-md text-label-md px-sm py-xs rounded-full hover:bg-primary-container/20 transition-colors">Handed Over</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-sm bg-surface border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 hover:text-primary transition-all scale-90 transition-transform duration-120 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="reorder" data-weight="fill" style="font-variation-settings: 'FILL' 1;">reorder</span>
+<span class="font-label-md text-label-md mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for accepting orders
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.97)';
+            });
+            btn.addEventListener('mouseup', function() {
+                this.style.transform = 'scale(1)';
+                if(this.textContent === 'Accept') {
+                    const card = this.closest('.group');
+                    if(card) {
+                        card.style.opacity = '0.5';
+                        setTimeout(() => card.style.display = 'none', 300);
+                    }
+                }
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body></html>

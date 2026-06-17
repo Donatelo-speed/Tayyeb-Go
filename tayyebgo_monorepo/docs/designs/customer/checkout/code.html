@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Checkout - Tayyeb Go</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#e4beb5",
+                        "primary-fixed-dim": "#ffb5a1",
+                        "on-tertiary-fixed": "#291800",
+                        "secondary-fixed": "#70fcb7",
+                        "surface-dim": "#d7d9e6",
+                        "surface-container": "#ebedfa",
+                        "on-secondary-fixed-variant": "#005233",
+                        "on-tertiary-fixed-variant": "#633f00",
+                        "surface-bright": "#f9f9ff",
+                        "on-primary-fixed": "#3b0800",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#dfe2ef",
+                        "surface-tint": "#b22c00",
+                        "secondary-container": "#70fcb7",
+                        "inverse-on-surface": "#eef0fd",
+                        "on-tertiary-container": "#3e2600",
+                        "outline": "#8f7068",
+                        "primary": "#b22c00",
+                        "tertiary-container": "#c88400",
+                        "tertiary-fixed-dim": "#ffb953",
+                        "error": "#ba1a1a",
+                        "tertiary": "#825500",
+                        "secondary-fixed-dim": "#50df9d",
+                        "primary-fixed": "#ffdbd1",
+                        "on-surface": "#181c25",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#dfe2ef",
+                        "inverse-primary": "#ffb5a1",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9ff",
+                        "surface-container-low": "#f1f3ff",
+                        "tertiary-fixed": "#ffddb4",
+                        "on-primary-container": "#571100",
+                        "on-background": "#181c25",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#002112",
+                        "inverse-surface": "#2c303a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#00734a",
+                        "surface-container-high": "#e5e8f5",
+                        "surface": "#f9f9ff",
+                        "on-error-container": "#93000a",
+                        "secondary": "#006c45",
+                        "primary-container": "#ff5a2c",
+                        "on-surface-variant": "#5b403a",
+                        "on-primary-fixed-variant": "#881f00",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xs": "8px",
+                        "sm": "12px",
+                        "max-width-desktop": "1200px",
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "unit": "8px",
+                        "lg": "24px",
+                        "xxs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-md": ["Inter"],
+                        "display-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "price": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["12px", { "lineHeight": "16.8px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "23px", "fontWeight": "600" }],
+                        "display-md": ["34px", { "lineHeight": "37.4px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24.8px", "fontWeight": "400" }],
+                        "stat-value": ["32px", { "lineHeight": "33.6px", "fontWeight": "800" }],
+                        "label-md": ["12px", { "lineHeight": "15.6px", "fontWeight": "600" }],
+                        "title-lg": ["24px", { "lineHeight": "28.3px", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "price": ["16px", { "lineHeight": "19.2px", "fontWeight": "700" }],
+                        "label-lg": ["14px", { "lineHeight": "18.9px", "fontWeight": "700" }],
+                        "display-lg": ["42px", { "lineHeight": "44.5px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        
+        /* Interactive Button Scale */
+        .btn-active:active {
+            transform: scale(0.97);
+            transition: transform 120ms ease-out;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(249, 249, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Ambient Glow */
+        .glow-primary {
+            box-shadow: 0 8px 24px -6px rgba(255, 90, 44, 0.4);
+        }
+        
+        .soft-shadow {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen pb-[120px] pt-16">
+<!-- TopAppBar (Transactional - simplified) -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-md h-16 bg-surface shadow-sm pt-safe">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-title-md text-title-md text-on-surface">Checkout</h1>
+<div class="w-10 h-10"></div> <!-- Spacer for center alignment -->
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-[600px] mx-auto px-md py-lg flex flex-col gap-lg">
+<!-- Restaurant Info -->
+<div class="flex items-center gap-sm pb-sm border-b border-surface-variant">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high overflow-hidden shadow-sm shrink-0">
+<img alt="Burger Haven" class="w-full h-full object-cover" data-alt="A close-up, vibrant, high-quality food photography shot of a classic cheeseburger. The burger features a glossy, toasted brioche bun, a thick, juicy beef patty with melted cheddar cheese dripping down the sides, crisp green lettuce, and bright red tomato slices. The lighting is bright and warm, emphasizing the fresh, appetizing textures of the ingredients. The style aligns with a modern, premium food delivery app, set against a soft, out-of-focus background to keep the focus entirely on the burger." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGBnftHgea72tDY5Z4i558FfZWQD6hQ6W0fE0iUk-veAn7CdO3JzRH5J8JPxtgKl-U3kxP7XgMRgo41CHskf8D2ShAhwh5rPSXYzqtMSx-31D4ouS_MnpKZpmZn0F0rooi2nALJHdBq9UQBqMh8Avdgbcp7IsrdR1jGlJMZ88yOf1u_XymkIW1zUp3_wMvXK500UwW0hVewmI01gc6fnv-a-0hRkeIR6mvD7dq9HtyJrIfuoOUgknlTK5AX4MwAz0qaWIArcyvpys"/>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Burger Haven</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Estimated delivery: 25-35 min</p>
+</div>
+</div>
+<!-- Order Summary -->
+<section class="bg-surface rounded-xl soft-shadow p-md border border-surface-container-high">
+<h3 class="font-label-lg text-label-lg text-on-surface mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                Order Summary
+            </h3>
+<div class="flex flex-col gap-sm">
+<!-- Item 1 -->
+<div class="flex justify-between items-start">
+<div class="flex items-start gap-sm">
+<div class="bg-surface-container w-8 h-8 rounded-lg flex items-center justify-center font-label-md text-primary mt-1">1x</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface text-[16px]">Classic Smashburger</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xxs">No onions, extra pickles</p>
+</div>
+</div>
+<span class="font-price text-price text-on-surface whitespace-nowrap ml-xs">$12.50</span>
+</div>
+<!-- Item 2 -->
+<div class="flex justify-between items-start">
+<div class="flex items-start gap-sm">
+<div class="bg-surface-container w-8 h-8 rounded-lg flex items-center justify-center font-label-md text-primary mt-1">2x</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface text-[16px]">Truffle Fries</p>
+</div>
+</div>
+<span class="font-price text-price text-on-surface whitespace-nowrap ml-xs">$9.00</span>
+</div>
+</div>
+<button class="mt-md font-label-md text-primary flex items-center gap-xxs hover:underline">
+<span class="material-symbols-outlined text-[16px]">add</span> Add more items
+            </button>
+</section>
+<!-- Delivery Address -->
+<section class="bg-surface rounded-xl soft-shadow p-md border border-surface-container-high relative overflow-hidden">
+<!-- Map background decorative hint -->
+<div class="absolute top-0 right-0 w-32 h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&amp;fit=crop&amp;w=300&amp;q=80')] bg-cover opacity-10" data-alt="A stylized, light-mode map illustration. The map features soft gray roads, subtle pale blue water features, and light cream landmasses, creating a clean, minimalistic aesthetic suitable for a modern delivery app interface. The map is viewed from a top-down perspective, with faint, glowing lines suggesting routes. The overall tone is bright, functional, and uncluttered, matching a crisp corporate design system."></div>
+<div class="relative z-10">
+<div class="flex justify-between items-center mb-sm">
+<h3 class="font-label-lg text-label-lg text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                        Delivery Details
+                    </h3>
+<button class="font-label-md text-primary hover:underline">Change</button>
+</div>
+<div class="flex items-start gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface text-[16px]">Home</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xxs">123 Market Street, Apt 4B<br/>San Francisco, CA 94103</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs bg-surface-container inline-block px-xs py-xxs rounded">Leave at door</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Payment Method -->
+<section class="bg-surface rounded-xl soft-shadow p-md border border-surface-container-high">
+<div class="flex justify-between items-center mb-sm">
+<h3 class="font-label-lg text-label-lg text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                    Payment Method
+                </h3>
+<button class="font-label-md text-primary hover:underline">Change</button>
+</div>
+<!-- Selected Method -->
+<div class="flex items-center justify-between p-sm border-2 border-primary rounded-lg bg-primary-fixed/20 relative">
+<div class="absolute -top-2 -right-2 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-10 h-6 bg-surface border border-outline-variant rounded flex items-center justify-center">
+<span class="font-body-sm font-bold text-[#1A1F71] italic tracking-tighter">VISA</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-semibold">•••• 4242</span>
+</div>
+</div>
+<!-- Apple Pay Option (Inactive state) -->
+<div class="flex items-center justify-between p-sm border border-surface-variant rounded-lg mt-sm hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-6 bg-black rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface">Apple Pay</span>
+</div>
+</div>
+</section>
+<!-- Bill Details -->
+<section class="mb-xxl">
+<div class="flex flex-col gap-xs font-body-md text-body-md text-on-surface-variant">
+<div class="flex justify-between">
+<span>Subtotal</span>
+<span class="text-on-surface">$21.50</span>
+</div>
+<div class="flex justify-between">
+<span>Delivery Fee</span>
+<span class="text-on-surface">$2.99</span>
+</div>
+<div class="flex justify-between">
+<span>Taxes &amp; Other Fees</span>
+<span class="text-on-surface">$2.15</span>
+</div>
+<div class="flex justify-between items-center mt-sm pt-sm border-t border-surface-variant">
+<span class="font-title-md text-title-md text-on-surface">Total</span>
+<span class="font-price text-[20px] font-bold text-on-surface">$26.64</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Sticky Action Bar -->
+<div class="fixed bottom-0 left-0 w-full glass-panel border-t border-surface-variant p-md pb-safe z-50">
+<div class="max-w-[600px] mx-auto flex items-center gap-sm">
+<div class="flex-col hidden sm:flex min-w-[100px]">
+<span class="font-body-sm text-on-surface-variant">Total</span>
+<span class="font-price text-price text-on-surface">$26.64</span>
+</div>
+<button class="btn-active flex-1 h-[52px] rounded-xl bg-gradient-to-r from-primary to-tertiary-container text-on-primary font-label-lg flex items-center justify-center gap-xs glow-primary">
+                Place Order <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>
