@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner With Us — TayyebGo</title>
+  <meta name="description" content="Join TayyebGo as a partner. Reach thousands of customers, manage orders, and grow your business with our analytics tools.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .form-page { padding: 120px 0 80px; min-height: 100vh; }
+    .form-container { max-width: 640px; margin: 0 auto; }
+    .form-header { text-align: center; margin-bottom: 48px; }
+    .form-header .section-tag { margin-bottom: 12px; }
+    .form-header h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(32px, 5vw, 42px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; }
+    .form-header p { font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
+    .form-card { border-radius: var(--radius-xl); padding: 40px; }
+    .form-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+    .form-steps { display: flex; gap: 8px; margin-bottom: 32px; }
+    .form-step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+    .form-step.active { background: var(--primary); }
+    .form-step.done { background: var(--success); }
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+    .form-section h4 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+    .form-actions { display: flex; gap: 12px; margin-top: 32px; }
+    .form-actions .btn { flex: 1; }
+    .form-checkbox { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+    .form-checkbox input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+    .form-checkbox label { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+    .form-checkbox label a { color: var(--primary); text-decoration: underline; }
+    .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+    .category-option { padding: 16px; border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: center; transition: all 0.2s ease; }
+    .category-option:hover { border-color: var(--primary); }
+    .category-option.selected { border-color: var(--primary); background: rgba(255,90,44,0.05); }
+    .category-option input { display: none; }
+    .category-option span { font-size: 24px; display: block; margin-bottom: 4px; }
+    .category-option strong { font-size: 14px; display: block; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+    .stat-card { text-align: center; padding: 24px 16px; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .stat-card .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
+    .stat-card .stat-lbl { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+    @media (max-width: 768px) {
+      .category-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <span>TayyebGo</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#for-customers">Customers</a>
+        <a href="/#for-drivers">Drivers</a>
+        <a href="/#pricing">Pricing</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/">Home</a>
+      <a href="/#for-customers">Customers</a>
+      <a href="/#for-drivers">Drivers</a>
+      <a href="/#pricing">Pricing</a>
+      <div class="mobile-menu-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost btn-full">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-full">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="form-page">
+    <div class="container">
+      <div class="form-container">
+        <div class="form-header">
+          <span class="section-tag">Grow With Us</span>
+          <h1>Partner With TayyebGo</h1>
+          <p>Reach thousands of customers. Manage orders, menu, and analytics — all in one place.</p>
+        </div>
+
+        <div class="form-card glass-card">
+          <div class="form-steps">
+            <div class="form-step active" data-step="1"></div>
+            <div class="form-step" data-step="2"></div>
+            <div class="form-step" data-step="3"></div>
+          </div>
+
+          <!-- Step 1: Business Info -->
+          <div class="form-section active" data-section="1">
+            <h4>Business Information</h4>
+            <div class="form-group">
+              <label>Business Category *</label>
+              <div class="category-grid">
+                <label class="category-option" onclick="selectCategory(this)">
+                  <input type="radio" name="category" value="restaurant">
+                  <span>🍔</span>
+                  <strong>Restaurant</strong>
+                </label>
+                <label class="category-option" onclick="selectCategory(this)">
+                  <input type="radio" name="category" value="grocery">
+                  <span>🛒</span>
+                  <strong>Grocery Store</strong>
+                </label>
+                <label class="category-option" onclick="selectCategory(this)">
+                  <input type="radio" name="category" value="pharmacy">
+                  <span>💊</span>
+                  <strong>Pharmacy</strong>
+                </label>
+                <label class="category-option" onclick="selectCategory(this)">
+                  <input type="radio" name="category" value="other">
+                  <span>📦</span>
+                  <strong>Other</strong>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="storeName">Store/Restaurant Name *</label>
+              <input type="text" id="storeName" placeholder="e.g. Pizza House" required>
+            </div>
+            <div class="form-group">
+              <label for="storePhone">Business Phone *</label>
+              <input type="tel" id="storePhone" placeholder="+963 11 XXX XXX" required>
+            </div>
+            <div class="form-group">
+              <label for="storeEmail">Business Email *</label>
+              <input type="email" id="storeEmail" placeholder="business@example.com" required>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep(2)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Location & Hours -->
+          <div class="form-section" data-section="2">
+            <h4>Location & Operating Hours</h4>
+            <div class="form-group">
+              <label for="storeAddress">Store Address *</label>
+              <input type="text" id="storeAddress" placeholder="Full address" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <select id="city" required>
+                  <option value="" disabled selected>Select city</option>
+                  <option value="damascus">Damascus</option>
+                  <option value="aleppo">Aleppo</option>
+                  <option value="homs">Homs</option>
+                  <option value="lattakia">Lattakia</option>
+                  <option value="tartous">Tartous</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="district">District</label>
+                <input type="text" id="district" placeholder="e.g. Mezzeh">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="openTime">Opens At *</label>
+                <input type="time" id="openTime" value="09:00" required>
+              </div>
+              <div class="form-group">
+                <label for="closeTime">Closes At *</label>
+                <input type="time" id="closeTime" value="23:00" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ownerName">Owner/Manager Name *</label>
+              <input type="text" id="ownerName" placeholder="Full name" required>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-lg" onclick="prevStep(1)">Back</button>
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep(3)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Agreement -->
+          <div class="form-section" data-section="3">
+            <h4>Review & Submit</h4>
+            <div style="padding:20px;background:rgba(255,90,44,0.05);border-radius:var(--radius);margin-bottom:20px">
+              <h4 style="font-size:14px;margin-bottom:8px">Partner Terms</h4>
+              <ul style="font-size:13px;color:var(--text-secondary);padding-left:16px;line-height:2">
+                <li>10% commission per order</li>
+                <li>No upfront costs</li>
+                <li>Weekly payouts</li>
+                <li>Free analytics dashboard</li>
+                <li>Marketing support included</li>
+              </ul>
+            </div>
+            <div class="form-checkbox">
+              <input type="checkbox" id="terms" required>
+              <label for="terms">I agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></label>
+            </div>
+            <div class="form-checkbox">
+              <input type="checkbox" id="commission" required>
+              <label for="commission">I understand and accept the 10% commission per order</label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-lg" onclick="prevStep(2)">Back</button>
+              <button type="button" class="btn btn-primary btn-lg btn-glow" onclick="submitPartnerForm()">Submit Application</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num">40%</div>
+            <div class="stat-lbl">More orders on average</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">500+</div>
+            <div class="stat-lbl">Active partner stores</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">4.7</div>
+            <div class="stat-lbl">Average partner rating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+
+    function selectCategory(el) {
+      document.querySelectorAll('.category-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function nextStep(step) {
+      document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.remove('active');
+      document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
+      document.querySelectorAll('.form-step').forEach((s, i) => {
+        s.classList.remove('active', 'done');
+        if (i < step - 1) s.classList.add('done');
+        if (i === step - 1) s.classList.add('active');
+      });
+      currentStep = step;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function prevStep(step) { nextStep(step); }
+
+    function submitPartnerForm() {
+      const terms = document.getElementById('terms');
+      const commission = document.getElementById('commission');
+      if (!terms.checked || !commission.checked) {
+        alert('Please agree to the terms and commission structure.');
+        return;
+      }
+      const btn = event.target;
+      btn.innerHTML = '✓ Application Submitted!';
+      btn.style.background = 'var(--success)';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = 'Submit Application';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

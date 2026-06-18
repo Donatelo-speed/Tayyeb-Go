@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safety — TayyebGo</title>
+  <meta name="description" content="Your safety is our priority. Learn about TayyebGo's safety features, driver verification, and SOS alerts.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .safety-hero { padding: 160px 0 80px; text-align: center; background: var(--bg-dark); }
+    .safety-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; color: white; }
+    .safety-hero p { font-size: 18px; color: var(--text-inverse-muted); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .features-section { padding: 80px 0; }
+    .safety-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 900px; margin: 0 auto; }
+    .safety-card { padding: 36px 32px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .safety-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; }
+    .safety-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .safety-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .verification-section { padding: 80px 0; background: var(--bg-dark); }
+    .verify-steps { display: flex; gap: 24px; max-width: 900px; margin: 0 auto; }
+    .verify-step { flex: 1; text-align: center; padding: 32px 20px; border-radius: var(--radius-xl); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .verify-num { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; margin: 0 auto 16px; }
+    .verify-step h4 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .verify-step p { font-size: 13px; color: var(--text-inverse-muted); line-height: 1.6; }
+    .report-section { padding: 80px 0; text-align: center; }
+    @media (max-width: 768px) { .safety-grid, .verify-steps { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg></div><span>TayyebGo</span></a>
+      <div class="nav-links"><a href="/">Home</a><a href="help.html">Help</a><a href="subscription.html">Subscription</a><a href="#contact">Contact</a></div>
+      <div class="nav-actions"><a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a><a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="safety-hero">
+      <div class="container">
+        <span class="section-tag">Safety</span>
+        <h1>Your safety is our priority</h1>
+        <p>We've built TayyebGo with safety at its core — for customers, drivers, and partners alike.</p>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Safety Features</span>
+          <h2 class="section-title">Built-in protection</h2>
+        </div>
+        <div class="safety-grid">
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(255,90,44,0.1)">🚨</div>
+            <h3>SOS Emergency Button</h3>
+            <p>One-tap SOS button in the app instantly alerts our safety team and shares your location with emergency contacts.</p>
+          </div>
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(34,197,94,0.1)">📍</div>
+            <h3>Real-Time Tracking</h3>
+            <p>Share your live location with family and friends during any delivery. They can track your driver in real-time.</p>
+          </div>
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(139,92,246,0.1)">✅</div>
+            <h3>Verified Drivers</h3>
+            <p>Every driver goes through background checks, document verification, and vehicle inspection before going live.</p>
+          </div>
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(6,182,212,0.1)">📸</div>
+            <h3>Photo Proof of Delivery</h3>
+            <p>Drivers take a photo when delivering your order, ensuring accountability and resolving disputes quickly.</p>
+          </div>
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(245,158,11,0.1)">⭐</div>
+            <h3>Rating System</h3>
+            <p>Rate every delivery. Drivers below 4.5 stars are flagged for review. Your feedback keeps everyone safe.</p>
+          </div>
+          <div class="safety-card">
+            <div class="safety-icon" style="background:rgba(239,68,68,0.1)">🔒</div>
+            <h3>Secure Payments</h3>
+            <p>All transactions are encrypted. Never share cash with drivers — pay through the app for complete safety.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="verification-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Driver Verification</span>
+          <h2 class="section-title" style="color:white">How we verify drivers</h2>
+          <p class="section-subtitle" style="color:var(--text-inverse-muted)">Every driver passes a rigorous 4-step verification process.</p>
+        </div>
+        <div class="verify-steps">
+          <div class="verify-step">
+            <div class="verify-num">1</div>
+            <h4>Identity Check</h4>
+            <p>National ID verification and facial recognition match</p>
+          </div>
+          <div class="verify-step">
+            <div class="verify-num">2</div>
+            <h4>License Verification</h4>
+            <p>Valid driver's license checked against official records</p>
+          </div>
+          <div class="verify-step">
+            <div class="verify-num">3</div>
+            <h4>Background Check</h4>
+            <p>Criminal record and safety history review</p>
+          </div>
+          <div class="verify-step">
+            <div class="verify-num">4</div>
+            <h4>Vehicle Inspection</h4>
+            <p>Vehicle condition and insurance verification</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <div class="container">
+        <h2 class="section-title">Report a safety concern</h2>
+        <p class="section-subtitle">If you feel unsafe or witness concerning behavior, report it immediately.</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+          <a href="mailto:safety@tayyebgo.com" class="btn btn-primary btn-lg">Report Issue</a>
+          <a href="tel:+963112345678" class="btn btn-outline btn-lg">Emergency Call</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom"><p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p></div></div>
+  </footer>
+</body>
+</html>

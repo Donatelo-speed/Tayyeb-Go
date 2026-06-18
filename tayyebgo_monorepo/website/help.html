@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Center — TayyebGo</title>
+  <meta name="description" content="Get help with your TayyebGo account, orders, payments, and more.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .help-hero { padding: 160px 0 60px; text-align: center; }
+    .help-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(32px, 5vw, 48px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 16px; }
+    .help-hero p { font-size: 17px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+    .search-box { max-width: 500px; margin: 32px auto 0; position: relative; }
+    .search-box input { width: 100%; padding: 16px 20px 16px 48px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); font-size: 15px; font-family: 'Inter', sans-serif; color: var(--text); transition: all 0.2s ease; }
+    .search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,90,44,0.1); }
+    .search-box svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); }
+    .help-categories { padding: 60px 0; }
+    .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .cat-card { padding: 32px 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); text-align: center; cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: inherit; }
+    .cat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .cat-icon { font-size: 36px; margin-bottom: 12px; }
+    .cat-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .cat-card p { font-size: 13px; color: var(--text-secondary); }
+    .faq-section { padding: 60px 0; background: var(--bg-dark); }
+    .faq-section .faq-grid { max-width: 800px; margin: 0 auto; }
+    .contact-cta { padding: 80px 0; text-align: center; }
+    @media (max-width: 768px) { .cat-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg></div><span>TayyebGo</span></a>
+      <div class="nav-links"><a href="/">Home</a><a href="safety.html">Safety</a><a href="subscription.html">Subscription</a><a href="#contact">Contact</a></div>
+      <div class="nav-actions"><a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a><a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="help-hero">
+      <div class="container">
+        <h1>How can we help?</h1>
+        <p>Search our help center or browse categories below.</p>
+        <div class="search-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Search for help..." id="helpSearch" onkeyup="filterFAQs()">
+        </div>
+      </div>
+    </section>
+
+    <section class="help-categories">
+      <div class="container">
+        <div class="cat-grid">
+          <a href="#orders" class="cat-card">
+            <div class="cat-icon">📦</div>
+            <h3>Orders</h3>
+            <p>Track, cancel, or get help with orders</p>
+          </a>
+          <a href="#account" class="cat-card">
+            <div class="cat-icon">👤</div>
+            <h3>Account</h3>
+            <p>Manage your profile and settings</p>
+          </a>
+          <a href="#payments" class="cat-card">
+            <div class="cat-icon">💳</div>
+            <h3>Payments</h3>
+            <p>Payment methods, refunds, wallet</p>
+          </a>
+          <a href="#driver" class="cat-card">
+            <div class="cat-icon">🚗</div>
+            <h3>Driver Help</h3>
+            <p>Earnings, documents, go online</p>
+          </a>
+          <a href="#partner" class="cat-card">
+            <div class="cat-icon">🏪</div>
+            <h3>Partner Help</h3>
+            <p>Menu, orders, payouts, analytics</p>
+          </a>
+          <a href="#safety" class="cat-card">
+            <div class="cat-icon">🛡️</div>
+            <h3>Safety</h3>
+            <p>Safety features and SOS alerts</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section" id="orders">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Orders</span>
+          <h2 class="section-title" style="color:white">Order FAQs</h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I track my order?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Open the TayyebGo app and go to "My Orders". Tap on an active order to see real-time tracking with your driver's location on the map.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>Can I cancel my order?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>You can cancel within 2 minutes of placing your order. After that, the restaurant may have already started preparing it. Go to My Orders → tap the order → Cancel.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>My order is late. What should I do?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Check the tracking screen for updates. If your order is significantly late, contact support through the app or call us at +963 11 234 5678. We'll help resolve it.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I get a refund?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>If there's an issue with your order (wrong items, missing items, quality issues), go to My Orders → select order → Report Issue. Refunds are processed within 24-48 hours.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section" id="account" style="background:var(--bg)">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Account</span>
+          <h2 class="section-title">Account FAQs</h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I update my phone number?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Go to Profile → Settings → Account → Phone Number. You'll need to verify the new number with an OTP code.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I add a delivery address?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Go to Profile → My Addresses → Add New Address. You can save multiple addresses like Home, Work, and others.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I delete my account?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Contact support at support@tayyebgo.com with your account email. Account deletion is processed within 7 days.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section" id="payments">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Payments</span>
+          <h2 class="section-title" style="color:white">Payment FAQs</h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>What payment methods are accepted?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>We accept Cash on Delivery, Sham Cash, and credit/debit cards. More payment options coming soon.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How does the wallet work?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Your TayyebGo wallet holds your balance. Add funds via Sham Cash or card, then use it to pay for orders. You can withdraw funds anytime.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>How do I add funds to my wallet?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Go to Wallet → Add Funds. Choose your amount and payment method. Funds are added instantly.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-cta">
+      <div class="container">
+        <h2 class="section-title">Still need help?</h2>
+        <p class="section-subtitle">Our support team is available 24/7.</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+          <a href="mailto:support@tayyebgo.com" class="btn btn-primary btn-lg">Email Support</a>
+          <a href="tel:+963112345678" class="btn btn-outline btn-lg">Call Us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom"><p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p></div></div>
+  </footer>
+
+  <script>
+    function filterFAQs() {
+      const query = document.getElementById('helpSearch').value.toLowerCase();
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false'); });
+        if (!isOpen) { item.classList.add('open'); trigger.setAttribute('aria-expanded', 'true'); }
+      });
+    });
+  </script>
+</body>
+</html>

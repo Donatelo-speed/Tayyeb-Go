@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us — TayyebGo</title>
+  <meta name="description" content="Learn about TayyebGo's mission to revolutionize delivery in Syria and the Middle East.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .about-hero { padding: 160px 0 80px; text-align: center; }
+    .about-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; }
+    .about-hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .mission-section { padding: 80px 0; }
+    .mission-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .mission-card { text-align: center; padding: 40px 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .mission-icon { font-size: 48px; margin-bottom: 16px; }
+    .mission-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .mission-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .team-section { padding: 80px 0; background: var(--bg-dark); }
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .team-card { text-align: center; padding: 32px 16px; border-radius: var(--radius-xl); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .team-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: white; }
+    .team-card h4 { font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
+    .team-card .role { font-size: 13px; color: var(--text-inverse-muted); }
+    .values-section { padding: 80px 0; }
+    .values-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 800px; margin: 0 auto; }
+    .value-item { display: flex; gap: 16px; padding: 24px; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .value-num { font-size: 24px; font-weight: 800; color: var(--primary); flex-shrink: 0; }
+    .value-item h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .value-item p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .cities-section { padding: 80px 0; background: var(--bg-dark); text-align: center; }
+    .cities-grid { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+    .city-badge { padding: 12px 24px; border-radius: 100px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: white; font-size: 14px; font-weight: 600; }
+    .city-badge.active { background: var(--primary); border-color: var(--primary); }
+    @media (max-width: 768px) {
+      .mission-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .values-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <span>TayyebGo</span>
+      </a>
+      <div class="nav-links"><a href="/">Home</a><a href="/#features">Features</a><a href="careers.html">Careers</a><a href="/#contact">Contact</a></div>
+      <div class="nav-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="about-hero">
+      <div class="container">
+        <span class="section-tag">About TayyebGo</span>
+        <h1>Everything Delivered.</h1>
+        <p>We're on a mission to make everything in your city accessible with just a few taps. From food to pharmacy to anything you need.</p>
+      </div>
+    </section>
+
+    <section class="mission-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Our Mission</span>
+          <h2 class="section-title">Why we exist</h2>
+        </div>
+        <div class="mission-grid">
+          <div class="mission-card">
+            <div class="mission-icon">🚀</div>
+            <h3>Speed</h3>
+            <p>Average delivery in 20 minutes. We believe fast delivery shouldn't be a luxury.</p>
+          </div>
+          <div class="mission-card">
+            <div class="mission-icon">🌍</div>
+            <h3>Accessibility</h3>
+            <p>Everything your city offers, delivered to your door. No matter who you are or where you live.</p>
+          </div>
+          <div class="mission-card">
+            <div class="mission-icon">🤝</div>
+            <h3>Community</h3>
+            <p>Supporting local businesses, creating jobs, and building a stronger economy together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="values-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Our Values</span>
+          <h2 class="section-title">What drives us</h2>
+        </div>
+        <div class="values-list">
+          <div class="value-item">
+            <div class="value-num">01</div>
+            <div>
+              <h4>Customer First</h4>
+              <p>Every decision starts with "how does this help our customers?"</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-num">02</div>
+            <div>
+              <h4>Move Fast</h4>
+              <p>We ship quickly, iterate faster, and never stop improving.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-num">03</div>
+            <div>
+              <h4>Trust & Safety</h4>
+              <p>Every driver is verified, every payment is secure, every order is tracked.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-num">04</div>
+            <div>
+              <h4>Local First</h4>
+              <p>We're built in Syria, for Syria. Understanding our market is our advantage.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="team-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Our Team</span>
+          <h2 class="section-title">The people behind TayyebGo</h2>
+          <p class="section-subtitle">A passionate team building the future of delivery.</p>
+        </div>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">T</div>
+            <h4>Tayyeb</h4>
+            <p class="role">Founder & CEO</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#22C55E,#06B6D4)">D</div>
+            <h4>Development</h4>
+            <p class="role">Engineering Team</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">O</div>
+            <h4>Operations</h4>
+            <p class="role">Operations Team</p>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">S</div>
+            <h4>Support</h4>
+            <p class="role">Customer Success</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cities-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Where We Operate</span>
+          <h2 class="section-title" style="color:white">Available cities</h2>
+          <p class="section-subtitle" style="color:var(--text-inverse-muted)">Expanding across Syria and beyond.</p>
+        </div>
+        <div class="cities-grid">
+          <div class="city-badge active">Damascus</div>
+          <div class="city-badge active">Aleppo</div>
+          <div class="city-badge active">Homs</div>
+          <div class="city-badge active">Lattakia</div>
+          <div class="city-badge active">Tartous</div>
+          <div class="city-badge">Deir ez-Zor</div>
+          <div class="city-badge">Hama</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

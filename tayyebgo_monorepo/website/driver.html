@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Driver — TayyebGo</title>
+  <meta name="description" content="Join TayyebGo as a driver. Earn on your schedule with flexible hours, instant payouts, and real-time earnings tracking.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .form-page { padding: 120px 0 80px; min-height: 100vh; }
+    .form-container { max-width: 640px; margin: 0 auto; }
+    .form-header { text-align: center; margin-bottom: 48px; }
+    .form-header .section-tag { margin-bottom: 12px; }
+    .form-header h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(32px, 5vw, 42px); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; }
+    .form-header p { font-size: 16px; color: var(--text-secondary); line-height: 1.7; }
+    .form-card { border-radius: var(--radius-xl); padding: 40px; }
+    .form-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.3px; }
+    .form-steps { display: flex; gap: 8px; margin-bottom: 32px; }
+    .form-step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+    .form-step.active { background: var(--primary); }
+    .form-step.done { background: var(--success); }
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+    .form-section h4 { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--text); }
+    .form-actions { display: flex; gap: 12px; margin-top: 32px; }
+    .form-actions .btn { flex: 1; }
+    .form-checkbox { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+    .form-checkbox input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+    .form-checkbox label { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+    .form-checkbox label a { color: var(--primary); text-decoration: underline; }
+    .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+    .benefit-card { text-align: center; padding: 24px 16px; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .benefit-icon { font-size: 32px; margin-bottom: 12px; }
+    .benefit-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .benefit-card p { font-size: 12px; color: var(--text-secondary); }
+    @media (max-width: 768px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <span>TayyebGo</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#for-customers">Customers</a>
+        <a href="/#for-partners">Partners</a>
+        <a href="/#pricing">Pricing</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/">Home</a>
+      <a href="/#for-customers">Customers</a>
+      <a href="/#for-partners">Partners</a>
+      <a href="/#pricing">Pricing</a>
+      <div class="mobile-menu-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost btn-full">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-full">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="form-page">
+    <div class="container">
+      <div class="form-container">
+        <div class="form-header">
+          <span class="section-tag">Drive With Us</span>
+          <h1>Become a TayyebGo Driver</h1>
+          <p>Drive when you want, earn what you need. Join hundreds of drivers already earning with TayyebGo.</p>
+        </div>
+
+        <div class="form-card glass-card">
+          <div class="form-steps">
+            <div class="form-step active" data-step="1"></div>
+            <div class="form-step" data-step="2"></div>
+            <div class="form-step" data-step="3"></div>
+          </div>
+
+          <!-- Step 1: Personal Info -->
+          <div class="form-section active" data-section="1">
+            <h4>Personal Information</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label for=" firstName">First Name *</label>
+                <input type="text" id="firstName" placeholder="John" required>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name *</label>
+                <input type="text" id="lastName" placeholder="Doe" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" placeholder="+963 9XX XXX XXX" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="city">City *</label>
+              <select id="city" required>
+                <option value="" disabled selected>Select your city</option>
+                <option value="damascus">Damascus</option>
+                <option value="aleppo">Aleppo</option>
+                <option value="homs">Homs</option>
+                <option value="lattakia">Lattakia</option>
+                <option value="tartous">Tartous</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep(2)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Vehicle Info -->
+          <div class="form-section" data-section="2">
+            <h4>Vehicle Information</h4>
+            <div class="form-group">
+              <label for="vehicleType">Vehicle Type *</label>
+              <select id="vehicleType" required>
+                <option value="" disabled selected>Select vehicle type</option>
+                <option value="motorcycle">Motorcycle</option>
+                <option value="car">Car</option>
+                <option value="bicycle">Bicycle</option>
+                <option value="walker">On Foot</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="vehiclePlate">Vehicle Plate Number *</label>
+              <input type="text" id="vehiclePlate" placeholder="e.g. 12345 Damascus">
+            </div>
+            <div class="form-group">
+              <label for="vehicleModel">Vehicle Model & Year</label>
+              <input type="text" id="vehicleModel" placeholder="e.g. Honda Wave 2023">
+            </div>
+            <div class="form-group">
+              <label for="experience">Driving Experience *</label>
+              <select id="experience" required>
+                <option value="" disabled selected>Select experience</option>
+                <option value="0-1">Less than 1 year</option>
+                <option value="1-3">1-3 years</option>
+                <option value="3-5">3-5 years</option>
+                <option value="5+">5+ years</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-lg" onclick="prevStep(1)">Back</button>
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep(3)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Documents & Submit -->
+          <div class="form-section" data-section="3">
+            <h4>Documents & Agreement</h4>
+            <div class="form-group">
+              <label for="idNumber">National ID Number *</label>
+              <input type="text" id="idNumber" placeholder="Your national ID number" required>
+            </div>
+            <div class="form-group">
+              <label>Upload Documents</label>
+              <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">You'll be asked to upload these after registration:</p>
+              <ul style="font-size:14px;color:var(--text-secondary);padding-left:20px;line-height:2">
+                <li>National ID (front & back)</li>
+                <li>Driver's license</li>
+                <li>Vehicle registration</li>
+                <li>Profile photo</li>
+              </ul>
+            </div>
+            <div class="form-checkbox">
+              <input type="checkbox" id="terms" required>
+              <label for="terms">I agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></label>
+            </div>
+            <div class="form-checkbox">
+              <input type="checkbox" id="background" required>
+              <label for="background">I consent to a background check as part of the driver verification process</label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline btn-lg" onclick="prevStep(2)">Back</button>
+              <button type="button" class="btn btn-primary btn-lg btn-glow" onclick="submitDriverForm()">Submit Application</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">🕐</div>
+            <h4>Flexible Hours</h4>
+            <p>Work whenever you want</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">💰</div>
+            <h4>Instant Payouts</h4>
+            <p>Get paid daily</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📍</div>
+            <h4>Smart Routes</h4>
+            <p>AI-optimized navigation</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+
+    function nextStep(step) {
+      document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.remove('active');
+      document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
+      document.querySelectorAll('.form-step').forEach((s, i) => {
+        s.classList.remove('active', 'done');
+        if (i < step - 1) s.classList.add('done');
+        if (i === step - 1) s.classList.add('active');
+      });
+      currentStep = step;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function prevStep(step) {
+      nextStep(step);
+    }
+
+    function submitDriverForm() {
+      const terms = document.getElementById('terms');
+      const background = document.getElementById('background');
+      if (!terms.checked || !background.checked) {
+        alert('Please agree to the terms and consent to background check.');
+        return;
+      }
+      const btn = event.target;
+      btn.innerHTML = '✓ Application Submitted!';
+      btn.style.background = 'var(--success)';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = 'Submit Application';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

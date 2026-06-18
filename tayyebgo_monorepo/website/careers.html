@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers — TayyebGo</title>
+  <meta name="description" content="Join TayyebGo. We're hiring across engineering, design, marketing, and operations.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .careers-hero { padding: 160px 0 80px; text-align: center; }
+    .careers-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; }
+    .careers-hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .perks-section { padding: 80px 0; }
+    .perks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .perk-card { text-align: center; padding: 32px 16px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .perk-icon { font-size: 36px; margin-bottom: 12px; }
+    .perk-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .perk-card p { font-size: 13px; color: var(--text-secondary); }
+    .jobs-section { padding: 80px 0; background: var(--bg-dark); }
+    .dept-group { margin-bottom: 40px; }
+    .dept-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .dept-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .dept-header h3 { font-size: 20px; font-weight: 700; color: white; }
+    .dept-header span { font-size: 14px; color: var(--text-inverse-muted); }
+    .job-list { display: flex; flex-direction: column; gap: 12px; }
+    .job-card { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s ease; cursor: pointer; }
+    .job-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+    .job-info h4 { font-size: 16px; font-weight: 600; color: white; margin-bottom: 4px; }
+    .job-meta { display: flex; gap: 16px; }
+    .job-meta span { font-size: 13px; color: var(--text-inverse-muted); }
+    .job-apply { padding: 8px 20px; border-radius: 8px; background: var(--primary); color: white; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+    .apply-section { padding: 80px 0; text-align: center; }
+    @media (max-width: 768px) {
+      .perks-grid { grid-template-columns: repeat(2, 1fr); }
+      .job-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <span>TayyebGo</span>
+      </a>
+      <div class="nav-links"><a href="/">Home</a><a href="about.html">About</a><a href="/#features">Features</a><a href="/#contact">Contact</a></div>
+      <div class="nav-actions">
+        <a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="careers-hero">
+      <div class="container">
+        <span class="section-tag">Careers</span>
+        <h1>Join our team.</h1>
+        <p>We're building the future of delivery in the Middle East. We're looking for passionate people who want to make an impact.</p>
+      </div>
+    </section>
+
+    <section class="perks-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Perks & Benefits</span>
+          <h2 class="section-title">Why work at TayyebGo</h2>
+        </div>
+        <div class="perks-grid">
+          <div class="perk-card">
+            <div class="perk-icon">🚀</div>
+            <h4>Grow Fast</h4>
+            <p>Rapid career progression in a scaling startup</p>
+          </div>
+          <div class="perk-card">
+            <div class="perk-icon">🌍</div>
+            <h4>Work Remote</h4>
+            <p>Flexible remote-first culture</p>
+          </div>
+          <div class="perk-card">
+            <div class="perk-icon">💰</div>
+            <h4>Competitive Pay</h4>
+            <p>Top-of-market salaries & equity</p>
+          </div>
+          <div class="perk-card">
+            <div class="perk-icon">🏥</div>
+            <h4>Health Benefits</h4>
+            <p>Full medical & dental coverage</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="jobs-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Open Positions</span>
+          <h2 class="section-title" style="color:white">Find your role</h2>
+        </div>
+
+        <div class="dept-group">
+          <div class="dept-header">
+            <div class="dept-icon" style="background:rgba(255,90,44,0.15)">💻</div>
+            <div>
+              <h3>Engineering</h3>
+              <span>8 open roles</span>
+            </div>
+          </div>
+          <div class="job-list">
+            <div class="job-card">
+              <div class="job-info">
+                <h4>Senior Flutter Developer</h4>
+                <div class="job-meta"><span>Full-time</span><span>Remote</span><span>$3,000-5,000/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+            <div class="job-card">
+              <div class="job-info">
+                <h4>Backend Engineer (Firebase/Node)</h4>
+                <div class="job-meta"><span>Full-time</span><span>Remote</span><span>$3,500-5,500/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+            <div class="job-card">
+              <div class="job-info">
+                <h4>DevOps Engineer</h4>
+                <div class="job-meta"><span>Full-time</span><span>Remote</span><span>$4,000-6,000/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dept-group">
+          <div class="dept-header">
+            <div class="dept-icon" style="background:rgba(139,92,246,0.15)">🎨</div>
+            <div>
+              <h3>Design</h3>
+              <span>3 open roles</span>
+            </div>
+          </div>
+          <div class="job-list">
+            <div class="job-card">
+              <div class="job-info">
+                <h4>Senior Product Designer</h4>
+                <div class="job-meta"><span>Full-time</span><span>Remote</span><span>$3,000-5,000/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+            <div class="job-card">
+              <div class="job-info">
+                <h4>UI/UX Designer</h4>
+                <div class="job-meta"><span>Full-time</span><span>Remote</span><span>$2,000-3,500/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dept-group">
+          <div class="dept-header">
+            <div class="dept-icon" style="background:rgba(34,197,94,0.15)">📈</div>
+            <div>
+              <h3>Marketing & Operations</h3>
+              <span>5 open roles</span>
+            </div>
+          </div>
+          <div class="job-list">
+            <div class="job-card">
+              <div class="job-info">
+                <h4>Growth Marketing Manager</h4>
+                <div class="job-meta"><span>Full-time</span><span>Damascus</span><span>$2,500-4,000/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+            <div class="job-card">
+              <div class="job-info">
+                <h4>City Operations Manager</h4>
+                <div class="job-meta"><span>Full-time</span><span>Aleppo</span><span>$2,000-3,500/mo</span></div>
+              </div>
+              <button class="job-apply">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="apply-section">
+      <div class="container">
+        <h2 class="section-title">Don't see your role?</h2>
+        <p class="section-subtitle">Send us your resume and we'll keep you in mind for future openings.</p>
+        <a href="mailto:careers@tayyebgo.com" class="btn btn-primary btn-lg" style="margin-top:24px">Send Your Resume</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

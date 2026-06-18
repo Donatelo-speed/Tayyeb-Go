@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refer Friends — TayyebGo</title>
+  <meta name="description" content="Invite friends to TayyebGo and earn rewards. Get free delivery and discounts for every friend who joins.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .ref-hero { padding: 160px 0 80px; text-align: center; }
+    .ref-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; }
+    .ref-hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .ref-code-box { max-width: 400px; margin: 32px auto 0; padding: 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); text-align: center; }
+    .ref-code { font-size: 32px; font-weight: 800; letter-spacing: 4px; color: var(--primary); margin: 12px 0; }
+    .ref-code-box p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+    .how-section { padding: 80px 0; background: var(--bg-dark); }
+    .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .how-card { text-align: center; padding: 32px 24px; border-radius: var(--radius-xl); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .how-num { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; margin: 0 auto 16px; }
+    .how-card h4 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .how-card p { font-size: 13px; color: var(--text-inverse-muted); line-height: 1.6; }
+    .rewards-section { padding: 80px 0; }
+    .rewards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 800px; margin: 0 auto; }
+    .reward-card { text-align: center; padding: 32px 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    .reward-icon { font-size: 36px; margin-bottom: 12px; }
+    .reward-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .reward-card p { font-size: 13px; color: var(--text-secondary); }
+    .faq-section { padding: 80px 0; background: var(--bg-dark); }
+    @media (max-width: 768px) { .how-grid, .rewards-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg></div><span>TayyebGo</span></a>
+      <div class="nav-links"><a href="/">Home</a><a href="subscription.html">Subscription</a><a href="help.html">Help</a></div>
+      <div class="nav-actions"><a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a><a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Get Started</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="ref-hero">
+      <div class="container">
+        <span class="section-tag">Refer & Earn</span>
+        <h1>Invite friends, earn rewards</h1>
+        <p>Share your referral code with friends. When they place their first order, you both get rewarded.</p>
+        <div class="ref-code-box">
+          <p>Your referral code</p>
+          <div class="ref-code">TAYYEBYOU</div>
+          <button class="btn btn-primary btn-lg" onclick="copyCode()">Copy Code</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">How It Works</span>
+          <h2 class="section-title" style="color:white">3 easy steps</h2>
+        </div>
+        <div class="how-grid">
+          <div class="how-card">
+            <div class="how-num">1</div>
+            <h4>Share Your Code</h4>
+            <p>Send your unique referral code to friends via WhatsApp, SMS, or social media.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-num">2</div>
+            <h4>Friend Signs Up</h4>
+            <p>Your friend downloads TayyebGo and enters your code during signup.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-num">3</div>
+            <h4>You Both Earn</h4>
+            <p>When they place their first order, you both get rewards automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rewards-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Rewards</span>
+          <h2 class="section-title">What you earn</h2>
+        </div>
+        <div class="rewards-grid">
+          <div class="reward-card">
+            <div class="reward-icon">🎁</div>
+            <h4>5,000 SYP Credit</h4>
+            <p>For every friend who signs up and orders</p>
+          </div>
+          <div class="reward-card">
+            <div class="reward-icon">🚀</div>
+            <h4>Free Delivery</h4>
+            <p>Your next 3 orders have free delivery</p>
+          </div>
+          <div class="reward-card">
+            <div class="reward-icon">⭐</div>
+            <h4>Bonus Points</h4>
+            <p>2x loyalty points for 1 week</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">FAQ</span>
+          <h2 class="section-title" style="color:white">Referral Questions</h2>
+        </div>
+        <div class="faq-grid" style="max-width:800px;margin:0 auto">
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>Is there a limit to referrals?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>No limit! Refer as many friends as you want. The more friends you invite, the more you earn.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>When do I get my reward?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Rewards are credited instantly when your friend completes their first order.</p></div>
+          </div>
+          <div class="faq-item glass-card">
+            <button class="faq-trigger" aria-expanded="false"><h4>Can my friend use multiple codes?</h4><svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div class="faq-answer"><p>Each account can only use one referral code during signup.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom"><p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p></div></div>
+  </footer>
+
+  <script>
+    function copyCode() {
+      navigator.clipboard.writeText('TAYYEBYOU').then(() => {
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = 'Copy Code', 2000);
+      });
+    }
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false'); });
+        if (!isOpen) { item.classList.add('open'); trigger.setAttribute('aria-expanded', 'true'); }
+      });
+    });
+  </script>
+</body>
+</html>

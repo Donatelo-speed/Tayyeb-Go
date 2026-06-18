@@ -75,7 +75,7 @@ class _ErrorApp extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(message,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted))),
+                    style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted)),
               ],
             ),
           ),

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anything Delivery — TayyebGo</title>
+  <meta name="description" content="Need something but can't go out? TayyebGo will buy it and deliver it to you. Medicine, documents, gifts — anything.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style">
+    .anything-hero { padding: 160px 0 80px; text-align: center; }
+    .anything-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; }
+    .anything-hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .how-section { padding: 80px 0; background: var(--bg-dark); }
+    .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .how-card { text-align: center; padding: 32px 16px; border-radius: var(--radius-xl); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .how-num { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; margin: 0 auto 16px; }
+    .how-card h4 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .how-card p { font-size: 13px; color: var(--text-inverse-muted); line-height: 1.6; }
+    .examples-section { padding: 80px 0; }
+    .examples-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .example-card { padding: 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); text-align: center; }
+    .example-icon { font-size: 36px; margin-bottom: 12px; }
+    .example-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .example-card p { font-size: 13px; color: var(--text-secondary); }
+    .pricing-section { padding: 80px 0; background: var(--bg-dark); }
+    .pricing-info { max-width: 600px; margin: 0 auto; padding: 40px; border-radius: var(--radius-xl); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+    .pricing-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .pricing-row:last-child { border-bottom: none; }
+    .pricing-row span:first-child { color: var(--text-inverse-muted); }
+    .pricing-row span:last-child { font-weight: 600; color: white; }
+    .cta-section { padding: 80px 0; text-align: center; }
+    @media (max-width: 768px) { .how-grid, .examples-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg></div><span>TayyebGo</span></a>
+      <div class="nav-links"><a href="/">Home</a><a href="safety.html">Safety</a><a href="help.html">Help</a><a href="#contact">Contact</a></div>
+      <div class="nav-actions"><a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a><a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Try Now</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="anything-hero">
+      <div class="container">
+        <span class="section-tag">Anything Delivery</span>
+        <h1>Need it? We'll get it.</h1>
+        <p>Can't go out? No problem. Tell us what you need and a TayyebGo driver will buy it and deliver it to your door.</p>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-xl btn-glow" style="margin-top:32px">Try Anything Delivery</a>
+      </div>
+    </section>
+
+    <section class="how-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">How It Works</span>
+          <h2 class="section-title" style="color:white">4 simple steps</h2>
+        </div>
+        <div class="how-grid">
+          <div class="how-card">
+            <div class="how-num">1</div>
+            <h4>Tell Us What You Need</h4>
+            <p>Describe the item, add a photo or link if you have one.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-num">2</div>
+            <h4>Get a Price Estimate</h4>
+            <p>We'll estimate the item cost + delivery fee before you confirm.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-num">3</div>
+            <h4>Driver Buys It</h4>
+            <p>A driver goes to the store, buys your item, and heads to you.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-num">4</div>
+            <h4>Delivered to You</h4>
+            <p>Track your driver in real-time. Receive your item at your door.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="examples-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Examples</span>
+          <h2 class="section-title">What can you order?</h2>
+          <p class="section-subtitle">Almost anything! Here are some popular requests.</p>
+        </div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-icon">💊</div>
+            <h4>Medicine</h4>
+            <p>Prescription or over-the-counter from any pharmacy</p>
+          </div>
+          <div class="example-card">
+            <div class="example-icon">📄</div>
+            <h4>Documents</h4>
+            <p>Pick up or deliver papers, contracts, IDs</p>
+          </div>
+          <div class="example-card">
+            <div class="example-icon">🎁</div>
+            <h4>Gifts</h4>
+            <p>Birthday presents, flowers, surprise packages</p>
+          </div>
+          <div class="example-card">
+            <div class="example-icon">🔧</div>
+            <h4>Small Items</h4>
+            <p>Phone chargers, cables, accessories</p>
+          </div>
+          <div class="example-card">
+            <div class="example-icon">🛒</div>
+            <h4>Groceries</h4>
+            <p>Specific items from any store</p>
+          </div>
+          <div class="example-card">
+            <div class="example-icon">📱</div>
+            <h4>Electronics</h4>
+            <p>Small electronics from local shops</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Pricing</span>
+          <h2 class="section-title" style="color:white">Transparent pricing</h2>
+        </div>
+        <div class="pricing-info">
+          <div class="pricing-row"><span>Item cost</span><span>Actual store price</span></div>
+          <div class="pricing-row"><span>Service fee</span><span>15% of item cost</span></div>
+          <div class="pricing-row"><span>Delivery fee</span><span>Standard delivery rates</span></div>
+          <div class="pricing-row"><span>Maximum item value</span><span>500,000 SYP</span></div>
+          <div class="pricing-row"><span>Payment</span><span>Cash, Sham Cash, or Card</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <h2 class="section-title">Try it now</h2>
+        <p class="section-subtitle">Can't go out? Let TayyebGo handle it.</p>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-xl" style="margin-top:24px">Start an Order</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom"><p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p></div></div>
+  </footer>
+</body>
+</html>

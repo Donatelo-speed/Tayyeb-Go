@@ -1,0 +1,29 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#090B10"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#grad)"/>
+  <defs>
+    <radialGradient id="grad" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#FF5A2C" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#090B10" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="80" y="180" width="380" height="280" rx="24" fill="#141C18" stroke="#2A3B33" stroke-width="1"/>
+  <rect x="100" y="200" width="340" height="240" rx="16" fill="#0D1210"/>
+  <text x="270" y="260" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#FF5A2C" text-anchor="middle">TayyebGo</text>
+  <text x="270" y="290" font-family="Inter, sans-serif" font-size="14" fill="#8A9A92" text-anchor="middle">Everything Delivered</text>
+  <rect x="120" y="320" width="300" height="40" rx="8" fill="#FF5A2C" opacity="0.1"/>
+  <rect x="120" y="370" width="300" height="40" rx="8" fill="#22C55E" opacity="0.1"/>
+  <rect x="120" y="420" width="300" height="40" rx="8" fill="#8B5CF6" opacity="0.1"/>
+  <text x="700" y="280" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="48" font-weight="800" fill="#FFFFFF" text-anchor="middle">Everything</text>
+  <text x="700" y="340" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="48" font-weight="800" fill="url(#textGrad)" text-anchor="middle">Delivered.</text>
+  <defs>
+    <linearGradient id="textGrad" x1="600" y1="310" x2="800" y2="340">
+      <stop offset="0%" stop-color="#FF5A2C"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <text x="700" y="380" font-family="Inter, sans-serif" font-size="18" fill="#8A9A92" text-anchor="middle">Food, groceries, pharmacy &amp; anything you need</text>
+  <rect x="600" y="420" width="200" height="50" rx="14" fill="#FF5A2C"/>
+  <text x="700" y="452" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Order Now</text>
+</svg>

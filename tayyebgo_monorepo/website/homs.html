@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo Homs — Food & Grocery Delivery</title>
+  <meta name="description" content="TayyebGo is now live in Homs! Order food, groceries, pharmacy items and get them delivered in minutes.">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .city-hero { padding: 160px 0 80px; text-align: center; background: var(--bg-dark); }
+    .city-hero h1 { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -2px; margin-bottom: 16px; color: white; }
+    .city-hero p { font-size: 18px; color: var(--text-inverse-muted); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+    .city-badge-live { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 100px; font-size: 13px; font-weight: 600; color: #22C55E; margin-bottom: 24px; }
+    .city-badge-live .dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .features-section { padding: 80px 0; }
+    .city-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .city-feature { padding: 32px 24px; border-radius: var(--radius-xl); background: var(--glass-bg); border: 1px solid var(--glass-border); text-align: center; }
+    .city-feature-icon { font-size: 36px; margin-bottom: 12px; }
+    .city-feature h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .city-feature p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .areas-section { padding: 80px 0; background: var(--bg-dark); }
+    .areas-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 700px; margin: 0 auto; }
+    .area-tag { padding: 10px 20px; border-radius: 100px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: white; font-size: 14px; font-weight: 500; }
+    .area-tag.active { background: var(--primary); border-color: var(--primary); }
+    .cta-section { padding: 80px 0; text-align: center; }
+    @media (max-width: 768px) { .city-features { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="/" class="logo"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/><path d="M12 2v20M3 7l9 5 9-5" stroke="white" stroke-width="1.5" fill="none"/></svg></div><span>TayyebGo</span></a>
+      <div class="nav-links"><a href="/">Home</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="help.html">Help</a></div>
+      <div class="nav-actions"><a href="https://tayyebgo-app.web.app/login" class="btn btn-ghost">Sign In</a><a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary">Order Now</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="city-hero">
+      <div class="container">
+        <div class="city-badge-live"><span class="dot"></span> Now Live</div>
+        <h1>TayyebGo is in Homs</h1>
+        <p>Food, groceries, pharmacy, and anything you need — delivered to your door in Homs.</p>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-xl btn-glow" style="margin-top:32px">Start Ordering</a>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">What's Available</span>
+          <h2 class="section-title">Everything you need in Homs</h2>
+        </div>
+        <div class="city-features">
+          <div class="city-feature">
+            <div class="city-feature-icon">🍔</div>
+            <h3>Food Delivery</h3>
+            <p>Order from your favorite restaurants in Homs. Pizza, shawarma, mansaf, and more.</p>
+          </div>
+          <div class="city-feature">
+            <div class="city-feature-icon">🛒</div>
+            <h3>Grocery Delivery</h3>
+            <p>Fresh groceries delivered from local stores. Daily essentials at your doorstep.</p>
+          </div>
+          <div class="city-feature">
+            <div class="city-feature-icon">💊</div>
+            <h3>Pharmacy</h3>
+            <p>Medicine and health products delivered from Al-Shifa and other pharmacies.</p>
+          </div>
+          <div class="city-feature">
+            <div class="city-feature-icon">📦</div>
+            <h3>Anything Delivery</h3>
+            <p>Can't go out? We'll buy it and deliver it. Documents, gifts, anything.</p>
+          </div>
+          <div class="city-feature">
+            <div class="city-feature-icon">⏱️</div>
+            <h3>20-Minute Delivery</h3>
+            <p>Average delivery time in Homs. Real-time tracking on every order.</p>
+          </div>
+          <div class="city-feature">
+            <div class="city-feature-icon">💳</div>
+            <h3>Multiple Payments</h3>
+            <p>Cash, Sham Cash, or card. Pay however works for you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="areas-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Delivery Areas</span>
+          <h2 class="section-title" style="color:white">Where we deliver in Homs</h2>
+          <p class="section-subtitle" style="color:var(--text-inverse-muted)">We're expanding coverage every week.</p>
+        </div>
+        <div class="areas-grid">
+          <div class="area-tag active">Al-Khalidiya</div>
+          <div class="area-tag active">Al-Inshaa</div>
+          <div class="area-tag active">Al-Hamraa</div>
+          <div class="area-tag active">Al-Ghouta</div>
+          <div class="area-tag active">Bab Hood</div>
+          <div class="area-tag active">Jaramana</div>
+          <div class="area-tag">Al-Waer</div>
+          <div class="area-tag">Al-Mustafa</div>
+          <div class="area-tag">Old City</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <h2 class="section-title">Ready to order in Homs?</h2>
+        <p class="section-subtitle">Download the app and get your first delivery.</p>
+        <a href="https://tayyebgo-app.web.app/signup" class="btn btn-primary btn-xl" style="margin-top:24px">Get Started Free</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom"><p>&copy; 2026 TayyebGo. All rights reserved. <a href="terms.html" style="color:var(--primary)">Terms</a> · <a href="privacy.html" style="color:var(--primary)">Privacy</a></p></div></div>
+  </footer>
+</body>
+</html>
