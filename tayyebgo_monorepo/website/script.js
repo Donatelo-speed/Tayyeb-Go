@@ -319,3 +319,41 @@ console.log(
   'background: linear-gradient(135deg, #FF5A2C, #8B5CF6); color: white; padding: 8px 12px; border-radius: 6px 0 0 6px; font-weight: bold;',
   'background: #0A0F0D; color: #8A9A92; padding: 8px 12px; border-radius: 0 6px 6px 0;'
 );
+
+// --- Back to Top Button ---
+const backToTop = document.getElementById('backToTop');
+if (backToTop) {
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('visible');
+    } else {
+      backToTop.classList.remove('visible');
+    }
+  });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// --- Loading Screen ---
+window.addEventListener('load', () => {
+  const loadingScreen = document.getElementById('loadingScreen');
+  if (loadingScreen) {
+    setTimeout(() => loadingScreen.classList.add('hidden'), 300);
+    setTimeout(() => loadingScreen.remove(), 700);
+  }
+});
+
+// --- Cookie Consent ---
+function acceptCookies() {
+  localStorage.setItem('tayyebgo-cookies', 'accepted');
+  document.getElementById('cookieConsent').style.display = 'none';
+}
+function declineCookies() {
+  localStorage.setItem('tayyebgo-cookies', 'declined');
+  document.getElementById('cookieConsent').style.display = 'none';
+}
+if (!localStorage.getItem('tayyebgo-cookies')) {
+  const cookieEl = document.getElementById('cookieConsent');
+  if (cookieEl) cookieEl.style.display = 'flex';
+}

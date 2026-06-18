@@ -1611,3 +1611,148 @@ img { max-width: 100%; display: block; }
   .store-badges { flex-direction: column; align-items: center; }
   .phone-mockup-hero, .phone-mockup { width: 260px; }
 }
+
+/* ========================================
+   BACK TO TOP BUTTON
+   ======================================== */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(255,90,44,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(255,90,44,0.4);
+}
+
+/* ========================================
+   LOADING SCREEN
+   ======================================== */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   COOKIE CONSENT
+   ======================================== */
+.cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+[data-theme="dark"] .cookie-consent {
+  background: var(--surface-dark);
+  border-color: var(--border-dark);
+}
+
+.cookie-consent p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.cookie-consent a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.cookie-consent .btn {
+  padding: 8px 20px;
+  font-size: 13px;
+}
+
+/* ========================================
+   RTL SUPPORT
+   ======================================== */
+[dir="rtl"] .nav-links { flex-direction: row-reverse; }
+[dir="rtl"] .hero-content { text-align: right; }
+[dir="rtl"] .hero-subtitle { margin-left: auto; margin-right: 0; }
+[dir="rtl"] .section-header { text-align: right; }
+[dir="rtl"] .section-subtitle { margin: 0 0 0 auto; }
+[dir="rtl"] .split-content { direction: rtl; }
+[dir="rtl"] .feature-list { padding-right: 0; padding-left: 0; }
+[dir="rtl"] .feature-list li { flex-direction: row-reverse; }
+[dir="rtl"] .pricing-card li { padding-left: 0; padding-right: 24px; }
+[dir="rtl"] .pricing-card li::before { left: auto; right: 0; }
+[dir="rtl"] .blog-link { flex-direction: row-reverse; }
+[dir="rtl"] .download-content .section-title,
+[dir="rtl"] .download-content .section-subtitle { text-align: right; }
+[dir="rtl"] .footer-brand { text-align: right; }
+[dir="rtl"] .form-group label { text-align: right; }
+[dir="rtl"] .info-item { flex-direction: row-reverse; }
+[dir="rtl"] .faq-trigger { flex-direction: row-reverse; }
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  .navbar, .footer, .back-to-top, .cookie-consent, .hero-scroll-indicator,
+  .cta-section, .mobile-menu-btn, .theme-toggle { display: none !important; }
+  body { background: white; color: black; }
+  .section-dark { background: white; color: black; }
+  .section-dark .section-title, .section-dark h2, .section-dark h3 { color: black; }
+  .legal-content { max-width: 100%; }
+  .legal-content h1 { font-size: 28px; }
+  a { color: #0066cc; }
+  .glass-card { background: white; border: 1px solid #ddd; box-shadow: none; }
+}

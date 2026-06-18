@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -128,6 +129,27 @@ class _LoginScreenState extends State<LoginScreen>
     if (success) {
       await _saveRemembered();
       _triggerRedirect();
+    } else if (auth.error != null) {
+      _showSnack(auth.error!, AppColors.error);
+    }
+  }
+
+  Future<void> _createTestAccount() async {
+    final email = _emailCtrl.text.trim();
+    final password = _passwordCtrl.text;
+    if (email.isEmpty || password.isEmpty) {
+      _showSnack('Enter email and password first', AppColors.warning);
+      return;
+    }
+    final auth = context.read<AuthProvider>();
+    final success = await auth.signUp(
+      email: email,
+      password: password,
+      displayName: email.split('@').first,
+    );
+    if (!mounted) return;
+    if (success) {
+      _showSnack('Account created! You can now sign in.', AppColors.success);
     } else if (auth.error != null) {
       _showSnack(auth.error!, AppColors.error);
     }
@@ -558,6 +580,24 @@ class _LoginScreenState extends State<LoginScreen>
             onPressed: auth.isLoading ? null : _submitEmail,
             isLoading: auth.isLoading,
           ),
+          const SizedBox(height: 12),
+          // Development helper: Create test account
+          if (kDebugMode)
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: OutlinedButton(
+                onPressed: auth.isLoading ? null : _createTestAccount,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brButton),
+                ),
+                child: Text(
+                  'Create Test Account',
+                  style: AppTypography.button.copyWith(color: AppColors.primary),
+                ),
+              ),
+            ),
         ],
       ),
     );

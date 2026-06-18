@@ -6,6 +6,7 @@
   <title>TayyebGo — Everything Delivered | Food, Groceries & More</title>
   <meta name="description" content="TayyebGo delivers food, groceries, pharmacy items, and anything you need — fast, reliable, and local. Order now in Damascus, Aleppo, Homs & across Syria.">
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -964,6 +965,23 @@
       </div>
     </div>
   </footer>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Cookie Consent -->
+  <div class="cookie-consent" id="cookieConsent" style="display:none">
+    <p>We use cookies to improve your experience. By continuing, you agree to our <a href="privacy.html">Privacy Policy</a>.</p>
+    <button class="btn btn-primary" onclick="acceptCookies()">Accept</button>
+    <button class="btn btn-outline" onclick="declineCookies()">Decline</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
