@@ -90,13 +90,13 @@ class OfflineSyncService {
   Future<void> _initConnectivity() async {
     final connectivity = Connectivity();
 
-    final result = await connectivity.checkConnectivity();
-    _isOnline = result != ConnectivityResult.none;
+    final results = await connectivity.checkConnectivity();
+    _isOnline = results.any((r) => r != ConnectivityResult.none);
     _connectivityController.add(_isOnline);
 
-    _connectivitySubscription = connectivity.onConnectivityChanged.listen((results) {
+    _connectivitySubscription = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
       final wasOnline = _isOnline;
-      _isOnline = results.isNotEmpty && results.first != ConnectivityResult.none;
+      _isOnline = results.any((r) => r != ConnectivityResult.none);
       _connectivityController.add(_isOnline);
 
       if (!wasOnline && _isOnline) {

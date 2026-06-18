@@ -21,8 +21,8 @@ class ConnectivityService {
     }
     try {
       _connectivity = Connectivity();
-      _connectivity!.checkConnectivity().then((result) {
-        _isOnline = result != ConnectivityResult.none;
+      _connectivity!.checkConnectivity().then((results) {
+        _isOnline = results.any((r) => r != ConnectivityResult.none);
       });
       _sub = _connectivity!.onConnectivityChanged.listen((results) {
         _isOnline = results.any((r) => r != ConnectivityResult.none);

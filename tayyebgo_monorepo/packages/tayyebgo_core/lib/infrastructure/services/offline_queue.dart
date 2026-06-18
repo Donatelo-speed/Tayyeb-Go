@@ -75,7 +75,7 @@ class OfflineQueue {
     _connectivitySubscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> results) {
-      if (results.isNotEmpty && results.first != ConnectivityResult.none) {
+      if (results.any((r) => r != ConnectivityResult.none)) {
         sync(executeOperation: executeOperation);
       }
     });

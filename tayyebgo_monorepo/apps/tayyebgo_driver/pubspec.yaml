@@ -20,8 +20,12 @@ dependencies:
   geolocator: ^14.0.2
   tayyebgo_core:
     path: ../../packages/tayyebgo_core
+  firebase_core: ^3.15.2
   firebase_auth: ^5.7.0
   firebase_storage: ^12.4.4
+  firebase_messaging: ^15.2.2
+  cloud_functions: ^5.3.6
+  package_info_plus: ^9.0.1
   image_picker: ^1.1.2
 
 dev_dependencies:
