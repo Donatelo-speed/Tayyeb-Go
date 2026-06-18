@@ -11,20 +11,13 @@ class NotificationHandler {
   NotificationHandler._();
 
   GoRouter? _router;
-  String? _currentUserId;
   final PushNotificationService _pushService = PushNotificationService();
 
   /// Initialize the handler with router and listen for incoming messages.
-  void initialize({required GoRouter router, String? userId}) {
+  void initialize({required GoRouter router}) {
     _router = router;
-    _currentUserId = userId;
     _listenToMessages();
     debugPrint('[NotificationHandler] Initialized');
-  }
-
-  /// Update the current user (e.g. after login/logout).
-  void setCurrentUser(String? userId) {
-    _currentUserId = userId;
   }
 
   /// Listen to foreground messages and route them.
@@ -48,7 +41,6 @@ class NotificationHandler {
   void _handleMessage(RemoteMessage message) {
     final data = message.data;
     final title = message.notification?.title ?? data['title'] ?? '';
-    final body = message.notification?.body ?? data['body'] ?? '';
     final type = data['type'] ?? 'unknown';
 
     debugPrint('[NotificationHandler] Received: type=$type title=$title');
@@ -127,6 +119,5 @@ class NotificationHandler {
 
   void dispose() {
     _router = null;
-    _currentUserId = null;
   }
 }

@@ -67,7 +67,7 @@ class _AddressManagementScreenState extends State<AddressManagementScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                 elevation: 0,
               ),
               child: Row(
@@ -206,7 +206,7 @@ class _AddressManagementScreenState extends State<AddressManagementScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brLg,
           side: BorderSide(color: context.borderColor),
         ),
         title: Text(
@@ -236,7 +236,7 @@ class _AddressManagementScreenState extends State<AddressManagementScreen> {
                     content: Text('Address deleted', style: GoogleFonts.inter()),
                     backgroundColor: context.errorColor,
                     behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                 );
               }
@@ -288,7 +288,7 @@ class _AddressCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected ? context.primaryColor.withValues(alpha: 0.08) : context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: isSelected ? context.primaryColor : context.borderColor,
             width: isSelected ? 1.5 : 1,
@@ -304,7 +304,7 @@ class _AddressCard extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: isSelected ? context.primaryColor.withValues(alpha: 0.15) : context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Icon(
                     _labelIcon(),
@@ -328,7 +328,7 @@ class _AddressCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: context.primaryColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: AppRadius.brSm,
                     ),
                     child: Text(
                       'Default',
@@ -411,7 +411,7 @@ class _AddressCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isDestructive ? context.errorColor.withValues(alpha: 0.08) : context.surfaceAltColor,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.brButton,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -498,7 +498,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
             height: 4,
             decoration: BoxDecoration(
               color: context.borderColor,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: AppRadius.brXs,
             ),
           ),
           Padding(
@@ -599,7 +599,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                     backgroundColor: context.primaryColor,
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: context.primaryColor.withValues(alpha: 0.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     elevation: 0,
                   ),
                   child: _isSaving
@@ -654,7 +654,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: isSelected ? context.primaryColor.withValues(alpha: 0.1) : context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(
                       color: isSelected ? context.primaryColor : context.borderColor,
                       width: isSelected ? 1.5 : 1,
@@ -721,23 +721,23 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
             fillColor: context.surfaceAltColor,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.primaryColor, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.errorColor),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.errorColor, width: 1.5),
             ),
             errorStyle: GoogleFonts.inter(fontSize: 12, color: context.errorColor),
@@ -774,7 +774,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
             ),
             backgroundColor: context.successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -786,7 +786,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
             content: Text('Failed to save address', style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }

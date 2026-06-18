@@ -20,6 +20,9 @@ dependencies:
   geolocator: ^14.0.2
   tayyebgo_core:
     path: ../../packages/tayyebgo_core
+  firebase_auth: ^5.7.0
+  firebase_storage: ^12.4.4
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

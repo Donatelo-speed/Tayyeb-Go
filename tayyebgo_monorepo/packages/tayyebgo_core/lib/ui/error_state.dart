@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../presentation/theme/app_colors.dart';
+import '../presentation/theme/app_radius.dart';
 
 class ErrorState extends StatelessWidget {
   final IconData icon;
@@ -19,8 +21,6 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -31,13 +31,13 @@ class ErrorState extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
                 size: 40,
-                color: Colors.red.withValues(alpha: 0.6),
+                color: AppColors.error.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 24),
@@ -46,7 +46,7 @@ class ErrorState extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black,
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -56,7 +56,7 @@ class ErrorState extends StatelessWidget {
                 subtitle!,
                 style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.5),
+                  color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -70,7 +70,7 @@ class ErrorState extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brCard,
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../presentation/theme/app_colors.dart';
+import '../../presentation/theme/app_radius.dart';
 import '../../presentation/theme/app_spacing.dart';
 
 class ShimmerLoading extends StatefulWidget {
@@ -92,7 +93,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: AppColors.divider.withValues(alpha: 0.3)),
         ),
         child: Row(children: [

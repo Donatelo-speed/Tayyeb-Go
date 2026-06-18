@@ -22,11 +22,13 @@ class TGSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final trackActive = activeColor ?? AppColors.primary;
-    final trackInactive = inactiveColor ?? (isDark ? AppColors.surfaceAlt : const Color(0xFFDCE3EA));
+    final trackInactive = inactiveColor ?? AppColors.surfaceAlt;
 
-    Widget switchWidget = Switch.adaptive(
+    Widget switchWidget = Semantics(
+      toggled: value,
+      label: label ?? 'Toggle',
+      child: Switch.adaptive(
       value: value,
       onChanged: onChanged,
       activeColor: trackActive,
@@ -35,8 +37,9 @@ class TGSwitch extends StatelessWidget {
         if (states.contains(WidgetState.selected)) {
           return Colors.white;
         }
-        return isDark ? AppColors.textMuted : const Color(0xFF93A0AF);
+        return AppColors.textMuted;
       }),
+      ),
     );
 
     if (label != null) {
@@ -53,7 +56,7 @@ class TGSwitch extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.textPrimary : const Color(0xFF151922),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   if (subtitle != null) ...[
@@ -62,7 +65,7 @@ class TGSwitch extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+                        color: AppColors.textMuted,
                       ),
                     ),
                   ],

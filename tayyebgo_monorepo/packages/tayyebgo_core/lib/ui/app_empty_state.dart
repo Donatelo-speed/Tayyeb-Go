@@ -21,8 +21,6 @@ class TGEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -62,7 +60,7 @@ class TGEmptyState extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                color: AppColors.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -72,7 +70,7 @@ class TGEmptyState extends StatelessWidget {
                 description!,
                 style: TextStyle(
                   fontSize: 14,
-                  color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+                  color: AppColors.textSecondary,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,

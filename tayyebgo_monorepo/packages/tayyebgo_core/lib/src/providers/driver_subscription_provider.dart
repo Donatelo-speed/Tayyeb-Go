@@ -77,7 +77,7 @@ class DriverSubscriptionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentSubscription = _service.cancelSubscription(_currentDriverId);
+      _currentSubscription = _service.cancelSubscription(_currentDriverId!);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -94,7 +94,7 @@ class DriverSubscriptionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentSubscription = _service.renewSubscription(_currentDriverId);
+      _currentSubscription = _service.renewSubscription(_currentDriverId!);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -107,7 +107,7 @@ class DriverSubscriptionProvider extends ChangeNotifier {
     if (_currentDriverId == null) return;
 
     _service.checkExpiration(_currentDriverId!);
-    _currentSubscription = _service.getSubscription(_currentDriverId);
+    _currentSubscription = _service.getSubscription(_currentDriverId!);
     notifyListeners();
   }
 

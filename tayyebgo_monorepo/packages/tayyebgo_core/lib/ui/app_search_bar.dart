@@ -61,18 +61,19 @@ class _TGSearchBarState extends State<TGSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
+    return Semantics(
+      label: widget.hintText,
+      button: true,
+      child: GestureDetector(
       onTap: widget.onTap,
       child: Container(
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceAlt : const Color(0xFFF5F6F8),
+          color: AppColors.surfaceAlt,
           borderRadius: AppRadius.brInput,
           border: Border.all(
-            color: isDark ? AppColors.border : const Color(0xFFE8EDF2),
+            color: AppColors.border,
             width: 1,
           ),
         ),
@@ -81,7 +82,7 @@ class _TGSearchBarState extends State<TGSearchBar> {
             Icon(
               widget.prefixIcon ?? Icons.search_rounded,
               size: 20,
-              color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+              color: AppColors.textMuted,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -94,13 +95,13 @@ class _TGSearchBarState extends State<TGSearchBar> {
                 onSubmitted: widget.onSubmitted,
                 style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: isDark ? AppColors.textPrimary : const Color(0xFF151922),
+                  color: AppColors.textPrimary,
                 ),
                 decoration: InputDecoration(
                   hintText: widget.hintText,
                   hintStyle: GoogleFonts.inter(
                     fontSize: 14,
-                    color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+                    color: AppColors.textMuted,
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
@@ -118,19 +119,20 @@ class _TGSearchBarState extends State<TGSearchBar> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.surface : const Color(0xFFE8EDF2),
+                    color: AppColors.surface,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.close_rounded,
                     size: 14,
-                    color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+                    color: AppColors.textMuted,
                   ),
                 ),
               ),
           ],
         ),
       ),
+    ),
     );
   }
 }

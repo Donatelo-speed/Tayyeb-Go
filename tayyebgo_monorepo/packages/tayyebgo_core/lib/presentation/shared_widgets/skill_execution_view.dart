@@ -4,6 +4,7 @@ import '../../domain/entities/skill.dart';
 import '../../domain/entities/skill_execution.dart';
 import '../../domain/enums/skill_execution_status.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import 'glass_card.dart';
@@ -345,17 +346,17 @@ class _SkillExecutionViewState extends State<SkillExecutionView>
                   ),
                   border: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(AppSpacing.radiusSm),
+                        BorderRadius.circular(AppRadius.sm),
                     borderSide: BorderSide(color: AppColors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(AppSpacing.radiusSm),
+                        BorderRadius.circular(AppRadius.sm),
                     borderSide: BorderSide(color: AppColors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius:
-                        BorderRadius.circular(AppSpacing.radiusSm),
+                        BorderRadius.circular(AppRadius.sm),
                     borderSide: BorderSide(
                         color: isRequired
                             ? AppColors.primary
@@ -511,7 +512,7 @@ class _SkillExecutionViewState extends State<SkillExecutionView>
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

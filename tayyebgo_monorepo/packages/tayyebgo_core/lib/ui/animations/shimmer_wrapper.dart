@@ -55,7 +55,7 @@ class _ShimmerWrapperState extends State<ShimmerWrapper>
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final base = widget.baseColor ??
-        (isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt);
+        AppColors.surfaceAlt;
     final highlight = widget.highlightColor ??
         (isDark
             ? AppColors.surfaceAlt.withValues(alpha: 0.5)

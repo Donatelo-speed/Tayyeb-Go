@@ -1,7 +1,6 @@
 export 'package:tayyebgo_core/tayyebgo_core.dart'
     show
         AppColors,
-        DarkAppColors,
         AppGradients,
         AppSpacing,
         AppRadius,

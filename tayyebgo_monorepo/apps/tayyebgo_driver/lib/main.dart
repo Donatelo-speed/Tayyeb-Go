@@ -193,8 +193,8 @@ class _DriverAppState extends State<DriverApp> {
                   DefaultWidgetsLocalizations.delegate,
                 ],
                 supportedLocales: AppLocalizations.supportedLocales,
-                theme: TayyebGoTheme.lightTheme(context),
-                darkTheme: TayyebGoTheme.darkTheme(context),
+                theme: TayyebGoTheme.lightTheme(),
+                darkTheme: TayyebGoTheme.darkTheme(),
                 themeMode: _themeProvider.mode,
                 routerConfig: _router,
               );

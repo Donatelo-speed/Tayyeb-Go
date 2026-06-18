@@ -143,7 +143,7 @@ class L10nEn {
   String get indian => 'Indian';
   String get mexican => 'Mexican';
   String get italian => 'Italian';
-  String get arabic => 'Arabic';
+  String get arabicFood => 'Arabic';
   String get american => 'American';
   String get seafood => 'Seafood';
   String get chicken => 'Chicken';

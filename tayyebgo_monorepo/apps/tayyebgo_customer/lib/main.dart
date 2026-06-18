@@ -259,8 +259,8 @@ class _CustomerAppState extends State<CustomerApp> {
                     }
                     return supportedLocales.first;
                   },
-                  theme: TayyebGoTheme.lightTheme(context),
-                  darkTheme: TayyebGoTheme.darkTheme(context),
+                  theme: TayyebGoTheme.lightTheme(),
+                  darkTheme: TayyebGoTheme.darkTheme(),
                   themeMode: theme.mode,
                   routerConfig: _router,
                 );

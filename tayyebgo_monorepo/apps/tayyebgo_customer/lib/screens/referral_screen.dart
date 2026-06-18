@@ -24,7 +24,7 @@ class ReferralScreen extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                       border: Border.all(
                         color: context.borderColor.withValues(alpha: 0.3),
                         width: 0.5,
@@ -59,7 +59,7 @@ class ReferralScreen extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [Color(0xFFFF6B35), Color(0xFFFF8C42), Color(0xFFFFB347)],
                 ),
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: AppRadius.brXxl,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.3),
@@ -75,7 +75,7 @@ class ReferralScreen extends StatelessWidget {
                     height: 80,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: AppRadius.brXxl,
                     ),
                     child: const Icon(
                       Icons.card_giftcard_rounded,
@@ -125,7 +125,7 @@ class ReferralScreen extends StatelessWidget {
                     content: Text('Code copied!', style: GoogleFonts.inter()),
                     backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                 );
               },
@@ -133,7 +133,7 @@ class ReferralScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.brLg,
                   border: Border.all(
                     color: context.borderColor.withValues(alpha: 0.3),
                     width: 0.5,
@@ -169,7 +169,7 @@ class ReferralScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.brMd,
                       ),
                       child: const Icon(
                         Icons.copy_rounded,
@@ -192,7 +192,7 @@ class ReferralScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
                         color: const Color(0xFF25D366),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brMd,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -220,7 +220,7 @@ class ReferralScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brMd,
                         border: Border.all(
                           color: context.borderColor.withValues(alpha: 0.3),
                           width: 0.5,
@@ -266,7 +266,7 @@ class ReferralScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.brLg,
                 border: Border.all(
                   color: context.borderColor.withValues(alpha: 0.3),
                   width: 0.5,
@@ -297,7 +297,7 @@ class ReferralScreen extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [AppColors.primary, AppColors.primaryHover],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Center(
               child: Text(

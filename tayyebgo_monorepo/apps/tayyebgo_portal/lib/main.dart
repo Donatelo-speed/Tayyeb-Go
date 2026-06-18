@@ -38,6 +38,7 @@ import 'package:tayyebgo_driver/screens/driver_profile_screen.dart';
 import 'package:tayyebgo_driver/screens/delivery_history_screen.dart';
 import 'package:tayyebgo_driver/screens/active_delivery_screen.dart';
 import 'package:tayyebgo_admin/features/dashboard/admin_dashboard_screen.dart';
+import 'screens/landing_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,8 +108,9 @@ class _TayyebGoPortalState extends State<TayyebGoPortal> {
   GoRouter _buildRouter() {
     return AppRouter.create(
       refreshListenable: _authListenable,
-      initialLocation: '/login',
+      initialLocation: '/',
       routes: [
+        AppRouter.route('/', const LandingScreen(), name: 'landing'),
         AppRouter.route('/login', const LoginScreen(
           showSignUpLink: true,
           subtitle: 'Sign in to access your TayyebGo dashboard.',
@@ -271,8 +273,8 @@ class _TayyebGoPortalState extends State<TayyebGoPortal> {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'TayyebGo Portal',
-            theme: TayyebGoTheme.lightTheme(context),
-            darkTheme: TayyebGoTheme.darkTheme(context),
+             theme: TayyebGoTheme.lightTheme(),
+             darkTheme: TayyebGoTheme.darkTheme(),
             themeMode: theme.mode,
             routerConfig: _router,
           );

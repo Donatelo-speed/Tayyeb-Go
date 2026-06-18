@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
+/// TayyebGo gradient system.
+///
+/// Pre-built gradients using design token colors. No inline hex values.
 abstract class AppGradients {
+  // ══════════════════════════════════════════════════════════════════════════
+  // PRIMARY GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
+
   static LinearGradient get primaryGradient => const LinearGradient(
         colors: [AppColors.gradientStart, AppColors.gradientEnd],
         begin: Alignment.topLeft,
@@ -32,14 +39,18 @@ abstract class AppGradients {
         end: Alignment.centerRight,
       );
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // BRAND GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
+
   static LinearGradient get freshRoute => const LinearGradient(
         colors: [AppColors.route, AppColors.driverAccent],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get warmGlow => const LinearGradient(
-        colors: [AppColors.background, Color(0xFF151820), AppColors.surface],
+  static LinearGradient get warmGlow => LinearGradient(
+        colors: [AppColors.background, AppColors.surfaceAlt, AppColors.surface],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
@@ -50,66 +61,82 @@ abstract class AppGradients {
         end: Alignment.bottomCenter,
       );
 
-  static LinearGradient get lightAppBackground => const LinearGradient(
-        colors: [Color(0xFFFFFAF6), LightAppColors.background, Color(0xFFEAF7F3)],
-        stops: [0, 0.58, 1],
+  // ══════════════════════════════════════════════════════════════════════════
+  // APP BACKGROUND GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
+
+  static LinearGradient get lightAppBackground => LinearGradient(
+        colors: [LightAppColors.surface, LightAppColors.background, LightAppColors.surfaceAlt],
+        stops: const [0, 0.58, 1],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get darkAppBackground => const LinearGradient(
-        colors: [Color(0xFF0D1017), AppColors.background, Color(0xFF0A1114)],
-        stops: [0, 0.62, 1],
+  static LinearGradient get darkAppBackground => LinearGradient(
+        colors: [AppColors.surfaceAlt, AppColors.background, AppColors.surfaceSunken],
+        stops: const [0, 0.62, 1],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get sidebarGradient => const LinearGradient(
-        colors: [AppColors.sidebarBg, Color(0xFF0F1622)],
+  static LinearGradient get sidebarGradient => LinearGradient(
+        colors: [AppColors.sidebarBg, AppColors.surfaceAlt],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       );
 
   static LinearGradient get darkOverlay => LinearGradient(
-        colors: [Colors.black.withValues(alpha: 0.72), Colors.transparent],
+        colors: [AppColors.scrim, Colors.transparent],
         begin: Alignment.bottomCenter,
         end: Alignment.topCenter,
       );
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // LOADING / UTILITY GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
 
   static LinearGradient get shimmerGradient => const LinearGradient(
         colors: [AppColors.surfaceAlt, AppColors.surfaceHover, AppColors.surfaceAlt],
         stops: [0.0, 0.45, 1.0],
       );
 
-  static LinearGradient get statBlue => const LinearGradient(
-        colors: [AppColors.adminAccent, Color(0xFF7A8CFF)],
+  // ══════════════════════════════════════════════════════════════════════════
+  // STAT / DASHBOARD GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
+
+  static LinearGradient get statBlue => LinearGradient(
+        colors: [AppColors.adminAccent, AppColors.adminAccent.withValues(alpha: 0.7)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get statGreen => const LinearGradient(
-        colors: [AppColors.driverAccent, Color(0xFF45D4A3)],
+  static LinearGradient get statGreen => LinearGradient(
+        colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.7)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get statOrange => const LinearGradient(
-        colors: [AppColors.partnerAccent, Color(0xFFFFD36B)],
+  static LinearGradient get statOrange => LinearGradient(
+        colors: [AppColors.partnerAccent, AppColors.partnerAccent.withValues(alpha: 0.7)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get statPurple => const LinearGradient(
-        colors: [AppColors.premium, Color(0xFFB08CFF)],
+  static LinearGradient get statPurple => LinearGradient(
+        colors: [AppColors.premium, AppColors.premium.withValues(alpha: 0.7)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
 
-  static LinearGradient get statCyan => const LinearGradient(
+  static LinearGradient get statCyan => LinearGradient(
         colors: [AppColors.cyan, AppColors.route],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // UTILITY GRADIENTS
+  // ══════════════════════════════════════════════════════════════════════════
 
   static LinearGradient get coolGradient => const LinearGradient(
         colors: [AppColors.route, AppColors.cyan],

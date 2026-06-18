@@ -67,11 +67,10 @@ class TGChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fgColor = color ?? (selected ? AppColors.primary : (isDark ? AppColors.textSecondary : const Color(0xFF6B7686)));
+    final fgColor = color ?? (selected ? AppColors.primary : AppColors.textSecondary);
     final bgColor = backgroundColor ?? (selected
         ? AppColors.primarySoft
-        : (isDark ? AppColors.surfaceAlt : const Color(0xFFF0F2F5)));
+        : AppColors.surfaceAlt);
 
     final fontSize = small ? 11.0 : 13.0;
     final hPad = small ? 8.0 : 12.0;
@@ -113,7 +112,12 @@ class TGChip extends StatelessWidget {
     );
 
     if (onTap != null) {
-      chip = GestureDetector(onTap: onTap, child: chip);
+      chip = Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: GestureDetector(onTap: onTap, child: chip),
+      );
     }
 
     return chip;

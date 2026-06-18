@@ -52,7 +52,7 @@ class CustomerWalletScreen extends StatelessWidget {
                 context.primaryColor.withValues(alpha: 0.7),
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.brLg,
             boxShadow: [
               BoxShadow(
                 color: context.primaryColor.withValues(alpha: 0.3),
@@ -107,7 +107,7 @@ class CustomerWalletScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
           ),
           child: Column(
             children: [
@@ -187,7 +187,7 @@ class CustomerWalletScreen extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.borderColor),
               ),
               child: Row(

@@ -95,7 +95,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: context.borderColor.withValues(alpha: 0.3),
                             width: 0.5,
@@ -172,7 +172,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           content: Text('Please enter a delivery address', style: GoogleFonts.inter()),
           backgroundColor: context.errorColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
       );
       return;
@@ -316,7 +316,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             content: Text(msg, style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -469,7 +469,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                     context.primaryColor.withValues(alpha: 0.8),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.brLg,
                 boxShadow: [
                   BoxShadow(
                     color: context.primaryColor.withValues(alpha: 0.3),
@@ -508,7 +508,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               end: Alignment.bottomCenter,
               colors: [AppColors.primary, AppColors.primaryHover],
             ),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: AppRadius.brXs,
           ),
         ),
         const SizedBox(width: 12),
@@ -529,7 +529,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brLg,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -581,7 +581,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
           color: selected
               ? context.primaryColor.withValues(alpha: 0.1)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brLg,
           border: Border.all(
             color: selected
                 ? context.primaryColor.withValues(alpha: 0.5)
@@ -608,7 +608,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                 color: selected
                     ? context.primaryColor.withValues(alpha: 0.15)
                     : context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(
                 icon,
@@ -641,7 +641,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
           color: widget.isExpress
               ? const Color(0xFFEF4444).withValues(alpha: 0.08)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brLg,
           border: Border.all(
             color: widget.isExpress
                 ? const Color(0xFFEF4444).withValues(alpha: 0.4)
@@ -659,7 +659,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                     ? const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFFF87171)])
                     : null,
                 color: widget.isExpress ? null : context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(
                 Icons.bolt_rounded,
@@ -688,7 +688,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: AppRadius.brSm,
                           ),
                           child: Text(
                             '+\$2.00',
@@ -721,7 +721,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                 color: widget.isExpress
                     ? const Color(0xFFEF4444)
                     : context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(3),
@@ -771,7 +771,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
           color: widget.scheduledTime != null
               ? AppColors.primary.withValues(alpha: 0.06)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brLg,
           border: Border.all(
             color: widget.scheduledTime != null
                 ? AppColors.primary.withValues(alpha: 0.3)
@@ -788,7 +788,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                 color: widget.scheduledTime != null
                     ? AppColors.primary.withValues(alpha: 0.12)
                     : context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(
                 Icons.schedule_rounded,
@@ -846,7 +846,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brCard,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -899,7 +899,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
             color: isSelected
                 ? context.primaryColor.withValues(alpha: 0.12)
                 : context.surfaceAltColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(
               color: isSelected
                   ? context.primaryColor.withValues(alpha: 0.5)
@@ -934,7 +934,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brCard,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -1027,7 +1027,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
             context.primaryColor.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brLg,
         border: Border.all(
           color: context.primaryColor.withValues(alpha: 0.3),
           width: 1,
@@ -1042,7 +1042,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               gradient: LinearGradient(
                 colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.8)],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.card_membership_rounded, color: Colors.white, size: 22),
           ),
@@ -1264,7 +1264,7 @@ class _ErrorState extends StatelessWidget {
                         context.primaryColor.withValues(alpha: 0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.brLg,
                     boxShadow: [
                       BoxShadow(
                         color: context.primaryColor.withValues(alpha: 0.3),
@@ -1301,7 +1301,7 @@ class _ErrorState extends StatelessWidget {
                   height: 52,
                   decoration: BoxDecoration(
                     color: context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.brLg,
                     border: Border.all(
                       color: context.borderColor.withValues(alpha: 0.3),
                       width: 0.5,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
@@ -38,7 +39,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: context.borderColor.withValues(alpha: 0.3),
                             width: 0.5,
@@ -190,7 +191,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                               _getSelectedPlanColor().withValues(alpha: 0.8),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.brLg,
                           boxShadow: [
                             BoxShadow(
                               color: _getSelectedPlanColor().withValues(alpha: 0.3),
@@ -241,7 +242,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brMd,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -269,7 +270,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
                   color: isSelected ? context.primaryColor : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
@@ -336,7 +337,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
           color: isSelected
               ? color.withValues(alpha: 0.08)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.brXl,
           border: Border.all(
             color: isSelected
                 ? color.withValues(alpha: 0.5)
@@ -376,7 +377,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                         color.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Icon(icon, color: color, size: 24),
                 ),
@@ -410,7 +411,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                                     AppColors.primary.withValues(alpha: 0.8),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: AppRadius.brSm,
                               ),
                               child: Text(
                                 'MOST POPULAR',
@@ -442,7 +443,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                   height: 24,
                   decoration: BoxDecoration(
                     color: isSelected ? color : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(
                       color: isSelected ? color : context.borderColor,
                       width: 2,
@@ -461,7 +462,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                 color: isSelected
                     ? color.withValues(alpha: 0.06)
                     : context.surfaceAltColor.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
               ),
               child: Column(
                 children: [
@@ -555,7 +556,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
             context.successColor.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brMd,
         border: Border.all(
           color: context.successColor.withValues(alpha: 0.2),
           width: 0.5,
@@ -568,7 +569,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
             height: 40,
             decoration: BoxDecoration(
               color: context.successColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(
               Icons.trending_up_rounded,
@@ -684,12 +685,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
       final clientSecret = result['clientSecret'] as String?;
       if (clientSecret == null || !context.mounted) return;
 
-      final stripe = CoreStripeWrapper();
-      await stripe.initPaymentSheet(
-        clientSecret: clientSecret,
-        merchantDisplayName: 'TayyebGo',
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'TayyebGo',
+        ),
       );
-      await stripe.presentPaymentSheet();
+      await Stripe.instance.presentPaymentSheet();
 
       await FirebaseFirestore.instance.collection('subscriptions').add({
         'userId': FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -713,7 +715,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
             backgroundColor: context.successColor,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brMd,
             ),
           ),
         );
@@ -729,7 +731,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
           backgroundColor: context.errorColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.brMd,
           ),
         ),
       );

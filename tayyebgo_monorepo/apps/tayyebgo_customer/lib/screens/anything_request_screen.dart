@@ -105,7 +105,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
   void _showSnack(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg, style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      SnackBar(content: Text(msg, style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
     );
   }
 
@@ -180,7 +180,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brMd,
                     child: Image.file(File(_photoPath!), height: 130, width: double.infinity, fit: BoxFit.cover),
                   ),
                   Positioned(
@@ -210,7 +210,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
                   label: Text('Add Photo', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.primaryColor)),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: context.borderColor),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                 ),
               ),
@@ -246,7 +246,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.primaryColor,
                   foregroundColor: context.textPrimaryColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   elevation: 0,
                 ),
                 child: _isSubmitting
@@ -285,9 +285,9 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
             prefixIcon: icon != null ? Icon(icon, color: context.textMutedColor, size: 20) : null,
             filled: true,
             fillColor: context.surfaceColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+            border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           ),
         ),

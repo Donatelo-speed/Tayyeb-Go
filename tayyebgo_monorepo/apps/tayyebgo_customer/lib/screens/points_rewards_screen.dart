@@ -19,7 +19,7 @@ class PointsRewardsScreen extends StatelessWidget {
                   onTap: () => Navigator.pop(context),
                   child: Container(
                     width: 40, height: 40,
-                    decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(12),
+                    decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd,
                       border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
                     child: Icon(Icons.arrow_back_ios_rounded, color: context.textPrimaryColor, size: 18),
                   ),
@@ -35,7 +35,7 @@ class PointsRewardsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
                   colors: [AppColors.primary, AppColors.primaryHover]),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: AppRadius.brXl,
                 boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
               ),
               child: Column(
@@ -51,7 +51,7 @@ class PointsRewardsScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14),
+              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
               child: Row(
                 children: [
@@ -85,11 +85,11 @@ class PointsRewardsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14),
+      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
       child: Row(
         children: [
-          Container(width: 44, height: 44, decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+          Container(width: 44, height: 44, decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
             child: Icon(icon, color: color, size: 22)),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -105,11 +105,11 @@ class PointsRewardsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14),
+      decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
       child: Row(
         children: [
-          Container(width: 44, height: 44, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+          Container(width: 44, height: 44, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
             child: Icon(icon, color: AppColors.primary, size: 22)),
           const SizedBox(width: 14),
           Expanded(child: Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor))),
@@ -117,7 +117,7 @@ class PointsRewardsScreen extends StatelessWidget {
             onTap: () {},
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: AppColors.primary, borderRadius: AppRadius.brMd),
               child: Text(points, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: Colors.white)),
             ),
           ),

@@ -168,19 +168,24 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
     final disabled = widget.onPressed == null || widget.isLoading;
     final btnHeight = widget.height ?? (widget.variant == TGBVariant.icon ? 48.0 : 52.0);
 
-    return GestureDetector(
-      onTapDown: disabled ? null : (_) => _controller.forward(),
-      onTapUp: disabled ? null : (_) => _controller.reverse(),
-      onTapCancel: disabled ? null : () => _controller.reverse(),
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: child,
-          );
-        },
-        child: _buildButton(isDark, disabled, btnHeight),
+    return Semantics(
+      button: true,
+      enabled: !disabled,
+      label: widget.label ?? (widget.variant == TGBVariant.icon ? 'Icon button' : null),
+      child: GestureDetector(
+        onTapDown: disabled ? null : (_) => _controller.forward(),
+        onTapUp: disabled ? null : (_) => _controller.reverse(),
+        onTapCancel: disabled ? null : () => _controller.reverse(),
+        child: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
+            );
+          },
+          child: _buildButton(isDark, disabled, btnHeight),
+        ),
       ),
     );
   }
@@ -232,7 +237,6 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildSecondary(bool isDark, bool disabled, double btnHeight) {
-    final fgColor = isDark ? AppColors.primary : AppColors.primary;
     return Container(
       width: widget.width ?? (widget.isExpanded ? double.infinity : null),
       height: btnHeight,
@@ -247,14 +251,13 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
         child: InkWell(
           onTap: widget.onPressed,
           borderRadius: AppRadius.brButton,
-          child: _buildContent(disabled ? fgColor.withValues(alpha: 0.5) : fgColor),
+          child: _buildContent(disabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary),
         ),
       ),
     );
   }
 
   Widget _buildGhost(bool isDark, bool disabled, double btnHeight) {
-    final fgColor = isDark ? AppColors.primary : AppColors.primary;
     return SizedBox(
       width: widget.width,
       height: btnHeight,
@@ -265,7 +268,7 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
           borderRadius: AppRadius.brButton,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _buildContent(disabled ? fgColor.withValues(alpha: 0.5) : fgColor),
+            child: _buildContent(disabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary),
           ),
         ),
       ),
@@ -305,8 +308,7 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
       width: widget.width ?? btnHeight,
       height: btnHeight,
       decoration: BoxDecoration(
-        color: widget.backgroundColor ??
-            (isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt),
+        color: widget.backgroundColor ?? AppColors.surfaceAlt,
         borderRadius: AppRadius.brAvatar,
       ),
       child: Material(
@@ -317,8 +319,7 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
           child: Icon(
             widget.icon,
             size: 22,
-            color: widget.foregroundColor ??
-                (isDark ? AppColors.textSecondary : AppColors.textSecondary),
+            color: widget.foregroundColor ?? AppColors.textSecondary,
           ),
         ),
       ),
@@ -333,7 +334,7 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
         color: isDark ? AppColors.surfaceAlt : AppColors.surface,
         borderRadius: AppRadius.brButton,
         border: Border.all(
-          color: isDark ? AppColors.border : AppColors.border,
+          color: AppColors.border,
           width: 1,
         ),
       ),
@@ -354,7 +355,7 @@ class _TGBState extends State<TGB> with SingleTickerProviderStateMixin {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],

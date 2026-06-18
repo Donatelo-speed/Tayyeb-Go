@@ -152,7 +152,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                   height: 44,
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(color: context.borderColor),
                   ),
                   child: TextField(
@@ -193,7 +193,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected ? context.primaryColor : context.surfaceColor,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.brXl,
                             border: Border.all(
                               color: isSelected ? context.primaryColor : context.borderColor,
                             ),
@@ -263,7 +263,7 @@ class _RestaurantMenuScreenState extends State<RestaurantMenuScreen> {
                     height: 18,
                     decoration: BoxDecoration(
                       color: context.primaryColor,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: AppRadius.brXs,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -314,7 +314,7 @@ class _MenuItemCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brMd,
           border: Border.all(color: context.borderColor),
         ),
         child: Row(
@@ -347,7 +347,7 @@ class _MenuItemCard extends StatelessWidget {
             ),
             if (product.imageUrl != null)
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 child: Image.network(
                   product.imageUrl!,
                   width: 72,
@@ -455,7 +455,7 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
                   height: 4,
                   decoration: BoxDecoration(
                     color: context.borderColor,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: AppRadius.brXs,
                   ),
                 ),
               ),
@@ -485,7 +485,7 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
               Container(
                 decoration: BoxDecoration(
                   color: context.backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(color: context.borderColor),
                 ),
                 child: TextField(
@@ -506,7 +506,7 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
                   Container(
                     decoration: BoxDecoration(
                       color: context.backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                       border: Border.all(color: context.borderColor),
                     ),
                     child: Row(
@@ -582,7 +582,7 @@ class _ItemDetailSheetState extends State<_ItemDetailSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.primaryColor,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     elevation: 0,
                   ),
                   child: Text(
@@ -706,7 +706,7 @@ class _QtyBtn extends StatelessWidget {
         height: 40,
         decoration: BoxDecoration(
           color: onTap != null ? context.surfaceAltColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
         ),
         child: Icon(
           icon,
@@ -748,7 +748,7 @@ class _ModifierGroupSelector extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: context.errorColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: AppRadius.brSm,
                   ),
                   child: Text('Required', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: context.errorColor)),
                 ),
@@ -778,7 +778,7 @@ class _ModifierGroupSelector extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 decoration: BoxDecoration(
                   color: isSelected ? context.primaryColor.withValues(alpha: 0.1) : context.backgroundColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(
                     color: isSelected ? context.primaryColor.withValues(alpha: 0.3) : context.borderColor,
                   ),

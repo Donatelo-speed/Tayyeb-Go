@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import 'glass_card.dart';
@@ -104,7 +105,7 @@ class DestructiveActionOverlay extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius:
-                  BorderRadius.circular(AppSpacing.radiusSm),
+                  BorderRadius.circular(AppRadius.sm),
             ),
             child: SelectableText(
               const JsonEncoder.withIndent('  ').convert(input),
@@ -167,7 +168,7 @@ class DestructiveActionOverlay extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusSm),
+                      BorderRadius.circular(AppRadius.sm),
                 ),
               ),
               child: const Text('Cancel'),
@@ -186,7 +187,7 @@ class DestructiveActionOverlay extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(AppSpacing.radiusSm),
+                      BorderRadius.circular(AppRadius.sm),
                 ),
               ),
             ),

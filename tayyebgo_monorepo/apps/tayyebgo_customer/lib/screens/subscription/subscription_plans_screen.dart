@@ -128,7 +128,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: context.borderColor.withValues(alpha: 0.3),
                             width: 0.5,
@@ -222,7 +222,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                               _planColor(_selectedPlan).withValues(alpha: 0.8),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.brLg,
                           boxShadow: [
                             BoxShadow(
                               color: _planColor(_selectedPlan).withValues(alpha: 0.3),
@@ -267,7 +267,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
             color.withValues(alpha: 0.04),
           ],
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brMd,
         border: Border.all(
           color: color.withValues(alpha: 0.2),
           width: 0.5,
@@ -280,7 +280,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
             height: 40,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(
               _planIcon(sub.plan),
@@ -318,7 +318,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Text(
                 'Manage',
@@ -340,7 +340,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brLg,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -407,7 +407,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: AppRadius.brSm,
               ),
               child: Text(
                 withPlus,
@@ -440,7 +440,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
           color: isSelected
               ? color.withValues(alpha: 0.08)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: isSelected
                 ? color.withValues(alpha: 0.5)
@@ -480,7 +480,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                         color.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Icon(_planIcon(plan), color: color, size: 22),
                 ),
@@ -514,7 +514,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                                     color.withValues(alpha: 0.8),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: AppRadius.brSm,
                               ),
                               child: Text(
                                 badge,
@@ -565,7 +565,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                 color: isSelected
                     ? color.withValues(alpha: 0.06)
                     : context.surfaceAltColor.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -595,7 +595,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.brButton,
                       ),
                       child: Text(
                         'Save ${((1 - (plan.priceInCents / 100) / ((plan.priceInCents / 100) / plan.durationMonths * 12)) * 100).toInt()}%',

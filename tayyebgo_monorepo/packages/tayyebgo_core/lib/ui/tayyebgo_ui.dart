@@ -30,6 +30,9 @@ export 'animations/spring.dart';
 export 'animations/animated_counter.dart';
 export 'animations/pulse_animation.dart';
 export 'animations/hero_routes.dart';
+export 'animations/micro_interactions.dart';
+export 'animations/page_transitions.dart';
+export 'layouts/tayyebgo_layouts.dart';
 
 // ── Extended Components (Blueprint) ──
 // These are added to support the full blueprint spec.

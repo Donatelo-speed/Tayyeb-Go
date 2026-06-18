@@ -60,7 +60,7 @@ class TGBanner extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: config.iconBgColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brSm,
               ),
               child: Icon(icon ?? config.icon, size: 16, color: config.iconColor),
             ),
@@ -94,39 +94,39 @@ class TGBanner extends StatelessWidget {
     switch (variant) {
       case TGBannerVariant.info:
         return _BannerConfig(
-          bgColor: isDark ? const Color(0xFF1A2332) : const Color(0xFFEFF6FF),
-          borderColor: isDark ? AppColors.border : const Color(0xFFBFDBFE),
-          iconBgColor: isDark ? AppColors.primarySoft : const Color(0xFFDBEAFE),
+          bgColor: isDark ? AppColors.infoSoft : AppColors.infoSoft,
+          borderColor: isDark ? AppColors.border : AppColors.infoSoft,
+          iconBgColor: AppColors.infoSoft,
           iconColor: AppColors.primary,
           icon: Icons.info_outline_rounded,
-          textColor: isDark ? AppColors.textPrimary : const Color(0xFF1E3A5F),
+          textColor: isDark ? AppColors.textPrimary : AppColors.textPrimary,
         );
       case TGBannerVariant.success:
         return _BannerConfig(
-          bgColor: isDark ? const Color(0xFF0F2318) : const Color(0xFFECFDF5),
-          borderColor: isDark ? AppColors.border : const Color(0xFFA7F3D0),
-          iconBgColor: isDark ? AppColors.successSoft : const Color(0xFFD1FAE5),
+          bgColor: isDark ? AppColors.successSoft : AppColors.successSoft,
+          borderColor: isDark ? AppColors.border : AppColors.successSoft,
+          iconBgColor: AppColors.successSoft,
           iconColor: AppColors.success,
           icon: Icons.check_circle_outline_rounded,
-          textColor: isDark ? AppColors.textPrimary : const Color(0xFF065F46),
+          textColor: isDark ? AppColors.textPrimary : AppColors.textPrimary,
         );
       case TGBannerVariant.warning:
         return _BannerConfig(
-          bgColor: isDark ? const Color(0xFF231A0F) : const Color(0xFFFFFBEB),
-          borderColor: isDark ? AppColors.border : const Color(0xFFFDE68A),
-          iconBgColor: isDark ? AppColors.warningSoft : const Color(0xFFFEF3C7),
+          bgColor: isDark ? AppColors.warningSoft : AppColors.warningSoft,
+          borderColor: isDark ? AppColors.border : AppColors.warningSoft,
+          iconBgColor: AppColors.warningSoft,
           iconColor: AppColors.warning,
           icon: Icons.warning_amber_rounded,
-          textColor: isDark ? AppColors.textPrimary : const Color(0xFF92400E),
+          textColor: isDark ? AppColors.textPrimary : AppColors.textPrimary,
         );
       case TGBannerVariant.error:
         return _BannerConfig(
-          bgColor: isDark ? const Color(0xFF230F0F) : const Color(0xFFFEF2F2),
-          borderColor: isDark ? AppColors.border : const Color(0xFFFECACA),
-          iconBgColor: isDark ? AppColors.errorSoft : const Color(0xFFFEE2E2),
+          bgColor: isDark ? AppColors.errorSoft : AppColors.errorSoft,
+          borderColor: isDark ? AppColors.border : AppColors.errorSoft,
+          iconBgColor: AppColors.errorSoft,
           iconColor: AppColors.error,
           icon: Icons.error_outline_rounded,
-          textColor: isDark ? AppColors.textPrimary : const Color(0xFF991B1B),
+          textColor: isDark ? AppColors.textPrimary : AppColors.textPrimary,
         );
     }
   }

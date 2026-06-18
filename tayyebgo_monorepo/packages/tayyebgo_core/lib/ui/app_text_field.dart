@@ -90,7 +90,6 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final hasError = widget.errorText != null;
 
     return AnimatedBuilder(
@@ -119,14 +118,14 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt,
+              color: AppColors.surfaceAlt,
               borderRadius: AppRadius.brInput,
               border: Border.all(
                 color: hasError
                     ? AppColors.error
                     : _isFocused
                         ? AppColors.primary
-                        : (isDark ? AppColors.border : AppColors.border),
+                        : AppColors.border,
                 width: _isFocused ? 1.5 : 1,
               ),
             ),
@@ -145,7 +144,7 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
-                color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                color: AppColors.textPrimary,
               ),
               decoration: InputDecoration(
                 labelText: widget.label,
@@ -157,7 +156,7 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
                         size: 20,
                         color: _isFocused
                             ? AppColors.primary
-                            : (isDark ? AppColors.textMuted : AppColors.textMuted),
+                            : AppColors.textMuted,
                       )
                     : null,
                 suffixIcon: widget.obscureText
@@ -165,7 +164,7 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
                         icon: Icon(
                           _obscureVisible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                           size: 20,
-                          color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                          color: AppColors.textMuted,
                         ),
                         onPressed: () => setState(() => _obscureVisible = !_obscureVisible),
                       )
@@ -175,11 +174,11 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
                   fontWeight: FontWeight.w400,
                   color: _isFocused
                       ? AppColors.primary
-                      : (isDark ? AppColors.textMuted : AppColors.textMuted),
+                      : AppColors.textMuted,
                 ),
                 hintStyle: TextStyle(
                   fontSize: 14,
-                  color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                  color: AppColors.textMuted,
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -203,7 +202,7 @@ class _TGFState extends State<TGF> with SingleTickerProviderStateMixin {
               widget.helperText!,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? AppColors.textMuted : AppColors.textMuted,
+                color: AppColors.textMuted,
               ),
             ),
           ],

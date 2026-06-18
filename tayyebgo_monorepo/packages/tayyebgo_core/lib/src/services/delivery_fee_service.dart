@@ -54,7 +54,7 @@ class DeliveryFeeService {
     required int timeOfDay,
     required double demand,
   }) {
-    double fee = baseFee;
+    double fee = baseFee.toDouble();
     fee += distance * perKmRate;
 
     final zoneMultiplier = zoneRates[zone] ?? 1.0;

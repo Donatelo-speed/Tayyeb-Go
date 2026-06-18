@@ -60,7 +60,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 decoration: BoxDecoration(
                   color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(
                     color: context.borderColor.withValues(alpha: 0.3),
                     width: 0.5,
@@ -81,7 +81,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                     fontSize: 14,
                   ),
                   dividerColor: Colors.transparent,
-                  splashBorderRadius: BorderRadius.circular(14),
+                  splashBorderRadius: AppRadius.brMd,
                   tabs: const [
                     Tab(text: 'Active'),
                     Tab(text: 'Completed'),
@@ -208,7 +208,7 @@ class _OrderCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: context.borderColor.withValues(alpha: 0.4),
             width: 0.5,
@@ -235,7 +235,7 @@ class _OrderCard extends StatelessWidget {
                     statusColor.withValues(alpha: 0.05),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(
                 isDelivered
@@ -271,7 +271,7 @@ class _OrderCard extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: AppRadius.brSm,
                         ),
                         child: Text(
                           statusText,

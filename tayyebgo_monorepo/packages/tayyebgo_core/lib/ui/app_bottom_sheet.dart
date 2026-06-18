@@ -55,7 +55,7 @@ class TGBottomSheet extends StatelessWidget {
       ),
       margin: EdgeInsets.only(bottom: bottomPadding),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surface : AppColors.surface,
+        color: AppColors.surface,
         borderRadius: AppRadius.brBottomSheet,
         boxShadow: AppShadow.elevation4(isDark),
       ),
@@ -86,7 +86,7 @@ class TGBottomSheet extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),
@@ -156,8 +156,6 @@ class TGConfirmSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +165,7 @@ class TGConfirmSheet extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -175,7 +173,7 @@ class TGConfirmSheet extends StatelessWidget {
           message,
           style: TextStyle(
             fontSize: 14,
-            color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+            color: AppColors.textSecondary,
             height: 1.5,
           ),
         ),
@@ -186,7 +184,7 @@ class TGConfirmSheet extends StatelessWidget {
               child: Container(
                 height: 52,
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt,
+                  color: AppColors.surfaceAlt,
                   borderRadius: AppRadius.brButton,
                 ),
                 child: Material(
@@ -200,7 +198,7 @@ class TGConfirmSheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),

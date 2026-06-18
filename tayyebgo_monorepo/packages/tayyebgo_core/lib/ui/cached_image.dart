@@ -28,6 +28,8 @@ class CachedImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      memCacheWidth: width?.toInt(),
+      memCacheHeight: height?.toInt(),
       placeholder: placeholder != null
           ? (_, __) => placeholder!
           : (_, __) => Container(

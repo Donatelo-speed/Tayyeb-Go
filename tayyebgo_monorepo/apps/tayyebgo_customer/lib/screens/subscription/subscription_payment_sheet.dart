@@ -62,7 +62,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
               ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               margin: const EdgeInsets.all(16),
             ),
           );
@@ -95,7 +95,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
               width: 40, height: 4,
               decoration: BoxDecoration(
                 color: AppColors.textMuted.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brXs,
               ),
             ),
           ),
@@ -137,7 +137,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(
                       color: AppColors.primary.withValues(alpha: 0.15),
                       width: 0.5,
@@ -164,7 +164,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Text(
                     _referenceCode,
@@ -190,7 +190,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppColors.warning.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
               border: Border.all(
                 color: AppColors.warning.withValues(alpha: 0.15),
                 width: 0.5,
@@ -223,7 +223,7 @@ class _SubscriptionPaymentSheetState extends State<SubscriptionPaymentSheet> {
                 disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.brMd,
                 ),
                 elevation: 0,
               ),

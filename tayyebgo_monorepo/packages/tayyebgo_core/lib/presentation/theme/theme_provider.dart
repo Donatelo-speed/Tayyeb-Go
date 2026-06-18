@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_colors.dart';
+import '../../src/theme/tayyebgo_theme.dart';
 
 const _kThemePref = 'tayyebgo_theme_mode';
 
@@ -13,6 +14,9 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDark => _mode == ThemeMode.dark ||
       (_mode == ThemeMode.system &&
           WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark);
+
+  ThemeData get darkTheme => TayyebGoTheme.darkTheme();
+  ThemeData get lightTheme => TayyebGoTheme.lightTheme();
 
   ThemeProvider() {
     _loadSaved();

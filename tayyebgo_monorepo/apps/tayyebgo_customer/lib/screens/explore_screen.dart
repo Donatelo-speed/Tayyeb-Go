@@ -160,7 +160,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: context.primaryColor.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -197,7 +197,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     Container(
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: AppRadius.brCard,
                         border: Border.all(
                           color: context.borderColor.withValues(alpha: 0.3),
                           width: 0.5,
@@ -252,7 +252,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             vertical: 16,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: AppRadius.brCard,
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -265,7 +265,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           margin: const EdgeInsets.only(top: 8),
                           decoration: BoxDecoration(
                             color: context.surfaceColor,
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: AppRadius.brCard,
                             border: Border.all(
                               color: context.borderColor.withValues(alpha: 0.3),
                               width: 0.5,
@@ -383,7 +383,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           color: selected
                               ? context.primaryColor
                               : context.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: selected
                                 ? context.primaryColor
@@ -497,7 +497,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: context.borderColor.withValues(alpha: 0.4),
             width: 0.5,
@@ -524,11 +524,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     context.primaryColor.withValues(alpha: 0.05),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
               ),
               child: result.imageUrl != null && result.imageUrl!.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: AppRadius.brMd,
                       child: Image.network(
                         result.imageUrl!,
                         fit: BoxFit.cover,
@@ -575,7 +575,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           color: result.type == 'restaurant'
                               ? context.primaryColor.withValues(alpha: 0.08)
                               : context.successColor.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: AppRadius.brSm,
                         ),
                         child: Text(
                           result.type == 'restaurant'
@@ -697,7 +697,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   end: Alignment.bottomCenter,
                   colors: [AppColors.primary, AppColors.primaryHover],
                 ),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brXs,
               ),
             ),
             const SizedBox(width: 12),
@@ -718,7 +718,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
               decoration: BoxDecoration(
                 color: context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brButton,
               ),
               child: Text(
                 '${restaurants.length}',
@@ -762,7 +762,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         width: 180,
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: context.borderColor.withValues(alpha: 0.4),
             width: 0.5,
@@ -844,7 +844,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: context.surfaceAltColor,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: AppRadius.brSm,
                           ),
                           child: Text(
                             'Delivery',

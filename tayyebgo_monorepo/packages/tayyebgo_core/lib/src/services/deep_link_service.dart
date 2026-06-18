@@ -25,9 +25,9 @@ class DeepLinkService {
   Stream<DeepLinkRoute> get onRoute => _routeController.stream;
 
   Future<void> initialize() async {
-    final initialLink = await _appLinks.getInitialLink();
+    final initialLink = await _appLinks.getInitialAppLinkString();
     if (initialLink != null) {
-      final route = handleIncomingLink(initialLink);
+      final route = handleIncomingLink(Uri.parse(initialLink));
       if (route != null) {
         _routeController.add(route);
       }

@@ -372,10 +372,21 @@ class _PremiumInputState extends State<PremiumInput>
   late AnimationController _glowController;
   late Animation<double> _glowAnim;
   bool _focused = false;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      final focused = _focusNode.hasFocus;
+      setState(() => _focused = focused);
+      if (focused) {
+        _glowController.forward();
+      } else {
+        _glowController.reverse();
+      }
+    });
     _glowController = AnimationController(
       vsync: this,
       duration: PremiumTheme.durationNormal,
@@ -387,6 +398,7 @@ class _PremiumInputState extends State<PremiumInput>
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _glowController.dispose();
     super.dispose();
   }
@@ -421,6 +433,7 @@ class _PremiumInputState extends State<PremiumInput>
           ),
           child: TextField(
             controller: widget.controller,
+            focusNode: _focusNode,
             obscureText: widget.obscure,
             keyboardType: widget.keyboardType,
             maxLines: widget.maxLines,
@@ -468,14 +481,6 @@ class _PremiumInputState extends State<PremiumInput>
               errorStyle: GoogleFonts.inter(
                   fontSize: 12, color: PremiumTheme.error),
             ),
-            onFocused: (focused) {
-              setState(() => _focused = focused);
-              if (focused) {
-                _glowController.forward();
-              } else {
-                _glowController.reverse();
-              }
-            },
           ),
         );
       },
@@ -525,7 +530,6 @@ class PremiumBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = PremiumTheme.isDark(context);
     final fontSize = small ? 10.0 : 11.0;
     final vPadding = small ? 3.0 : 5.0;
     final hPadding = small ? 8.0 : 12.0;

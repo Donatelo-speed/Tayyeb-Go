@@ -38,7 +38,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
                     width: 40, height: 40,
                     decoration: BoxDecoration(
                       color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                       border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                     ),
                     child: Icon(Icons.arrow_back_ios_rounded, color: context.textPrimaryColor, size: 18),
@@ -57,14 +57,14 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
                   begin: Alignment.topLeft, end: Alignment.bottomRight,
                   colors: [Color(0xFF8B5CF6), Color(0xFF6366F1), Color(0xFF4F46E5)],
                 ),
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: AppRadius.brXxl,
                 boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
               ),
               child: Column(
                 children: [
                   Container(
                     width: 80, height: 80,
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(24)),
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: AppRadius.brXxl),
                     child: const Icon(Icons.card_giftcard_rounded, color: Colors.white, size: 40),
                   ),
                   const SizedBox(height: 20),
@@ -89,7 +89,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
                     width: 100, height: 60,
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.primary : context.surfaceColor,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: AppRadius.brMd,
                       border: Border.all(color: isSelected ? AppColors.primary : context.borderColor.withValues(alpha: 0.3), width: isSelected ? 2 : 0.5),
                       boxShadow: isSelected ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.2), blurRadius: 8)] : null,
                     ),
@@ -104,7 +104,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
             Text('Recipient Name', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: context.textPrimaryColor)),
             const SizedBox(height: 12),
             Container(
-              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
+              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd, border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
               child: TextField(
                 controller: _recipientCtrl,
                 style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 15),
@@ -119,7 +119,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
             Text('Personal Message', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: context.textPrimaryColor)),
             const SizedBox(height: 12),
             Container(
-              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
+              decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brMd, border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5)),
               child: TextField(
                 controller: _messageCtrl, maxLines: 3,
                 style: GoogleFonts.inter(color: context.textPrimaryColor, fontSize: 15),
@@ -137,7 +137,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
                 width: double.infinity, height: 56,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)]),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.brLg,
                   boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
                 ),
                 child: Center(child: Text('Buy Gift Card — \$_selectedAmount', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white))),
@@ -152,7 +152,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
   void _purchaseGiftCard() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Gift card feature coming soon!', style: GoogleFonts.inter()), backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+        behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
     );
   }
 }

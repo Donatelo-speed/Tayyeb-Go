@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:tayyebgo_multi_tenant/tayyebgo_multi_tenant.dart';
+import 'home/_home_sections.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -81,163 +82,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             controller: _scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
-SliverToBoxAdapter(
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                  child: AnimatedFadeSlide(
-                    duration: const Duration(milliseconds: 500),
-                    child: Row(
-                      children: [
-                        // Location selector
-                        GestureDetector(
-                          onTap: () => context.push('/addresses'),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 28, height: 28,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(colors: [AppColors.primary, AppColors.primaryHover]),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 16),
-                                ),
-                                const SizedBox(width: 8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Deliver to', style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
-                                    Text('Al Hamra, Homs', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-                                  ],
-                                ),
-                                const SizedBox(width: 4),
-                                Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMuted, size: 18),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        // Notification bell
-                        AnimatedPressScale(
-                          onTap: () => context.push('/notifications'),
-                          child: Container(
-                            width: 44, height: 44,
-                            decoration: BoxDecoration(
-                              color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-                            ),
-                            child: Stack(
-                              children: [
-                                Center(child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22)),
-                                Positioned(
-                                  right: 10, top: 10,
-                                  child: Container(
-                                    width: 8, height: 8,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.error,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [BoxShadow(color: AppColors.error, blurRadius: 4, spreadRadius: 1)],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+              const HomeHeader(),
 
-            // Greeting
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: AnimatedFadeSlide(
-                  delay: 100,
-                  duration: const Duration(milliseconds: 500),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_greeting(), style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
-                      const SizedBox(height: 4),
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [AppColors.primary, AppColors.primaryHover],
-                        ).createShader(bounds),
-                        child: Text(
-                          user?.displayName.isNotEmpty == true ? user!.displayName : 'Guest',
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 32, color: Colors.white, letterSpacing: 0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+              HomeGreeting(displayName: user?.displayName ?? ''),
 
-            // Search bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: AnimatedFadeSlide(
-                  delay: 200,
-                  duration: const Duration(milliseconds: 500),
-                  child: GestureDetector(
-                    onTap: () => context.push('/explore'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search_rounded, color: AppColors.textMuted, size: 22),
-                          const SizedBox(width: 12),
-                          Text('Search restaurants, cuisines...', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 15)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+              const HomeSearchBar(),
 
-            // Quick categories
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: AnimatedFadeSlide(
-                  delay: 250,
-                  duration: const Duration(milliseconds: 500),
-                  child: Row(
-                    children: [
-                      _categoryChip(context, Icons.restaurant_rounded, 'Food', AppColors.primary),
-                      const SizedBox(width: 10),
-                      _categoryChip(context, Icons.local_grocery_store_rounded, 'Grocery', AppColors.driverAccent),
-                      const SizedBox(width: 10),
-                      _categoryChip(context, Icons.local_pharmacy_rounded, 'Pharmacy', AppColors.error),
-                      const SizedBox(width: 10),
-                      _categoryChip(context, Icons.store_rounded, 'Retail', AppColors.adminAccent),
-                    ],
-                  ),
-                ),
+              HomeCategories(
+                onFoodTap: () {},
+                onGroceryTap: () {},
+                onPharmacyTap: () {},
+                onRetailTap: () {},
               ),
-            ),
 
               SliverToBoxAdapter(
                 child: Padding(
@@ -284,7 +140,7 @@ SliverToBoxAdapter(
                                 color: active
                                     ? color.withValues(alpha: 0.12)
                                     : context.surfaceColor,
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: AppRadius.brCard,
                                 border: Border.all(
                                   color: active
                                       ? color.withValues(alpha: 0.3)
@@ -312,7 +168,7 @@ SliverToBoxAdapter(
                                       color: active
                                           ? color.withValues(alpha: 0.18)
                                           : context.surfaceAltColor,
-                                      borderRadius: BorderRadius.circular(14),
+                                      borderRadius: AppRadius.brMd,
                                     ),
                                     child: Icon(
                                       _iconForVertical(vt),
@@ -349,7 +205,7 @@ SliverToBoxAdapter(
                     child: Container(
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: AppRadius.brCard,
                         border: Border.all(
                           color: context.borderColor.withValues(alpha: 0.3),
                           width: 0.5,
@@ -403,7 +259,7 @@ SliverToBoxAdapter(
                           fillColor: Colors.transparent,
                           contentPadding: const EdgeInsets.symmetric(vertical: 16),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: AppRadius.brCard,
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -456,53 +312,22 @@ SliverToBoxAdapter(
                     child: AnimatedFadeSlide(
                       delay: 350,
                       duration: const Duration(milliseconds: 500),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 20,
+                      child: HomeSectionTitle(
+                        title: 'Active Orders',
+                        trailing: AnimatedPressScale(
+                          onTap: () => context.push('/order-history'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [AppColors.primary, AppColors.primaryHover],
-                              ),
-                              borderRadius: BorderRadius.circular(2),
+                              color: AppColors.primary.withValues(alpha: 0.08),
+                              borderRadius: AppRadius.brSm,
+                            ),
+                            child: Text(
+                              'History',
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: AppColors.primary),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Active Orders',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: context.textPrimaryColor,
-                              letterSpacing: 0,
-                            ),
-                          ),
-                          const Spacer(),
-                          AnimatedPressScale(
-                            onTap: () => context.push('/order-history'),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.08),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'History',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -549,31 +374,10 @@ SliverToBoxAdapter(
                   child: AnimatedFadeSlide(
                     delay: 550,
                     duration: const Duration(milliseconds: 500),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [AppColors.customerAccent, Color(0xFFFFB703)],
-                            ),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Nearby',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                            color: context.textPrimaryColor,
-                            letterSpacing: 0,
-                          ),
-                        ),
-                      ],
+                    child: const HomeSectionTitle(
+                      title: 'Nearby',
+                      gradientStart: AppColors.customerAccent,
+                      gradientEnd: Color(0xFFFFB703),
                     ),
                   ),
                 ),
@@ -598,35 +402,6 @@ SliverToBoxAdapter(
     );
   }
 
-  String _greeting() {
-    final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  Widget _categoryChip(BuildContext context, IconData icon, String label, Color color) {
-    return Expanded(
-      child: AnimatedPressScale(
-        onTap: () {},
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: color.withValues(alpha: 0.15), width: 0.5),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(height: 6),
-              Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textPrimaryColor)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _LoyaltyCard extends StatelessWidget {
@@ -650,7 +425,7 @@ class _LoyaltyCard extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.brLg,
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.2),
                     width: 1,
@@ -699,7 +474,7 @@ class _LoyaltyCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brSm,
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.2),
                       width: 1,
@@ -769,7 +544,7 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: AppRadius.brCard,
               border: Border.all(
                 color: context.borderColor.withValues(alpha: 0.4),
                 width: 0.5,
@@ -796,7 +571,7 @@ class _ActiveOrdersSectionState extends State<_ActiveOrdersSection> {
                         context.primaryColor.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Icon(
                     Icons.receipt_long_rounded,
@@ -893,7 +668,7 @@ class _RecommendationsSectionState extends State<_RecommendationsSection> {
                   end: Alignment.bottomCenter,
                   colors: [AppColors.primary, AppColors.primaryHover],
                 ),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
             const SizedBox(width: 12),
@@ -929,7 +704,7 @@ class _RecommendationsSectionState extends State<_RecommendationsSection> {
                   width: 170,
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: AppRadius.brCard,
                     border: Border.all(
                       color: context.borderColor.withValues(alpha: 0.4),
                       width: 0.5,
@@ -1082,7 +857,7 @@ class _FavoritesSectionState extends State<_FavoritesSection> {
               width: 130,
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: AppRadius.brCard,
                 border: Border.all(
                   color: context.borderColor.withValues(alpha: 0.4),
                   width: 0.5,
@@ -1200,7 +975,7 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.brFull,
               border: Border.all(
                 color: context.borderColor.withValues(alpha: 0.4),
                 width: 0.5,
@@ -1268,7 +1043,7 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: AppColors.warning.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: AppRadius.brButton,
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -1320,11 +1095,11 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
                             color: isFav
                                 ? Colors.red.withValues(alpha: 0.1)
                                 : context.surfaceAltColor,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: AppRadius.brMd,
                           ),
                           child: Icon(
                             isFav ? Icons.favorite : Icons.favorite_border,
-                            color: isFav ? Colors.red : context.textMutedColor,
+                            color: isFav ? AppColors.error : context.textMutedColor,
                             size: 22,
                           ),
                         ),
@@ -1345,7 +1120,7 @@ class _NearbyRestaurantsSectionState extends State<_NearbyRestaurantsSection> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: context.surfaceAltColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brButton,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1439,7 +1214,7 @@ class _LoyaltyPointsBanner extends StatelessWidget {
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
                 colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
               ),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: AppRadius.brCard,
               boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
             ),
             child: Row(
@@ -1448,7 +1223,7 @@ class _LoyaltyPointsBanner extends StatelessWidget {
                   width: 52, height: 52,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
                   ),
                   child: const Icon(Icons.stars_rounded, color: Colors.white, size: 26),
@@ -1466,7 +1241,7 @@ class _LoyaltyPointsBanner extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: AppRadius.brMd),
                   child: Text('$points pts', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white)),
                 ),
               ],
@@ -1491,7 +1266,7 @@ class _QuickActionsGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.primary.withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(
@@ -1512,7 +1287,7 @@ class _QuickActionsGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: const Color(0xFFFBBF24).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: const Color(0xFFFBBF24).withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(
@@ -1533,7 +1308,7 @@ class _QuickActionsGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: AppColors.driverAccent.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.driverAccent.withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(
@@ -1554,7 +1329,7 @@ class _QuickActionsGrid extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: const Color(0xFF22C55E).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(

@@ -42,7 +42,7 @@ class CartScreen extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: context.errorColor.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: AppRadius.brMd,
                           ),
                           child: Text(
                             'Clear',
@@ -115,7 +115,7 @@ class CartScreen extends StatelessWidget {
                             context.primaryColor.withValues(alpha: 0.8),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: AppRadius.brLg,
                         boxShadow: [
                           BoxShadow(
                             color: context.primaryColor.withValues(alpha: 0.3),
@@ -169,7 +169,7 @@ class _CartItemRow extends StatelessWidget {
               context.errorColor,
             ],
           ),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
         ),
         child: const Icon(
           Icons.delete_outline_rounded,
@@ -182,7 +182,7 @@ class _CartItemRow extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: context.borderColor.withValues(alpha: 0.4),
             width: 0.5,
@@ -254,7 +254,7 @@ class _CartItemRow extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: context.surfaceAltColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -336,7 +336,7 @@ class _CartSummary extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brCard,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.4),
           width: 0.5,
@@ -446,7 +446,7 @@ class _CouponSectionState extends State<_CouponSection> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: context.successColor.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
           ),
           child: Row(
             children: [
@@ -479,7 +479,7 @@ class _CouponSectionState extends State<_CouponSection> {
                   ),
                   decoration: BoxDecoration(
                     color: context.errorColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brButton,
                   ),
                   child: Text(
                     'Remove',
@@ -503,7 +503,7 @@ class _CouponSectionState extends State<_CouponSection> {
             height: 48,
             decoration: BoxDecoration(
               color: context.surfaceAltColor,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brMd,
               border: Border.all(
                 color: _error != null
                     ? context.errorColor.withValues(alpha: 0.5)
@@ -550,7 +550,7 @@ class _CouponSectionState extends State<_CouponSection> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               color: context.primaryColor,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brMd,
               boxShadow: [
                 BoxShadow(
                   color: context.primaryColor.withValues(alpha: 0.2),

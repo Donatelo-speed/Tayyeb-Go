@@ -214,8 +214,8 @@ class _PartnerAppState extends State<PartnerApp> {
                     DefaultWidgetsLocalizations.delegate,
                   ],
                   supportedLocales: AppLocalizations.supportedLocales,
-                  theme: TayyebGoTheme.lightTheme(context),
-                  darkTheme: TayyebGoTheme.darkTheme(context),
+                  theme: TayyebGoTheme.lightTheme(),
+                  darkTheme: TayyebGoTheme.darkTheme(),
                   themeMode: themeProvider.mode,
                   routerConfig: _router,
                 );

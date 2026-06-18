@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../presentation/theme/app_colors.dart';
+import '../presentation/theme/app_radius.dart';
 
 enum TGCVariant { surface, elevated, outlined, glass }
 
@@ -19,7 +20,7 @@ class TGC extends StatelessWidget {
     this.padding,
     this.margin,
     this.backgroundColor,
-    this.borderRadius = 16,
+    this.borderRadius = 12,
     this.onTap,
   });
 
@@ -36,9 +37,12 @@ class TGC extends StatelessWidget {
     );
 
     if (onTap != null) {
-      card = GestureDetector(
-        onTap: onTap,
-        child: card,
+      card = Semantics(
+        button: true,
+        child: GestureDetector(
+          onTap: onTap,
+          child: card,
+        ),
       );
     }
 
@@ -61,7 +65,7 @@ class TGC extends StatelessWidget {
   }
 
   BoxDecoration _getDecoration(bool isDark, Color bgColor) {
-    final borderColor = isDark ? AppColors.border : const Color(0xFFDDE7E2);
+    final borderColor = AppColors.border;
     
     return BoxDecoration(
       color: bgColor,
@@ -112,7 +116,6 @@ class TGCKpi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final accentColor = color ?? AppColors.primary;
     
     return TGC(
@@ -129,7 +132,7 @@ class TGCKpi extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: accentColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brSm,
                   ),
                   child: Icon(icon, color: accentColor, size: 18),
                 ),
@@ -140,7 +143,7 @@ class TGCKpi extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 13,
-                    color: isDark ? AppColors.textMuted : const Color(0xFF8A9891),
+                    color: AppColors.textMuted,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -153,7 +156,7 @@ class TGCKpi extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.textPrimary : const Color(0xFF10201A),
+              color: AppColors.textPrimary,
               letterSpacing: 0,
             ),
           ),
@@ -163,7 +166,7 @@ class TGCKpi extends StatelessWidget {
               subtitle!,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? AppColors.textMuted : const Color(0xFF8A9891),
+                color: AppColors.textMuted,
               ),
             ),
           ],
@@ -183,7 +186,7 @@ class TGCGradient extends StatelessWidget {
   const TGCGradient({
     super.key,
     required this.child,
-    this.gradient = const [AppColors.primary, Color(0xFF8B5CF6)],
+    this.gradient = const [AppColors.primary, AppColors.accent],
     this.padding,
     this.borderRadius = 16,
   });

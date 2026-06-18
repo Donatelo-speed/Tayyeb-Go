@@ -21,7 +21,7 @@ class TayyebGoPicksScreen extends StatelessWidget {
                     width: 40, height: 40,
                     decoration: BoxDecoration(
                       color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                       border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                     ),
                     child: Icon(Icons.arrow_back_ios_rounded, color: context.textPrimaryColor, size: 18),
@@ -50,7 +50,7 @@ class TayyebGoPicksScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [color, color.withValues(alpha: 0.5)]), borderRadius: BorderRadius.circular(2))),
+          Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [color, color.withValues(alpha: 0.5)]), borderRadius: AppRadius.brXs)),
           const SizedBox(width: 12),
           Icon(icon, size: 20, color: color),
           const SizedBox(width: 8),
@@ -63,7 +63,7 @@ class TayyebGoPicksScreen extends StatelessWidget {
           itemBuilder: (_, i) => AnimatedPressScale(
             onTap: () {},
             child: Container(
-              width: 160, decoration: BoxDecoration(color: context.surfaceColor, borderRadius: BorderRadius.circular(16),
+              width: 160, decoration: BoxDecoration(color: context.surfaceColor, borderRadius: AppRadius.brLg,
                 border: Border.all(color: color.withValues(alpha: 0.2), width: 0.5)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(height: 80, width: double.infinity,

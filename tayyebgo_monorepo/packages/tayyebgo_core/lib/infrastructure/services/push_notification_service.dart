@@ -17,7 +17,6 @@ class PushNotificationService {
   Stream<RemoteMessage> get onMessage => _messageController.stream;
 
   String? _currentToken;
-  String? _userId;
 
   /// Backward-compatible initializer called by AuthProvider.
   Future<void> initializeAndRegister(String userId, String role) async {
@@ -27,7 +26,6 @@ class PushNotificationService {
   /// Initialize Firebase Messaging, request permission, and store the token.
   Future<void> initialize({required String userId, required String role}) async {
     if (kIsWeb) return;
-    _userId = userId;
     try {
       await requestPermission();
       final token = await getToken();

@@ -158,7 +158,7 @@ class ReorderScreen extends StatelessWidget {
         ),
         backgroundColor: context.primaryColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -184,7 +184,7 @@ class _OrderHeader extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -194,7 +194,7 @@ class _OrderHeader extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: context.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(Icons.restaurant_rounded, color: context.primaryColor, size: 22),
           ),
@@ -252,7 +252,7 @@ class _OrderItemRow extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -302,7 +302,7 @@ class _OrderTotalRow extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.primaryColor.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -357,7 +357,7 @@ class _ReorderButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: context.primaryColor,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               elevation: 0,
             ),
           ),

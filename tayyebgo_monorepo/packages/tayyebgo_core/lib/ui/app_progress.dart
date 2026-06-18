@@ -19,7 +19,6 @@ class TGCircularProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final progressColor = color ?? AppColors.primary;
 
     if (label != null) {
@@ -32,7 +31,7 @@ class TGCircularProgress extends StatelessWidget {
             child: CircularProgressIndicator(
               strokeWidth: strokeWidth ?? 3,
               color: progressColor,
-              backgroundColor: isDark ? AppColors.surfaceAlt : const Color(0xFFF0F2F5),
+              backgroundColor: AppColors.surfaceAlt,
             ),
           ),
           const SizedBox(height: 12),
@@ -40,7 +39,7 @@ class TGCircularProgress extends StatelessWidget {
             label!,
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+              color: AppColors.textMuted,
             ),
           ),
         ],
@@ -79,9 +78,8 @@ class TGLinearProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final progressColor = color ?? AppColors.primary;
-    final bgColor = backgroundColor ?? (isDark ? AppColors.surfaceAlt : const Color(0xFFF0F2F5));
+    final bgColor = backgroundColor ?? AppColors.surfaceAlt;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +97,7 @@ class TGLinearProgress extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.textSecondary : const Color(0xFF6B7686),
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 if (valueLabel != null)
@@ -108,7 +106,7 @@ class TGLinearProgress extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.textPrimary : const Color(0xFF151922),
+                      color: AppColors.textPrimary,
                     ),
                   ),
               ],

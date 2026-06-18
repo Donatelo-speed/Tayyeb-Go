@@ -18,14 +18,13 @@ class TGDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: height,
       margin: margin,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: color ?? (isDark ? AppColors.divider : const Color(0xFFE8EDF2)),
+            color: color ?? AppColors.divider,
             width: thickness,
           ),
         ),
@@ -80,8 +79,7 @@ class TGText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultColor = isDark ? AppColors.textPrimary : const Color(0xFF151922);
+    final defaultColor = AppColors.textPrimary;
 
     return Text(
       text,
@@ -124,7 +122,7 @@ class TGContainer extends StatelessWidget {
         color: backgroundColor ?? (isDark ? AppColors.surface : Colors.white),
         borderRadius: BorderRadius.circular(borderRadius),
         border: border ?? Border.all(
-          color: isDark ? AppColors.border : const Color(0xFFE8EDF2),
+          color: AppColors.border,
           width: 1,
         ),
       ),

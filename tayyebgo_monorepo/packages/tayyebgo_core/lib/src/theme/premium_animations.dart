@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'premium_theme.dart';
 
 /// ═══════════════════════════════════════════════════════════════════════════
@@ -518,7 +519,7 @@ class _CounterAnimationState extends State<CounterAnimation>
     );
 
     return Text(
-      '$prefix$_current$suffix',
+      '${widget.prefix}$_current${widget.suffix}',
       style: widget.style ?? defaultStyle,
     );
   }
@@ -556,11 +557,7 @@ class ParallaxScroll extends StatelessWidget {
   }
 }
 
-/// ═══════════════════════════════════════════════════════════════════════════
-/// AnimatedBuilder — Re-export with a more intuitive name alias.
-/// This is the standard Flutter AnimatedBuilder.
-/// ═══════════════════════════════════════════════════════════════════════════
-typedef AnimatedBuilder = AnimatedBuilder;
+// Flutter's AnimatedBuilder is used directly — no typedef needed.
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STAGGERED LIST BUILDER — utility for staggering lists

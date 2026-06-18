@@ -93,7 +93,7 @@ class _TGDialogState extends State<TGDialog> {
         constraints: const BoxConstraints(maxWidth: 400),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surface : AppColors.surface,
+          color: AppColors.surface,
           borderRadius: AppRadius.brDialog,
           boxShadow: AppShadow.elevation4(isDark),
         ),
@@ -106,7 +106,7 @@ class _TGDialogState extends State<TGDialog> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.textPrimary : AppColors.textPrimary,
+                  color: AppColors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),

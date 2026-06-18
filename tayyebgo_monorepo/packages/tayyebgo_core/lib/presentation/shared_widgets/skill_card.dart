@@ -3,6 +3,7 @@ import '../../domain/entities/skill.dart';
 import '../../domain/entities/skill_execution.dart';
 import '../../domain/enums/skill_execution_status.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 
@@ -28,7 +29,7 @@ class SkillCard extends StatelessWidget {
         padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
         decoration: BoxDecoration(
           color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: skill.destructive
                 ? AppColors.error.withValues(alpha: 0.3)
@@ -74,7 +75,7 @@ class SkillCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius:
-                          BorderRadius.circular(AppSpacing.radiusSm),
+                          BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Text(
                       'DESTRUCTIVE',

@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
+/// TayyebGo shadow system.
+///
+/// Multi-layer elevation shadows with dark/light adaptive support.
+/// All methods require [isDark] parameter for proper theme adaptation.
+/// For context-aware access, use [ThemeColors] extensions from theme_provider.dart.
 abstract class AppShadow {
+  // ══════════════════════════════════════════════════════════════════════════
+  // ELEVATION SHADOWS (5 tiers)
+  // ══════════════════════════════════════════════════════════════════════════
+
   static List<BoxShadow> elevation0(bool isDark) => const [];
 
   static List<BoxShadow> elevation1(bool isDark) => isDark
@@ -73,6 +82,10 @@ abstract class AppShadow {
           ),
         ];
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // GLOW SHADOWS (colored, for interactive feedback)
+  // ══════════════════════════════════════════════════════════════════════════
+
   static List<BoxShadow> glowPrimary(bool isDark) => [
         BoxShadow(
           color: (isDark ? AppColors.primary : LightAppColors.primary)
@@ -100,11 +113,29 @@ abstract class AppShadow {
         ),
       ];
 
+  static List<BoxShadow> glowWarning(bool isDark) => [
+        BoxShadow(
+          color: (isDark ? AppColors.warning : LightAppColors.warning)
+              .withValues(alpha: isDark ? 0.28 : 0.2),
+          blurRadius: 24,
+          spreadRadius: -8,
+        ),
+      ];
+
+  static List<BoxShadow> glowInfo(bool isDark) => [
+        BoxShadow(
+          color: (isDark ? AppColors.info : LightAppColors.info)
+              .withValues(alpha: isDark ? 0.28 : 0.2),
+          blurRadius: 24,
+          spreadRadius: -8,
+        ),
+      ];
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // SEMANTIC ALIASES
+  // ══════════════════════════════════════════════════════════════════════════
+
   static List<BoxShadow> cardSoft(bool isDark) => elevation1(isDark);
   static List<BoxShadow> cardMedium(bool isDark) => elevation2(isDark);
   static List<BoxShadow> cardStrong(bool isDark) => elevation3(isDark);
-
-  static List<BoxShadow> get card => elevation1(false);
-  static List<BoxShadow> get elevated => elevation2(false);
-  static List<BoxShadow> get level3 => elevation3(false);
 }

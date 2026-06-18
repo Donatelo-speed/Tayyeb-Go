@@ -23,7 +23,6 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final accent = accentColor ?? AppColors.primary;
     
     return Center(
@@ -67,7 +66,7 @@ class EmptyState extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.textPrimary : const Color(0xFF10201A),
+                  color: AppColors.textPrimary,
                   letterSpacing: 0,
                 ),
                 textAlign: TextAlign.center,
@@ -81,7 +80,7 @@ class EmptyState extends StatelessWidget {
                   subtitle!,
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: isDark ? AppColors.textSecondary : const Color(0xFF40534B),
+                    color: AppColors.textSecondary,
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
@@ -145,14 +144,12 @@ class ModernSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return ShimmerWidget(
       child: Container(
         width: isCircle ? height : width,
         height: height,
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceAlt : const Color(0xFFEEF3F0),
+          color: AppColors.surfaceAlt,
           borderRadius: BorderRadius.circular(isCircle ? (height ?? 48) / 2 : borderRadius),
         ),
       ),

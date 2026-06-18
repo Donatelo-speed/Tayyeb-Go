@@ -53,7 +53,10 @@ class AppLocalizations {
 
   static AppLocale get currentLocale => _currentLocale;
 
-  Object get _strings {
+  static List<Locale> get supportedLocales =>
+      AppLocale.values.map((e) => e.locale).toList();
+
+  dynamic get _strings {
     switch (_currentLocale) {
       case AppLocale.en:
         return L10nEn.instance;
@@ -204,7 +207,7 @@ class AppLocalizations {
   String get indian => _strings.indian;
   String get mexican => _strings.mexican;
   String get italian => _strings.italian;
-  String get arabic => _strings.arabic;
+  String get arabicFood => _strings.arabicFood;
   String get american => _strings.american;
   String get seafood => _strings.seafood;
   String get chicken => _strings.chicken;

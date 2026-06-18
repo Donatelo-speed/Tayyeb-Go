@@ -57,7 +57,7 @@ class TGS extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt,
+        color: AppColors.surfaceAlt,
         borderRadius: circle ? BorderRadius.circular(width) : borderRadius,
       ),
       child: _ShimmerEffect(isDark: isDark),
@@ -94,7 +94,7 @@ class _ShimmerEffectState extends State<_ShimmerEffect>
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = widget.isDark ? AppColors.surfaceAlt : AppColors.surfaceAlt;
+    final baseColor = AppColors.surfaceAlt;
     final highlightColor = widget.isDark
         ? AppColors.surfaceAlt.withValues(alpha: 0.5)
         : Colors.grey.shade100;

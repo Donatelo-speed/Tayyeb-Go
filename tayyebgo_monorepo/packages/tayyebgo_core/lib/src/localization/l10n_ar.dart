@@ -143,7 +143,7 @@ class L10nAr {
   String get indian => 'هندي';
   String get mexican => 'مكسيكي';
   String get italian => 'إيطالي';
-  String get arabic => 'عربي';
+  String get arabicFood => 'عربي';
   String get american => 'أمريكي';
   String get seafood => 'مأكولات بحرية';
   String get chicken => 'دجاج';

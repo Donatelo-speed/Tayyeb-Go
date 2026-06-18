@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../presentation/theme/app_colors.dart';
+import '../presentation/theme/app_radius.dart';
 
 class SkeletonLoader extends StatelessWidget {
   final double? width;
@@ -14,16 +16,12 @@ class SkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark 
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.05),
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        color: AppColors.surfaceAlt,
+        borderRadius: borderRadius ?? AppRadius.brSm,
       ),
     );
   }
@@ -41,10 +39,8 @@ class SkeletonCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.black.withValues(alpha: 0.02),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surfaceAlt,
+        borderRadius: AppRadius.brCard,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +83,7 @@ class SkeletonList extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: (_, __) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: SkeletonLoader(height: itemHeight, borderRadius: BorderRadius.circular(12)),
+        child: SkeletonLoader(height: itemHeight, borderRadius: AppRadius.brCard),
       ),
     );
   }

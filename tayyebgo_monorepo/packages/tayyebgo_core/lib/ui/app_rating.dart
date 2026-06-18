@@ -28,11 +28,12 @@ class TGRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final active = activeColor ?? AppColors.amber;
-    final inactive = inactiveColor ?? (isDark ? AppColors.surfaceAlt : const Color(0xFFDCE3EA));
+    final inactive = inactiveColor ?? AppColors.surfaceAlt;
 
-    return Row(
+    return Semantics(
+      label: 'Rating: ${rating.toStringAsFixed(1)} out of $maxRating',
+      child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ...List.generate(maxRating, (index) {
@@ -65,7 +66,7 @@ class TGRating extends StatelessWidget {
             style: TextStyle(
               fontSize: starSize * 0.7,
               fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.textPrimary : const Color(0xFF151922),
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -75,11 +76,12 @@ class TGRating extends StatelessWidget {
             label!,
             style: TextStyle(
               fontSize: starSize * 0.6,
-              color: isDark ? AppColors.textMuted : const Color(0xFF93A0AF),
+              color: AppColors.textMuted,
             ),
           ),
         ],
       ],
+      ),
     );
   }
 }

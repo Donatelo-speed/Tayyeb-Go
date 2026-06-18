@@ -81,7 +81,7 @@ class OrderTrackingScreen extends StatelessWidget {
                         child: Container(
                           width: 40,
                           height: 4,
-                          decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2)),
+                          decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brXs),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -91,7 +91,7 @@ class OrderTrackingScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: _statusIconColor(context, currentStatus).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.brMd,
                             ),
                             child: Icon(_statusIcon(currentStatus), size: 24, color: _statusIconColor(context, currentStatus)),
                           ),
@@ -130,7 +130,7 @@ class OrderTrackingScreen extends StatelessWidget {
                             style: OutlinedButton.styleFrom(
                               foregroundColor: context.errorColor,
                               side: BorderSide(color: context.errorColor.withValues(alpha: 0.3)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                             ),
                             child: Text('Cancel Order', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                           ),
@@ -199,7 +199,7 @@ class OrderTrackingScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                   decoration: BoxDecoration(
                     color: step.isCurrent ? context.primaryColor.withValues(alpha: 0.08) : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brButton,
                   ),
                   child: Row(
                     children: [
@@ -233,7 +233,7 @@ class OrderTrackingScreen extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -268,7 +268,7 @@ class OrderTrackingScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
         title: Text('Cancel Order', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: Text('Are you sure you want to cancel this order?', style: GoogleFonts.inter(color: context.textMutedColor)),
         actions: [
@@ -292,7 +292,7 @@ class OrderTrackingScreen extends StatelessWidget {
                       content: Text('Order cancelled', style: GoogleFonts.inter()),
                       backgroundColor: context.successColor,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     ),
                   );
                 }
@@ -303,7 +303,7 @@ class OrderTrackingScreen extends StatelessWidget {
                       content: Text('Failed to cancel', style: GoogleFonts.inter()),
                       backgroundColor: context.errorColor,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     ),
                   );
                 }
@@ -394,7 +394,7 @@ class _EtaCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: context.backgroundColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(color: context.primaryColor.withValues(alpha: 0.15)),
           ),
           child: Row(
@@ -403,7 +403,7 @@ class _EtaCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: context.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(Icons.delivery_dining_rounded, color: context.primaryColor, size: 24),
               ),
@@ -460,7 +460,7 @@ class _DriverContactCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: context.backgroundColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(color: context.borderColor),
           ),
           child: Column(
@@ -472,7 +472,7 @@ class _DriverContactCard extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: context.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: AppRadius.brMd,
                     ),
                     child: Icon(Icons.person_rounded, color: context.primaryColor, size: 24),
                   ),
@@ -499,7 +499,7 @@ class _DriverContactCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: context.successColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(color: driverPhone != null ? context.successColor : context.borderColor),
                         ),
                         child: Row(
@@ -521,7 +521,7 @@ class _DriverContactCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: context.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(color: driverPhone != null ? context.primaryColor : context.borderColor),
                         ),
                         child: Row(
@@ -580,7 +580,7 @@ class _DeliveryPinCard extends StatelessWidget {
         gradient: LinearGradient(
           colors: [context.primaryColor.withValues(alpha: 0.15), context.primaryColor.withValues(alpha: 0.05)],
         ),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -590,7 +590,7 @@ class _DeliveryPinCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: context.primaryColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(Icons.pin_rounded, color: context.primaryColor, size: 24),
           ),
@@ -612,7 +612,7 @@ class _DeliveryPinCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: context.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.brButton,
             ),
             child: Text('Share with driver', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.primaryColor)),
           ),

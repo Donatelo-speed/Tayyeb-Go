@@ -96,7 +96,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           content: Text('${_product!['name']} added to cart'),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           action: SnackBarAction(
             label: 'View Cart',
             textColor: Colors.white,
@@ -225,7 +225,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color: AppColors.error.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.brButton,
                           ),
                           child: Text(
                             'Unavailable',
@@ -301,7 +301,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               elevation: 0,
             ),
             child: Row(
@@ -339,7 +339,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(color: context.borderColor),
           ),
           child: Row(
@@ -408,15 +408,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             filled: true,
             fillColor: context.surfaceColor,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
           ),

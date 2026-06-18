@@ -45,6 +45,12 @@ abstract class AppColors {
   static const Color glassBorder = Color(0x1FFFFFFF);
   static const Color glassOverlay = Color(0x66000000);
 
+  // ── Glassmorphism (dark/light variants for adaptive glass effects) ──
+  static const Color darkGlass = Color(0xB3121722);
+  static const Color darkGlassBorder = Color(0x1FFFFFFF);
+  static const Color glowSecondary = Color(0x4021B8A6);
+  static const Color glowAccent = Color(0x4035C88A);
+
   static const Color error = Color(0xFFFF4D5E);
   static const Color errorSoft = Color(0x26FF4D5E);
   static const Color success = Color(0xFF22C96D);
@@ -86,11 +92,7 @@ abstract class AppColors {
   static const List<Color> driversGradient = [driverAccent, Color(0xFF45D4A3)];
   static const List<Color> storesGradient = [partnerAccent, Color(0xFFFFD36B)];
 
-  static const Color surfaceDark = background;
-  static const Color darkBg = background;
 }
-
-typedef DarkAppColors = AppColors;
 
 /// Light theme colors.
 abstract class LightAppColors {
@@ -133,6 +135,12 @@ abstract class LightAppColors {
   static const Color glassBorder = Color(0x80FFFFFF);
   static const Color glassOverlay = Color(0x33000000);
 
+  // ── Glassmorphism (light variants for adaptive glass effects) ──
+  static const Color lightGlass = Color(0xD9FFFFFF);
+  static const Color lightGlassBorder = Color(0x80FFFFFF);
+  static const Color glowSecondary = AppColors.glowSecondary;
+  static const Color glowAccent = AppColors.glowAccent;
+
   static const Color error = AppColors.error;
   static const Color errorSoft = Color(0xFFFFEDF0);
   static const Color success = AppColors.success;
@@ -173,7 +181,4 @@ abstract class LightAppColors {
   static const List<Color> ordersGradient = AppColors.ordersGradient;
   static const List<Color> driversGradient = AppColors.driversGradient;
   static const List<Color> storesGradient = AppColors.storesGradient;
-
-  static const Color surfaceDark = surface;
-  static const Color darkBg = background;
 }

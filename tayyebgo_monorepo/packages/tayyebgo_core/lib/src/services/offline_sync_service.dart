@@ -96,7 +96,7 @@ class OfflineSyncService {
 
     _connectivitySubscription = connectivity.onConnectivityChanged.listen((results) {
       final wasOnline = _isOnline;
-      _isOnline = results.any((result) => result != ConnectivityResult.none);
+      _isOnline = results.isNotEmpty && results.first != ConnectivityResult.none;
       _connectivityController.add(_isOnline);
 
       if (!wasOnline && _isOnline) {

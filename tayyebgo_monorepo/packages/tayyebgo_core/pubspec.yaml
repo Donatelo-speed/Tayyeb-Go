@@ -1,5 +1,5 @@
 name: tayyebgo_core
-description: Core functionality for TayyebGo customer app
+description: Core functionality for TayyebGo ecosystem
 version: 0.1.0
 
 environment:
@@ -8,16 +8,38 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cloud_firestore: ^5.6.12
-  provider: ^6.0.0
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  firebase_storage: ^12.4.4
+  firebase_messaging: ^15.2.2
+  cloud_functions: ^5.3.6
+  provider: ^6.1.2
+  go_router: ^17.2.3
+  intl: ^0.20.2
+  shared_preferences: ^2.2.0
   sqflite: ^2.3.0
-  connectivity_plus: ^5.0.0
+  connectivity_plus: ^6.0.0
   path: ^1.8.0
   app_links: ^3.5.0
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.4.1
+  image_picker: ^1.1.2
+  url_launcher: ^6.2.5
+  flutter_stripe: ^11.1.0
+  geolocator: ^14.0.2
+  flutter_map: ^8.3.0
+  latlong2: ^0.9.1
+  package_info_plus: ^9.0.1
+  http: ^1.2.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  test: ^1.24.0
 
 flutter:
+  uses-material-design: true

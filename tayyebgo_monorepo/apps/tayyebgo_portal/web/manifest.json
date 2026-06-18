@@ -1,13 +1,14 @@
 {
-    "name": "tayyebgo_portal",
-    "short_name": "tayyebgo_portal",
+    "name": "TayyebGo - Multi-Store Delivery Platform",
+    "short_name": "TayyebGo",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#090B10",
+    "theme_color": "#FF5A2C",
+    "description": "Order food, groceries, pharmacy items, and retail products from your favorite local stores — all delivered fast with TayyebGo.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["food", "shopping", "delivery"],
     "icons": [
         {
             "src": "icons/Icon-192.png",

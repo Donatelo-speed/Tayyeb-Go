@@ -114,7 +114,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: context.borderColor.withValues(alpha: 0.3),
                             width: 0.5,
@@ -212,7 +212,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                   gradient: LinearGradient(
                     colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.brMd,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary.withValues(alpha: 0.3),
@@ -296,7 +296,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
             color.withValues(alpha: 0.04),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.brXl,
         border: Border.all(
           color: color.withValues(alpha: 0.2),
           width: 0.5,
@@ -316,7 +316,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                   color.withValues(alpha: 0.08),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.brLg,
             ),
             child: Icon(
               Icons.star_rounded,
@@ -343,7 +343,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.brXl,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -391,7 +391,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brLg,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -430,7 +430,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
           ),
           const SizedBox(height: 12),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: AppRadius.brSm,
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
@@ -472,7 +472,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                         AppColors.success.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: const Icon(Icons.savings_rounded, color: AppColors.success, size: 20),
                 ),
@@ -517,7 +517,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                         AppColors.info.withValues(alpha: 0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: const Icon(Icons.receipt_long_rounded, color: AppColors.info, size: 20),
                 ),
@@ -552,7 +552,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brLg,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -622,7 +622,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
                 gradient: LinearGradient(
                   colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.3),
@@ -653,7 +653,7 @@ class _SubscriptionDashboardScreenState extends State<SubscriptionDashboardScree
               height: 52,
               decoration: BoxDecoration(
                 color: Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(
                   color: AppColors.error.withValues(alpha: 0.3),
                   width: 1,
