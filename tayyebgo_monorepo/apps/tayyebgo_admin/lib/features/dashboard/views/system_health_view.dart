@@ -107,7 +107,7 @@ class SystemHealthView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -123,7 +123,7 @@ class SystemHealthView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Text(status, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: statusColor)),
           ),
@@ -179,7 +179,7 @@ class SystemHealthView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -238,7 +238,7 @@ class SystemHealthView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -261,7 +261,7 @@ class SystemHealthView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(

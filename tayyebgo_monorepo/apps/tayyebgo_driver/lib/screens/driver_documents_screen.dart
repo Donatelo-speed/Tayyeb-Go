@@ -257,7 +257,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(
             color: isUploaded ? context.successColor : context.borderColor,
           ),
@@ -274,7 +274,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
                     color: isUploaded
                         ? context.successColor.withValues(alpha: 0.1)
                         : context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Icon(
                     icon,
@@ -326,7 +326,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
             if (isUploading) ...[
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: AppRadius.brSm,
                 child: LinearProgressIndicator(
                   value: progress,
                   backgroundColor: context.borderColor,
@@ -349,7 +349,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: context.successColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

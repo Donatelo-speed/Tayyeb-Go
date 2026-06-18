@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class CommissionEditorView extends StatefulWidget {
   const CommissionEditorView({super.key});
@@ -25,7 +26,7 @@ class _CommissionEditorViewState extends State<CommissionEditorView> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: const Icon(Icons.percent_rounded, color: Color(0xFF6366F1), size: 24),
                 ),
@@ -143,7 +144,7 @@ class _CommissionCardState extends State<_CommissionCard> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
@@ -156,7 +157,7 @@ class _CommissionCardState extends State<_CommissionCard> {
             height: 44,
             decoration: BoxDecoration(
               color: _tierColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(Icons.store_rounded, color: _tierColor, size: 22),
           ),
@@ -173,7 +174,7 @@ class _CommissionCardState extends State<_CommissionCard> {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: _tierColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.brSm,
                       ),
                       child: Text(_tierLabel, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: _tierColor)),
                     ),
@@ -195,11 +196,11 @@ class _CommissionCardState extends State<_CommissionCard> {
                   suffixStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF94A3B8)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brMd,
                     borderSide: const BorderSide(color: Color(0xFF6366F1)),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brMd,
                     borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
                   ),
                   isDense: true,
@@ -218,7 +219,7 @@ class _CommissionCardState extends State<_CommissionCard> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: _tierColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brMd,
               ),
               child: Text(
                 '${_currentPercent.toStringAsFixed(1)}%',
@@ -239,7 +240,7 @@ class _CommissionCardState extends State<_CommissionCard> {
       child: Container(
         width: 34,
         height: 34,
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
         child: _isSaving
             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
             : Icon(icon, size: 18, color: color),

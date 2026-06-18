@@ -54,7 +54,7 @@ class _DriverShellScreenState extends State<DriverShellScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.brXl,
               border: Border.all(
                 color: context.borderColor.withValues(alpha: 0.3),
                 width: 0.5,
@@ -103,7 +103,7 @@ class _DriverShellScreenState extends State<DriverShellScreen> {
             color: isSelected
                 ? AppColors.driverAccent.withValues(alpha: 0.1)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.brLg,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

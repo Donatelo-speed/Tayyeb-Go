@@ -59,7 +59,7 @@ class OrderDetailView extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brLg,
               border: Border.all(color: context.borderColor),
             ),
             child: Row(
@@ -68,7 +68,7 @@ class OrderDetailView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Text(status[0].toUpperCase() + status.substring(1), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: statusColor)),
                 ),
@@ -133,7 +133,7 @@ class OrderDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -174,7 +174,7 @@ class OrderDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -204,7 +204,7 @@ class OrderDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -249,7 +249,7 @@ class OrderDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -374,7 +374,7 @@ class OrderDetailView extends StatelessWidget {
         label: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: color)),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: color.withValues(alpha: 0.3)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           alignment: Alignment.centerLeft,
         ),

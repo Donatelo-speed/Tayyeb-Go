@@ -148,7 +148,7 @@ class _DeliveryHistoryScreenState extends State<DeliveryHistoryScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: selected ? context.successColor.withValues(alpha: 0.15) : context.surfaceColor,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.brXl,
                   border: Border.all(
                     color: selected ? context.successColor.withValues(alpha: 0.3) : context.borderColor,
                   ),
@@ -221,7 +221,7 @@ class _DeliveryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -240,7 +240,7 @@ class _DeliveryCard extends StatelessWidget {
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: context.successColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: AppRadius.brMd,
                       ),
                       child: Icon(Icons.check_circle_rounded, color: context.successColor, size: 18),
                     ),
@@ -366,7 +366,7 @@ class _DeliveryCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: context.warningColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

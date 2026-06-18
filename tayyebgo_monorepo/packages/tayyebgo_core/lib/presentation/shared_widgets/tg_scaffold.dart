@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../theme/theme_provider.dart';
 import 'animated_widgets.dart';
+import '../theme/app_radius.dart';
 
 /// Modern scaffold wrapper with consistent styling
 class TGScaffold extends StatelessWidget {
@@ -57,7 +58,7 @@ class TGScaffold extends StatelessWidget {
                         height: 36,
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(
                             color: context.borderColor.withValues(alpha: 0.3),
                             width: 0.5,
@@ -115,7 +116,7 @@ class TGSectionHeader extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [accentColor, accentColor.withValues(alpha: 0.5)],
             ),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: AppRadius.brSm,
           ),
         ),
         const SizedBox(width: 12),
@@ -136,7 +137,7 @@ class TGSectionHeader extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: accentColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Text(
                 trailing!,
@@ -177,7 +178,7 @@ class TGStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(
           color: context.borderColor.withValues(alpha: 0.3),
           width: 0.5,
@@ -202,7 +203,7 @@ class TGStatCard extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -259,7 +260,7 @@ class TGListItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brCard,
           border: Border.all(
             color: context.borderColor.withValues(alpha: 0.3),
             width: 0.5,
@@ -337,7 +338,7 @@ class TGGradientButton extends StatelessWidget {
           gradient: LinearGradient(
             colors: [buttonColor, buttonColor.withValues(alpha: 0.8)],
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brCard,
           boxShadow: [
             BoxShadow(
               color: buttonColor.withValues(alpha: 0.3),

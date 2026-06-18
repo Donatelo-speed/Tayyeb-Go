@@ -6,18 +6,13 @@ import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_radius.dart';
 import '../../presentation/theme/app_typography.dart';
 import '../../presentation/shared_widgets/brand_logo.dart';
-import '../../presentation/shared_widgets/animated_widgets.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_listenable.dart';
 
 enum _AuthMode { phone, email }
 
 class LoginScreen extends StatefulWidget {
-  /// Whether to show the "Don't have an account? Create Account" link.
-  /// Set to false for Driver, Partner, and Admin apps (customer-only signup).
   final bool showSignUpLink;
-
-  /// App-specific subtitle shown below the logo.
   final String subtitle;
 
   const LoginScreen({
@@ -29,7 +24,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
@@ -40,10 +36,24 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _otpSent = false;
   bool _rememberMe = false;
 
+  late final AnimationController _animCtrl;
+  late final Animation<double> _fadeAnim;
+  late final Animation<Offset> _slideAnim;
+
   @override
   void initState() {
     super.initState();
     _loadRemembered();
+    _animCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic));
+    _animCtrl.forward();
   }
 
   Future<void> _loadRemembered() async {
@@ -73,10 +83,20 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _phoneCtrl.dispose();
+    _animCtrl.dispose();
     super.dispose();
   }
 
+  bool _redirecting = false;
+
   void _triggerRedirect() {
+    if (_redirecting) return;
+    _redirecting = true;
+    // forceNotify triggers GoRouter's redirect function which handles
+    // all role-based navigation. We must NOT call context.go() here
+    // because the portal's route structure (/customer/home, /admin/dashboard)
+    // differs from mobile apps (/home, /dashboard), and a mismatched
+    // context.go() fights the redirect and lands on a non-existent route.
     AuthListenable.instance?.forceNotify();
   }
 
@@ -99,7 +119,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submitEmail() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
-    final success = await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text, context);
+    final success = await auth.login(
+      _emailCtrl.text.trim(),
+      _passwordCtrl.text,
+      context,
+    );
     if (!mounted) return;
     if (success) {
       await _saveRemembered();
@@ -137,64 +161,164 @@ class _LoginScreenState extends State<LoginScreen> {
       content: Text(msg),
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
       margin: const EdgeInsets.all(16),
     ));
   }
 
+  // ─── BUILD ──────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    if (auth.isAuthenticated) {
-      return Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(color: AppColors.primary),
-              const SizedBox(height: 16),
-              Text('Signed in as ${auth.user?.email ?? ''}',
-                  style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary)),
-            ],
-          ),
-        ),
-      );
+    final w = MediaQuery.sizeOf(context).width;
+    final isWide = w >= 960;
+
+    if (auth.isAuthenticated && auth.user != null) {
+      _triggerRedirect();
+      return _buildLoadingState(auth);
     }
+
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.background, Color(0xFF0F1713), AppColors.surface],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      backgroundColor: AppColors.background,
+      body: isWide ? _buildWideLayout(auth) : _buildMobileLayout(auth),
+    );
+  }
+
+  Widget _buildLoadingState(AuthProvider auth) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              width: 32,
+              height: 32,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Signing you in...',
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── WIDE LAYOUT (WEB / TABLET) ───────────────────
+
+  Widget _buildWideLayout(AuthProvider auth) {
+    return Row(
+      children: [
+        // Left branding panel
+        Expanded(flex: 5, child: _buildBrandingPanel()),
+        // Right form panel
+        Expanded(flex: 4, child: _buildFormPanel(auth)),
+      ],
+    );
+  }
+
+  Widget _buildBrandingPanel() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0D1117), AppColors.surface],
+        ),
+      ),
+      child: Center(
+        child: FadeTransition(
+          opacity: _fadeAnim,
+          child: SlideTransition(
+            position: _slideAnim,
+            child: Padding(
+              padding: const EdgeInsets.all(48),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TayyebGoLogo(size: 64, showText: true),
+                  const SizedBox(height: 48),
+                  Text(
+                    'Deliver anything\nfrom anywhere.',
+                    style: AppTypography.headlineLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      height: 1.15,
+                      fontSize: 38,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Food, groceries, pharmacy, and retail — all in one platform.\nJoin thousands of customers, drivers, and restaurants.',
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  _FeatureRow(
+                    icon: Icons.delivery_dining_rounded,
+                    label: 'Real-time delivery tracking',
+                    color: AppColors.driverAccent,
+                  ),
+                  const SizedBox(height: 14),
+                  _FeatureRow(
+                    icon: Icons.store_rounded,
+                    label: 'Multi-vertical marketplace',
+                    color: AppColors.partnerAccent,
+                  ),
+                  const SizedBox(height: 14),
+                  _FeatureRow(
+                    icon: Icons.shield_rounded,
+                    label: 'Secure payments & safety',
+                    color: AppColors.adminAccent,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              physics: const BouncingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+      ),
+    );
+  }
+
+  Widget _buildFormPanel(AuthProvider auth) {
+    return Container(
+      color: AppColors.background,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+          physics: const BouncingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: FadeTransition(
+              opacity: _fadeAnim,
+              child: SlideTransition(
+                position: _slideAnim,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildLogo(),
-                    const SizedBox(height: 48),
                     if (auth.error != null) ...[
                       _buildErrorBanner(auth.error!),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                     ],
                     if (_mode == _AuthMode.phone) _buildPhoneForm(auth),
                     if (_mode == _AuthMode.email) _buildEmailForm(auth),
                     const SizedBox(height: 24),
                     _buildModeToggle(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 28),
                     _buildDivider(),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     _buildSocialButtons(auth),
                     if (widget.showSignUpLink) ...[
                       const SizedBox(height: 24),
@@ -210,25 +334,72 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLogo() {
-    return AnimatedFadeSlide(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const BrandLogo(markSize: 82, fontSize: 28),
-          const SizedBox(height: 16),
-          Text(
-            widget.subtitle,
-            style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textMuted,
-              letterSpacing: 0,
+  // ─── MOBILE LAYOUT ────────────────────────────────
+
+  Widget _buildMobileLayout(AuthProvider auth) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.background, Color(0xFF0F1713), AppColors.surface],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: SlideTransition(
+                  position: _slideAnim,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const BrandLogo(markSize: 64, fontSize: 22),
+                      const SizedBox(height: 12),
+                      Text(
+                        widget.subtitle,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textMuted,
+                          letterSpacing: 0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 36),
+                      if (auth.error != null) ...[
+                        _buildErrorBanner(auth.error!),
+                        const SizedBox(height: 16),
+                      ],
+                      if (_mode == _AuthMode.phone) _buildPhoneForm(auth),
+                      if (_mode == _AuthMode.email) _buildEmailForm(auth),
+                      const SizedBox(height: 20),
+                      _buildModeToggle(),
+                      const SizedBox(height: 24),
+                      _buildDivider(),
+                      const SizedBox(height: 20),
+                      _buildSocialButtons(auth),
+                      if (widget.showSignUpLink) ...[
+                        const SizedBox(height: 20),
+                        _buildSignUpLink(),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
             ),
-            textAlign: TextAlign.center,
           ),
-        ],
+        ),
       ),
     );
   }
+
+  // ─── FORM BUILDERS ────────────────────────────────
 
   Widget _buildPhoneForm(AuthProvider auth) {
     return Column(
@@ -370,7 +541,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (v) => setState(() => _rememberMe = v ?? false),
                   activeColor: AppColors.primary,
                   checkColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brSm),
                   side: const BorderSide(color: AppColors.border),
                 ),
               ),
@@ -393,13 +564,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildModeToggle() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildModeChip('Phone', _AuthMode.phone),
-        const SizedBox(width: 8),
-        _buildModeChip('Email', _AuthMode.email),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: AppRadius.brFull,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildModeChip('Phone', _AuthMode.phone),
+          _buildModeChip('Email', _AuthMode.email),
+        ],
+      ),
     );
   }
 
@@ -412,18 +589,18 @@ class _LoginScreenState extends State<LoginScreen> {
       }),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary.withValues(alpha: 0.15) : AppColors.surface,
+          color: isActive ? AppColors.primary : Colors.transparent,
           borderRadius: AppRadius.brFull,
-          border: Border.all(
-            color: isActive ? AppColors.primary.withValues(alpha: 0.3) : AppColors.border,
-          ),
+          boxShadow: isActive
+              ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2))]
+              : null,
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isActive ? AppColors.primary : AppColors.textMuted,
+            color: isActive ? Colors.white : AppColors.textMuted,
             fontSize: 13,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
           ),
@@ -447,14 +624,19 @@ class _LoginScreenState extends State<LoginScreen> {
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
           elevation: 0,
+          shadowColor: AppColors.primary.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.brButton),
         ),
         child: isLoading
             ? const SizedBox(
-                width: 22, height: 22,
+                width: 22,
+                height: 22,
                 child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
               )
-            : Text(label, style: AppTypography.button.copyWith(color: Colors.white)),
+            : Text(
+                label,
+                style: AppTypography.button.copyWith(color: Colors.white),
+              ),
       ),
     );
   }
@@ -464,24 +646,32 @@ class _LoginScreenState extends State<LoginScreen> {
       maxLength: 6,
       keyboardType: TextInputType.number,
       textAlign: TextAlign.center,
-      style: const TextStyle(fontSize: 28, letterSpacing: 0, fontWeight: FontWeight.w600),
+      style: const TextStyle(
+        fontSize: 28,
+        letterSpacing: 8,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: InputDecoration(
         counterText: '',
-        hintText: '------',
-        hintStyle: TextStyle(color: AppColors.border, fontSize: 28, letterSpacing: 0),
+        hintText: '- - - - - -',
+        hintStyle: TextStyle(
+          color: AppColors.border,
+          fontSize: 28,
+          letterSpacing: 8,
+        ),
         filled: true,
         fillColor: AppColors.surfaceAlt,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
@@ -516,23 +706,23 @@ class _LoginScreenState extends State<LoginScreen> {
         fillColor: AppColors.surfaceAlt,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.brInput,
+          borderRadius: AppRadius.brMd,
           borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
         labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
@@ -551,9 +741,10 @@ class _LoginScreenState extends State<LoginScreen> {
         const Expanded(child: Divider(color: AppColors.border)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('or continue with', style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textMuted,
-          )),
+          child: Text(
+            'or continue with',
+            style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+          ),
         ),
         const Expanded(child: Divider(color: AppColors.border)),
       ],
@@ -584,10 +775,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 )),
               ),
             ),
-            label: Text('Continue with Google', style: AppTypography.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            )),
+            label: Text(
+              'Continue with Google',
+              style: AppTypography.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               backgroundColor: AppColors.surface,
@@ -603,10 +797,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: OutlinedButton.icon(
             onPressed: auth.isLoading ? null : _handleAppleSignIn,
             icon: const Icon(Icons.apple, color: AppColors.textPrimary, size: 22),
-            label: Text('Continue with Apple', style: AppTypography.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            )),
+            label: Text(
+              'Continue with Apple',
+              style: AppTypography.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
             style: OutlinedButton.styleFrom(
               backgroundColor: AppColors.surface,
               side: const BorderSide(color: AppColors.border),
@@ -622,15 +819,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Don't have an account? ", style: AppTypography.bodyMedium.copyWith(
-          color: AppColors.textMuted,
-        )),
+        Text(
+          "Don't have an account? ",
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+        ),
         GestureDetector(
           onTap: () => context.go('/signup'),
-          child: Text('Create Account', style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w600,
-          )),
+          child: Text(
+            'Create Account',
+            style: AppTypography.bodyMedium.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
@@ -641,15 +842,8 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.error.withValues(alpha: 0.10),
-        borderRadius: AppRadius.brSm,
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.error.withValues(alpha: 0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -666,6 +860,45 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── WIDE PANEL FEATURE ROW ─────────────────────────
+
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _FeatureRow({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: AppRadius.brMd,
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 14),
+        Text(
+          label,
+          style: AppTypography.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

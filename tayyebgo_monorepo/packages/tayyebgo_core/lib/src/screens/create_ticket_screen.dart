@@ -105,7 +105,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: selected ? AppColors.primary.withValues(alpha: 0.1) : context.surfaceColor,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.brXl,
                     border: Border.all(
                       color: selected ? AppColors.primary : context.borderColor,
                       width: selected ? 1.5 : 1,
@@ -136,15 +136,15 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
               filled: true,
               fillColor: context.surfaceColor,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: BorderSide(color: context.borderColor),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: BorderSide(color: context.borderColor),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.primary, width: 2),
               ),
             ),
@@ -158,7 +158,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                 elevation: 0,
               ),
               child: _submitting

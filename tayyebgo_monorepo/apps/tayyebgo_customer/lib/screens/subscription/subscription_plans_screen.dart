@@ -546,7 +546,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                   height: 22,
                   decoration: BoxDecoration(
                     color: isSelected ? color : Colors.transparent,
-                    borderRadius: BorderRadius.circular(11),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(
                       color: isSelected ? color : context.borderColor,
                       width: 2,

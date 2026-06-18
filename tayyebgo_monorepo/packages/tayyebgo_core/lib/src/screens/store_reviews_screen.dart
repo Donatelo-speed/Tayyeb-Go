@@ -50,7 +50,7 @@ class _StoreReviewsScreenState extends State<StoreReviewsScreen> {
               label: Text('Write a Review', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
             ),
           const SizedBox(height: 24),
@@ -129,7 +129,7 @@ class _RatingSummary extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.brCard,
                 border: Border.all(color: context.borderColor),
               ),
               child: Row(
@@ -167,7 +167,7 @@ class _RatingSummary extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: AppRadius.brSm,
                                   child: LinearProgressIndicator(
                                     value: pct,
                                     backgroundColor: context.borderColor,
@@ -205,7 +205,7 @@ class _ReviewCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -254,7 +254,7 @@ class _ReviewCard extends StatelessWidget {
                 itemCount: review.photoUrls.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, i) => ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                   child: CachedImage(
                     url: review.photoUrls[i],
                     width: 80,
@@ -339,7 +339,7 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
           Center(
             child: Container(
               width: 40, height: 4,
-              decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm),
             ),
           ),
           const SizedBox(height: 16),
@@ -368,7 +368,7 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
             decoration: InputDecoration(
               hintText: 'Tell us about your experience...',
               hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(borderRadius: AppRadius.brMd),
             ),
           ),
           const SizedBox(height: 16),
@@ -380,7 +380,7 @@ class _WriteReviewSheetState extends State<_WriteReviewSheet> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
               child: _isSubmitting
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))

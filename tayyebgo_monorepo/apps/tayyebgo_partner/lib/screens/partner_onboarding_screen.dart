@@ -111,7 +111,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 2),
                     decoration: BoxDecoration(
                       color: i <= _step ? context.warningColor : context.surfaceAltColor,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: AppRadius.brSm,
                     ),
                   ),
                 )),
@@ -131,7 +131,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.warningColor,
                         foregroundColor: context.backgroundColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                         elevation: 0,
                       ),
                       child: _isSaving
@@ -153,7 +153,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
       case 0:
         return [
           const SizedBox(height: 40),
-          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.store_rounded, color: context.warningColor, size: 40))),
+          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: AppRadius.brXl), child: Icon(Icons.store_rounded, color: context.warningColor, size: 40))),
           const SizedBox(height: 24),
           Center(child: Text('Partner Setup', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
@@ -246,9 +246,9 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
             prefixIcon: icon != null ? Icon(icon, color: context.textMutedColor, size: 20) : null,
             filled: true,
             fillColor: context.surfaceColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+            border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           ),
         ),
@@ -264,7 +264,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: selected ? context.warningColor : context.borderColor, width: selected ? 2 : 1),
         ),
         child: Row(
@@ -295,7 +295,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: selected ? context.warningColor : context.borderColor, width: selected ? 2 : 1),
         ),
         child: Row(
@@ -323,7 +323,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: uploaded ? context.warningColor : context.borderColor),
       ),
       child: Row(
@@ -350,7 +350,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(

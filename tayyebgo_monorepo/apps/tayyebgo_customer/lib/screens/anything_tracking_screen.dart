@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnythingTrackingScreen extends StatelessWidget {
   final String requestId;
@@ -33,6 +35,7 @@ class AnythingTrackingScreen extends StatelessWidget {
           }
           final status = AnythingRequestStatus.fromString(d['status'] as String?);
           final driverName = d['driverName'] as String?;
+          final driverId = d['driverId'] as String?;
           final driverLat = (d['driverLatitude'] as num?)?.toDouble();
           final driverLng = (d['driverLongitude'] as num?)?.toDouble();
           final storeName = d['storeName'] as String? ?? 'Store';
@@ -49,7 +52,7 @@ class AnythingTrackingScreen extends StatelessWidget {
               _InfoCard(storeName: storeName, items: items, instructions: instructions, budget: budget),
               if (driverName != null) ...[
                 const SizedBox(height: 12),
-                _DriverCard(driverName: driverName, hasLocation: driverLat != null && driverLng != null),
+                _DriverCard(driverName: driverName, driverId: driverId, hasLocation: driverLat != null && driverLng != null),
               ],
               if (driverLat != null && driverLng != null) ...[
                 const SizedBox(height: 12),
@@ -171,54 +174,86 @@ class _InfoCard extends StatelessWidget {
 
 class _DriverCard extends StatelessWidget {
   final String driverName;
+  final String? driverId;
   final bool hasLocation;
 
-  const _DriverCard({required this.driverName, required this.hasLocation});
+  const _DriverCard({required this.driverName, this.driverId, required this.hasLocation});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: AppRadius.brMd,
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: context.primaryColor,
-              borderRadius: AppRadius.brMd,
-            ),
-            child: Center(
-              child: Text(driverName.isNotEmpty ? driverName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 18, color: context.textPrimaryColor)),
-            ),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: driverId != null
+          ? FirebaseFirestore.instance.collection('users').doc(driverId).snapshots()
+          : const Stream.empty(),
+      builder: (context, snap) {
+        final driverPhone = (snap.data?.data() as Map<String, dynamic>?)?['phoneNumber'] as String?;
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: AppRadius.brMd,
+            border: Border.all(color: context.borderColor),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(driverName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
-                if (hasLocation)
-                  Text('Live location available', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-              ],
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: context.primaryColor,
+                  borderRadius: AppRadius.brMd,
+                ),
+                child: Center(
+                  child: Text(driverName.isNotEmpty ? driverName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 18, color: context.textPrimaryColor)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(driverName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                    if (hasLocation)
+                      Text('Live location available', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.message_rounded, color: driverPhone != null ? context.primaryColor : context.textMutedColor, size: 20),
+                onPressed: driverPhone != null ? () => _launchMessage(driverPhone) : null,
+              ),
+              IconButton(
+                icon: Icon(Icons.phone_rounded, color: driverPhone != null ? context.primaryColor : context.textMutedColor, size: 20),
+                onPressed: driverPhone != null ? () => _launchCall(driverPhone) : null,
+              ),
+            ],
           ),
-          IconButton(
-            icon: Icon(Icons.message_rounded, color: context.primaryColor, size: 20),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.phone_rounded, color: context.primaryColor, size: 20),
-            onPressed: () {},
-          ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  Future<void> _launchCall(String phone) async {
+    try {
+      final uri = Uri(scheme: 'tel', path: phone);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Failed to launch call: $e');
+    }
+  }
+
+  Future<void> _launchMessage(String phone) async {
+    try {
+      final uri = Uri(scheme: 'sms', path: phone);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      debugPrint('Failed to launch message: $e');
+    }
   }
 }
 

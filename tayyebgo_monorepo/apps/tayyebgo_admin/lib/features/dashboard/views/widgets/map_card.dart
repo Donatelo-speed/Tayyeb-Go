@@ -14,7 +14,7 @@ class LiveMapCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       padding: const EdgeInsets.all(20),
@@ -34,7 +34,7 @@ class LiveMapCard extends StatelessWidget {
           Text('Active stores plotted by location. Click a pin to view details.', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             child: SizedBox(
               height: 360,
               child: StreamBuilder<List<Map<String, dynamic>>>(
@@ -170,7 +170,7 @@ class _MapInfoBubble extends StatelessWidget {
     final openOrders = (store['openOrders'] as int?) ?? 0;
     return Material(
       color: context.surfaceColor.withValues(alpha: 0.97),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.brMd,
       elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -180,7 +180,7 @@ class _MapInfoBubble extends StatelessWidget {
               width: 40, height: 40,
               decoration: BoxDecoration(
                 color: context.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(Icons.storefront_rounded, color: context.primaryColor),
             ),

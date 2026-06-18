@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../domain/enums/payment_method_type.dart';
 import '../../domain/value_objects/money.dart';
 import '../theme/tayyebgo_theme.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class PaymentSelectionSheet extends StatefulWidget {
   final Money totalAmount;
@@ -40,7 +41,7 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
               width: 40, height: 4,
               decoration: BoxDecoration(
                 color: TayyebGoTheme.textMuted.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
           ),
@@ -85,11 +86,11 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
     final selected = _selected == type;
     return InkWell(
       onTap: () => setState(() => _selected = type),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.brMd,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: selected ? TayyebGoTheme.primaryColor : TayyebGoTheme.dividerColor,
             width: selected ? 2 : 1,

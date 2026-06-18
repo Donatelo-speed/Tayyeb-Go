@@ -73,7 +73,7 @@ class QuickActionsRow extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: cardDecoBordered(context),
@@ -82,7 +82,7 @@ class QuickActionsRow extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: AppRadius.brMd),
                 child: Icon(icon, size: 18, color: color),
               ),
               const SizedBox(width: 10),

@@ -39,6 +39,10 @@ import 'package:tayyebgo_driver/screens/delivery_history_screen.dart';
 import 'package:tayyebgo_driver/screens/active_delivery_screen.dart';
 import 'package:tayyebgo_admin/features/dashboard/admin_dashboard_screen.dart';
 import 'screens/landing_screen.dart';
+import 'screens/driver_application_screen.dart';
+import 'screens/partner_application_screen.dart';
+import 'screens/about_screen.dart';
+import 'screens/download_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,6 +125,11 @@ class _TayyebGoPortalState extends State<TayyebGoPortal> {
         AppRouter.route('/terms-conditions', const TermsConditionsScreen(), name: 'termsConditions'),
         AppRouter.route('/help-support', const HelpSupportScreen(), name: 'helpSupport'),
         AppRouter.route('/access-denied', const AccessDeniedScreen(), name: 'accessDenied'),
+        // Portal public pages
+        AppRouter.route('/driver-application', const DriverApplicationScreen(), name: 'driverApplication'),
+        AppRouter.route('/partner-application', const PartnerApplicationScreen(), name: 'partnerApplication'),
+        AppRouter.route('/about', const AboutScreen(), name: 'about'),
+        AppRouter.route('/download', const DownloadScreen(), name: 'download'),
         // Customer routes
         AppRouter.route('/customer/home', AuthStateRedirector(allowedRoles: UserRole.customerRoles, child: const CustomerMainScreen()), name: 'customerHome'),
         AppRouter.route('/customer/checkout', const CheckoutScreen(), name: 'customerCheckout'),
@@ -200,18 +209,21 @@ class _TayyebGoPortalState extends State<TayyebGoPortal> {
     final fbUser = fb.FirebaseAuth.instance.currentUser;
     final isLoggedIn = fbUser != null;
 
-    // Always allow these routes
-    if (location == '/login' || location == '/signup' || location == '/forgot-password') return null;
-    if (location == '/privacy-policy' || location == '/terms-conditions' || location == '/help-support') return null;
-    if (location == '/access-denied') return null;
+    // Always allow these routes (but only when NOT logged in)
+    if (!isLoggedIn) {
+      if (location == '/login' || location == '/signup' || location == '/forgot-password') return null;
+      if (location == '/privacy-policy' || location == '/terms-conditions' || location == '/help-support') return null;
+      if (location == '/access-denied') return null;
+      if (location == '/') return null;
+      if (location == '/driver-application' || location == '/partner-application') return null;
+      if (location == '/about' || location == '/download') return null;
+      return '/login';
+    }
 
-    // Not logged in → login
-    if (!isLoggedIn) return '/login';
-
-    // Auth still loading
+    // Logged in but auth still loading — wait
     if (auth == null || auth.isLoading) return null;
 
-    // No user model yet
+    // Logged in but no user model yet — wait
     if (auth.user == null) return null;
 
     // Account disabled
@@ -223,6 +235,13 @@ class _TayyebGoPortalState extends State<TayyebGoPortal> {
     if (location == '/login' || location == '/signup') {
       return _roleHomePath(auth.user!.role);
     }
+
+    // Always allow public content routes
+    if (location == '/privacy-policy' || location == '/terms-conditions' || location == '/help-support') return null;
+    if (location == '/access-denied') return null;
+    if (location == '/') return null;
+    if (location == '/driver-application' || location == '/partner-application') return null;
+    if (location == '/about' || location == '/download') return null;
 
     // Check role prefix
     final rolePrefix = _roleRoutePrefix(auth.user!.role);

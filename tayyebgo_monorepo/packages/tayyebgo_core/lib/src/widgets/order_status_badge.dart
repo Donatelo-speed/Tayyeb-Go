@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class OrderStatusBadge extends StatelessWidget {
   final String status;
@@ -20,7 +21,7 @@ class OrderStatusBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: padding + 2, vertical: padding),
       decoration: BoxDecoration(
         color: config.color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.brSm,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

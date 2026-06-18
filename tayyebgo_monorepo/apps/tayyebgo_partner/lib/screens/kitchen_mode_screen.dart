@@ -93,7 +93,7 @@ class _KitchenModeScreenState extends State<KitchenModeScreen> {
               return Container(
                 decoration: BoxDecoration(
                   color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppRadius.brCard,
                   border: Border.all(
                     color: statusIsAccepted
                         ? context.warningColor.withValues(alpha: 0.2)
@@ -112,7 +112,7 @@ class _KitchenModeScreenState extends State<KitchenModeScreen> {
                             height: 28,
                             decoration: BoxDecoration(
                               color: statusIsAccepted ? context.warningColor : context.primaryColor,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: AppRadius.brMd,
                             ),
                             child: Center(
                               child: Text('${idx + 1}', style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
@@ -126,7 +126,7 @@ class _KitchenModeScreenState extends State<KitchenModeScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: statusIsAccepted ? context.warningColor.withValues(alpha: 0.1) : context.primaryColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: AppRadius.brSm,
                             ),
                             child: Text(
                               statusIsAccepted ? 'New' : 'Prep',
@@ -174,7 +174,7 @@ class _KitchenModeScreenState extends State<KitchenModeScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: statusIsAccepted ? context.warningColor : context.successColor,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                             elevation: 0,
                           ),
                           child: Text(

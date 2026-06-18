@@ -7,6 +7,7 @@ import '../providers/user_profile_provider.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/theme_provider.dart';
 import '../../ui/cached_image.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -58,12 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await auth.updateProfile(photoUrl: url);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile photo updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Profile photo updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload photo', style: GoogleFonts.inter()), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        SnackBar(content: Text('Failed to upload photo', style: GoogleFonts.inter()), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
       );
     }
     if (mounted) setState(() => _uploadingPhoto = false);
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!mounted) return;
     setState(() => _edited = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Profile updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      SnackBar(content: Text('Profile updated', style: GoogleFonts.inter()), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
     );
     if (mounted) setState(() => _saving = false);
   }
@@ -221,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
       ),
       child: Row(
@@ -230,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.shield_rounded, color: AppColors.primary, size: 22),
           ),
@@ -249,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.brXl,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -276,7 +277,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.dividerColor.withValues(alpha: 0.5)),
       ),
       child: TextField(
@@ -321,7 +322,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: isSubscription
             ? AppColors.premium.withValues(alpha: 0.06)
             : context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: isSubscription
             ? Border.all(color: AppColors.premium.withValues(alpha: 0.15), width: 0.5)
             : null,
@@ -341,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         trailing: Icon(Icons.chevron_right_rounded, size: 20, color: context.textMutedColor),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         onTap: () {
           if (isSubscription) {
             context.push('/subscription');
@@ -363,7 +364,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.error,
           side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
         child: Text('Sign Out', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
       ),

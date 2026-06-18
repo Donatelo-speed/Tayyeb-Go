@@ -70,7 +70,7 @@ class TGBottomSheet extends StatelessWidget {
               height: 4,
               decoration: BoxDecoration(
                 color: AppColors.borderStrong,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
           ),

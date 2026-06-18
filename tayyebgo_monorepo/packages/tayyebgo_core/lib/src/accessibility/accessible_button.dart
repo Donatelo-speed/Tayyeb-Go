@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../presentation/theme/app_radius.dart';
 
 /// Accessible button that meets WCAG minimum touch target (48x48).
 class AccessibleButton extends StatelessWidget {
@@ -30,7 +31,7 @@ class AccessibleButton extends StatelessWidget {
               minimumSize: Size(isExpanded ? double.infinity : 0, minHeight),
               backgroundColor: color,
               foregroundColor: color != null ? Colors.white : null,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
           )
         : ElevatedButton(
@@ -39,7 +40,7 @@ class AccessibleButton extends StatelessWidget {
               minimumSize: Size(isExpanded ? double.infinity : 0, minHeight),
               backgroundColor: color,
               foregroundColor: color != null ? Colors.white : null,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
             child: Text(label),
           );

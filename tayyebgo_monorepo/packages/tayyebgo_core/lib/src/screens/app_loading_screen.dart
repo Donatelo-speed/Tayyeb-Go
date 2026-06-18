@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../infrastructure/services/connectivity_service.dart';
 import '../../presentation/shared_widgets/brand_logo.dart';
 import '../../presentation/theme/app_colors.dart';
+import '../../presentation/theme/app_gradients.dart';
 import '../../presentation/theme/app_typography.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class AppLoadingScreen extends StatefulWidget {
   final VoidCallback? onReady;
@@ -15,8 +17,11 @@ class AppLoadingScreen extends StatefulWidget {
 
 class _AppLoadingScreenState extends State<AppLoadingScreen>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulseCtrl;
-  late final Animation<double> _pulse;
+  late final AnimationController _animCtrl;
+  late final Animation<double> _logoFade;
+  late final Animation<double> _logoScale;
+  late final Animation<double> _progressFade;
+  late final Animation<Offset> _logoSlide;
   bool _isOnline = true;
   bool _checking = true;
   StreamSubscription<bool>? _connectivitySub;
@@ -24,14 +29,35 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
   @override
   void initState() {
     super.initState();
-    _pulseCtrl = AnimationController(
+
+    _animCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-    _pulse = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
     );
 
+    _logoFade = CurvedAnimation(
+      parent: _animCtrl,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+    );
+    _logoScale = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animCtrl,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+      ),
+    );
+    _logoSlide = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animCtrl,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+    ));
+    _progressFade = CurvedAnimation(
+      parent: _animCtrl,
+      curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
+    );
+
+    _animCtrl.forward();
     _initConnectivity();
   }
 
@@ -55,7 +81,7 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
 
   @override
   void dispose() {
-    _pulseCtrl.dispose();
+    _animCtrl.dispose();
     _connectivitySub?.cancel();
     super.dispose();
   }
@@ -87,24 +113,75 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const BrandLogo(markSize: 72, fontSize: 24),
-              const SizedBox(height: 40),
-              FadeTransition(
-                opacity: _pulse,
-                child: SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: AppColors.primary,
+              // Animated logo with glow
+              SlideTransition(
+                position: _logoSlide,
+                child: FadeTransition(
+                  opacity: _logoFade,
+                  child: ScaleTransition(
+                    scale: _logoScale,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Glow orb
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                AppColors.primary.withValues(alpha: 0.15),
+                                AppColors.primary.withValues(alpha: 0.0),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TayyebGoBrandMark(size: 72, showShadow: true),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Loading...',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textMuted,
+              const SizedBox(height: 32),
+              // Staggered progress indicator + text
+              FadeTransition(
+                opacity: _progressFade,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: AppColors.primary,
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ShaderMask(
+                      shaderCallback: (bounds) =>
+                          AppGradients.primaryGradientHorizontal.createShader(bounds),
+                      child: Text(
+                        'TayyebGo',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Preparing your experience...',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textMuted,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -181,7 +258,7 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.brMd,
                       ),
                     ),
                     child: Text(

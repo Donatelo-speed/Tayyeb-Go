@@ -112,7 +112,7 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
                       width: 40, height: 40,
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.brMd,
                         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                       ),
                       child: Icon(Icons.arrow_back_ios_rounded, color: context.textPrimaryColor, size: 18),
@@ -143,7 +143,7 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: sel ? AppColors.driverAccent : context.surfaceColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.brMd,
                           border: Border.all(color: sel ? AppColors.driverAccent : context.borderColor.withValues(alpha: 0.3), width: 0.5),
                         ),
                         child: Text(p, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: sel ? Colors.white : context.textMutedColor)),
@@ -194,7 +194,7 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
                           top: 12, right: 12,
                           child: Container(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: context.surfaceColor.withValues(alpha: 0.95), borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8)]),
+                            decoration: BoxDecoration(color: context.surfaceColor.withValues(alpha: 0.95), borderRadius: AppRadius.brMd, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8)]),
                             child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                               Text('Demand', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textPrimaryColor)),
                               const SizedBox(height: 8),
@@ -210,7 +210,7 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
                           bottom: 12, left: 12,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(color: context.surfaceColor.withValues(alpha: 0.95), borderRadius: BorderRadius.circular(10)),
+                            decoration: BoxDecoration(color: context.surfaceColor.withValues(alpha: 0.95), borderRadius: AppRadius.brMd),
                             child: Text('${_demandPoints.length} active zone${_demandPoints.length == 1 ? '' : 's'}', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: AppColors.driverAccent)),
                           ),
                         ),
@@ -225,7 +225,7 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
 
   Widget _legendItem(BuildContext context, String label, Color color) {
     return Row(children: [
-      Container(width: 12, height: 12, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3))),
+      Container(width: 12, height: 12, decoration: BoxDecoration(color: color, borderRadius: AppRadius.brSm)),
       const SizedBox(width: 8),
       Text(label, style: GoogleFonts.inter(fontSize: 11, color: context.textMutedColor)),
     ]);

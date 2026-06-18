@@ -322,7 +322,7 @@ class TGSection extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [accentColor, accentColor.withValues(alpha: 0.5)],
             ),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: AppRadius.brSm,
           ),
         ),
         const SizedBox(width: 12),
@@ -348,7 +348,7 @@ class TGSection extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: accentColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Text(
                 trailing!,
@@ -574,7 +574,7 @@ class TGStatSkeleton extends StatelessWidget {
             width: 80, height: 24,
             decoration: BoxDecoration(
               color: context.surfaceAltColor,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.brSm,
             ),
           ),
           const SizedBox(height: 8),
@@ -582,7 +582,7 @@ class TGStatSkeleton extends StatelessWidget {
             width: 60, height: 14,
             decoration: BoxDecoration(
               color: context.surfaceAltColor,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.brSm,
             ),
           ),
         ],
@@ -617,7 +617,7 @@ class TGListItemSkeleton extends StatelessWidget {
                   width: 120, height: 16,
                   decoration: BoxDecoration(
                     color: context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -625,7 +625,7 @@ class TGListItemSkeleton extends StatelessWidget {
                   width: 80, height: 12,
                   decoration: BoxDecoration(
                     color: context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                 ),
               ],
@@ -670,7 +670,7 @@ class TGHorizontalSkeleton extends StatelessWidget {
                   width: 100, height: 14,
                   decoration: BoxDecoration(
                     color: context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -678,7 +678,7 @@ class TGHorizontalSkeleton extends StatelessWidget {
                   width: 60, height: 12,
                   decoration: BoxDecoration(
                     color: context.surfaceAltColor,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                 ),
               ],
@@ -879,7 +879,7 @@ class TGDeliveryBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.success.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -98,7 +98,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
               backgroundColor: context.primaryColor,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
             ),
           );
@@ -143,7 +143,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -188,7 +188,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: context.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Text(
                   '${_formatDate(_selectedDate!)} at ${_formatTime(_selectedTime!)}',
@@ -224,7 +224,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
           color: _scheduleLater
               ? context.primaryColor.withValues(alpha: 0.15)
               : context.backgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: _scheduleLater ? context.primaryColor : context.borderColor,
             width: _scheduleLater ? 1.5 : 1,
@@ -253,7 +253,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
           color: hasDate
               ? context.primaryColor.withValues(alpha: 0.1)
               : context.backgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: hasDate ? context.primaryColor : context.borderColor,
             width: hasDate ? 1.5 : 1,
@@ -293,7 +293,7 @@ class _ScheduleOrderPickerState extends State<ScheduleOrderPicker> {
           color: hasTime
               ? context.primaryColor.withValues(alpha: 0.1)
               : context.backgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: hasTime ? context.primaryColor : context.borderColor,
             width: hasTime ? 1.5 : 1,

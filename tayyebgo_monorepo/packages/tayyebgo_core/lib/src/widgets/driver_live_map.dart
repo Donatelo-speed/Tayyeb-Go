@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../infrastructure/services/driver_location_service.dart';
 import '../theme/tayyebgo_theme.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class DriverLiveMap extends StatefulWidget {
   final double height;
@@ -89,7 +90,7 @@ class _DriverLiveMapState extends State<DriverLiveMap> {
         height: widget.height,
         decoration: BoxDecoration(
           color: TayyebGoTheme.surfaceColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
           border: Border.all(color: TayyebGoTheme.dividerColor),
         ),
         child: Center(
@@ -123,7 +124,7 @@ class _DriverLiveMapState extends State<DriverLiveMap> {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                     boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 4)],
                   ),
                   child: Text(name, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
@@ -231,7 +232,7 @@ class _DriverLiveMapState extends State<DriverLiveMap> {
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: TayyebGoTheme.dividerColor),
       ),
       clipBehavior: Clip.antiAlias,

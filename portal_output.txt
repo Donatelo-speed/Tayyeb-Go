@@ -1,0 +1,513 @@
+Launching lib\main.dart on Chrome in debug mode...
+Waiting for connection from debug service on Chrome...             22.3s
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+Debug service listening on ws://127.0.0.1:54288/doSYckihJfM=/ws
+A Dart VM Service on Chrome is available at: http://127.0.0.1:54288/doSYckihJfM=
+The Flutter DevTools debugger and profiler on Chrome is available at: http://127.0.0.1:54288/doSYckihJfM=/devtools/?uri=ws://127.0.0.1:54288/doSYckihJfM=/ws
+Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
+Found an existing <meta name="viewport"> tag. Flutter Web uses its own viewport configuration for better compatibility with Flutter. This tag will be replaced.
+[AuthProvider] login: email=customer@test.com
+[AuthProvider] login: Firebase Auth success, uid=customer-test
+[AuthProvider] resolveUser: reading Firestore for uid=customer-test
+[AuthProvider] resolveUser: found doc, role=customer
+[AuthProvider] login: resolved user role=customer isActive=true
+══╡ EXCEPTION CAUGHT BY FOUNDATION LIBRARY ╞════════════════════════════════════════════════════════
+The following assertion was thrown while dispatching notifications for GoRouterDelegate:
+setState() or markNeedsBuild() called during build.
+This Router<Object> widget cannot be marked as needing to build because the framework is already in
+the process of building widgets. A widget can be marked as needing to be built during the build
+phase only if one of its ancestors is currently building. This exception is allowed because the
+framework builds parent widgets before children, which means a dirty descendant will always be
+built. Otherwise, the framework might not visit this widget during this build phase.
+The widget on which setState() or markNeedsBuild() was called was:
+  Router<Object>
+The widget which was currently being built when the offending call was made was:
+  LoginScreen
+
+When the exception was thrown, this was the stack:
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+package:flutter/src/widgets/framework.dart 5373:9                                 <fn>
+package:flutter/src/widgets/framework.dart 5384:14                                markNeedsBuild
+package:flutter/src/widgets/framework.dart 1219:5                                 setState
+package:flutter/src/widgets/router.dart 833:5                                     [_handleRouterDelegateNotification]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:go_router/src/delegate.dart 321:5                                         [_setCurrentConfiguration]
+package:go_router/src/delegate.dart 272:18                                        <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+package:go_router/src/delegate.dart 267:34                                        setNewRoutePath
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/widgets/router.dart 790:32                                    <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+package:flutter/src/widgets/router.dart 778:61                                    [_processRouteInformation]
+package:flutter/src/widgets/router.dart 799:5                                     [_handleRouteInformationProviderNotification]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:go_router/src/information_provider.dart 160:11                            notifyListeners
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:tayyebgo_core/src/services/auth_listenable.dart 11:25                     forceNotify
+package:tayyebgo_core/src/screens/login_screen.dart 81:30                         [_triggerRedirect]
+package:tayyebgo_core/src/screens/login_screen.dart 166:7                         build
+package:flutter/src/widgets/framework.dart 5931:27                                build
+package:flutter/src/widgets/framework.dart 5817:15                                performRebuild
+package:flutter/src/widgets/framework.dart 5982:11                                performRebuild
+package:flutter/src/widgets/framework.dart 5529:7                                 rebuild
+package:flutter/src/widgets/framework.dart 2750:14                                [_tryRebuild]
+package:flutter/src/widgets/framework.dart 2807:11                                [_flushDirtyElements]
+package:flutter/src/widgets/framework.dart 3111:17                                buildScope
+package:flutter/src/widgets/binding.dart 1302:9                                   drawFrame
+package:flutter/src/rendering/binding.dart 495:5                                  [_handlePersistentFrameCallback]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/scheduler/binding.dart 1430:7                                 [_invokeFrameCallback]
+package:flutter/src/scheduler/binding.dart 1345:9                                 handleDrawFrame
+package:flutter/src/scheduler/binding.dart 1198:5                                 [_handleDrawFrame]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher.dart 1689:5                                invoke
+lib/_engine/engine/platform_dispatcher.dart 265:5                                 invokeOnDrawFrame
+lib/_engine/engine/frame_service.dart 209:32                                      [_renderFrame]
+lib/_engine/engine/frame_service.dart 117:9                                       <fn>
+dart-sdk/lib/async/zone.dart 962:54                                               runUnary
+dart-sdk/lib/async/zone.dart 917:26                                               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 84:15     ret
+
+The GoRouterDelegate sending notification was:
+  Instance of 'GoRouterDelegate'
+════════════════════════════════════════════════════════════════════════════════════════════════════
+Another exception was thrown: setState() or markNeedsBuild() called during build.
+DartError: setState() or markNeedsBuild() called during build.
+This Router<Object> widget cannot be marked as needing to build because the framework is already in the process of building widgets. A widget can be marked as needing to be built during the build phase only if one of its ancestors is currently building. This exception is allowed because the framework builds parent widgets before children, which means a dirty descendant will always be built. Otherwise, the framework might not visit this widget during this build phase.
+The widget on which setState() or markNeedsBuild() was called was:
+  Router<Object>
+The widget which was currently being built when the offending call was made was:
+  LoginScreen
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+package:flutter/src/widgets/framework.dart 5373:9                                 <fn>
+package:flutter/src/widgets/framework.dart 5384:14                                markNeedsBuild
+package:flutter/src/widgets/framework.dart 1219:5                                 setState
+package:flutter/src/widgets/router.dart 825:5                                     [_rebuild]
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 594:19               <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 606:11               _awaitOnObject
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 560:3                _asyncAwait
+package:flutter/src/widgets/router.dart 790:7                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+package:flutter/src/widgets/router.dart 778:61                                    [_processRouteInformation]
+package:flutter/src/widgets/router.dart 799:5                                     [_handleRouteInformationProviderNotification]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:go_router/src/information_provider.dart 160:11                            notifyListeners
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:tayyebgo_core/src/services/auth_listenable.dart 11:25                     forceNotify
+package:tayyebgo_core/src/screens/login_screen.dart 81:30                         [_triggerRedirect]
+package:tayyebgo_core/src/screens/login_screen.dart 166:7                         build
+package:flutter/src/widgets/framework.dart 5931:27                                build
+package:flutter/src/widgets/framework.dart 5817:15                                performRebuild
+package:flutter/src/widgets/framework.dart 5982:11                                performRebuild
+package:flutter/src/widgets/framework.dart 5529:7                                 rebuild
+package:flutter/src/widgets/framework.dart 2750:14                                [_tryRebuild]
+package:flutter/src/widgets/framework.dart 2807:11                                [_flushDirtyElements]
+package:flutter/src/widgets/framework.dart 3111:17                                buildScope
+package:flutter/src/widgets/binding.dart 1302:9                                   drawFrame
+package:flutter/src/rendering/binding.dart 495:5                                  [_handlePersistentFrameCallback]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/scheduler/binding.dart 1430:7                                 [_invokeFrameCallback]
+package:flutter/src/scheduler/binding.dart 1345:9                                 handleDrawFrame
+package:flutter/src/scheduler/binding.dart 1198:5                                 [_handleDrawFrame]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher.dart 1689:5                                invoke
+lib/_engine/engine/platform_dispatcher.dart 265:5                                 invokeOnDrawFrame
+lib/_engine/engine/frame_service.dart 209:32                                      [_renderFrame]
+lib/_engine/engine/frame_service.dart 117:9                                       <fn>
+dart-sdk/lib/async/zone.dart 962:54                                               runUnary
+dart-sdk/lib/async/zone.dart 917:26                                               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 84:15     ret
+DartError: setState() or markNeedsBuild() called during build.
+This Router<Object> widget cannot be marked as needing to build because the framework is already in the process of building widgets. A widget can be marked as needing to be built during the build phase only if one of its ancestors is currently building. This exception is allowed because the framework builds parent widgets before children, which means a dirty descendant will always be built. Otherwise, the framework might not visit this widget during this build phase.
+The widget on which setState() or markNeedsBuild() was called was:
+  Router<Object>
+The widget which was currently being built when the offending call was made was:
+  LoginScreen
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+package:flutter/src/widgets/framework.dart 5373:9                                 <fn>
+package:flutter/src/widgets/framework.dart 5384:14                                markNeedsBuild
+package:flutter/src/widgets/framework.dart 1219:5                                 setState
+package:flutter/src/widgets/router.dart 825:5                                     [_rebuild]
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 594:19               <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 606:11               _awaitOnObject
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 560:3                _asyncAwait
+package:flutter/src/widgets/router.dart 790:7                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+package:flutter/src/widgets/router.dart 778:61                                    [_processRouteInformation]
+package:flutter/src/widgets/router.dart 799:5                                     [_handleRouteInformationProviderNotification]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:go_router/src/information_provider.dart 160:11                            notifyListeners
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:tayyebgo_core/src/services/auth_listenable.dart 11:25                     forceNotify
+package:tayyebgo_core/src/screens/login_screen.dart 81:30                         [_triggerRedirect]
+package:tayyebgo_core/src/screens/login_screen.dart 166:7                         build
+package:flutter/src/widgets/framework.dart 5931:27                                build
+package:flutter/src/widgets/framework.dart 5817:15                                performRebuild
+package:flutter/src/widgets/framework.dart 5982:11                                performRebuild
+package:flutter/src/widgets/framework.dart 5529:7                                 rebuild
+package:flutter/src/widgets/framework.dart 2750:14                                [_tryRebuild]
+package:flutter/src/widgets/framework.dart 2807:11                                [_flushDirtyElements]
+package:flutter/src/widgets/framework.dart 3111:17                                buildScope
+package:flutter/src/widgets/binding.dart 1302:9                                   drawFrame
+package:flutter/src/rendering/binding.dart 495:5                                  [_handlePersistentFrameCallback]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/scheduler/binding.dart 1430:7                                 [_invokeFrameCallback]
+package:flutter/src/scheduler/binding.dart 1345:9                                 handleDrawFrame
+package:flutter/src/scheduler/binding.dart 1198:5                                 [_handleDrawFrame]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher.dart 1689:5                                invoke
+lib/_engine/engine/platform_dispatcher.dart 265:5                                 invokeOnDrawFrame
+lib/_engine/engine/frame_service.dart 209:32                                      [_renderFrame]
+lib/_engine/engine/frame_service.dart 117:9                                       <fn>
+dart-sdk/lib/async/zone.dart 962:54                                               runUnary
+dart-sdk/lib/async/zone.dart 917:26                                               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 84:15     ret
+[AuthProvider] login: email=driver@test.com
+[AuthProvider] login: Firebase Auth success, uid=driver-test
+[AuthProvider] resolveUser: reading Firestore for uid=driver-test
+[AuthProvider] resolveUser: found doc, role=driver
+[AuthProvider] login: resolved user role=driver isActive=true
+DartError: setState() or markNeedsBuild() called during build.
+This Router<Object> widget cannot be marked as needing to build because the framework is already in the process of building widgets. A widget can be marked as needing to be built during the build phase only if one of its ancestors is currently building. This exception is allowed because the framework builds parent widgets before children, which means a dirty descendant will always be built. Otherwise, the framework might not visit this widget during this build phase.
+The widget on which setState() or markNeedsBuild() was called was:
+  Router<Object>
+The widget which was currently being built when the offending call was made was:
+  LoginScreen
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+package:flutter/src/widgets/framework.dart 5373:9                                 <fn>
+package:flutter/src/widgets/framework.dart 5384:14                                markNeedsBuild
+package:flutter/src/widgets/framework.dart 1219:5                                 setState
+package:flutter/src/widgets/router.dart 825:5                                     [_rebuild]
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 594:19               <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 606:11               _awaitOnObject
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 560:3                _asyncAwait
+package:flutter/src/widgets/router.dart 790:7                                     <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/widgets/router.dart 792:9                                     <fn>
+package:flutter/src/foundation/synchronous_future.dart 44:20                      <fn>
+package:flutter/src/foundation/synchronous_future.dart 46:22                      then
+package:flutter/src/widgets/router.dart 778:61                                    [_processRouteInformation]
+package:flutter/src/widgets/router.dart 799:5                                     [_handleRouteInformationProviderNotification]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:go_router/src/information_provider.dart 160:11                            notifyListeners
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/foundation/change_notifier.dart 432:24                        notifyListeners
+package:tayyebgo_core/src/services/auth_listenable.dart 11:25                     forceNotify
+package:tayyebgo_core/src/screens/login_screen.dart 81:30                         [_triggerRedirect]
+package:tayyebgo_core/src/screens/login_screen.dart 166:7                         build
+package:flutter/src/widgets/framework.dart 5931:27                                build
+package:flutter/src/widgets/framework.dart 5817:15                                performRebuild
+package:flutter/src/widgets/framework.dart 5982:11                                performRebuild
+package:flutter/src/widgets/framework.dart 5529:7                                 rebuild
+package:flutter/src/widgets/framework.dart 2750:14                                [_tryRebuild]
+package:flutter/src/widgets/framework.dart 2807:11                                [_flushDirtyElements]
+package:flutter/src/widgets/framework.dart 3111:17                                buildScope
+package:flutter/src/widgets/binding.dart 1302:9                                   drawFrame
+package:flutter/src/rendering/binding.dart 495:5                                  [_handlePersistentFrameCallback]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/scheduler/binding.dart 1430:7                                 [_invokeFrameCallback]
+package:flutter/src/scheduler/binding.dart 1345:9                                 handleDrawFrame
+package:flutter/src/scheduler/binding.dart 1198:5                                 [_handleDrawFrame]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher.dart 1689:5                                invoke
+lib/_engine/engine/platform_dispatcher.dart 265:5                                 invokeOnDrawFrame
+lib/_engine/engine/frame_service.dart 209:32                                      [_renderFrame]
+lib/_engine/engine/frame_service.dart 117:9                                       <fn>
+dart-sdk/lib/async/zone.dart 962:54                                               runUnary
+dart-sdk/lib/async/zone.dart 917:26                                               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 84:15     ret
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
+Found an existing <meta name="viewport"> tag. Flutter Web uses its own viewport configuration for better compatibility with Flutter. This tag will be replaced.
+[AuthProvider] resolveUser: reading Firestore for uid=driver-test
+[AuthProvider] resolveUser: found doc, role=driver
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+══╡ EXCEPTION CAUGHT BY SERVICES LIBRARY ╞══════════════════════════════════════════════════════════
+The following UnsupportedError was thrown during a platform message callback:
+Unsupported operation: getLastKnownPosition is not supported on the web platform.
+
+When the exception was thrown, this was the stack:
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+package:geolocator_web/geolocator_web.dart 71:7                                   getLastKnownPosition
+package:geolocator/geolocator.dart 59:35                                          getLastKnownPosition
+package:tayyebgo_core/infrastructure/services/driver_location_service.dart 72:16  forceRefresh
+package:tayyebgo_driver/screens/driver_dashboard_screen.dart 38:29                didChangeAppLifecycleState
+package:flutter/src/widgets/binding.dart 1103:15                                  handleAppLifecycleStateChanged
+package:flutter/src/services/binding.dart 306:7                                   <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/services/binding.dart 302:19                                  [_handleLifecycleMessage]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/services/platform_channel.dart 258:49                         <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/services/platform_channel.dart 258:9                          <fn>
+package:flutter/src/services/binding.dart 663:35                                  <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 623:19               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 648:23               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 542:3                _asyncStartSync
+package:flutter/src/services/binding.dart 662:9                                   <fn>
+lib/_engine/engine/platform_dispatcher.dart 1719:5                                invoke2
+lib/ui/channel_buffers.dart 25:12                                                 invoke
+lib/ui/channel_buffers.dart 70:7                                                  push
+lib/ui/channel_buffers.dart 136:16                                                push
+lib/_engine/engine/platform_dispatcher.dart 416:10                                invokeOnPlatformMessage
+lib/_engine/engine/platform_dispatcher.dart 1168:5                                [_setAppLifecycleState]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher/app_lifecycle_state.dart 50:9              onAppLifecycleStateChange
+lib/_engine/engine/platform_dispatcher/app_lifecycle_state.dart 90:5              <fn>
+dart-sdk/lib/async/zone.dart 962:54                                               runUnary
+dart-sdk/lib/async/zone.dart 917:26                                               <fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 84:15     ret
+════════════════════════════════════════════════════════════════════════════════════════════════════
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+[DriverDashboard] dispatch_requests stream error: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>
+RethrownDartError: [cloud_firestore/permission-denied] Missing or insufficient permissions.
+
+
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 307:10      createErrorWithStack
+dart-sdk/lib/_internal/js_dev_runtime/patch/core_patch.dart 280:28                _throw
+dart-sdk/lib/core/errors.dart 120:5                                               throwWithStackTrace
+dart-sdk/lib/async/zone_root.dart 22:11                                           <fn>
+dart-sdk/lib/async/schedule_microtask.dart 40:34                                  _microtaskLoop
+dart-sdk/lib/async/schedule_microtask.dart 49:5                                   _startMicrotaskLoop
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+dart-sdk/lib/_internal/js_dev_runtime/patch/async_patch.dart 188:69               <fn>

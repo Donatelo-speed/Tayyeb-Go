@@ -132,7 +132,7 @@ class OrdersTrendChart extends StatelessWidget {
                         toY: weeklyData[i],
                         color: context.primaryColor,
                         width: 16,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.brSm,
                       ),
                     ],
                   )),

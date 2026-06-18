@@ -48,7 +48,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.successColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.successColor.withValues(alpha: 0.3)),
               ),
               child: Row(
@@ -64,7 +64,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
           Container(
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               border: Border.all(color: context.borderColor),
             ),
             child: TextField(
@@ -85,7 +85,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
           Container(
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               border: Border.all(color: context.borderColor),
             ),
             child: TextField(
@@ -113,7 +113,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                 elevation: 0,
               ),
               child: _isProcessing
@@ -130,7 +130,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: TextField(
@@ -269,7 +269,7 @@ class _WalletSendScreenState extends State<WalletSendScreen> {
             content: Text('\$${amount.toStringAsFixed(2)} sent to $_recipientName!', style: GoogleFonts.inter()),
             backgroundColor: context.successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
         Navigator.pop(context, true);

@@ -44,7 +44,7 @@ class _WalletTopUpScreenState extends State<WalletTopUpScreen> {
                 end: Alignment.bottomRight,
                 colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.7)],
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.brCard,
             ),
             child: Column(
               children: [
@@ -68,7 +68,7 @@ class _WalletTopUpScreenState extends State<WalletTopUpScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(color: context.borderColor),
                   ),
                   child: Text('\$$amt', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: context.textPrimaryColor)),
@@ -80,7 +80,7 @@ class _WalletTopUpScreenState extends State<WalletTopUpScreen> {
           Container(
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               border: Border.all(color: context.borderColor),
             ),
             child: TextField(
@@ -111,7 +111,7 @@ class _WalletTopUpScreenState extends State<WalletTopUpScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                 elevation: 0,
               ),
               child: _isProcessing
@@ -179,7 +179,7 @@ class _WalletTopUpScreenState extends State<WalletTopUpScreen> {
             content: Text('\$${amount.toStringAsFixed(2)} added to wallet!', style: GoogleFonts.inter()),
             backgroundColor: context.successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
         Navigator.pop(context, true);

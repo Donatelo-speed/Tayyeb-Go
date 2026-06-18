@@ -130,7 +130,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
               backgroundColor: context.primaryColor,
               foregroundColor: context.textPrimaryColor,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
             child: Text('Continue', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
@@ -147,7 +147,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
           border: Border.all(color: selected ? context.primaryColor : context.borderColor, width: selected ? 2 : 1),
         ),
         child: Row(
@@ -156,7 +156,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: (selected ? context.primaryColor : context.textMutedColor).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(icon, color: selected ? context.primaryColor : context.textMutedColor, size: 20),
             ),
@@ -202,7 +202,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
               backgroundColor: context.primaryColor,
               foregroundColor: context.textPrimaryColor,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
             child: Text('Review & Create', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
@@ -222,9 +222,9 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
         prefixIcon: Icon(icon, color: context.textMutedColor, size: 18),
         filled: true,
         fillColor: context.surfaceAltColor,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+        border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+        enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+        focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
       ),
     );
   }
@@ -257,7 +257,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
               backgroundColor: context.primaryColor,
               foregroundColor: context.textPrimaryColor,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
           ),
         ),
@@ -270,7 +270,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(children: children),
@@ -297,7 +297,7 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
   Future<void> _saveUser() async {
     if (_nameCtrl.text.trim().isEmpty || _phoneCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Name and phone are required', style: GoogleFonts.inter()), backgroundColor: context.warningColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        SnackBar(content: Text('Name and phone are required', style: GoogleFonts.inter()), backgroundColor: context.warningColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
       );
       return;
     }
@@ -317,14 +317,14 @@ class _CreateBusinessWizardState extends State<CreateBusinessWizard> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User created successfully', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('User created successfully', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     } finally {

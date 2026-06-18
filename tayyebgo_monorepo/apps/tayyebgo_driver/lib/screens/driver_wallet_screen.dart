@@ -93,7 +93,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
             content: Text('Invalid amount', style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -117,7 +117,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
             content: Text('Payout requested successfully', style: GoogleFonts.inter()),
             backgroundColor: context.successColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       } else {
@@ -126,7 +126,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
             content: Text(result.errorMessage ?? 'Request failed', style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -138,7 +138,7 @@ class _DriverWalletScreenState extends State<DriverWalletScreen> {
           content: Text('Error: $e', style: GoogleFonts.inter()),
           backgroundColor: context.errorColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
       );
     }
@@ -159,7 +159,7 @@ class _BalanceCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.successColor.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -175,7 +175,7 @@ class _BalanceCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: _levelColor(wallet.level).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.brXl,
             ),
             child: Text(
               wallet.level.displayName,
@@ -216,7 +216,7 @@ class _PayoutSection extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -227,7 +227,7 @@ class _PayoutSection extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: context.backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               border: Border.all(color: context.borderColor),
             ),
             child: TextField(
@@ -254,7 +254,7 @@ class _PayoutSection extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.successColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                 elevation: 0,
               ),
               child: isRequesting

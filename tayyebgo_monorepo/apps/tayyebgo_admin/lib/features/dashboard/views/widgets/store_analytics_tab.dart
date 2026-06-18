@@ -48,7 +48,7 @@ Widget _AnalyticsStatTile(BuildContext context, String label, String value, Icon
     child: Row(children: [
       Container(
         padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
         child: Icon(icon, color: color, size: 20),
       ),
       const SizedBox(width: 12),

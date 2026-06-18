@@ -110,9 +110,9 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                   filled: true,
                   fillColor: context.backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -140,9 +140,9 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                         hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                         filled: true,
                         fillColor: context.backgroundColor,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+                        border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
                       ),
                     ),
                   ),
@@ -157,9 +157,9 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                         hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                         filled: true,
                         fillColor: context.backgroundColor,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+                        border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
                       ),
                     ),
                   ),
@@ -192,7 +192,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.warningColor,
                     foregroundColor: context.backgroundColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                   child: Text('Add Group', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
                 ),
@@ -239,9 +239,9 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                   filled: true,
                   fillColor: context.backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -254,9 +254,9 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                   filled: true,
                   fillColor: context.backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -297,7 +297,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.warningColor,
                     foregroundColor: context.backgroundColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                   child: Text('Add Modifier', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
                 ),
@@ -315,7 +315,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('Delete Group?', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: Text(
           'This will remove "${_groups[groupIndex]['name']}" and all its modifiers.',
@@ -406,7 +406,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.warningColor,
                       foregroundColor: context.backgroundColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                       elevation: 0,
                     ),
                     child: _isSaving
@@ -445,7 +445,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: context.warningColor,
               foregroundColor: context.backgroundColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
           ),
         ],
@@ -465,7 +465,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Theme(
@@ -482,7 +482,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
               if (isRequired)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.15), borderRadius: AppRadius.brSm),
                   child: Text('Required', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10, color: context.errorColor)),
                 ),
             ],
@@ -512,7 +512,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: context.backgroundColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(color: context.borderColor, style: BorderStyle.solid),
                 ),
                 child: Row(
@@ -542,7 +542,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         children: [
@@ -561,7 +561,7 @@ class _ModifierBuilderScreenState extends State<ModifierBuilderScreen> {
             Container(
               margin: const EdgeInsets.only(right: 6),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
+              decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.15), borderRadius: AppRadius.brSm),
               child: Text('Default', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 9, color: context.successColor)),
             ),
           IconButton(

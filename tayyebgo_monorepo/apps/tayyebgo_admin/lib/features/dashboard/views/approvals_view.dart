@@ -247,7 +247,7 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -256,7 +256,7 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, size: 20, color: iconColor),
           ),
@@ -285,7 +285,7 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
             style: ElevatedButton.styleFrom(
               backgroundColor: context.primaryColor,
               foregroundColor: context.textPrimaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
             child: Text('Approve', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
           ),
@@ -322,13 +322,13 @@ class _ApprovalsViewState extends State<ApprovalsView> with SingleTickerProvider
       await FirebaseFirestore.instance.collection(collection).doc(id).update(updates);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Updated $collection', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Updated $collection', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     }

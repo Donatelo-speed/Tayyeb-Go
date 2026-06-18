@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../presentation/theme/app_colors.dart';
+import '../../tayyebgo_core.dart';
 
 /// ShimmerWrapper — Wraps any child with a shimmer loading effect
 class ShimmerWrapper extends StatefulWidget {
@@ -66,7 +66,7 @@ class _ShimmerWrapperState extends State<ShimmerWrapper>
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.brMd,
             gradient: LinearGradient(
               colors: [base, highlight, base],
               stops: [

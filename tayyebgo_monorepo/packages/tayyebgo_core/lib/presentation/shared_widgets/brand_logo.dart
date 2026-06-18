@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_gradients.dart';
 import '../theme/app_shadow.dart';
+import '../theme/app_radius.dart';
 
 enum LogoVariant { full, icon, text }
 
@@ -104,7 +105,7 @@ class BrandLogo extends StatelessWidget {
   }
 }
 
-class BrandedSplashView extends StatelessWidget {
+class BrandedSplashView extends StatefulWidget {
   final String label;
   final String tagline;
   final IconData icon;
@@ -119,68 +120,214 @@ class BrandedSplashView extends StatelessWidget {
   });
 
   @override
+  State<BrandedSplashView> createState() => _BrandedSplashViewState();
+}
+
+class _BrandedSplashViewState extends State<BrandedSplashView>
+    with TickerProviderStateMixin {
+  late final AnimationController _glowCtrl;
+  late final AnimationController _staggerCtrl;
+  late final Animation<double> _glowPulse;
+  late final Animation<double> _logoFade;
+  late final Animation<Offset> _logoSlide;
+  late final Animation<double> _wordmarkFade;
+  late final Animation<Offset> _wordmarkSlide;
+  late final Animation<double> _taglineFade;
+  late final Animation<Offset> _taglineSlide;
+  late final Animation<double> _badgeFade;
+  late final Animation<double> _badgeScale;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Ambient glow pulse — infinite
+    _glowCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
+    _glowPulse = Tween<double>(begin: 0.3, end: 0.7).animate(
+      CurvedAnimation(parent: _glowCtrl, curve: Curves.easeInOut),
+    );
+
+    // Staggered entrance — one-shot
+    _staggerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+
+    _logoFade = CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+    );
+    _logoSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOutCubic),
+    ));
+
+    _wordmarkFade = CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.2, 0.6, curve: Curves.easeOut),
+    );
+    _wordmarkSlide = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.2, 0.7, curve: Curves.easeOutCubic),
+    ));
+
+    _taglineFade = CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.4, 0.8, curve: Curves.easeOut),
+    );
+    _taglineSlide = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.4, 0.85, curve: Curves.easeOutCubic),
+    ));
+
+    _badgeFade = CurvedAnimation(
+      parent: _staggerCtrl,
+      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
+    );
+    _badgeScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _staggerCtrl,
+        curve: const Interval(0.6, 1.0, curve: Curves.elasticOut),
+      ),
+    );
+
+    _staggerCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _glowCtrl.dispose();
+    _staggerCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: isDark ? AppGradients.darkAppBackground : AppGradients.lightAppBackground,
+          gradient: isDark
+              ? AppGradients.darkAppBackground
+              : AppGradients.lightAppBackground,
         ),
         child: Center(
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 900),
-            tween: Tween(begin: 0, end: 1),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              return Opacity(
-                opacity: value,
-                child: Transform.translate(
-                  offset: Offset(0, 20 * (1 - value)),
-                  child: child,
-                ),
-              );
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.center,
-                  children: [
-                    TayyebGoAnimatedLogo(size: 104),
-                    Positioned(
-                      right: -2,
-                      bottom: -2,
-                      child: Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDark ? AppColors.background : Colors.white,
-                            width: 3,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Logo with glow
+              SlideTransition(
+                position: _logoSlide,
+                child: FadeTransition(
+                  opacity: _logoFade,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      // Ambient glow orb
+                      AnimatedBuilder(
+                        animation: _glowPulse,
+                        builder: (context, _) {
+                          return Container(
+                            width: 140,
+                            height: 140,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  widget.accentColor.withValues(alpha: _glowPulse.value * 0.35),
+                                  widget.accentColor.withValues(alpha: 0.0),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      TayyebGoAnimatedLogo(size: 104),
+                      // Role badge
+                      Positioned(
+                        right: -4,
+                        bottom: -4,
+                        child: FadeTransition(
+                          opacity: _badgeFade,
+                          child: ScaleTransition(
+                            scale: _badgeScale,
+                            child: Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    widget.accentColor,
+                                    widget.accentColor.withValues(alpha: 0.8),
+                                  ],
+                                ),
+                                borderRadius: AppRadius.brMd,
+                                border: Border.all(
+                                  color: isDark ? AppColors.background : Colors.white,
+                                  width: 3,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: widget.accentColor.withValues(alpha: 0.4),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(widget.icon, color: Colors.white, size: 18),
+                            ),
                           ),
                         ),
-                        child: Icon(icon, color: Colors.white, size: 18),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _LogoWordmark(size: 104),
-                const SizedBox(height: 8),
-                Text(
-                  tagline,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? AppColors.textSecondary : LightAppColors.textSecondary,
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 28),
+              // Wordmark
+              SlideTransition(
+                position: _wordmarkSlide,
+                child: FadeTransition(
+                  opacity: _wordmarkFade,
+                  child: _LogoWordmark(size: 104),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Tagline
+              SlideTransition(
+                position: _taglineSlide,
+                child: FadeTransition(
+                  opacity: _taglineFade,
+                  child: Text(
+                    widget.tagline,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.2,
+                      color: isDark
+                          ? AppColors.textSecondary
+                          : LightAppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

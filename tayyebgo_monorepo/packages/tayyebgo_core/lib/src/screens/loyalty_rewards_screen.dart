@@ -63,7 +63,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
                 const Color(0xFF8B5CF6),
               ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.brXl,
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF6366F1).withValues(alpha: 0.3),
@@ -96,7 +96,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: AppRadius.brFull,
                 ),
                 child: Text(
                   _tierFromPoints(points),
@@ -123,7 +123,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -133,7 +133,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -159,7 +159,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -169,7 +169,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -187,7 +187,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.brMd,
             ),
             child: Text('Redeem', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.white)),
           ),
@@ -234,7 +234,7 @@ class LoyaltyRewardsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.borderColor),
               ),
               child: Row(

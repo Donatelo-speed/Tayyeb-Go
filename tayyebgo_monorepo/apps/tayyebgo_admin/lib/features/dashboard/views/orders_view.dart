@@ -83,7 +83,7 @@ class _OrdersViewState extends State<OrdersView> {
                           height: 40,
                           decoration: BoxDecoration(
                             color: context.surfaceColor,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: AppRadius.brMd,
                             border: Border.all(color: context.borderColor),
                           ),
                           child: TextField(
@@ -176,7 +176,7 @@ class _OrdersViewState extends State<OrdersView> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: selected ? context.primaryColor : context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brXl,
           border: Border.all(color: selected ? context.primaryColor : context.borderColor),
         ),
         child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : context.textSecondaryColor)),
@@ -208,7 +208,7 @@ class _OrderRow extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -237,7 +237,7 @@ class _OrderRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.brSm,
             ),
             child: Text(statusLabel, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
           ),
@@ -254,7 +254,7 @@ class _OrderRow extends StatelessWidget {
             icon: Icon(Icons.more_vert_rounded, size: 16, color: context.textMutedColor),
             onSelected: (v) {
               if (v == 'refund') _refundOrder(context, id, amount);
-              if (v == 'contact') ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Contact $customerName', style: GoogleFonts.inter()), backgroundColor: context.primaryColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+              if (v == 'contact') ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Contact $customerName', style: GoogleFonts.inter()), backgroundColor: context.primaryColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)));
             },
             itemBuilder: (_) => [
               if (status == 'delivered')
@@ -272,7 +272,7 @@ class _OrderRow extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('Refund Order', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: Text('Process refund of \$${amount.toStringAsFixed(2)}?', style: GoogleFonts.inter(color: context.textSecondaryColor)),
         actions: [
@@ -291,7 +291,7 @@ class _OrderRow extends StatelessWidget {
                 });
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Refund processed', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Refund processed', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)));
                 }
               } catch (e) {
                 if (ctx.mounted) {

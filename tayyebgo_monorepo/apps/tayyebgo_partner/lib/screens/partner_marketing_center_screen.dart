@@ -72,7 +72,7 @@ class _StatsSection extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -143,7 +143,7 @@ class _CouponsSection extends StatelessWidget {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: AppRadius.brXl,
                     border: Border.all(color: context.borderColor),
                   ),
                   child: Row(
@@ -155,7 +155,7 @@ class _CouponsSection extends StatelessWidget {
                           color: isActive && !isExpired
                               ? context.successColor.withValues(alpha: 0.1)
                               : context.errorColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                         ),
                         child: Icon(
                           Icons.local_offer_rounded,
@@ -178,7 +178,7 @@ class _CouponsSection extends StatelessWidget {
                                     color: isActive && !isExpired
                                         ? context.successColor.withValues(alpha: 0.1)
                                         : context.errorColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(6),
+                                    borderRadius: AppRadius.brSm,
                                   ),
                                   child: Text(
                                     isActive && !isExpired ? 'Active' : (isExpired ? 'Expired' : 'Inactive'),
@@ -263,7 +263,7 @@ class _CouponsSection extends StatelessWidget {
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Center(

@@ -113,7 +113,7 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.brCard,
               border: Border.all(color: context.borderColor),
             ),
             child: Column(
@@ -134,7 +134,7 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
                 const SizedBox(height: 16),
                 if (_selectedImage != null)
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     child: Image.file(_selectedImage!, height: 200, width: double.infinity, fit: BoxFit.cover),
                   ),
                 const SizedBox(height: 16),
@@ -159,7 +159,7 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.warningColor,
                   foregroundColor: context.backgroundColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   elevation: 0,
                 ),
                 child: _isProcessing
@@ -179,7 +179,7 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
               child: Row(
                 children: [
                   Icon(Icons.error_outline_rounded, color: context.errorColor, size: 20),
@@ -210,12 +210,12 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: context.surfaceColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(color: context.borderColor),
                 ),
                 child: Row(
                   children: [
-                    Container(width: 40, height: 40, decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.restaurant_rounded, color: context.warningColor, size: 20)),
+                    Container(width: 40, height: 40, decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: AppRadius.brMd), child: Icon(Icons.restaurant_rounded, color: context.warningColor, size: 20)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -244,7 +244,7 @@ class _AiMenuCreationScreenState extends State<AiMenuCreationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
           border: Border.all(color: context.borderColor),
         ),
         child: Row(

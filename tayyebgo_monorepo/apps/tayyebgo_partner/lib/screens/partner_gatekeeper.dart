@@ -76,7 +76,7 @@ class PartnerGatekeeper extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.primaryColor,
                   foregroundColor: AppColors.textInverse,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                 ),
                 child: Text('Sign Out', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
               ),
@@ -180,7 +180,7 @@ class _OwnerNavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? AppColors.partnerAccent.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

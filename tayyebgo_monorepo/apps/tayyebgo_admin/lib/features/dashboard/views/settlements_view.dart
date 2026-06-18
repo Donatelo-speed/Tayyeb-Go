@@ -89,14 +89,14 @@ class SettlementsView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 10),
@@ -126,7 +126,7 @@ class SettlementsView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -136,7 +136,7 @@ class SettlementsView extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               color: context.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Center(
               child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 16, color: context.primaryColor)),
@@ -214,7 +214,7 @@ class SettlementsView extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               children: [
                 Center(
-                  child: Container(width: 36, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2))),
+                  child: Container(width: 36, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm)),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -224,7 +224,7 @@ class SettlementsView extends StatelessWidget {
                       height: 48,
                       decoration: BoxDecoration(
                         color: context.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brLg,
                       ),
                       child: Center(
                         child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: context.primaryColor)),
@@ -247,7 +247,7 @@ class SettlementsView extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [context.primaryColor, context.primaryColor]),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brLg,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +273,7 @@ class SettlementsView extends StatelessWidget {
                         onPressed: () => Navigator.of(context).pop(),
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(color: context.borderColor),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                         ),
                         child: Text('Close', style: GoogleFonts.inter(color: context.textMutedColor)),
                       ),
@@ -295,13 +295,13 @@ class SettlementsView extends StatelessWidget {
                           if (context.mounted) {
                             Navigator.of(context).pop();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Settlement recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                              SnackBar(content: Text('Settlement recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                             );
                           }
                         },
                         icon: const Icon(Icons.check_rounded, size: 16),
                         label: Text('Mark Paid', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-                        style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                        style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                       ),
                     ),
                   ],

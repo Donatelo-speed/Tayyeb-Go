@@ -49,7 +49,7 @@ class _CustomersViewState extends State<CustomersView> {
               height: 44,
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.borderColor),
               ),
               child: TextField(
@@ -215,7 +215,7 @@ class _CustomerCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -228,7 +228,7 @@ class _CustomerCard extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: context.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Center(
                   child: Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.primaryColor)),
@@ -247,7 +247,7 @@ class _CustomerCard extends StatelessWidget {
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: _roleColor(context).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(4)),
+                          decoration: BoxDecoration(color: _roleColor(context).withValues(alpha: 0.12), borderRadius: AppRadius.brSm),
                           child: Text(_roleLabel(), style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: _roleColor(context))),
                         ),
                       ],
@@ -260,7 +260,7 @@ class _CustomerCard extends StatelessWidget {
               if (!isActive)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(color: context.errorColor.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
                   child: Text('Suspended', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: context.errorColor)),
                 ),
               PopupMenuButton<String>(
@@ -308,7 +308,7 @@ class _CustomerCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text(d['displayName'] as String? ?? 'Customer', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 350,
@@ -349,14 +349,14 @@ class _CustomerCard extends StatelessWidget {
             content: Text(active ? 'Account activated' : 'Account suspended', style: GoogleFonts.inter()),
             backgroundColor: active ? context.successColor : context.warningColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Update failed', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Update failed', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     }
@@ -379,7 +379,7 @@ class _CustomerCard extends StatelessWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: context.surfaceColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
           title: Text('Change Role', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
           content: SizedBox(
             width: 350,
@@ -420,14 +420,14 @@ class _CustomerCard extends StatelessWidget {
                               content: Text('Role changed to ${roles[selectedRole]}', style: GoogleFonts.inter()),
                               backgroundColor: context.successColor,
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                             ),
                           );
                         }
                       } catch (_) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to change role', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                            SnackBar(content: Text('Failed to change role', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                           );
                         }
                       }

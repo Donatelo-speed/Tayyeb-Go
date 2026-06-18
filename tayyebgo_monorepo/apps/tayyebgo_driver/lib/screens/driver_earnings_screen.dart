@@ -125,7 +125,7 @@ class _DriverEarningsScreenState extends State<DriverEarningsScreen> with Single
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.brLg,
                               border: Border.all(color: context.borderColor),
                             ),
                             child: Center(
@@ -158,7 +158,7 @@ class _EarningsSummaryCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.brFull,
         boxShadow: [
           BoxShadow(
             color: AppColors.driverAccent.withValues(alpha: 0.3),
@@ -194,7 +194,7 @@ class _EarningsSummaryCard extends StatelessWidget {
       children: [
         Container(
           width: 36, height: 36,
-          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: AppRadius.brMd),
           child: Icon(icon, color: Colors.white, size: 18),
         ),
         const SizedBox(height: 8),
@@ -216,7 +216,7 @@ class _LevelCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
@@ -233,7 +233,7 @@ class _LevelCard extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [_levelColor(wallet.level), _levelColor(wallet.level).withValues(alpha: 0.7)],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(_levelIcon(wallet.level), color: Colors.white, size: 22),
               ),
@@ -254,7 +254,7 @@ class _LevelCard extends StatelessWidget {
             Text('$nextDeliveries more to ${wallet.nextLevel.displayName}', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
             const SizedBox(height: 10),
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.brSm,
               child: LinearProgressIndicator(
                 value: wallet.totalDeliveries / wallet.nextLevel.minDeliveries,
                 backgroundColor: context.borderColor.withValues(alpha: 0.5),
@@ -295,7 +295,7 @@ class _LevelCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: context.successColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -321,7 +321,7 @@ class _TransactionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
@@ -340,7 +340,7 @@ class _TransactionCard extends StatelessWidget {
                     ? [AppColors.driverAccent.withValues(alpha: 0.15), AppColors.driverAccent.withValues(alpha: 0.05)]
                     : [AppColors.warning.withValues(alpha: 0.15), AppColors.warning.withValues(alpha: 0.05)],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(
               isEarning ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notifications_provider.dart';
 import '../../presentation/theme/theme_provider.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -98,7 +99,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: read ? context.surfaceColor : context.surfaceColor.withValues(alpha: 1.2),
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: AppRadius.brLg,
                             border: Border.all(
                               color: read ? context.borderColor : context.primaryColor.withValues(alpha: 0.15),
                             ),

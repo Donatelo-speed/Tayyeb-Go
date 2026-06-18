@@ -66,7 +66,7 @@ class StoreDetailView extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   color: context.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.brLg,
                 ),
                 child: Icon(Icons.store_rounded, color: context.primaryColor, size: 24),
               ),
@@ -85,7 +85,7 @@ class StoreDetailView extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: (isActive ? context.successColor : context.textMutedColor).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.brMd,
                           ),
                           child: Text(isActive ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: isActive ? context.successColor : context.textMutedColor)),
                         ),
@@ -131,7 +131,7 @@ class StoreDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -153,7 +153,7 @@ class StoreDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -190,7 +190,7 @@ class StoreDetailView extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                     border: Border.all(color: context.borderColor),
                   ),
                   child: Row(

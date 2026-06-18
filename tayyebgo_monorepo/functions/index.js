@@ -15,9 +15,14 @@ const { validatePromo } = require('./promos');
 const {
   logAuditEvent,
   onUserSensitiveUpdate,
-  onOrderStatusChange,
+  onOrderStatusChange: onOrderAuditChange,
   getAuditLog,
 } = require('./audit');
+const {
+  onUserCreated,
+  onOrderStatusChange: onOrderStatusNotify,
+  onDriverAssigned,
+} = require('./emails');
 
 module.exports = {
   onNotificationCreated,
@@ -40,6 +45,9 @@ module.exports = {
   validatePromo,
   logAuditEvent,
   onUserSensitiveUpdate,
-  onOrderStatusChange,
+  onOrderAuditChange,
   getAuditLog,
+  onUserCreated,
+  onOrderStatusNotify,
+  onDriverAssigned,
 };

@@ -58,7 +58,7 @@ class _TemplatePicker extends StatelessWidget {
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+            decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(businessIcon(current.iconKey), size: 14, color: context.primaryColor),
               const SizedBox(width: 4),
@@ -88,13 +88,13 @@ class _TemplatePicker extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: selected ? context.primaryColor.withValues(alpha: 0.05) : context.surfaceColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(color: selected ? context.primaryColor : context.borderColor, width: selected ? 1.5 : 1),
                 ),
                 child: Row(children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: (selected ? context.primaryColor : context.textMutedColor).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: (selected ? context.primaryColor : context.textMutedColor).withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
                     child: Icon(businessIcon(t.iconKey), color: selected ? context.primaryColor : context.textMutedColor, size: 22),
                   ),
                   const SizedBox(width: 10),
@@ -138,8 +138,8 @@ class _DesignSection extends StatelessWidget {
           if (hasExisting)
             Container(
               width: 48, height: 48,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor.withValues(alpha: 0.3))),
-              child: ClipRRect(borderRadius: BorderRadius.circular(7), child: Image.network(existingUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
+              decoration: BoxDecoration(borderRadius: AppRadius.brMd, border: Border.all(color: context.borderColor.withValues(alpha: 0.3))),
+              child: ClipRRect(borderRadius: AppRadius.brSm, child: Image.network(existingUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
             ),
         ]),
         const SizedBox(height: 8),
@@ -177,7 +177,7 @@ class _BrandColors extends StatelessWidget {
         Text('Primary brand color used across store presence', style: GoogleFonts.inter(fontSize: 12, color: context.textMutedColor)),
         const SizedBox(height: 12),
         Row(children: [
-          Container(width: 40, height: 40, decoration: BoxDecoration(color: Color(int.parse(primary.replaceFirst('#', '0xFF'))), borderRadius: BorderRadius.circular(8), border: Border.all(color: context.borderColor))),
+          Container(width: 40, height: 40, decoration: BoxDecoration(color: Color(int.parse(primary.replaceFirst('#', '0xFF'))), borderRadius: AppRadius.brMd, border: Border.all(color: context.borderColor))),
           const SizedBox(width: 12),
           Text(primary, style: GoogleFonts.inter(fontWeight: FontWeight.w500, color: context.textPrimaryColor)),
           const Spacer(),

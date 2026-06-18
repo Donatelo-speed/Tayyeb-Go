@@ -62,7 +62,7 @@ class _CashierTerminalViewState extends State<CashierTerminalView> {
             ),
             backgroundColor: context.warningColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -101,7 +101,7 @@ class _CashierTerminalViewState extends State<CashierTerminalView> {
             ),
             backgroundColor: context.warningColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -126,7 +126,7 @@ class _CashierTerminalViewState extends State<CashierTerminalView> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brMd,
               ),
               child: const Icon(Icons.point_of_sale_rounded, color: Colors.white, size: 16),
             ),
@@ -145,7 +145,7 @@ class _CashierTerminalViewState extends State<CashierTerminalView> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: context.warningColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Text(
                   '$pendingCount pending',
@@ -328,7 +328,7 @@ class _OrderCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(
@@ -347,7 +347,7 @@ class _OrderCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: (isDelivery ? AppColors.primary : context.warningColor).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.brSm,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -374,7 +374,7 @@ class _OrderCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.brSm,
                 ),
                 child: Text(
                   status.value.toUpperCase(),
@@ -395,7 +395,7 @@ class _OrderCard extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.partnerAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Center(
                   child: Text(
@@ -450,7 +450,7 @@ class _OrderCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.successColor,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                         elevation: 0,
                       ),
                       child: Text(
@@ -469,7 +469,7 @@ class _OrderCard extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: context.errorColor,
                         side: BorderSide(color: context.errorColor.withValues(alpha: 0.3)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                       ),
                       child: Text(
                         'Reject',
@@ -494,7 +494,7 @@ class _OrderCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   elevation: 0,
                 ),
                 child: Text(
@@ -516,7 +516,7 @@ class _OrderCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.successColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   elevation: 0,
                 ),
                 child: Text(
@@ -538,7 +538,7 @@ class _OrderCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.partnerAccent,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   elevation: 0,
                 ),
                 child: Text(
@@ -558,7 +558,7 @@ class _OrderCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text(
           'Reject Order',
           style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor),
@@ -571,15 +571,15 @@ class _OrderCard extends StatelessWidget {
             hintText: 'Reason (optional)',
             hintStyle: GoogleFonts.inter(color: context.textMutedColor),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.errorColor),
             ),
             filled: true,

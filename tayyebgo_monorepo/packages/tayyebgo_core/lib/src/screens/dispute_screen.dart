@@ -136,7 +136,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -149,7 +149,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: const Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 20),
               ),
@@ -221,15 +221,15 @@ class _DisputeScreenState extends State<DisputeScreen> {
               fillColor: AppColors.surfaceAlt,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
               ),
             ),
@@ -252,19 +252,19 @@ class _DisputeScreenState extends State<DisputeScreen> {
               fillColor: AppColors.surfaceAlt,
               contentPadding: const EdgeInsets.all(16),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 borderSide: const BorderSide(color: AppColors.error),
               ),
             ),
@@ -308,7 +308,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
                 return Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: AppRadius.brMd,
                       child: Image.file(
                         File(_photoPaths[index]),
                         width: 90,
@@ -342,7 +342,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.border, style: BorderStyle.solid),
               ),
               child: Row(
@@ -362,7 +362,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
               height: 80,
               decoration: BoxDecoration(
                 color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.border, style: BorderStyle.solid),
               ),
               child: Row(
@@ -395,7 +395,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: selected ? AppColors.primaryLight : AppColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.border,
             width: selected ? 1.5 : 1,
@@ -439,7 +439,7 @@ class _DisputeScreenState extends State<DisputeScreen> {
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.primarySoft,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
         ),
         child: _submitting
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))

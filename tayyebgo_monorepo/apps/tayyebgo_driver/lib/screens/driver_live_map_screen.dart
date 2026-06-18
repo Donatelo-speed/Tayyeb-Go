@@ -271,7 +271,7 @@ class _DriverLiveMapScreenState extends State<DriverLiveMapScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
                 color: const Color(0xFF10B981),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: AppRadius.brSm,
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF10B981).withValues(alpha: 0.4),
@@ -325,7 +325,7 @@ class _DriverLiveMapScreenState extends State<DriverLiveMapScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
                 color: const Color(0xFFF59E0B),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: AppRadius.brSm,
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFFF59E0B).withValues(alpha: 0.4),
@@ -509,7 +509,7 @@ class _InfoBar extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: context.borderColor,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.brSm,
                 ),
               ),
               const SizedBox(height: 16),
@@ -594,7 +594,7 @@ class _InfoBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: context.backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   border: Border.all(color: context.borderColor),
                 ),
                 child: Row(
@@ -643,7 +643,7 @@ class _InfoBar extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.primaryColor,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                           elevation: 0,
                         ),
                       ),
@@ -669,7 +669,7 @@ class _InfoBar extends StatelessWidget {
                               ? (isAtPickup ? const Color(0xFF10B981) : const Color(0xFFF59E0B))
                               : context.surfaceAltColor,
                           foregroundColor: canArrive ? Colors.white : context.textMutedColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                           elevation: 0,
                           disabledBackgroundColor: context.surfaceAltColor,
                           disabledForegroundColor: context.textMutedColor,

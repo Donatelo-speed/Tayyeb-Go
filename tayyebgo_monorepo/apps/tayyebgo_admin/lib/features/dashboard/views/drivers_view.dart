@@ -51,9 +51,9 @@ class _DriversViewState extends State<DriversView> {
                         prefixIcon: Icon(Icons.search_rounded, color: context.textMutedColor, size: 20),
                         filled: true,
                         fillColor: context.surfaceColor,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+                        border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                        focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
                       onChanged: (v) => setState(() => _searchQuery = v),
@@ -126,7 +126,7 @@ class _DriversViewState extends State<DriversView> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.brLg,
                           border: Border.all(color: context.borderColor),
                         ),
                         child: Column(
@@ -139,7 +139,7 @@ class _DriversViewState extends State<DriversView> {
                                   height: 38,
                                   decoration: BoxDecoration(
                                     color: context.primaryColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: AppRadius.brMd,
                                   ),
                                   child: Center(
                                     child: Text(displayName.isNotEmpty ? displayName[0].toUpperCase() : '?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 16, color: context.primaryColor)),
@@ -177,7 +177,7 @@ class _DriversViewState extends State<DriversView> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: (isOnline ? context.successColor : context.textMutedColor).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: AppRadius.brMd,
                                   ),
                                   child: Text(isOnline ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: isOnline ? context.successColor : context.textMutedColor)),
                                 ),
@@ -191,7 +191,7 @@ class _DriversViewState extends State<DriversView> {
                                   },
                                   icon: Icon(Icons.more_vert_rounded, color: context.textMutedColor, size: 20),
                                   color: context.surfaceColor,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                                   itemBuilder: (_) => [
                                     PopupMenuItem(value: 'approve', child: ListTile(leading: Icon(Icons.check_circle, size: 20, color: context.successColor), title: Text('Approve'))),
                                     if (isOnline) PopupMenuItem(value: 'suspend', child: ListTile(leading: Icon(Icons.pause_circle, size: 20, color: context.warningColor), title: Text('Suspend'))),
@@ -234,7 +234,7 @@ class _DriversViewState extends State<DriversView> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? context.primaryColor : context.surfaceColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.brXl,
           border: Border.all(color: selected ? context.primaryColor : context.borderColor),
         ),
         child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? context.textPrimaryColor : context.textMutedColor)),
@@ -246,7 +246,7 @@ class _DriversViewState extends State<DriversView> {
     final c = type == 'platform' ? context.successColor : context.primaryColor;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+      decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
       child: Text(type.replaceAll('_', ' ').toUpperCase(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: c)),
     );
   }
@@ -269,7 +269,7 @@ class _DriversViewState extends State<DriversView> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('Assign Store', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 350,
@@ -287,9 +287,9 @@ class _DriversViewState extends State<DriversView> {
                   hintText: 'Enter store document ID',
                   labelStyle: GoogleFonts.inter(color: context.textMutedColor),
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                 ),
               ),
               const SizedBox(height: 8),
@@ -315,7 +315,7 @@ class _DriversViewState extends State<DriversView> {
               }
               Navigator.pop(ctx);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
             child: Text('Save', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],

@@ -53,7 +53,7 @@ class _ProfileCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -63,7 +63,7 @@ class _ProfileCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: context.primaryColor,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brLg,
             ),
             child: Center(
               child: Text(initials, style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 20, color: context.textPrimaryColor)),
@@ -82,7 +82,7 @@ class _ProfileCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: context.primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.brXl,
                   ),
                   child: Text(auth.user?.role.displayName ?? 'Super Admin', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.primaryColor)),
                 ),
@@ -109,7 +109,7 @@ class _PreferencesCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -183,7 +183,7 @@ class _FeatureTogglesCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -267,7 +267,7 @@ class _AccountCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -315,7 +315,7 @@ class _AboutCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -378,7 +378,7 @@ class _SettingRow extends StatelessWidget {
       label: '$title — $subtitle',
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Row(
@@ -417,7 +417,7 @@ void _showLanguagePicker(BuildContext context) {
     builder: (ctx) {
       return AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('Choose language', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -468,7 +468,7 @@ void _showPolicyPage(BuildContext context, String title, String body) {
       return Dialog(
         backgroundColor: context.surfaceColor,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640, maxHeight: 560),
           child: Column(

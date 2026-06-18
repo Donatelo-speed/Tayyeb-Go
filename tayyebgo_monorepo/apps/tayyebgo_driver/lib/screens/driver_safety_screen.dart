@@ -68,7 +68,7 @@ class DriverSafetyScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brLg,
               border: Border.all(color: context.borderColor),
             ),
             child: Column(
@@ -107,7 +107,7 @@ class DriverSafetyScreen extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('SOS Emergency', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.errorColor)),
         content: Text(
           'Your location and details will be sent to our support team immediately. Do you want to proceed?',
@@ -138,7 +138,7 @@ class DriverSafetyScreen extends StatelessWidget {
                       content: Text('SOS alert sent to support', style: GoogleFonts.inter()),
                       backgroundColor: context.errorColor,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     ),
                   );
                 }
@@ -165,7 +165,7 @@ class DriverSafetyScreen extends StatelessWidget {
       builder: (_) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: context.surfaceColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
           title: Text('Report Issue', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -188,9 +188,9 @@ class DriverSafetyScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Describe the issue...',
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.primaryColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                   filled: true,
                   fillColor: context.backgroundColor,
                 ),
@@ -223,7 +223,7 @@ class DriverSafetyScreen extends StatelessWidget {
                         content: Text('Report submitted', style: GoogleFonts.inter()),
                         backgroundColor: context.successColor,
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                       ),
                     );
                   }
@@ -250,7 +250,7 @@ class DriverSafetyScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: selectedType == value ? AppColors.driverAccent.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.brXl,
           border: Border.all(
             color: selectedType == value ? AppColors.driverAccent : Colors.grey,
           ),
@@ -295,7 +295,7 @@ class _SafetyCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: context.borderColor),
         ),
         child: Row(
@@ -305,7 +305,7 @@ class _SafetyCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: iconColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(icon, color: iconColor, size: 22),
             ),

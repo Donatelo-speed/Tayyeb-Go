@@ -301,6 +301,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
@@ -389,6 +390,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (_disposed) return false;
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
@@ -397,6 +399,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -404,6 +407,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -453,6 +457,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
@@ -461,6 +466,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -468,6 +474,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -514,6 +521,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
@@ -522,6 +530,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -529,6 +538,7 @@ class AuthProvider extends ChangeNotifier {
       if (_disposed) return false;
       _error = _friendlyAuthError(e);
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       return false;
@@ -645,6 +655,7 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
       _isLoading = false;
+      _isInitializing = false;
       _loginInProgress = false;
       notifyListeners();
       _notifyRouter();
@@ -657,6 +668,8 @@ class AuthProvider extends ChangeNotifier {
       _error = _friendlyAuthError(e);
     }
     _isLoading = false;
+    _isInitializing = false;
+    _loginInProgress = false;
     notifyListeners();
     return false;
   }

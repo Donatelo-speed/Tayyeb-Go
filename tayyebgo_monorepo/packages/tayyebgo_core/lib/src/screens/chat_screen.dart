@@ -126,11 +126,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         hintText: 'Type a message...',
                         hintStyle: GoogleFonts.inter(color: context.textMutedColor),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.brFull,
                           borderSide: BorderSide(color: context.borderColor),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.brFull,
                           borderSide: BorderSide(color: context.borderColor),
                         ),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -170,7 +170,7 @@ class _ChatBubble extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
         decoration: BoxDecoration(
           color: isMe ? context.primaryColor : context.surfaceColor,
-          borderRadius: BorderRadius.circular(16).copyWith(
+          borderRadius: AppRadius.brCard.copyWith(
             bottomRight: isMe ? const Radius.circular(4) : null,
             bottomLeft: !isMe ? const Radius.circular(4) : null,
           ),

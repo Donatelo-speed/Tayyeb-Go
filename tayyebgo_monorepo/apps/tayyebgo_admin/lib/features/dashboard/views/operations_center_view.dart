@@ -60,7 +60,7 @@ class _OperationsCenterViewState extends State<OperationsCenterView> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       clipBehavior: Clip.antiAlias,
@@ -197,7 +197,7 @@ class _MapOverlayBadge extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: context.surfaceColor.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.brMd,
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8)],
           ),
           child: Row(
@@ -294,7 +294,7 @@ class _DelayedOrderCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -303,7 +303,7 @@ class _DelayedOrderCard extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.access_time_rounded, color: Colors.orange, size: 20),
           ),
@@ -322,7 +322,7 @@ class _DelayedOrderCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.brSm,
             ),
             child: Text('${delay}m late', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: Colors.red)),
           ),
@@ -364,7 +364,7 @@ class _FraudAlertsList extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
               ),
               child: Row(
@@ -373,7 +373,7 @@ class _FraudAlertsList extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.brMd,
                     ),
                     child: const Icon(Icons.shield_rounded, color: Colors.red, size: 20),
                   ),
@@ -423,7 +423,7 @@ class _RiskBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.brSm,
       ),
       child: Text('${(score * 100).toInt()}%', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11, color: color)),
     );
@@ -460,7 +460,7 @@ class _FailedPaymentsList extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
               ),
               child: Row(
@@ -469,7 +469,7 @@ class _FailedPaymentsList extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.brMd,
                     ),
                     child: const Icon(Icons.payment_rounded, color: Colors.red, size: 20),
                   ),
@@ -507,7 +507,7 @@ class _EmptyCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Center(

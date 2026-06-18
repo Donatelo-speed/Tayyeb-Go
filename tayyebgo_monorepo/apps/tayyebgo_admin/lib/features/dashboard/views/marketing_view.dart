@@ -95,14 +95,14 @@ class _CampaignsTab extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.brLg,
                           border: Border.all(color: context.borderColor),
                         ),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                              decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
                               child: Icon(_iconForType(type), size: 20, color: context.primaryColor),
                             ),
                             const SizedBox(width: 12),
@@ -195,7 +195,7 @@ class _CampaignsTab extends StatelessWidget {
       builder: (_) => StatefulBuilder(
         builder: (ctx, setLocal) => AlertDialog(
           backgroundColor: context.surfaceColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
           title: Text('New Campaign', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
           content: SizedBox(
             width: 400,
@@ -210,9 +210,9 @@ class _CampaignsTab extends StatelessWidget {
                     hintText: 'Ramadan Iftar Special',
                     labelStyle: GoogleFonts.inter(color: context.textMutedColor),
                     hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                    border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                    enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                    focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -223,9 +223,9 @@ class _CampaignsTab extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Type',
                     labelStyle: GoogleFonts.inter(color: context.textMutedColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                    border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                    enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                    focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                   ),
                   items: const [
                     DropdownMenuItem(value: 'free_delivery', child: Text('Free Delivery')),
@@ -244,9 +244,9 @@ class _CampaignsTab extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Reward type',
                     labelStyle: GoogleFonts.inter(color: context.textMutedColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                    border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                    enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                    focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                   ),
                   items: const [
                     DropdownMenuItem(value: 'free_delivery', child: Text('Free Delivery')),
@@ -272,7 +272,7 @@ class _CampaignsTab extends StatelessWidget {
                 });
                 if (ctx.mounted) Navigator.of(ctx).pop();
               },
-              style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
               child: Text('Create', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
             ),
           ],
@@ -324,7 +324,7 @@ class _CouponsTab extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.brLg,
                           border: Border.all(color: context.borderColor),
                         ),
                         child: Row(
@@ -333,7 +333,7 @@ class _CouponsTab extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: context.primaryColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.brMd,
                                 border: Border.all(color: context.primaryColor.withValues(alpha: 0.3)),
                               ),
                               child: Text(code, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w800, color: context.primaryColor, letterSpacing: 0)),
@@ -417,7 +417,7 @@ class _CouponsTab extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('New Coupon', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 400,
@@ -432,9 +432,9 @@ class _CouponsTab extends StatelessWidget {
                   hintText: 'TAYYEB10',
                   labelStyle: GoogleFonts.inter(color: context.textMutedColor),
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -445,9 +445,9 @@ class _CouponsTab extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Discount %',
                   labelStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -458,9 +458,9 @@ class _CouponsTab extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Max uses',
                   labelStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                  enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+                  focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
                 ),
               ),
             ],
@@ -480,7 +480,7 @@ class _CouponsTab extends StatelessWidget {
               });
               if (context.mounted) Navigator.of(context).pop();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: ElevatedButton.styleFrom(backgroundColor: context.primaryColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
             child: Text('Create', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],

@@ -176,7 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       content: Text(msg),
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
       margin: const EdgeInsets.all(16),
     ));
   }
@@ -379,7 +379,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             value: _agreedToTerms,
             onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
             activeColor: AppColors.primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brSm),
             side: BorderSide(color: AppColors.border),
           ),
         ),

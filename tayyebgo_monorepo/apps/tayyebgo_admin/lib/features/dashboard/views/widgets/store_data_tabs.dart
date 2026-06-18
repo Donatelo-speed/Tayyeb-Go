@@ -83,7 +83,7 @@ class StoreProductsTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: (available ? context.successColor : context.errorColor).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                   child: Text(available ? 'In stock' : 'Out', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: available ? context.successColor : context.errorColor)),
                 ),
@@ -224,7 +224,7 @@ class StoreDriversTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: (active ? context.successColor : context.errorColor).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: AppRadius.brSm,
                   ),
                   child: Text(active ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: active ? context.successColor : context.errorColor)),
                 ),

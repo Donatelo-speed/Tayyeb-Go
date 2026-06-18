@@ -213,7 +213,7 @@ class _PartnerPayoutsScreenState extends State<PartnerPayoutsScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -252,7 +252,7 @@ class _PartnerPayoutsScreenState extends State<PartnerPayoutsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: selected ? context.warningColor : context.surfaceColor,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: AppRadius.brXl,
                 border: Border.all(
                     color:
                         selected ? context.warningColor : context.borderColor),
@@ -281,7 +281,7 @@ class _PartnerPayoutsScreenState extends State<PartnerPayoutsScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -303,7 +303,7 @@ class _PartnerPayoutsScreenState extends State<PartnerPayoutsScreen> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: statusBg,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.brXl,
                 ),
                 child: Text(
                   payout.status[0].toUpperCase() + payout.status.substring(1),

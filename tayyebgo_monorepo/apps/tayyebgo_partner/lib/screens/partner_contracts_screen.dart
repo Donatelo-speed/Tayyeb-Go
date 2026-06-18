@@ -125,7 +125,7 @@ class _SummaryCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +137,7 @@ class _SummaryCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Text(
                   '$type Plan',
@@ -234,7 +234,7 @@ class _ContractCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -285,7 +285,7 @@ class _ContractCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Text(
         type,
@@ -317,7 +317,7 @@ class _ContractCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -439,7 +439,7 @@ class _ContractChangeFormState extends State<_ContractChangeForm> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: context.surfaceAltColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(color: context.borderColor),
           ),
           child: DropdownButtonHideUnderline(
@@ -485,15 +485,15 @@ class _ContractChangeFormState extends State<_ContractChangeForm> {
             filled: true,
             fillColor: context.surfaceAltColor,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.borderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               borderSide: BorderSide(color: context.primaryColor, width: 1.5),
             ),
           ),
@@ -509,7 +509,7 @@ class _ContractChangeFormState extends State<_ContractChangeForm> {
               foregroundColor: context.backgroundColor,
               disabledBackgroundColor: context.warningColor.withValues(alpha: 0.5),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
               ),
               elevation: 0,
             ),

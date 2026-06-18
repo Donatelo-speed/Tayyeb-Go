@@ -87,7 +87,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: AppRadius.brXl,
                               boxShadow: [
                                 BoxShadow(
                                   color: context.primaryColor.withValues(alpha: 0.3),
@@ -148,7 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               height: 56,
                               decoration: BoxDecoration(
                                 color: context.primaryColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: AppRadius.brLg,
                               ),
                               child: Icon(Icons.lock_reset_rounded, color: context.primaryColor, size: 28),
                             ),
@@ -192,15 +192,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     fillColor: context.surfaceColor,
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.brMd,
                                       borderSide: BorderSide(color: context.borderColor.withValues(alpha: 0.5)),
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.brMd,
                                       borderSide: BorderSide(color: context.borderColor.withValues(alpha: 0.5)),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.brMd,
                                       borderSide: BorderSide(color: context.primaryColor, width: 1.5),
                                     ),
                                   ),
@@ -217,7 +217,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   foregroundColor: Colors.white,
                                   elevation: 0,
                                   disabledBackgroundColor: context.primaryColor.withValues(alpha: 0.6),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                                   textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                                 ),
                                 child: _loading
@@ -233,7 +233,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 color: context.successColor.withValues(alpha: 0.06),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.brMd,
                                 border: Border.all(color: context.successColor.withValues(alpha: 0.12)),
                               ),
                               child: Column(
@@ -296,7 +296,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
                                 color: context.errorColor.withValues(alpha: 0.06),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: AppRadius.brMd,
                                 border: Border.all(color: context.errorColor.withValues(alpha: 0.12)),
                               ),
                               child: Row(

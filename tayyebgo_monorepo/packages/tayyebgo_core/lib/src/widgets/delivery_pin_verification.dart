@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../../presentation/theme/app_colors.dart';
+import '../../presentation/theme/app_radius.dart';
 
 /// Generates a 4-digit delivery PIN for order verification.
 /// Stores it in the order document under `deliveryPin`.
@@ -122,7 +123,7 @@ class _DeliveryPinVerificationSheetState extends State<DeliveryPinVerificationSh
               height: 4,
               decoration: BoxDecoration(
                 color: AppColors.textMuted.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
           ),
@@ -135,7 +136,7 @@ class _DeliveryPinVerificationSheetState extends State<DeliveryPinVerificationSh
                 height: 44,
                 decoration: BoxDecoration(
                   color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: const Icon(Icons.pin_rounded, color: AppColors.primary, size: 22),
               ),
@@ -168,19 +169,19 @@ class _DeliveryPinVerificationSheetState extends State<DeliveryPinVerificationSh
               fillColor: AppColors.surfaceAlt,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brLg,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brLg,
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brLg,
                 borderSide: const BorderSide(color: AppColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.brLg,
                 borderSide: const BorderSide(color: AppColors.error),
               ),
             ),
@@ -192,7 +193,7 @@ class _DeliveryPinVerificationSheetState extends State<DeliveryPinVerificationSh
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
               ),
               child: Row(
@@ -218,7 +219,7 @@ class _DeliveryPinVerificationSheetState extends State<DeliveryPinVerificationSh
                 backgroundColor: AppColors.success,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: AppColors.success.withValues(alpha: 0.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                 elevation: 0,
               ),
               child: _verifying

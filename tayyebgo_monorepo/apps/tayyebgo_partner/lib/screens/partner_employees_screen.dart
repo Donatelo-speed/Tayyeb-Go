@@ -98,7 +98,7 @@ class _PartnerEmployeesScreenState extends State<PartnerEmployeesScreen> {
               Center(
                 child: Container(
                   width: 40, height: 4,
-                  decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2)),
+                  decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm),
                 ),
               ),
               const SizedBox(height: 20),
@@ -113,7 +113,7 @@ class _PartnerEmployeesScreenState extends State<PartnerEmployeesScreen> {
                   labelStyle: GoogleFonts.inter(color: context.textMutedColor),
                   filled: true,
                   fillColor: context.backgroundColor,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
                 ),
               ),
               const SizedBox(height: 16),
@@ -137,7 +137,7 @@ class _PartnerEmployeesScreenState extends State<PartnerEmployeesScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     elevation: 0,
                   ),
                   child: Text('Send Invite', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
@@ -158,7 +158,7 @@ class _PartnerEmployeesScreenState extends State<PartnerEmployeesScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : context.surfaceColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
           border: Border.all(
             color: isSelected ? AppColors.primary : context.borderColor,
             width: isSelected ? 2 : 1,
@@ -194,7 +194,7 @@ class _PartnerEmployeesScreenState extends State<PartnerEmployeesScreen> {
             content: Text('Invite sent to $email'),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -264,7 +264,7 @@ class _MemberCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
@@ -328,7 +328,7 @@ class _MemberCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.brSm,
       ),
       child: Text(label, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
     );

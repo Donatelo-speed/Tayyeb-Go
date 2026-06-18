@@ -104,7 +104,7 @@ class _ShimmerEffectState extends State<_ShimmerEffect>
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.brMd,
             gradient: LinearGradient(
               colors: [baseColor, highlightColor, baseColor],
               stops: [

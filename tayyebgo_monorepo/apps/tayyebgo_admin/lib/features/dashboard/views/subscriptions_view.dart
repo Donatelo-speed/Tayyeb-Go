@@ -209,7 +209,7 @@ class _SubscriptionsContent extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -219,7 +219,7 @@ class _SubscriptionsContent extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               gradient: gradient,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: Colors.white, size: 22),
           ),
@@ -246,7 +246,7 @@ class _SubscriptionsContent extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.brCard,
           border: Border.all(color: context.borderColor),
         ),
         child: Center(child: Text('No revenue data yet', style: GoogleFonts.inter(color: context.textMutedColor))),
@@ -260,7 +260,7 @@ class _SubscriptionsContent extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -272,7 +272,7 @@ class _SubscriptionsContent extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: context.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(Icons.bar_chart_rounded, color: context.primaryColor, size: 20),
               ),
@@ -300,7 +300,7 @@ class _SubscriptionsContent extends StatelessWidget {
                           height: barHeight,
                           decoration: BoxDecoration(
                             gradient: _statOrange,
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: AppRadius.brSm,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -324,7 +324,7 @@ class _SubscriptionsContent extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -336,7 +336,7 @@ class _SubscriptionsContent extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: AppColors.adminAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(Icons.pie_chart_rounded, color: AppColors.adminAccent, size: 20),
               ),
@@ -369,7 +369,7 @@ class _SubscriptionsContent extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.brSm,
           child: LinearProgressIndicator(
             value: pct,
             backgroundColor: context.surfaceAltColor,
@@ -389,7 +389,7 @@ class _SubscriptionsContent extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
               border: Border.all(color: context.borderColor),
             ),
             child: TextField(
@@ -411,7 +411,7 @@ class _SubscriptionsContent extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.brMd,
             border: Border.all(color: context.borderColor),
           ),
           child: DropdownButtonHideUnderline(
@@ -439,7 +439,7 @@ class _SubscriptionsContent extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -508,7 +508,7 @@ class _SubscriptionsContent extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.brSm,
       ),
       child: Text(plan[0].toUpperCase() + plan.substring(1), style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
     );
@@ -524,7 +524,7 @@ class _SubscriptionsContent extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.brSm,
       ),
       child: Text(status[0].toUpperCase() + status.substring(1), style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
     );

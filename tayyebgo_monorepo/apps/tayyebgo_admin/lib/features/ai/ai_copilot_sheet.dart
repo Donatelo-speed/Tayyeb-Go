@@ -220,7 +220,7 @@ class _SheetHeader extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [context.primaryColor, context.primaryColor.withValues(alpha: 0.7)],
               ),
-              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
           ),
@@ -351,7 +351,7 @@ class _ToolCallChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surfaceColor,
         border: Border.all(color: context.borderColor),
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -365,7 +365,7 @@ class _ToolCallChip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: riskColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.brSm,
             ),
             child: Text(riskLabel,
                 style: AppTypography.label.copyWith(color: riskColor, fontSize: 9)),
@@ -538,7 +538,7 @@ class _InputBar extends StatelessWidget {
                   fillColor: context.surfaceAltColor,
                   contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderRadius: AppRadius.brMd,
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -724,7 +724,7 @@ class _PreviewBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      borderRadius: AppRadius.brMd,
       child: Container(
         height: 120,
         decoration: BoxDecoration(
@@ -762,7 +762,7 @@ class _PreviewBox extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.brXl,
                 ),
                 child: Text(plan.toTemplate,
                     style: AppTypography.label.copyWith(color: Colors.white)),

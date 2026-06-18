@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../presentation/theme/app_colors.dart';
 import '../presentation/shared_widgets/animated_widgets.dart';
+import '../presentation/theme/app_radius.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -99,7 +100,7 @@ class EmptyState extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [accent, accent.withValues(alpha: 0.8)],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                       boxShadow: [
                         BoxShadow(
                           color: accent.withValues(alpha: 0.3),
@@ -169,7 +170,7 @@ class RestaurantCardSkeleton extends StatelessWidget {
         color: Theme.of(context).brightness == Brightness.dark 
             ? AppColors.surface 
             : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.brXl,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +218,7 @@ class ListItemSkeleton extends StatelessWidget {
         color: Theme.of(context).brightness == Brightness.dark 
             ? AppColors.surface 
             : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
       ),
       child: Row(
         children: [

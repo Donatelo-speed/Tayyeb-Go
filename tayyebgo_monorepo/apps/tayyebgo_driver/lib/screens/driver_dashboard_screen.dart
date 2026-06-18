@@ -150,7 +150,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                             gradient: LinearGradient(
                               colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.brXl,
                             boxShadow: [
                               BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2)),
                             ],
@@ -188,7 +188,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                               ? [AppColors.driverAccent, const Color(0xFF059669)]
                               : [context.surfaceColor, context.surfaceColor],
                         ),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: AppRadius.brXl,
                         boxShadow: _isOnline
                             ? [BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))]
                             : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
@@ -230,7 +230,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                             width: 52, height: 28,
                             decoration: BoxDecoration(
                               color: _isOnline ? Colors.white.withValues(alpha: 0.2) : context.surfaceAltColor,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.brLg,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(3),
@@ -305,7 +305,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                       children: [
                         Row(
                           children: [
-                            Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.5)]), borderRadius: BorderRadius.circular(2))),
+                            Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.5)]), borderRadius: AppRadius.brSm)),
                             const SizedBox(width: 12),
                             Text('Active Dispatch', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor, letterSpacing: 0)),
                           ],
@@ -334,7 +334,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                     children: [
                       Row(
                         children: [
-                          Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.primary, AppColors.primaryHover]), borderRadius: BorderRadius.circular(2))),
+                          Container(width: 4, height: 20, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.primary, AppColors.primaryHover]), borderRadius: AppRadius.brSm)),
                           const SizedBox(width: 12),
                           Text('Active Deliveries', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor, letterSpacing: 0)),
                         ],
@@ -374,7 +374,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.brLg,
             border: Border.all(color: color.withValues(alpha: 0.15), width: 0.5),
           ),
           child: Column(
@@ -413,7 +413,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
               begin: Alignment.topLeft, end: Alignment.bottomRight,
               colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.brXl,
             boxShadow: [BoxShadow(color: AppColors.driverAccent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
           ),
           child: Row(
@@ -436,7 +436,7 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen>
                     width: 60, height: 60,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.brCard,
                     ),
                     child: const Icon(Icons.star_rounded, color: Colors.white, size: 32),
                   ),
@@ -503,7 +503,7 @@ class _AssignedDispatchCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.brCard,
             border: Border.all(color: AppColors.driverAccent.withValues(alpha: 0.3), width: 1),
           ),
           child: Column(
@@ -522,7 +522,7 @@ class _AssignedDispatchCard extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => onReject(d),
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: AppColors.error), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    style: OutlinedButton.styleFrom(side: BorderSide(color: AppColors.error), shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                     child: Text('Reject', style: TextStyle(color: AppColors.error)),
                   ),
                 ),
@@ -530,7 +530,7 @@ class _AssignedDispatchCard extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => onAccept(d),
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.driverAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.driverAccent, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                     child: const Text('Accept', style: TextStyle(color: Colors.white)),
                   ),
                 ),
@@ -564,7 +564,7 @@ class _ActiveOrdersSection extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.brCard,
             ),
             child: Center(
               child: Text('No active deliveries', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
@@ -583,7 +583,7 @@ class _ActiveOrdersSection extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.brCard,
                 border: Border.all(color: AppColors.warning.withValues(alpha: 0.3), width: 1),
               ),
               child: Column(
@@ -592,7 +592,7 @@ class _ActiveOrdersSection extends StatelessWidget {
                   Row(children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                      decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
                       child: Text(status.toUpperCase(), style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: AppColors.warning)),
                     ),
                     const Spacer(),

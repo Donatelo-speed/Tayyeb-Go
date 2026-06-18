@@ -65,7 +65,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
               height: 4,
               decoration: BoxDecoration(
                 color: AppColors.textMuted.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
           ),
@@ -78,7 +78,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brLg,
               border: Border.all(color: AppColors.border),
             ),
             child: Row(
@@ -88,7 +88,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
                   height: 44,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: const Icon(Icons.payments_rounded, color: AppColors.primary, size: 22),
                 ),
@@ -125,15 +125,15 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
                 fillColor: AppColors.surfaceAlt,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.border),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
               ),
@@ -151,15 +151,15 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
                 fillColor: AppColors.surfaceAlt,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.border),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.brMd,
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
               ),
@@ -173,7 +173,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: AppColors.border),
               ),
               child: Row(
@@ -202,7 +202,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: AppColors.successSoft,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
               ),
               child: _confirming
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
@@ -262,7 +262,7 @@ class _CodVerificationSheetState extends State<CodVerificationSheet>
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
               ),
               child: Text('Done', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
             ),

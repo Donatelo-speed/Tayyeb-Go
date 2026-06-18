@@ -137,7 +137,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: context.warningColor,
                     foregroundColor: context.backgroundColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                     elevation: 0,
                   ),
                   child: _isSaving
@@ -164,7 +164,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -193,9 +193,9 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
             prefixIcon: icon != null ? Icon(icon, color: context.textMutedColor, size: 20) : null,
             filled: true,
             fillColor: context.backgroundColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.warningColor)),
+            border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.warningColor)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           ),
         ),

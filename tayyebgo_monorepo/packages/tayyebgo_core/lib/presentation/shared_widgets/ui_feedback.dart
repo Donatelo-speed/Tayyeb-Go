@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
 
 extension UiFeedback on BuildContext {
   void showSuccess(String message) {
@@ -16,7 +17,7 @@ extension UiFeedback on BuildContext {
         ),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
       ),
@@ -37,7 +38,7 @@ extension UiFeedback on BuildContext {
         ),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 4),
       ),
@@ -62,7 +63,7 @@ extension UiFeedback on BuildContext {
         ),
         backgroundColor: Colors.orange,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
       ),
@@ -83,7 +84,7 @@ extension UiFeedback on BuildContext {
         ),
         backgroundColor: AppColors.info,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
       ),
@@ -100,7 +101,7 @@ extension UiFeedback on BuildContext {
     final result = await showDialog<bool>(
       context: this,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
         content: Text(message, style: const TextStyle(fontSize: 14)),
         actions: [
@@ -117,7 +118,7 @@ extension UiFeedback on BuildContext {
               backgroundColor: confirmColor ?? AppColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
             ),
             child: Text(confirmLabel),

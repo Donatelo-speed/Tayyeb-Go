@@ -81,7 +81,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: selected ? context.warningColor : context.surfaceColor,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: AppRadius.brXl,
                           border: Border.all(color: selected ? context.warningColor : context.borderColor),
                         ),
                         child: Text(cat, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: selected ? context.backgroundColor : context.textMutedColor)),
@@ -139,7 +139,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -149,11 +149,11 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
             height: 56,
             decoration: BoxDecoration(
               color: context.surfaceAltColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.brMd,
                     child: Image.network(imageUrl, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(Icons.restaurant_rounded, color: context.textMutedColor, size: 24)),
                   )
                 : Icon(Icons.restaurant_rounded, color: context.textMutedColor, size: 24),
@@ -204,7 +204,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text(existingId != null ? 'Edit Item' : 'Add Item', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
         content: SingleChildScrollView(
           child: Column(
@@ -216,7 +216,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
                 decoration: InputDecoration(
                   hintText: 'Item name',
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
                   filled: true,
                   fillColor: context.backgroundColor,
                 ),
@@ -229,7 +229,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
                 decoration: InputDecoration(
                   hintText: 'Price (SYP)',
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
                   filled: true,
                   fillColor: context.backgroundColor,
                 ),
@@ -241,7 +241,7 @@ class _PartnerMenuManagementScreenState extends State<PartnerMenuManagementScree
                 decoration: InputDecoration(
                   hintText: 'Category (e.g. Mains, Drinks)',
                   hintStyle: GoogleFonts.inter(color: context.textMutedColor),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
                   filled: true,
                   fillColor: context.backgroundColor,
                 ),

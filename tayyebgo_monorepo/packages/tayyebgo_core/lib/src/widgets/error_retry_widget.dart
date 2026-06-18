@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/tayyebgo_theme.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class ErrorRetryWidget extends StatelessWidget {
   final String message;
@@ -41,7 +42,7 @@ class ErrorRetryWidget extends StatelessWidget {
                 backgroundColor: TayyebGoTheme.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
             ),
           ],

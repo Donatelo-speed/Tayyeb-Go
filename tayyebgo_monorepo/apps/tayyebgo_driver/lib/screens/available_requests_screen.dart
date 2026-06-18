@@ -102,7 +102,7 @@ class _DispatchRequestCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.warningColor.withValues(alpha: 0.15)),
       ),
       child: Column(
@@ -114,7 +114,7 @@ class _DispatchRequestCard extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: context.warningColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(Icons.delivery_dining_rounded, color: context.warningColor, size: 20),
               ),
@@ -126,7 +126,7 @@ class _DispatchRequestCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: context.warningColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.brSm,
                 ),
                 child: Text('NEW', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: context.warningColor)),
               ),
@@ -168,7 +168,7 @@ class _DispatchRequestCard extends StatelessWidget {
                               content: Text('You already have an active delivery. Complete it before accepting a new one.'),
                               backgroundColor: AppColors.warning,
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                             ),
                           );
                         }
@@ -188,7 +188,7 @@ class _DispatchRequestCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.successColor,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                       elevation: 0,
                     ),
                     child: Text('Accept', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
@@ -215,7 +215,7 @@ class _DispatchRequestCard extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: context.textMutedColor,
                       side: BorderSide(color: context.borderColor),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     ),
                     child: Text('Reject', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
                   ),
@@ -240,7 +240,7 @@ class _AnythingRequestCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.successColor.withValues(alpha: 0.15)),
       ),
       child: Column(
@@ -252,7 +252,7 @@ class _AnythingRequestCard extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: context.successColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: Icon(Icons.shopping_bag_rounded, color: context.successColor, size: 20),
               ),
@@ -300,7 +300,7 @@ class _AnythingRequestCard extends StatelessWidget {
                         content: Text('You already have an active delivery. Complete it first.'),
                         backgroundColor: AppColors.warning,
                         behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                       ),
                     );
                   }
@@ -322,7 +322,7 @@ class _AnythingRequestCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.successColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                 elevation: 0,
               ),
               child: Text('Accept Request', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),

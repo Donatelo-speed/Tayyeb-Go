@@ -102,7 +102,7 @@ void pickBrandColor(BuildContext context, Map<String, dynamic> d, String storeId
                     await AdminFirestoreService.instance.updateStore(storeId, {'brandColor': s.$1});
                     if (context.mounted) context.showSuccess('Brand color set to ${s.$1}');
                   },
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.brXl,
                   child: Container(
                     width: 40, height: 40,
                     decoration: BoxDecoration(

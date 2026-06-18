@@ -79,18 +79,18 @@ class StoreHeader extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: (active ? context.successColor : context.errorColor).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.brSm,
                 ),
                 child: Text(active ? 'Active' : 'Inactive', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: active ? context.successColor : context.errorColor)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
                 child: Text('${commission.toStringAsFixed(0)}% Commission', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryColor)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: context.warningColor.withValues(alpha: 0.1), borderRadius: AppRadius.brSm),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.workspace_premium, size: 12, color: context.warningColor),
                   const SizedBox(width: 3),
@@ -116,7 +116,7 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.brSm,
         border: Border.all(color: color.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [

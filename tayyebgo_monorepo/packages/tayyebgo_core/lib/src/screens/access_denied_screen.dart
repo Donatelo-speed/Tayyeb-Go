@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../theme/tayyebgo_theme.dart';
+import '../../presentation/theme/app_radius.dart';
 
 class AccessDeniedScreen extends StatefulWidget {
   final String? currentRole;
@@ -108,7 +109,7 @@ class _AccessDeniedScreenState extends State<AccessDeniedScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24, vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: AppRadius.brMd),
                 ),
               ),
             ],
@@ -153,7 +154,7 @@ class _RoleInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: TayyebGoTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: AppColors.border),
       ),
       child: Column(

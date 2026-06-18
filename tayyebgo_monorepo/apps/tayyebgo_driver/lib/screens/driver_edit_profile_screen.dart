@@ -78,7 +78,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
               content: Text('Profile photo updated', style: GoogleFonts.inter()),
               backgroundColor: context.successColor,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
             ),
           );
         }
@@ -88,7 +88,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
             content: Text('Failed to upload photo', style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -129,7 +129,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
           content: Text('Profile updated successfully', style: GoogleFonts.inter()),
           backgroundColor: context.successColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
       );
       if (context.mounted) context.pop();
@@ -140,7 +140,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
             content: Text('Failed to update profile', style: GoogleFonts.inter()),
             backgroundColor: context.errorColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
           ),
         );
       }
@@ -220,7 +220,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                   backgroundColor: context.successColor,
                   foregroundColor: context.backgroundColor,
                   disabledBackgroundColor: context.successColor.withValues(alpha: 0.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                   elevation: 0,
                 ),
                 child: _saving
@@ -298,7 +298,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
       ),
       child: TextFormField(
@@ -324,7 +324,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),

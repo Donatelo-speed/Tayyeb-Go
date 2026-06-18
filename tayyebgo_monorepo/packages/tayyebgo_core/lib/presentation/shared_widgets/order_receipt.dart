@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
 
 /// Shared Order Receipt Widget - used across all 4 apps
 class OrderReceipt extends StatelessWidget {
@@ -49,7 +50,7 @@ class OrderReceipt extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.brXl,
         border: Border.all(
           color: isDark ? AppColors.border : AppColors.border,
           width: 0.5,
@@ -107,7 +108,7 @@ class OrderReceipt extends StatelessWidget {
             gradient: const LinearGradient(
               colors: [AppColors.primary, AppColors.primaryHover],
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.brLg,
           ),
           child: const Icon(
             Icons.receipt_long_rounded,
@@ -146,7 +147,7 @@ class OrderReceipt extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: AppColors.success.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.brMd,
           ),
           child: Text(
             'COMPLETED',
@@ -335,7 +336,7 @@ class OrderReceipt extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         children: [
@@ -360,7 +361,7 @@ class OrderReceipt extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.driverAccent.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         children: [
@@ -369,7 +370,7 @@ class OrderReceipt extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: AppColors.driverAccent.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.delivery_dining_rounded, size: 18, color: AppColors.driverAccent),
           ),
@@ -401,7 +402,7 @@ class OrderReceipt extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         children: [
@@ -410,7 +411,7 @@ class OrderReceipt extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: const Icon(Icons.person_rounded, size: 18, color: AppColors.primary),
           ),

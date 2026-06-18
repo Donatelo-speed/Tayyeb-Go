@@ -89,14 +89,14 @@ class StoresView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 10),
@@ -127,7 +127,7 @@ class StoresView extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: isActive ? context.primaryColor.withValues(alpha: 0.3) : context.borderColor),
         ),
         child: Row(
@@ -137,7 +137,7 @@ class StoresView extends StatelessWidget {
               height: 42,
               decoration: BoxDecoration(
                 color: context.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(Icons.store_rounded, color: context.primaryColor, size: 20),
             ),
@@ -156,7 +156,7 @@ class StoresView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: (isOpen ? context.successColor : context.textMutedColor).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.brMd,
                         ),
                         child: Text(
                           isOpen ? 'Open' : 'Closed',

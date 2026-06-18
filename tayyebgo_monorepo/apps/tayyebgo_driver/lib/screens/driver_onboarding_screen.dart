@@ -114,7 +114,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 2),
                     decoration: BoxDecoration(
                       color: i <= _step ? context.successColor : context.borderColor,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: AppRadius.brSm,
                     ),
                   ),
                 )),
@@ -134,7 +134,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.successColor,
                         foregroundColor: context.textPrimaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                         elevation: 0,
                       ),
                       child: _isSaving
@@ -156,7 +156,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
       case 0:
         return [
           const SizedBox(height: 40),
-          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.person_add_rounded, color: context.successColor, size: 40))),
+          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: AppRadius.brXl), child: Icon(Icons.person_add_rounded, color: context.successColor, size: 40))),
           const SizedBox(height: 24),
           Center(child: Text('Welcome, Driver!', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
@@ -219,7 +219,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
       case 5:
         return [
           const SizedBox(height: 40),
-          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Icon(Icons.check_circle_rounded, color: context.successColor, size: 40))),
+          Center(child: Container(width: 80, height: 80, decoration: BoxDecoration(color: context.successColor.withValues(alpha: 0.1), borderRadius: AppRadius.brXl), child: Icon(Icons.check_circle_rounded, color: context.successColor, size: 40))),
           const SizedBox(height: 24),
           Center(child: Text('You\'re All Set!', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 28, color: context.textPrimaryColor))),
           const SizedBox(height: 8),
@@ -244,9 +244,9 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
             prefixIcon: icon != null ? Icon(icon, color: context.textMutedColor, size: 20) : null,
             filled: true,
             fillColor: context.surfaceColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.successColor)),
+            border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.successColor)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           ),
         ),
@@ -262,7 +262,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: selected ? context.successColor : context.borderColor, width: selected ? 2 : 1),
         ),
         child: Row(
@@ -283,7 +283,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: uploaded ? context.successColor : context.borderColor),
       ),
       child: Row(
@@ -313,7 +313,7 @@ class _DriverOnboardingScreenState extends State<DriverOnboardingScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: selected ? context.successColor : context.borderColor),
         ),
         child: Row(

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../presentation/theme/app_colors.dart';
 import '../src/providers/auth_provider.dart';
+import '../presentation/theme/app_radius.dart';
 
 class AppShellItem {
   final String label;
@@ -170,7 +171,7 @@ class _SideNav extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: const Center(
                     child: Icon(Icons.restaurant_menu_rounded,
@@ -204,7 +205,7 @@ class _SideNav extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => context.go(item.route),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: AppRadius.brMd,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         padding: const EdgeInsets.symmetric(
@@ -213,7 +214,7 @@ class _SideNav extends StatelessWidget {
                           color: isSelected
                               ? AppColors.primary.withValues(alpha: 0.08)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.brMd,
                         ),
                         child: Row(
                           children: [
@@ -470,7 +471,7 @@ class _CustomBottomNav extends StatelessWidget {
                 color: isSelected
                     ? AppColors.primary.withValues(alpha: 0.1)
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.brCard,
               ),
               child: Icon(
                 isSelected ? item.activeIcon : item.icon,

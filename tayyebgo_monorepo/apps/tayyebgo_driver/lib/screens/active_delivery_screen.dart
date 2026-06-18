@@ -126,7 +126,7 @@ class _FoodDeliveryView extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                       children: [
                         Center(
-                          child: Container(width: 40, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2))),
+                          child: Container(width: 40, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm)),
                         ),
                         const SizedBox(height: 16),
                         _buildStatusHeader(ctx, dispatchStatus),
@@ -160,7 +160,7 @@ class _FoodDeliveryView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -218,7 +218,7 @@ class _FoodDeliveryView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -249,7 +249,7 @@ class _FoodDeliveryView extends StatelessWidget {
         height: 52,
         child: ElevatedButton(
           onPressed: () => ctx.go('/dashboard'),
-          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg), elevation: 0),
           child: Text('Back to Dashboard', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
         ),
       );
@@ -261,7 +261,7 @@ class _FoodDeliveryView extends StatelessWidget {
         height: 52,
         child: ElevatedButton(
           onPressed: () => _confirmDelivery(ctx, dispatchId, orderId),
-          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg), elevation: 0),
           child: Text('Mark Delivered', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
         ),
       );
@@ -289,7 +289,7 @@ class _FoodDeliveryView extends StatelessWidget {
               }
             }
           },
-          style: ElevatedButton.styleFrom(backgroundColor: ctx.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+          style: ElevatedButton.styleFrom(backgroundColor: ctx.primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg), elevation: 0),
           child: Text('Picked Up from Restaurant', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
         ),
       );
@@ -304,7 +304,7 @@ class _FoodDeliveryView extends StatelessWidget {
       context: ctx,
       builder: (ctx) => AlertDialog(
         backgroundColor: ctx.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brXl),
         title: Row(
           children: [
             Icon(Icons.check_circle_rounded, color: ctx.successColor, size: 24),
@@ -323,7 +323,7 @@ class _FoodDeliveryView extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
             child: Text('Confirm', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
           ),
         ],
@@ -469,7 +469,7 @@ class _AnythingDeliveryView extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   children: [
                     Center(
-                      child: Container(width: 40, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(2))),
+                      child: Container(width: 40, height: 4, decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm)),
                     ),
                     const SizedBox(height: 16),
                     _buildStatusHeader(context, status),
@@ -502,7 +502,7 @@ class _AnythingDeliveryView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -520,7 +520,7 @@ class _AnythingDeliveryView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -552,7 +552,7 @@ class _AnythingDeliveryView extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -599,7 +599,7 @@ class _AnythingDeliveryView extends StatelessWidget {
         height: 52,
         child: ElevatedButton(
           onPressed: () => ctx.go('/dashboard'),
-          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 0),
+          style: ElevatedButton.styleFrom(backgroundColor: ctx.successColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg), elevation: 0),
           child: Text('Back to Dashboard', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15)),
         ),
       );
@@ -630,7 +630,7 @@ class _AnythingDeliveryView extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: ctx.successColor,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
           elevation: 0,
         ),
       ),

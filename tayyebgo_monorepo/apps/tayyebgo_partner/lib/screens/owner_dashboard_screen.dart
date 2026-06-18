@@ -109,7 +109,7 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? AppColors.partnerAccent.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.brMd,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -190,7 +190,7 @@ class _DashboardTab extends StatelessWidget {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.brMd,
                           ),
                           child: const Icon(Icons.store_rounded, color: Colors.white, size: 20),
                         ),
@@ -225,7 +225,7 @@ class _DashboardTab extends StatelessWidget {
                               height: 40,
                               decoration: BoxDecoration(
                                 color: context.surfaceColor,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: AppRadius.brMd,
                                 border: Border.all(color: context.borderColor.withValues(alpha: 0.3)),
                               ),
                               child: Icon(Icons.edit_rounded, color: context.textMutedColor, size: 18),
@@ -340,7 +340,7 @@ class _DashboardTab extends StatelessWidget {
                         padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: AppRadius.brCard,
                           border: Border.all(color: context.borderColor.withValues(alpha: 0.3)),
                         ),
                         child: Center(
@@ -377,7 +377,7 @@ class _DashboardTab extends StatelessWidget {
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.brLg,
                               border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                             ),
                             child: Row(
@@ -387,7 +387,7 @@ class _DashboardTab extends StatelessWidget {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     color: AppColors.partnerAccent.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: AppRadius.brMd,
                                   ),
                                   child: Center(
                                     child: Text(
@@ -483,7 +483,7 @@ class _KpiCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
         boxShadow: [
           BoxShadow(
@@ -502,7 +502,7 @@ class _KpiCard extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 18),
           ),
@@ -564,7 +564,7 @@ class _CommissionCards extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Column(
@@ -575,7 +575,7 @@ class _CommissionCards extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(Icons.paid_rounded, color: color, size: 16),
           ),
@@ -653,7 +653,7 @@ class _MenuTab extends StatelessWidget {
                           gradient: const LinearGradient(
                             colors: [AppColors.partnerAccent, Color(0xFFFCD34D)],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.brMd,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -723,7 +723,7 @@ class _MenuTab extends StatelessWidget {
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brLg,
                         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                       ),
                       child: Row(
@@ -733,7 +733,7 @@ class _MenuTab extends StatelessWidget {
                             height: 44,
                             decoration: BoxDecoration(
                               color: AppColors.partnerAccent.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.brMd,
                             ),
                             child: Icon(
                               Icons.restaurant_rounded,
@@ -765,7 +765,7 @@ class _MenuTab extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: context.errorColor.withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(6),
+                                          borderRadius: AppRadius.brSm,
                                         ),
                                         child: Text(
                                           'Low',
@@ -796,7 +796,7 @@ class _MenuTab extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: context.surfaceAltColor,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: AppRadius.brSm,
                                         ),
                                         child: Text(
                                           category,
@@ -838,7 +838,7 @@ class _MenuTab extends StatelessWidget {
                               height: 32,
                               decoration: BoxDecoration(
                                 color: context.surfaceAltColor,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.brMd,
                               ),
                               child: Icon(Icons.edit_outlined, color: context.textMutedColor, size: 16),
                             ),
@@ -851,7 +851,7 @@ class _MenuTab extends StatelessWidget {
                               height: 32,
                               decoration: BoxDecoration(
                                 color: context.errorColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.brMd,
                               ),
                               child: Icon(Icons.delete_outline, color: context.errorColor, size: 16),
                             ),
@@ -969,7 +969,7 @@ class _OrdersTab extends StatelessWidget {
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.brLg,
                           border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                         ),
                         child: Column(
@@ -981,7 +981,7 @@ class _OrdersTab extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
                                     color: statusColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(6),
+                                    borderRadius: AppRadius.brSm,
                                   ),
                                   child: Text(
                                     status.toUpperCase(),
@@ -1011,7 +1011,7 @@ class _OrdersTab extends StatelessWidget {
                                   height: 36,
                                   decoration: BoxDecoration(
                                     color: AppColors.partnerAccent.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: AppRadius.brMd,
                                   ),
                                   child: Center(
                                     child: Text(
@@ -1127,7 +1127,7 @@ class _MarketingTab extends StatelessWidget {
                       gradient: const LinearGradient(
                         colors: [AppColors.partnerAccent, Color(0xFFFCD34D)],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.brMd,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -1167,7 +1167,7 @@ class _MarketingTab extends StatelessWidget {
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.brCard,
                       border: Border.all(color: context.borderColor.withValues(alpha: 0.3)),
                     ),
                     child: Center(
@@ -1209,7 +1209,7 @@ class _MarketingTab extends StatelessWidget {
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brLg,
                         border: Border.all(
                           color: isActive
                               ? AppColors.partnerAccent.withValues(alpha: 0.3)
@@ -1224,7 +1224,7 @@ class _MarketingTab extends StatelessWidget {
                             height: 40,
                             decoration: BoxDecoration(
                               color: (isActive ? AppColors.partnerAccent : context.textMutedColor).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppRadius.brMd,
                             ),
                             child: Icon(
                               Icons.local_offer,

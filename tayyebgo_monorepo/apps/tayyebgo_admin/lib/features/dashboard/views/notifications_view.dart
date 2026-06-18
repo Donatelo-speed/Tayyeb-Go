@@ -58,7 +58,7 @@ class _NotificationsViewState extends State<NotificationsView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -111,7 +111,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                 backgroundColor: context.primaryColor,
                 foregroundColor: context.textPrimaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
             ),
           ),
@@ -128,7 +128,7 @@ class _NotificationsViewState extends State<NotificationsView> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? context.primaryColor.withValues(alpha: 0.15) : context.surfaceAltColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.brXl,
           border: Border.all(color: selected ? context.primaryColor : context.borderColor),
         ),
         child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: selected ? context.primaryColor : context.textMutedColor)),
@@ -142,9 +142,9 @@ class _NotificationsViewState extends State<NotificationsView> {
       hintStyle: GoogleFonts.inter(color: context.textMutedColor),
       filled: true,
       fillColor: context.surfaceAltColor,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.borderColor)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: context.primaryColor)),
+      border: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+      enabledBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.borderColor)),
+      focusedBorder: OutlineInputBorder(borderRadius: AppRadius.brMd, borderSide: BorderSide(color: context.primaryColor)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     );
   }
@@ -177,7 +177,7 @@ class _NotificationsViewState extends State<NotificationsView> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -209,7 +209,7 @@ class _NotificationsViewState extends State<NotificationsView> {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: context.primaryColor.withValues(alpha: 0.1), borderRadius: AppRadius.brMd),
                 child: Text(audience, style: GoogleFonts.inter(fontSize: 10, color: context.primaryColor)),
               ),
               if (recipientCount > 0) ...[
@@ -237,7 +237,7 @@ class _NotificationsViewState extends State<NotificationsView> {
     final body = _bodyCtrl.text.trim();
     if (title.isEmpty || body.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in title and message', style: GoogleFonts.inter()), backgroundColor: context.warningColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        SnackBar(content: Text('Please fill in title and message', style: GoogleFonts.inter()), backgroundColor: context.warningColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
       );
       return;
     }
@@ -270,13 +270,13 @@ class _NotificationsViewState extends State<NotificationsView> {
       _bodyCtrl.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Notification sent to $recipientCount users', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Notification sent to $recipientCount users', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: context.errorColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
         );
       }
     } finally {

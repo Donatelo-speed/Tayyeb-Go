@@ -344,7 +344,7 @@ class TayyebGoTheme {
           return colors.surfaceAlt;
         }),
         side: BorderSide(color: colors.border),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brSm),
       ),
       // ── Radio ──
       radioTheme: RadioThemeData(
@@ -375,7 +375,7 @@ class TayyebGoTheme {
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
           color: colors.textPrimary,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.brMd,
         ),
         textStyle: GoogleFonts.inter(
           color: colors.background,

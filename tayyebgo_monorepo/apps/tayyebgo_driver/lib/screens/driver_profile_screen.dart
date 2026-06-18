@@ -48,7 +48,7 @@ class DriverProfileScreen extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.8)],
                   ),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: AppRadius.brFull,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.driverAccent.withValues(alpha: 0.3),
@@ -64,7 +64,7 @@ class DriverProfileScreen extends StatelessWidget {
                       height: 80,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: AppRadius.brFull,
                         border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
                       ),
                       child: Center(
@@ -97,7 +97,7 @@ class DriverProfileScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: AppRadius.brXl,
                       ),
                       child: Text(
                         'Platform Driver',
@@ -120,7 +120,7 @@ class DriverProfileScreen extends StatelessWidget {
               delay: 250,
               duration: const Duration(milliseconds: 500),
               child: TGListItem(
-                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.person_rounded, color: AppColors.driverAccent, size: 20)),
+                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: AppRadius.brMd), child: Icon(Icons.person_rounded, color: AppColors.driverAccent, size: 20)),
                 title: 'Personal Information',
                 onTap: () => context.push('/edit-profile'),
               ),
@@ -129,7 +129,7 @@ class DriverProfileScreen extends StatelessWidget {
               delay: 275,
               duration: const Duration(milliseconds: 500),
               child: TGListItem(
-                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.directions_car_rounded, color: AppColors.driverAccent, size: 20)),
+                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: AppRadius.brMd), child: Icon(Icons.directions_car_rounded, color: AppColors.driverAccent, size: 20)),
                 title: 'Vehicle Details',
                 onTap: () => context.push('/edit-profile'),
               ),
@@ -138,7 +138,7 @@ class DriverProfileScreen extends StatelessWidget {
               delay: 300,
               duration: const Duration(milliseconds: 500),
               child: TGListItem(
-                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.badge_rounded, color: AppColors.driverAccent, size: 20)),
+                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: AppRadius.brMd), child: Icon(Icons.badge_rounded, color: AppColors.driverAccent, size: 20)),
                 title: 'Documents',
                 onTap: () => context.push('/documents'),
               ),
@@ -147,7 +147,7 @@ class DriverProfileScreen extends StatelessWidget {
               delay: 325,
               duration: const Duration(milliseconds: 500),
               child: TGListItem(
-                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.history_rounded, color: AppColors.driverAccent, size: 20)),
+                leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.driverAccent.withValues(alpha: 0.1), borderRadius: AppRadius.brMd), child: Icon(Icons.history_rounded, color: AppColors.driverAccent, size: 20)),
                 title: 'Delivery History',
                 onTap: () => context.push('/delivery-history'),
               ),
@@ -213,7 +213,7 @@ class DriverProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.brLg,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2), width: 0.5),
                   ),
                   child: Center(
@@ -248,7 +248,7 @@ class DriverProfileScreen extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [AppColors.driverAccent, AppColors.driverAccent.withValues(alpha: 0.5)],
             ),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: AppRadius.brSm,
           ),
         ),
         const SizedBox(width: 12),
@@ -273,7 +273,7 @@ class DriverProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.brLg,
           border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
           boxShadow: [
             BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
@@ -286,7 +286,7 @@ class DriverProfileScreen extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: AppColors.driverAccent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
               ),
               child: Icon(icon, color: AppColors.driverAccent, size: 20),
             ),

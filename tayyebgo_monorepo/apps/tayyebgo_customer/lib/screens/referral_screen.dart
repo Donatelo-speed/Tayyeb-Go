@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Referral Screen - Invite friends and earn rewards
 class ReferralScreen extends StatelessWidget {
@@ -9,6 +10,9 @@ class ReferralScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const referralCode = 'TAYYEB-DIANA';
+    final shareMessage = 'Join TayyebGo with my referral code: $referralCode\nhttps://tayyebgo.com/invite/$referralCode';
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       body: SafeArea(
@@ -119,7 +123,7 @@ class ReferralScreen extends StatelessWidget {
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () {
-                Clipboard.setData(const ClipboardData(text: 'TAYYEB-DIANA'));
+                Clipboard.setData(const ClipboardData(text: referralCode));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Code copied!', style: GoogleFonts.inter()),
@@ -154,7 +158,7 @@ class ReferralScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'TAYYEB-DIANA',
+                            referralCode,
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w800,
                               fontSize: 24,
@@ -187,7 +191,16 @@ class ReferralScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: AnimatedPressScale(
-                    onTap: () {},
+                    onTap: () async {
+                      final uri = Uri.parse(
+                        'https://wa.me/?text=${Uri.encodeComponent(shareMessage)}',
+                      );
+                      try {
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        }
+                      } catch (_) {}
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
@@ -215,7 +228,16 @@ class ReferralScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: AnimatedPressScale(
-                    onTap: () {},
+                    onTap: () async {
+                      final uri = Uri.parse(
+                        'sms:?body=${Uri.encodeComponent(shareMessage)}',
+                      );
+                      try {
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri);
+                        }
+                      } catch (_) {}
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(

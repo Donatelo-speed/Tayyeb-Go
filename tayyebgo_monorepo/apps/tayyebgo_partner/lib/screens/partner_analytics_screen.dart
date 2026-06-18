@@ -300,7 +300,7 @@ class _SummaryCards extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
         boxShadow: [
           BoxShadow(
@@ -324,7 +324,7 @@ class _SummaryCards extends StatelessWidget {
                   color.withValues(alpha: 0.05),
                 ],
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 18),
           ),
@@ -385,7 +385,7 @@ class _DateRangeSelector extends StatelessWidget {
                 color: isActive
                     ? context.warningColor
                     : context.surfaceColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(
                   color: isActive
                       ? context.warningColor
@@ -432,7 +432,7 @@ class _RevenueChart extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
       ),
       child: LineChart(
@@ -587,7 +587,7 @@ class _OrdersChart extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
       ),
       child: BarChart(
@@ -690,7 +690,7 @@ class _BreakdownCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brXl,
           border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
         ),
         child: Text(
@@ -708,7 +708,7 @@ class _BreakdownCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
       ),
       child: Column(
@@ -788,7 +788,7 @@ class _BreakdownCard extends StatelessWidget {
           height: 10,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: AppRadius.brSm,
           ),
         ),
         const SizedBox(width: 6),
@@ -820,7 +820,7 @@ class _TopItemsList extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.brXl,
           border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
         ),
         child: Text(
@@ -836,7 +836,7 @@ class _TopItemsList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.6)),
       ),
       child: Column(
@@ -855,7 +855,7 @@ class _TopItemsList extends StatelessWidget {
                     height: 24,
                     decoration: BoxDecoration(
                       color: medal.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: AppRadius.brSm,
                     ),
                     child: Center(
                       child: Text(
@@ -887,7 +887,7 @@ class _TopItemsList extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.brSm,
                         child: LinearProgressIndicator(
                           value: ratio,
                           backgroundColor: context.borderColor.withValues(alpha: 0.3),

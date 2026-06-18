@@ -184,7 +184,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                   },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: context.errorColor),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                   ),
                   child: Text(
                     'Sign Out',
@@ -241,7 +241,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                       height: 4,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: AppRadius.brSm,
                       ),
                     ),
                   ),
@@ -278,7 +278,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.partnerAccent,
                       minimumSize: const Size(double.infinity, 48),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                     ),
                     child: const Text(
                       'Save Changes',
@@ -327,7 +327,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                         height: 4,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: AppRadius.brSm,
                         ),
                       ),
                     ),
@@ -360,7 +360,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                       decoration: BoxDecoration(
                                         color: context.surfaceColor,
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: AppRadius.brMd,
                                         border: Border.all(color: context.borderColor),
                                       ),
                                       child: Text(
@@ -379,7 +379,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                                                 horizontal: 8, vertical: 10),
                                             decoration: BoxDecoration(
                                               color: context.surfaceColor,
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius: AppRadius.brMd,
                                               border: Border.all(color: context.borderColor),
                                             ),
                                             child: Text(
@@ -424,7 +424,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.partnerAccent,
                         minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
                       ),
                       child: const Text(
                         'Save Hours',
@@ -459,7 +459,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               height: 4,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
             const SizedBox(height: 16),
@@ -489,7 +489,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.partnerAccent,
                 minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
               child: const Text(
                 'Save',
@@ -519,7 +519,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               height: 4,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
             const SizedBox(height: 16),
@@ -577,7 +577,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               height: 4,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.brSm,
               ),
             ),
             const SizedBox(height: 16),
@@ -607,7 +607,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.partnerAccent,
                 minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
               ),
               child: const Text(
                 'Save',
@@ -631,7 +631,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
             AppColors.partnerAccent.withValues(alpha: 0.02),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(
           color: AppColors.partnerAccent.withValues(alpha: 0.2),
           width: 0.5,
@@ -648,7 +648,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.brLg,
             ),
             child: Center(
               child: Text(
@@ -700,7 +700,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Column(
@@ -757,7 +757,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: AppRadius.brMd),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
     );

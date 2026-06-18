@@ -27,7 +27,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.brMd,
               ),
               child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 16),
             ),
@@ -250,7 +250,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.brLg,
                               border: Border.all(
                                 color: context.borderColor.withValues(alpha: 0.3),
                                 width: 0.5,
@@ -263,7 +263,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     color: AppColors.partnerAccent.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: AppRadius.brMd,
                                   ),
                                   child: Center(
                                     child: Text(
@@ -315,7 +315,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
                                         color: statusColor.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(6),
+                                        borderRadius: AppRadius.brSm,
                                       ),
                                       child: Text(
                                         statusLabel,
@@ -352,7 +352,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Column(
@@ -362,7 +362,7 @@ class PartnerDispatchCenterScreen extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 18),
           ),

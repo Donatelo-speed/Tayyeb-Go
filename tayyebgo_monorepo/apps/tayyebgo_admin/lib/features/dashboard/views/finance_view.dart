@@ -151,7 +151,7 @@ class _FinanceContent extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -161,7 +161,7 @@ class _FinanceContent extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -191,7 +191,7 @@ class _FinanceContent extends StatelessWidget {
         label: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: color)),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: color.withValues(alpha: 0.3)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
       ),
     );
@@ -206,7 +206,7 @@ class _FinanceContent extends StatelessWidget {
       _openCommissionEditor(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$label exported', style: GoogleFonts.inter()), backgroundColor: color, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        SnackBar(content: Text('$label exported', style: GoogleFonts.inter()), backgroundColor: color, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
       );
     }
   }
@@ -225,7 +225,7 @@ class _FinanceContent extends StatelessWidget {
     csv.writeln('Refunds,,,\$$totalRefunds ($refundCount orders)');
     Clipboard.setData(ClipboardData(text: csv.toString()));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Report copied to clipboard', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      SnackBar(content: Text('Report copied to clipboard', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
     );
   }
 
@@ -241,7 +241,7 @@ class _FinanceContent extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
         title: Text('Process Payouts', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
         content: SizedBox(
           width: 350,
@@ -279,7 +279,7 @@ class _FinanceContent extends StatelessWidget {
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${restaurantData.length} payouts recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    SnackBar(content: Text('${restaurantData.length} payouts recorded', style: GoogleFonts.inter()), backgroundColor: context.successColor, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
                   );
                 }
               } catch (e) {
@@ -290,7 +290,7 @@ class _FinanceContent extends StatelessWidget {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: ElevatedButton.styleFrom(backgroundColor: context.successColor, foregroundColor: context.textPrimaryColor, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
             child: Text('Confirm Payouts', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],
@@ -317,7 +317,7 @@ class _FinanceContent extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -382,7 +382,7 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.brCard,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -394,7 +394,7 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.brMd,
                 ),
                 child: const Icon(Icons.insights_rounded, color: Color(0xFFF59E0B), size: 20),
               ),
@@ -406,7 +406,7 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _levelColor(_summary!['currentLevel'] ?? 'low').withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.brMd,
                   ),
                   child: Text(
                     '${(_summary!['currentLevel'] as String? ?? 'low').toUpperCase()} DEMAND',
@@ -454,7 +454,7 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
                               height: barHeight.toDouble(),
                               decoration: BoxDecoration(
                                 color: color.withValues(alpha: 0.7),
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: AppRadius.brSm,
                               ),
                             ),
                           ),
@@ -479,7 +479,7 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.brMd,
         ),
         child: Column(
           children: [

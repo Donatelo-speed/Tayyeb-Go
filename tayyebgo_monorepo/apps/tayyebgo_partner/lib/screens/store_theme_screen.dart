@@ -171,7 +171,7 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
                           duration: const Duration(milliseconds: 200),
                           decoration: BoxDecoration(
                             color: selected ? _selectedBrandColor.withValues(alpha: 0.15) : context.surfaceAltColor,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: AppRadius.brLg,
                             border: Border.all(
                               color: selected ? _selectedBrandColor : context.borderColor,
                               width: selected ? 2 : 1,
@@ -232,7 +232,7 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: context.backgroundColor,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.brLg,
                         border: Border.all(color: context.borderColor),
                         image: _bannerUrl != null && _bannerUrl!.isNotEmpty
                             ? DecorationImage(image: NetworkImage(_bannerUrl!), fit: BoxFit.cover)
@@ -261,7 +261,7 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
                               child: Container(
                                 margin: const EdgeInsets.all(8),
                                 padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(8)),
+                                decoration: BoxDecoration(color: Colors.black54, borderRadius: AppRadius.brMd),
                                 child: const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
                               ),
                             ),
@@ -285,7 +285,7 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: context.warningColor,
                       foregroundColor: context.backgroundColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.brLg),
                       elevation: 0,
                     ),
                     child: _isSaving
@@ -310,7 +310,7 @@ class _StoreThemeScreenState extends State<StoreThemeScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.brLg,
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -342,7 +342,7 @@ class _StorePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.brLg,
       child: Container(
         height: 320,
         decoration: BoxDecoration(
@@ -369,7 +369,7 @@ class _StorePreview extends StatelessWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(color: brandColor, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: brandColor, borderRadius: AppRadius.brMd),
                   child: const Icon(Icons.store_rounded, color: Colors.white, size: 20),
                 ),
                 const SizedBox(width: 10),
@@ -474,11 +474,11 @@ class _StorePreview extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: context.surfaceAltColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brMd,
       ),
       child: Row(
         children: [
-          Container(width: 40, height: 40, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(6))),
+          Container(width: 40, height: 40, decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm)),
           const SizedBox(width: 10),
           Expanded(child: Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: context.textPrimaryColor))),
           Text(price, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.accent)),
@@ -493,11 +493,11 @@ class _StorePreview extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: context.surfaceAltColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
       ),
       child: Column(
         children: [
-          Container(width: 80, height: 50, decoration: BoxDecoration(color: context.borderColor, borderRadius: BorderRadius.circular(6))),
+          Container(width: 80, height: 50, decoration: BoxDecoration(color: context.borderColor, borderRadius: AppRadius.brSm)),
           const SizedBox(height: 6),
           Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10, color: context.textPrimaryColor), maxLines: 1, overflow: TextOverflow.ellipsis),
           Text(price, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 10, color: AppColors.accent)),
@@ -523,7 +523,7 @@ class _StorePreview extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: brandColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.brMd,
         border: Border.all(color: brandColor.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -531,7 +531,7 @@ class _StorePreview extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: brandColor.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: brandColor.withValues(alpha: 0.2), borderRadius: AppRadius.brMd),
             child: Icon(Icons.restaurant_rounded, size: 18, color: brandColor),
           ),
           const SizedBox(width: 10),

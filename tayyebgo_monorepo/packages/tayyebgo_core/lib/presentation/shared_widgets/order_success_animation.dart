@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_radius.dart';
 
 /// A full-screen overlay that shows confetti particles + animated checkmark
 /// after a successful order placement.
@@ -145,7 +146,7 @@ class _OrderSuccessAnimationState extends State<OrderSuccessAnimation>
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: AppRadius.brXl,
                       ),
                       child: Text(
                         'Tap to continue',

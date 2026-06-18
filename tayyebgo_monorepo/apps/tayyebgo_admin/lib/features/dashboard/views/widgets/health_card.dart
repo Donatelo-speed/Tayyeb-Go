@@ -38,7 +38,7 @@ class OperationsHealthCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: healthColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.brXl,
                 ),
                 child: Text(healthLabel, style: GoogleFonts.inter(color: healthColor, fontSize: 12, fontWeight: FontWeight.w600)),
               ),
@@ -46,7 +46,7 @@ class OperationsHealthCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: AppRadius.brSm,
             child: LinearProgressIndicator(
               value: healthScore / 100,
               backgroundColor: context.borderColor.withValues(alpha: 0.3),
@@ -69,7 +69,7 @@ class OperationsHealthCard extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.warningColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: context.warningColor.withValues(alpha: 0.15)),
               ),
               child: Row(

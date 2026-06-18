@@ -21,8 +21,10 @@ class _DriverSplashScreenState extends State<DriverSplashScreen> {
 
   Future<void> _waitForAuth() async {
     final auth = context.read<AuthProvider>();
-    while (auth.isInitializing && mounted) {
+    var waited = 0;
+    while (auth.isInitializing && mounted && waited < 15000) {
       await Future.delayed(const Duration(milliseconds: 100));
+      waited += 100;
     }
     if (!mounted) return;
     _navigate(auth);
