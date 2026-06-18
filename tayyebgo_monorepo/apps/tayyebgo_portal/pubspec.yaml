@@ -14,16 +14,10 @@ dependencies:
   intl: ^0.20.2
   google_fonts: ^6.2.1
   cached_network_image: ^3.4.1
+  url_launcher: ^6.2.5
+  firebase_auth: ^5.7.0
   tayyebgo_core:
     path: ../../packages/tayyebgo_core
-  tayyebgo_customer:
-    path: ../tayyebgo_customer
-  tayyebgo_driver:
-    path: ../tayyebgo_driver
-  tayyebgo_partner:
-    path: ../tayyebgo_partner
-  tayyebgo_admin:
-    path: ../tayyebgo_admin
 
 dev_dependencies:
   flutter_test:
