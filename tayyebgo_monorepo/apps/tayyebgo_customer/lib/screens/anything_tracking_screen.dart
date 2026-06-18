@@ -80,7 +80,7 @@ class _StatusBanner extends StatelessWidget {
     final (icon, color, text) = switch (status) {
       AnythingRequestStatus.pending => (Icons.hourglass_empty_rounded, context.warningColor, 'Looking for a driver'),
       AnythingRequestStatus.accepted => (Icons.check_circle_rounded, context.primaryColor, 'Driver accepted'),
-      AnythingRequestStatus.shopping => (Icons.shopping_cart_rounded, const Color(0xFF8B5CF6), 'Driver is shopping'),
+      AnythingRequestStatus.shopping => (Icons.shopping_cart_rounded, AppColors.adminAccent, 'Driver is shopping'),
       AnythingRequestStatus.enRoute => (Icons.delivery_dining_rounded, context.primaryColor, 'On the way'),
       AnythingRequestStatus.delivered => (Icons.check_circle_rounded, context.successColor, 'Delivered'),
       AnythingRequestStatus.cancelled => (Icons.cancel_rounded, context.errorColor, 'Cancelled'),

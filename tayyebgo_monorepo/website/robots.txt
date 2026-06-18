@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tayyebgo.web.app/sitemap.xml

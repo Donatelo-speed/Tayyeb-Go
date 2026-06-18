@@ -639,12 +639,12 @@ class _CheckoutFormState extends State<_CheckoutForm> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: widget.isExpress
-              ? const Color(0xFFEF4444).withValues(alpha: 0.08)
+              ? AppColors.error.withValues(alpha: 0.08)
               : context.surfaceColor,
           borderRadius: AppRadius.brLg,
           border: Border.all(
             color: widget.isExpress
-                ? const Color(0xFFEF4444).withValues(alpha: 0.4)
+                ? AppColors.error.withValues(alpha: 0.4)
                 : context.borderColor.withValues(alpha: 0.3),
             width: widget.isExpress ? 1.5 : 0.5,
           ),
@@ -656,7 +656,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               height: 44,
               decoration: BoxDecoration(
                 gradient: widget.isExpress
-                    ? const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFFF87171)])
+                    ? LinearGradient(colors: [AppColors.error, Color(0xFFF87171)])
                     : null,
                 color: widget.isExpress ? null : context.surfaceAltColor,
                 borderRadius: AppRadius.brMd,
@@ -687,7 +687,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                            color: AppColors.error.withValues(alpha: 0.1),
                             borderRadius: AppRadius.brSm,
                           ),
                           child: Text(
@@ -695,7 +695,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w700,
                               fontSize: 11,
-                              color: const Color(0xFFEF4444),
+                              color: AppColors.error,
                             ),
                           ),
                         ),
@@ -719,7 +719,7 @@ class _CheckoutFormState extends State<_CheckoutForm> {
               height: 28,
               decoration: BoxDecoration(
                 color: widget.isExpress
-                    ? const Color(0xFFEF4444)
+                    ? AppColors.error
                     : context.surfaceAltColor,
                 borderRadius: AppRadius.brMd,
               ),

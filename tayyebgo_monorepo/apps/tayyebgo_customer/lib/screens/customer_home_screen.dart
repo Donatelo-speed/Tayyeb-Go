@@ -59,10 +59,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
   Color _colorForVertical(VerticalType v) {
     switch (v) {
-      case VerticalType.restaurant: return const Color(0xFFF97316);
-      case VerticalType.grocery: return const Color(0xFF22C55E);
-      case VerticalType.pharmacy: return const Color(0xFFEF4444);
-      case VerticalType.retail: return const Color(0xFF8B5CF6);
+      case VerticalType.restaurant: return AppColors.primary;
+      case VerticalType.grocery: return AppColors.success;
+      case VerticalType.pharmacy: return AppColors.error;
+      case VerticalType.retail: return AppColors.adminAccent;
     }
   }
 
@@ -416,7 +416,7 @@ class _LoyaltyCard extends StatelessWidget {
         final data = snap.data?.isNotEmpty == true ? snap.data!.first : null;
         final coins = (data?['loyaltyCoins'] as num?)?.toInt() ?? 0;
         return TGCGradient(
-          gradient: const [AppColors.primary, Color(0xFF8B5CF6)],
+          gradient: const [AppColors.primary, AppColors.adminAccent],
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
@@ -1212,10 +1212,10 @@ class _LoyaltyPointsBanner extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
-                colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+                colors: [AppColors.adminAccent, Color(0xFF6366F1)],
               ),
               borderRadius: AppRadius.brCard,
-              boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
+              boxShadow: [BoxShadow(color: AppColors.adminAccent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6))],
             ),
             child: Row(
               children: [
@@ -1286,13 +1286,13 @@ class _QuickActionsGrid extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFBBF24).withValues(alpha: 0.08),
+                color: AppColors.warning.withValues(alpha: 0.08),
                 borderRadius: AppRadius.brMd,
-                border: Border.all(color: const Color(0xFFFBBF24).withValues(alpha: 0.15), width: 0.5),
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.stars_rounded, color: Color(0xFFFBBF24), size: 24),
+                  Icon(Icons.stars_rounded, color: AppColors.warning, size: 24),
                   const SizedBox(height: 8),
                   Text('Rewards', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.textPrimaryColor)),
                 ],
@@ -1328,13 +1328,13 @@ class _QuickActionsGrid extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF22C55E).withValues(alpha: 0.08),
+                color: AppColors.success.withValues(alpha: 0.08),
                 borderRadius: AppRadius.brMd,
-                border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.15), width: 0.5),
+                border: Border.all(color: AppColors.success.withValues(alpha: 0.15), width: 0.5),
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.location_on_rounded, color: Color(0xFF22C55E), size: 24),
+                  Icon(Icons.location_on_rounded, color: AppColors.success, size: 24),
                   const SizedBox(height: 8),
                   Text('Address', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, color: context.textPrimaryColor)),
                 ],

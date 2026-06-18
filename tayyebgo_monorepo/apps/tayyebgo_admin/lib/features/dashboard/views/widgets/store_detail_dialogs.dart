@@ -47,7 +47,7 @@ void showImageUploadDialog(BuildContext context, String title, Map<String, dynam
               await AdminFirestoreService.instance.updateStore(storeId, {field: FieldValue.delete()});
               if (context.mounted) context.showSuccess('$title removed');
             },
-            child: const Text('Remove', style: TextStyle(color: Colors.red)),
+            child: const Text('Remove', style: TextStyle(color: AppColors.error)),
           ),
         ElevatedButton(
           onPressed: () async {
@@ -72,11 +72,11 @@ void pickBrandColor(BuildContext context, Map<String, dynamic> d, String storeId
     ('#2563EB', Color(0xFF2563EB)),
     ('#10B981', Color(0xFF10B981)),
     ('#F59E0B', Color(0xFFF59E0B)),
-    ('#EF4444', Color(0xFFEF4444)),
-    ('#8B5CF6', Color(0xFF8B5CF6)),
+    ('#EF4444', AppColors.error),
+    ('#8B5CF6', AppColors.adminAccent),
     ('#EC4899', Color(0xFFEC4899)),
     ('#0EA5E9', Color(0xFF0EA5E9)),
-    ('#F97316', Color(0xFFF97316)),
+    ('#F97316', AppColors.primary),
     ('#14B8A6', Color(0xFF14B8A6)),
     ('#84CC16', Color(0xFF84CC16)),
     ('#1F2937', Color(0xFF1F2937)),

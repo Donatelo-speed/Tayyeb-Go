@@ -6,8 +6,6 @@ import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
 import 'commission_editor_view.dart';
 
-const _purple = Color(0xFF8B5CF6);
-
 class FinanceView extends StatelessWidget {
   const FinanceView();
 
@@ -124,7 +122,7 @@ class _FinanceContent extends StatelessWidget {
           const SizedBox(height: 10),
           _statCard(context, 'Refunds', '\$${totalRefunds.toStringAsFixed(0)}', Icons.money_off_rounded, context.errorColor, subtitle: '$refundCount orders'),
           const SizedBox(height: 10),
-          _statCard(context, 'Driver Payouts', '\$${driverPayouts.toStringAsFixed(0)}', Icons.delivery_dining_rounded, _purple),
+          _statCard(context, 'Driver Payouts', '\$${driverPayouts.toStringAsFixed(0)}', Icons.delivery_dining_rounded, AppColors.adminAccent),
           const SizedBox(height: 10),
           _statCard(context, 'Store Payouts', '\$${storePayouts.toStringAsFixed(0)}', Icons.store_rounded, context.warningColor),
           const SizedBox(height: 24),
@@ -134,7 +132,7 @@ class _FinanceContent extends StatelessWidget {
           const SizedBox(height: 8),
           _actionButton(context, 'Process Payouts', Icons.payments_rounded, context.successColor),
           const SizedBox(height: 8),
-          _actionButton(context, 'Edit Commissions', Icons.percent_rounded, const Color(0xFF6366F1)),
+          _actionButton(context, 'Edit Commissions', Icons.percent_rounded, AppColors.adminAccent),
           const SizedBox(height: 24),
           const _DemandForecastSection(),
           const SizedBox(height: 24),
@@ -393,10 +391,10 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                  color: AppColors.warning.withValues(alpha: 0.1),
                   borderRadius: AppRadius.brMd,
                 ),
-                child: const Icon(Icons.insights_rounded, color: Color(0xFFF59E0B), size: 20),
+                child: const Icon(Icons.insights_rounded, color: AppColors.warning, size: 20),
               ),
               const SizedBox(width: 10),
               Text('Demand Forecast', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor)),
@@ -421,9 +419,9 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
           else ...[
             Row(
               children: [
-                _forecastStat('Peak Hour', _summary?['peakHour'] ?? 'N/A', const Color(0xFFEF4444)),
+                _forecastStat('Peak Hour', _summary?['peakHour'] ?? 'N/A', AppColors.error),
                 const SizedBox(width: 12),
-                _forecastStat('Peak Orders', '${_summary?['peakOrders'] ?? 0}', const Color(0xFFF59E0B)),
+                _forecastStat('Peak Orders', '${_summary?['peakOrders'] ?? 0}', AppColors.warning),
                 const SizedBox(width: 12),
                 _forecastStat('24h Total', '${_summary?['totalPredicted'] ?? 0}', context.primaryColor),
               ],
@@ -493,9 +491,9 @@ class _DemandForecastSectionState extends State<_DemandForecastSection> {
 
   Color _levelColor(String level) {
     switch (level) {
-      case 'high': return const Color(0xFFEF4444);
-      case 'medium': return const Color(0xFFF59E0B);
-      default: return const Color(0xFF10B981);
+      case 'high': return AppColors.error;
+      case 'medium': return AppColors.warning;
+      default: return AppColors.success;
     }
   }
 }

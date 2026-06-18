@@ -227,7 +227,7 @@ class AnalyticsEngine {
         customerRetentionRate: retentionRate,
       );
     } catch (e) {
-      debugPrint('[AnalyticsEngine] Error getting business metrics: $e');
+      if (kDebugMode) debugPrint('[AnalyticsEngine] Error getting business metrics: $e');
       return const BusinessMetrics(
         totalOrders: 0,
         activeUsers: 0,
@@ -295,7 +295,7 @@ class AnalyticsEngine {
         activeHoursToday: 0,
       );
     } catch (e) {
-      debugPrint('[AnalyticsEngine] Error getting driver analytics: $e');
+      if (kDebugMode) debugPrint('[AnalyticsEngine] Error getting driver analytics: $e');
       return DriverAnalytics(
         driverId: driverId,
         driverName: '',
@@ -386,7 +386,7 @@ class AnalyticsEngine {
             prepCount > 0 ? totalPrepTime / prepCount : 0,
       );
     } catch (e) {
-      debugPrint('[AnalyticsEngine] Error getting store analytics: $e');
+      if (kDebugMode) debugPrint('[AnalyticsEngine] Error getting store analytics: $e');
       return StoreAnalytics(
         storeId: storeId,
         storeName: '',
@@ -412,7 +412,7 @@ class AnalyticsEngine {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      debugPrint('[AnalyticsEngine] Error tracking event: $e');
+      if (kDebugMode) debugPrint('[AnalyticsEngine] Error tracking event: $e');
     }
   }
 }

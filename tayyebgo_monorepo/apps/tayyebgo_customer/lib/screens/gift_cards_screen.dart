@@ -55,10 +55,10 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft, end: Alignment.bottomRight,
-                  colors: [Color(0xFF8B5CF6), Color(0xFF6366F1), Color(0xFF4F46E5)],
+                  colors: [AppColors.adminAccent, Color(0xFF6366F1), Color(0xFF4F46E5)],
                 ),
                 borderRadius: AppRadius.brXxl,
-                boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
+                boxShadow: [BoxShadow(color: AppColors.adminAccent.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
               ),
               child: Column(
                 children: [
@@ -136,9 +136,9 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
               child: Container(
                 width: double.infinity, height: 56,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)]),
+                  gradient: LinearGradient(colors: [AppColors.adminAccent, Color(0xFF6366F1)]),
                   borderRadius: AppRadius.brLg,
-                  boxShadow: [BoxShadow(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+                  boxShadow: [BoxShadow(color: AppColors.adminAccent.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
                 ),
                 child: Center(child: Text('Buy Gift Card — \$_selectedAmount', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.white))),
               ),

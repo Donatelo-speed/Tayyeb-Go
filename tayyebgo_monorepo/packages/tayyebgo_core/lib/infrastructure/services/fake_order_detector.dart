@@ -52,7 +52,7 @@ class FakeOrderDetector {
     details['ordersInLast5Min'] = rapidCount;
     if (rapidCount > 3) {
       flags.add('RAPID_FIRE');
-      debugPrint(
+      if (kDebugMode) debugPrint(
           '[FakeOrderDetector] RAPID_FIRE: $customerId placed $rapidCount orders in 5min');
     }
 
@@ -78,7 +78,7 @@ class FakeOrderDetector {
           minDistance == double.infinity ? null : minDistance;
       if (minDistance > 10) {
         flags.add('ADDRESS_MISMATCH');
-        debugPrint(
+        if (kDebugMode) debugPrint(
             '[FakeOrderDetector] ADDRESS_MISMATCH: $customerId delivery ${minDistance.toStringAsFixed(1)}km from usual');
       }
     }
@@ -106,7 +106,7 @@ class FakeOrderDetector {
         itemCounts.values.isEmpty ? 0 : itemCounts.values.reduce((a, b) => a > b ? a : b);
     if (maxRepeat > 5) {
       flags.add('PATTERN_REPEAT');
-      debugPrint(
+      if (kDebugMode) debugPrint(
           '[FakeOrderDetector] PATTERN_REPEAT: $customerId repeated same items $maxRepeat times in 24h');
     }
 
@@ -123,7 +123,7 @@ class FakeOrderDetector {
       details['cashCancelled24h'] = cancelledCount;
       if (cancelledCount > 2) {
         flags.add('COD_CYCLING');
-        debugPrint(
+        if (kDebugMode) debugPrint(
             '[FakeOrderDetector] COD_CYCLING: $customerId cancelled $cancelledCount cash orders in 24h');
       }
     }
@@ -138,7 +138,7 @@ class FakeOrderDetector {
     if (createdAt != null && now.difference(createdAt).inHours < 1) {
       if (totalAmount > 20000) {
         flags.add('NEW_ACCOUNT_HIGH_VALUE');
-        debugPrint(
+        if (kDebugMode) debugPrint(
             '[FakeOrderDetector] NEW_ACCOUNT_HIGH_VALUE: $customerId account ${(now.difference(createdAt).inMinutes)}min old, amount $totalAmount SYP');
       }
     }
@@ -159,7 +159,7 @@ class FakeOrderDetector {
       details['accountsSameAddress24h'] = uniqueCustomers.length;
       if (uniqueCustomers.length > 3) {
         flags.add('MULTI_ACCOUNT_SAME_ADDRESS');
-        debugPrint(
+        if (kDebugMode) debugPrint(
             '[FakeOrderDetector] MULTI_ACCOUNT_SAME_ADDRESS: $normalizedAddress used by ${uniqueCustomers.length} accounts in 24h');
       }
     }
@@ -199,7 +199,7 @@ class FakeOrderDetector {
       details: details,
     );
 
-    debugPrint(
+    if (kDebugMode) debugPrint(
         '[FakeOrderDetector] customerId=$customerId restaurant=$restaurantId '
         'suspicious=${result.suspicious} risk=$riskLevel flags=$flags');
 
@@ -218,10 +218,10 @@ class FakeOrderDetector {
         'details': result.details,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      debugPrint(
+      if (kDebugMode) debugPrint(
           '[FakeOrderDetector] Flagged order=$orderId risk=${result.riskLevel}');
     } catch (e) {
-      debugPrint('[FakeOrderDetector] Failed to flag order $orderId: $e');
+      if (kDebugMode) debugPrint('[FakeOrderDetector] Failed to flag order $orderId: $e');
     }
   }
 
@@ -276,11 +276,11 @@ class FakeOrderDetector {
       }
 
       final clampedScore = score.clamp(0, 100);
-      debugPrint(
+      if (kDebugMode) debugPrint(
           '[FakeOrderDetector] Risk score for $customerId = $clampedScore');
       return clampedScore;
     } catch (e) {
-      debugPrint('[FakeOrderDetector] Failed to get risk score: $e');
+      if (kDebugMode) debugPrint('[FakeOrderDetector] Failed to get risk score: $e');
       return 0;
     }
   }

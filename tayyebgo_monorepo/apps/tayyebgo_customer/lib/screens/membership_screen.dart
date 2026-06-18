@@ -84,7 +84,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                       id: 'basic',
                       name: 'Basic',
                       icon: Icons.bolt_rounded,
-                      color: const Color(0xFF22C55E),
+                      color: AppColors.success,
                       monthlyPrice: 10,
                       features: [
                         'Free delivery on first 10 orders/month',
@@ -121,7 +121,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                       id: 'pro',
                       name: 'Pro',
                       icon: Icons.diamond_rounded,
-                      color: const Color(0xFF8B5CF6),
+                      color: AppColors.adminAccent,
                       monthlyPrice: 30,
                       features: [
                         'Free delivery on first 40 orders/month',
@@ -227,11 +227,11 @@ class _MembershipScreenState extends State<MembershipScreen> {
   Color _getSelectedPlanColor() {
     switch (_selectedPlan) {
       case 'basic':
-        return const Color(0xFF22C55E);
+        return AppColors.success;
       case 'plus':
         return AppColors.primary;
       case 'pro':
-        return const Color(0xFF8B5CF6);
+        return AppColors.adminAccent;
       default:
         return AppColors.primary;
     }

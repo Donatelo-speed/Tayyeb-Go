@@ -33,7 +33,7 @@ String? appRedirect({
   final fbUser = fb.FirebaseAuth.instance.currentUser;
   final isLoggedIn = fbUser != null;
 
-  debugPrint('[appRedirect] location=$location isLoggedIn=$isLoggedIn auth.isLoading=${auth?.isLoading} auth.user=${auth?.user?.role.value ?? "null"} allowedRoles=${allowedRoles.map((r)=>r.value).join(",")}');
+  if (kDebugMode) debugPrint('[appRedirect] location=$location isLoggedIn=$isLoggedIn auth.isLoading=${auth?.isLoading} auth.user=${auth?.user?.role.value ?? "null"} allowedRoles=${allowedRoles.map((r)=>r.value).join(",")}');
 
   if (location == '/onboarding') {
     if (onboardingComplete) return '/login';
@@ -62,7 +62,7 @@ String? appRedirect({
         );
       }
       final home = roleHomePath(auth.user!.role);
-      debugPrint('[appRedirect] /login → redirecting to $home (role=${auth.user!.role.value})');
+      if (kDebugMode) debugPrint('[appRedirect] /login → redirecting to $home (role=${auth.user!.role.value})');
       return home;
     }
     return null;
@@ -80,7 +80,7 @@ String? appRedirect({
   }
   if (auth == null || auth.isLoading) return null;
   if (auth.user == null) {
-    debugPrint('[appRedirect] user is null but logged in → /login');
+    if (kDebugMode) debugPrint('[appRedirect] user is null but logged in → /login');
     return '/login';
   }
   if (location == '/access-denied') return null;
@@ -92,7 +92,7 @@ String? appRedirect({
     );
   }
   if (location != '/login' && !allowedRoles.contains(auth.user!.role)) {
-    debugPrint('[appRedirect] role_mismatch: user=${auth.user!.role.value} allowed=${allowedRoles.map((r)=>r.value).join(",")}}');
+    if (kDebugMode) debugPrint('[appRedirect] role_mismatch: user=${auth.user!.role.value} allowed=${allowedRoles.map((r)=>r.value).join(",")}}');
     return _accessDeniedRedirect(
       reason: 'role_mismatch',
       auth: auth,

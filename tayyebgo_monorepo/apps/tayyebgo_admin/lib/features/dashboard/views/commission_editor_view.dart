@@ -14,7 +14,7 @@ class _CommissionEditorViewState extends State<CommissionEditorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: context.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -25,17 +25,17 @@ class _CommissionEditorViewState extends State<CommissionEditorView> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                    color: AppColors.adminAccent.withValues(alpha: 0.1),
                     borderRadius: AppRadius.brMd,
                   ),
-                  child: const Icon(Icons.percent_rounded, color: Color(0xFF6366F1), size: 24),
+                  child: const Icon(Icons.percent_rounded, color: AppColors.adminAccent, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Commission Rates', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: const Color(0xFF1E293B))),
-                    Text('Manage per-store platform fees', style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8))),
+                    Text('Commission Rates', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20, color: context.textPrimaryColor)),
+                    Text('Manage per-store platform fees', style: GoogleFonts.inter(fontSize: 13, color: context.textMutedColor)),
                   ],
                 ),
               ],
@@ -57,7 +57,7 @@ class _CommissionEditorViewState extends State<CommissionEditorView> {
                         children: [
                           Icon(Icons.store_rounded, size: 48, color: Colors.grey.shade400),
                           const SizedBox(height: 12),
-                          Text('No stores found', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 15)),
+                          Text('No stores found', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 15)),
                         ],
                       ),
                     );
@@ -126,9 +126,9 @@ class _CommissionCardState extends State<_CommissionCard> {
   }
 
   Color get _tierColor {
-    if (_currentPercent <= 10) return const Color(0xFF10B981);
-    if (_currentPercent <= 20) return const Color(0xFFF59E0B);
-    return const Color(0xFFEF4444);
+    if (_currentPercent <= 10) return AppColors.success;
+    if (_currentPercent <= 20) return AppColors.warning;
+    return AppColors.error;
   }
 
   String get _tierLabel {
@@ -145,7 +145,7 @@ class _CommissionCardState extends State<_CommissionCard> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: AppRadius.brLg,
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
         ],
@@ -166,7 +166,7 @@ class _CommissionCardState extends State<_CommissionCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.storeName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: const Color(0xFF1E293B))),
+                Text(widget.storeName, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor)),
                 const SizedBox(height: 2),
                 Row(
                   children: [
@@ -190,27 +190,27 @@ class _CommissionCardState extends State<_CommissionCard> {
                 controller: _ctrl,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: const Color(0xFF1E293B)),
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimaryColor),
                 decoration: InputDecoration(
                   suffixText: '%',
-                  suffixStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFF94A3B8)),
+                  suffixStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, color: context.textMutedColor),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.brMd,
-                    borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                    borderSide: const BorderSide(color: AppColors.adminAccent),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.brMd,
-                    borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+                    borderSide: const BorderSide(color: AppColors.adminAccent, width: 2),
                   ),
                   isDense: true,
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            _iconBtn(Icons.check_rounded, const Color(0xFF10B981), _save),
+            _iconBtn(Icons.check_rounded, AppColors.success, _save),
             const SizedBox(width: 4),
-            _iconBtn(Icons.close_rounded, const Color(0xFF94A3B8), () => setState(() {
+            _iconBtn(Icons.close_rounded, context.textMutedColor, () => setState(() {
               _isEditing = false;
               _ctrl.text = _currentPercent.toStringAsFixed(1);
             })),
@@ -227,7 +227,7 @@ class _CommissionCardState extends State<_CommissionCard> {
               ),
             ),
             const SizedBox(width: 8),
-            _iconBtn(Icons.edit_rounded, const Color(0xFF6366F1), () => setState(() => _isEditing = true)),
+            _iconBtn(Icons.edit_rounded, AppColors.adminAccent, () => setState(() => _isEditing = true)),
           ],
         ],
       ),
@@ -254,7 +254,7 @@ class _CommissionCardState extends State<_CommissionCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Commission must be 0-50%', style: GoogleFonts.inter()),
-          backgroundColor: const Color(0xFFEF4444),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -276,7 +276,7 @@ class _CommissionCardState extends State<_CommissionCard> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Commission updated to ${newPercent.toStringAsFixed(1)}%', style: GoogleFonts.inter()),
-            backgroundColor: const Color(0xFF10B981),
+            backgroundColor: AppColors.success,
           ),
         );
       }
@@ -284,7 +284,7 @@ class _CommissionCardState extends State<_CommissionCard> {
       setState(() => _isSaving = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: const Color(0xFFEF4444)),
+            SnackBar(content: Text('Failed: $e', style: GoogleFonts.inter()), backgroundColor: AppColors.error),
         );
       }
     }

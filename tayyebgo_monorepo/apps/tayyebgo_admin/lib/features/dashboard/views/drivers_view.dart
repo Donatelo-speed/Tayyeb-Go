@@ -4,8 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'shared.dart';
 
-const _purple = Color(0xFF8B5CF6);
-
 class DriversView extends StatefulWidget {
   const DriversView();
   @override
@@ -209,7 +207,7 @@ class _DriversViewState extends State<DriversView> {
                                 const SizedBox(width: 16),
                                 _driverStat(context, Icons.attach_money_rounded, '\$${earnings.toStringAsFixed(0)}', 'Earnings', context.successColor),
                                 const SizedBox(width: 16),
-                                _driverStat(context, Icons.person_pin_rounded, driverType.replaceAll('_', ' ').toUpperCase(), 'Type', _purple),
+                                _driverStat(context, Icons.person_pin_rounded, driverType.replaceAll('_', ' ').toUpperCase(), 'Type', AppColors.adminAccent),
                               ],
                             ),
                           ],

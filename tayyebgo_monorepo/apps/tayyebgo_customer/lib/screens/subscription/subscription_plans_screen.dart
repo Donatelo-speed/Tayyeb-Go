@@ -31,11 +31,11 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
   Color _planColor(SubscriptionPlanType plan) {
     switch (plan) {
       case SubscriptionPlanType.starter:
-        return const Color(0xFF22C55E);
+        return AppColors.success;
       case SubscriptionPlanType.plus:
         return AppColors.primary;
       case SubscriptionPlanType.pro:
-        return const Color(0xFF8B5CF6);
+        return AppColors.adminAccent;
       case SubscriptionPlanType.vip:
         return const Color(0xFFF59E0B);
     }

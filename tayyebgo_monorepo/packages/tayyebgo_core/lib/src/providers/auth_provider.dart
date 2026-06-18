@@ -180,7 +180,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<UserModel?> resolveUser(fb.User firebaseUser) async {
     try {
-      debugPrint('[AuthProvider] resolveUser: reading Firestore for uid=${firebaseUser.uid}');
+      if (kDebugMode) debugPrint('[AuthProvider] resolveUser: reading Firestore for uid=${firebaseUser.uid}');
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(firebaseUser.uid)
@@ -188,7 +188,7 @@ class AuthProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
       if (doc.exists) {
         _user = UserModel.fromFirestore(doc);
-        debugPrint('[AuthProvider] resolveUser: found doc, role=${_user!.role.value}');
+        if (kDebugMode) debugPrint('[AuthProvider] resolveUser: found doc, role=${_user!.role.value}');
 
         final now = DateTime.now();
         final email = (firebaseUser.email ?? '').toLowerCase();
@@ -197,15 +197,15 @@ class AuthProvider extends ChangeNotifier {
         // Firestore role is wrong, fix it automatically.
         final correctRole = _testAccountRoles[email];
         if (correctRole != null && _user!.role.value != correctRole) {
-          debugPrint('[AuthProvider] resolveUser: fixing test account $email role=${_user!.role.value} → $correctRole');
+          if (kDebugMode) debugPrint('[AuthProvider] resolveUser: fixing test account $email role=${_user!.role.value} → $correctRole');
           try {
             await FirebaseFirestore.instance
                 .collection('users')
                 .doc(firebaseUser.uid)
                 .update({'role': correctRole});
-            debugPrint('[AuthProvider] resolveUser: Firestore role updated to $correctRole');
+            if (kDebugMode) debugPrint('[AuthProvider] resolveUser: Firestore role updated to $correctRole');
           } catch (updateError) {
-            debugPrint('[AuthProvider] resolveUser: Firestore update failed (non-blocking): $updateError');
+            if (kDebugMode) debugPrint('[AuthProvider] resolveUser: Firestore update failed (non-blocking): $updateError');
           }
           _user = _user!.copyWith(role: UserRole.fromValue(correctRole));
         }
@@ -220,7 +220,7 @@ class AuthProvider extends ChangeNotifier {
             'updatedAt': Timestamp.fromDate(now),
           });
         } catch (e) {
-          debugPrint('[AuthProvider] resolveUser: could not update timestamps (non-critical): $e');
+          if (kDebugMode) debugPrint('[AuthProvider] resolveUser: could not update timestamps (non-critical): $e');
         }
       } else {
         // No Firestore doc — create one using the app's expected role.
@@ -228,7 +228,7 @@ class AuthProvider extends ChangeNotifier {
         final roleValue = _testAccountRoles[email] ??
             (_expectedRole ?? defaultExpectedRole ?? UserRole.customer).value;
         final role = UserRole.fromValue(roleValue);
-        debugPrint('[AuthProvider] resolveUser: NO Firestore doc for uid=${firebaseUser.uid} — creating with role=${role.value}');
+        if (kDebugMode) debugPrint('[AuthProvider] resolveUser: NO Firestore doc for uid=${firebaseUser.uid} — creating with role=${role.value}');
         final now = DateTime.now();
         _user = UserModel(
           id: firebaseUser.uid,
@@ -244,14 +244,14 @@ class AuthProvider extends ChangeNotifier {
             .collection('users')
             .doc(firebaseUser.uid)
             .set(_user!.toFirestore());
-        debugPrint('[AuthProvider] resolveUser: created Firestore doc with role=${role.value}');
+        if (kDebugMode) debugPrint('[AuthProvider] resolveUser: created Firestore doc with role=${role.value}');
       }
     } on TimeoutException {
-      debugPrint('[AuthProvider] resolveUser: TIMEOUT');
+      if (kDebugMode) debugPrint('[AuthProvider] resolveUser: TIMEOUT');
       _error = 'Connection timed out. Please check your network.';
       _user = null;
     } catch (e) {
-      debugPrint('[AuthProvider] resolveUser: ERROR $e');
+      if (kDebugMode) debugPrint('[AuthProvider] resolveUser: ERROR $e');
       _error = _friendlyAuthError(e);
       _user = null;
     }
@@ -264,7 +264,7 @@ class AuthProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     if (_disposed) return false;
-    debugPrint('[AuthProvider] login: email=$email');
+    if (kDebugMode) debugPrint('[AuthProvider] login: email=$email');
     _isLoading = true;
     _loginInProgress = true;
     _error = null;
@@ -281,17 +281,17 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
         return false;
       }
-      debugPrint('[AuthProvider] login: Firebase Auth success, uid=${credential.user!.uid}');
+      if (kDebugMode) debugPrint('[AuthProvider] login: Firebase Auth success, uid=${credential.user!.uid}');
       await resolveUser(credential.user!);
       if (_disposed) return false;
       if (_user == null) {
-        debugPrint('[AuthProvider] login: resolveUser returned null');
+        if (kDebugMode) debugPrint('[AuthProvider] login: resolveUser returned null');
         _isLoading = false;
         _loginInProgress = false;
         notifyListeners();
         return false;
       }
-      debugPrint('[AuthProvider] login: resolved user role=${_user!.role.value} isActive=${_user!.isActive}');
+      if (kDebugMode) debugPrint('[AuthProvider] login: resolved user role=${_user!.role.value} isActive=${_user!.isActive}');
       if (!_user!.isActive) {
         _error =
             'Your account has been deactivated. Please contact your administrator.';
@@ -308,7 +308,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } on fb.FirebaseAuthException catch (e) {
       if (_disposed) return false;
-      debugPrint('[AuthProvider] login: FirebaseAuthException ${e.code}');
+      if (kDebugMode) debugPrint('[AuthProvider] login: FirebaseAuthException ${e.code}');
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -316,7 +316,7 @@ class AuthProvider extends ChangeNotifier {
       return false;
     } catch (e) {
       if (_disposed) return false;
-      debugPrint('[AuthProvider] login: error $e');
+      if (kDebugMode) debugPrint('[AuthProvider] login: error $e');
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
@@ -556,7 +556,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       // Always show success to prevent account enumeration.
       // Firebase already silently ignores non-existent emails.
-      debugPrint('[resetPassword] Error (suppressed): $e');
+      if (kDebugMode) debugPrint('[resetPassword] Error (suppressed): $e');
     }
     _isLoading = false;
     notifyListeners();

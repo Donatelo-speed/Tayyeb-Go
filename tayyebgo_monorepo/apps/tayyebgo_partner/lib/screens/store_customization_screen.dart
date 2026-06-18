@@ -14,7 +14,7 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _feeCtrl = TextEditingController();
-  Color _selectedColor = const Color(0xFFF59E0B);
+  Color _selectedColor = AppColors.partnerAccent;
   bool _isSaving = false;
 
   @override
@@ -98,16 +98,16 @@ class _StoreCustomizationScreenState extends State<StoreCustomizationScreen> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    const Color(0xFFF59E0B),
-                    const Color(0xFF6366F1),
-                    const Color(0xFF10B981),
-                    const Color(0xFFEF4444),
-                    const Color(0xFF8B5CF6),
-                    const Color(0xFFF97316),
-                    const Color(0xFF06B6D4),
-                    const Color(0xFFEC4899),
-                    const Color(0xFFA98D6B),
-                    const Color(0xFF78716C),
+                    AppColors.partnerAccent,
+                    AppColors.adminAccent,
+                    AppColors.emerald,
+                    AppColors.error,
+                    AppColors.premium,
+                    AppColors.primary,
+                    AppColors.cyan,
+                    AppColors.accent,
+                    AppColors.amber,
+                    AppColors.textMuted,
                   ].map((c) {
                     final isSelected = _selectedColor == c;
                     return GestureDetector(

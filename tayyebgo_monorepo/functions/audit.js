@@ -16,7 +16,7 @@ exports.logAuditEvent = functions.https.onCall(async (data, context) => {
   const callerDoc = await db.collection('users').doc(callerUid).get();
   const callerRole = callerDoc.data()?.role;
 
-  if (callerRole !== 'admin' && callerRole !== 'super_admin') {
+  if (callerRole !== 'superAdmin') {
     throw new functions.https.HttpsError('permission-denied', 'Admin only');
   }
 
@@ -116,7 +116,7 @@ exports.getAuditLog = functions.https.onCall(async (data, context) => {
   const callerDoc = await db.collection('users').doc(context.auth.uid).get();
   const callerRole = callerDoc.data()?.role;
 
-  if (callerRole !== 'admin' && callerRole !== 'super_admin') {
+  if (callerRole !== 'superAdmin') {
     throw new functions.https.HttpsError('permission-denied', 'Admin only');
   }
 

@@ -74,9 +74,9 @@ class MultiChannelNotificationService {
       final fcmToken = userDoc.data()?['fcmToken'] as String?;
       if (fcmToken == null || fcmToken.isEmpty) return;
 
-      debugPrint('[Notification] Push to ${n.recipientId}: ${n.title}');
+      if (kDebugMode) debugPrint('[Notification] Push to ${n.recipientId}: ${n.title}');
     } catch (e) {
-      debugPrint('[Notification] Push error: $e');
+      if (kDebugMode) debugPrint('[Notification] Push error: $e');
     }
   }
 
@@ -87,9 +87,9 @@ class MultiChannelNotificationService {
       final phone = userDoc.data()?['phone'] as String?;
       if (phone == null || phone.isEmpty) return;
 
-      debugPrint('[Notification] SMS to $phone: ${n.title}');
+      if (kDebugMode) debugPrint('[Notification] SMS to $phone: ${n.title}');
     } catch (e) {
-      debugPrint('[Notification] SMS error: $e');
+      if (kDebugMode) debugPrint('[Notification] SMS error: $e');
     }
   }
 
@@ -100,9 +100,9 @@ class MultiChannelNotificationService {
       final phone = userDoc.data()?['phone'] as String?;
       if (phone == null || phone.isEmpty) return;
 
-      debugPrint('[Notification] WhatsApp to $phone: ${n.title}');
+      if (kDebugMode) debugPrint('[Notification] WhatsApp to $phone: ${n.title}');
     } catch (e) {
-      debugPrint('[Notification] WhatsApp error: $e');
+      if (kDebugMode) debugPrint('[Notification] WhatsApp error: $e');
     }
   }
 
@@ -113,9 +113,9 @@ class MultiChannelNotificationService {
       final email = userDoc.data()?['email'] as String?;
       if (email == null || email.isEmpty) return;
 
-      debugPrint('[Notification] Email to $email: ${n.title}');
+      if (kDebugMode) debugPrint('[Notification] Email to $email: ${n.title}');
     } catch (e) {
-      debugPrint('[Notification] Email error: $e');
+      if (kDebugMode) debugPrint('[Notification] Email error: $e');
     }
   }
 
