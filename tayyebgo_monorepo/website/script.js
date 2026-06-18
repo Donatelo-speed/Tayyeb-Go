@@ -1,16 +1,20 @@
 // ========================================
-// TayyebGo Premium Interactions
+// TayyebGo Premium Interactions v2.0
 // ========================================
 
 // --- Mobile Menu ---
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');
+  const btn = document.querySelector('.mobile-menu-btn');
   menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded', menu.classList.contains('open'));
 }
 
 document.querySelectorAll('.mobile-menu a').forEach(link => {
   link.addEventListener('click', () => {
     document.getElementById('mobileMenu').classList.remove('open');
+    document.querySelector('.mobile-menu-btn').classList.remove('open');
   });
 });
 
@@ -34,12 +38,16 @@ themeToggle.addEventListener('click', () => {
 
 // --- Navbar Scroll ---
 const navbar = document.getElementById('navbar');
+let lastScroll = 0;
+
 window.addEventListener('scroll', () => {
-  if (window.scrollY > 50) {
+  const scrollY = window.scrollY;
+  if (scrollY > 50) {
     navbar.classList.add('scrolled');
   } else {
     navbar.classList.remove('scrolled');
   }
+  lastScroll = scrollY;
 });
 
 // --- Smooth Scroll ---
@@ -71,16 +79,17 @@ document.querySelectorAll('.ripple').forEach(btn => {
 });
 
 // Fix ripple positioning
-const style = document.createElement('style');
-style.textContent = `.ripple::after { left: var(--ripple-x, 50%); top: var(--ripple-y, 50%); }`;
-document.head.appendChild(style);
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `.ripple::after { left: var(--ripple-x, 50%); top: var(--ripple-y, 50%); }`;
+document.head.appendChild(rippleStyle);
 
 // --- Scroll Reveal ---
 const revealElements = document.querySelectorAll(
   '.section-header, .step-card, .split-content, .split-visual, ' +
   '.testimonial-card, .pricing-card, .faq-item, .blog-card, ' +
-  '.trust-badge, .partner-logo-item, .career-perk, .career-dept-card, ' +
-  '.download-content, .download-phone, .contact-form, .info-card, .app-screen-wrapper'
+  '.partner-logo-item, .career-perk, .career-dept-card, ' +
+  '.download-content, .download-phone, .contact-form, .info-card, ' +
+  '.app-screen-wrapper, .feature-card, .trust-item'
 );
 
 revealElements.forEach(el => el.classList.add('reveal'));
@@ -99,6 +108,7 @@ revealElements.forEach(el => revealObserver.observe(el));
 const appWrappers = document.querySelectorAll('.app-screen-wrapper');
 const appDots = document.querySelectorAll('.app-dot');
 let activeScreen = 1;
+let appInterval;
 
 function switchScreen(num) {
   activeScreen = num;
@@ -110,30 +120,36 @@ function switchScreen(num) {
   });
 }
 
+function startAppInterval() {
+  appInterval = setInterval(() => {
+    activeScreen = activeScreen >= 3 ? 1 : activeScreen + 1;
+    switchScreen(activeScreen);
+  }, 4000);
+}
+
 appDots.forEach(dot => {
-  dot.addEventListener('click', () => switchScreen(dot.dataset.screen));
+  dot.addEventListener('click', () => {
+    clearInterval(appInterval);
+    switchScreen(parseInt(dot.dataset.screen));
+    startAppInterval();
+  });
 });
 
 appWrappers.forEach(wrapper => {
-  wrapper.addEventListener('click', () => switchScreen(wrapper.dataset.screen));
+  wrapper.addEventListener('click', () => {
+    clearInterval(appInterval);
+    switchScreen(parseInt(wrapper.dataset.screen));
+    startAppInterval();
+  });
 });
 
-// Auto-rotate app screens
-let appInterval = setInterval(() => {
-  activeScreen = activeScreen >= 3 ? 1 : activeScreen + 1;
-  switchScreen(activeScreen);
-}, 4000);
+startAppInterval();
 
 // Pause on hover
 const showcase = document.querySelector('.app-showcase');
 if (showcase) {
   showcase.addEventListener('mouseenter', () => clearInterval(appInterval));
-  showcase.addEventListener('mouseleave', () => {
-    appInterval = setInterval(() => {
-      activeScreen = activeScreen >= 3 ? 1 : activeScreen + 1;
-      switchScreen(activeScreen);
-    }, 4000);
-  });
+  showcase.addEventListener('mouseleave', startAppInterval);
 }
 
 // --- Hero Particles ---
@@ -199,19 +215,107 @@ window.addEventListener('scroll', () => {
   }
 });
 
+// --- FAQ Accordion ---
+document.querySelectorAll('.faq-trigger').forEach(trigger => {
+  trigger.addEventListener('click', () => {
+    const item = trigger.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+
+    // Close all other items
+    document.querySelectorAll('.faq-item.open').forEach(openItem => {
+      if (openItem !== item) {
+        openItem.classList.remove('open');
+        openItem.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    item.classList.toggle('open');
+    trigger.setAttribute('aria-expanded', !isOpen);
+  });
+});
+
 // --- Contact Form ---
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    // Basic validation
+    const name = contactForm.querySelector('#name');
+    const email = contactForm.querySelector('#email');
+    const subject = contactForm.querySelector('#subject');
+    const message = contactForm.querySelector('#message');
+
+    let valid = true;
+    [name, email, subject, message].forEach(field => {
+      if (!field.value.trim()) {
+        field.style.borderColor = '#EF4444';
+        valid = false;
+      } else {
+        field.style.borderColor = '';
+      }
+    });
+
+    if (email.value && !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      email.style.borderColor = '#EF4444';
+      valid = false;
+    }
+
+    if (!valid) return;
+
     const btn = contactForm.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<span>Sent! We\'ll get back to you soon.</span>';
     btn.style.background = 'var(--success)';
+    btn.disabled = true;
     setTimeout(() => {
       btn.innerHTML = originalText;
       btn.style.background = '';
+      btn.disabled = false;
       contactForm.reset();
     }, 3000);
   });
 }
+
+// --- Performance: Lazy load images ---
+if ('IntersectionObserver' in window) {
+  const imgObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        }
+        imgObserver.unobserve(img);
+      }
+    });
+  }, { rootMargin: '100px' });
+
+  document.querySelectorAll('img[data-src]').forEach(img => imgObserver.observe(img));
+}
+
+// --- Accessibility: Keyboard navigation for FAQ ---
+document.querySelectorAll('.faq-trigger').forEach(trigger => {
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      trigger.click();
+    }
+  });
+});
+
+// --- Reduce motion preference ---
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.documentElement.style.setProperty('--transition-fast', '0s');
+  document.documentElement.style.setProperty('--transition-base', '0s');
+  document.documentElement.style.setProperty('--transition-smooth', '0s');
+  document.documentElement.style.setProperty('--transition-spring', '0s');
+}
+
+// --- Console branding ---
+console.log(
+  '%c TayyebGo %c Everything Delivered ',
+  'background: linear-gradient(135deg, #FF5A2C, #8B5CF6); color: white; padding: 8px 12px; border-radius: 6px 0 0 6px; font-weight: bold;',
+  'background: #0A0F0D; color: #8A9A92; padding: 8px 12px; border-radius: 0 6px 6px 0;'
+);
