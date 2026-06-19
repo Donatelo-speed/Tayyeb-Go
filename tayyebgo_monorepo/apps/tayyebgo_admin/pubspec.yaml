@@ -21,6 +21,7 @@ dependencies:
     path: ../../packages/tayyebgo_core
   tayyebgo_multi_tenant:
     path: ../../packages/tayyebgo_multi_tenant
+  google_sign_in_web: ^1.1.3
 
 dev_dependencies:
   flutter_test:
