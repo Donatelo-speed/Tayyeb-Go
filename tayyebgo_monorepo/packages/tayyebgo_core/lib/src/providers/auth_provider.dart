@@ -309,6 +309,34 @@ class AuthProvider extends ChangeNotifier {
     } on fb.FirebaseAuthException catch (e) {
       if (_disposed) return false;
       if (kDebugMode) debugPrint('[AuthProvider] login: FirebaseAuthException ${e.code}');
+      
+      // Auto-create account if user-not-found
+      if (e.code == 'user-not-found' && kDebugMode) {
+        if (kDebugMode) debugPrint('[AuthProvider] login: User not found, auto-creating account');
+        try {
+          final credential = await fb.FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email.trim(), password: password);
+          if (credential.user != null) {
+            // Create Firestore user document
+            await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
+              'email': email.trim(),
+              'displayName': email.split('@').first,
+              'role': 'customer',
+              'isActive': true,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+            if (kDebugMode) debugPrint('[AuthProvider] login: Account created successfully');
+            // Try login again
+            _isLoading = false;
+            _loginInProgress = false;
+            notifyListeners();
+            return await login(email, password, context);
+          }
+        } catch (createError) {
+          if (kDebugMode) debugPrint('[AuthProvider] login: Failed to create account: $createError');
+        }
+      }
+      
       _error = _friendlyAuthError(e);
       _isLoading = false;
       _loginInProgress = false;
