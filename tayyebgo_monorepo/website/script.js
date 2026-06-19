@@ -313,6 +313,131 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.documentElement.style.setProperty('--transition-spring', '0s');
 }
 
+// --- Arabic Language Toggle ---
+const translations = {
+  // Navigation
+  'nav_how': { en: 'How It Works', ar: 'كيف يعمل' },
+  'nav_features': { en: 'Features', ar: 'المميزات' },
+  'nav_customers': { en: 'Customers', ar: 'العملاء' },
+  'nav_drivers': { en: 'Drivers', ar: 'السائقون' },
+  'nav_partners': { en: 'Partners', ar: 'الشركاء' },
+  'nav_pricing': { en: 'Pricing', ar: 'الأسعار' },
+  'nav_signin': { en: 'Sign In', ar: 'تسجيل الدخول' },
+  'nav_getstarted': { en: 'Get Started', ar: 'ابدأ الآن' },
+  // Hero
+  'hero_badge': { en: 'Live in Damascus & beyond', ar: 'متاح في دمشق وما حولها' },
+  'hero_title1': { en: 'Everything', ar: 'كل شيء' },
+  'hero_title2': { en: 'Delivered.', ar: 'توصيل.' },
+  'hero_subtitle': { en: 'Food, groceries, pharmacy, and anything you need — delivered to your door in minutes. One app for your entire city.', ar: 'طعام، بقالة، صيدلية، وأي شيء تحتاجه — يوصّل لبابك في دقائق. تطبيق واحد لمدينتك كلها.' },
+  'hero_ordernow': { en: 'Order Now', ar: 'اطلب الآن' },
+  'hero_partner': { en: 'Partner With Us', ar: 'كن شريكاً' },
+  'stat_orders': { en: 'Orders Delivered', ar: 'طلب تم توصيله' },
+  'stat_stores': { en: 'Partner Stores', ar: 'متجر شريك' },
+  'stat_drivers': { en: 'Active Drivers', ar: 'سائق نشط' },
+  // Trust
+  'trust_payments': { en: 'Secure Payments', ar: 'مدفوعات آمنة' },
+  'trust_fast': { en: 'Fast Delivery', ar: 'توصيل سريع' },
+  'trust_support': { en: '24/7 Support', ar: 'دعم على مدار الساعة' },
+  'trust_rating': { en: 'Top Rated', ar: 'الأعلى تقييماً' },
+  // How It Works
+  'how_tag': { en: 'How It Works', ar: 'كيف يعمل' },
+  'how_title': { en: 'Order in 3 simple steps', ar: 'اطلب في 3 خطوات بسيطة' },
+  'how_subtitle': { en: 'From your phone to your door in minutes.', ar: 'من هاتفك إلى بابك في دقائق.' },
+  'step1_title': { en: 'Browse & Choose', ar: 'تصفح واختر' },
+  'step1_desc': { en: 'Explore restaurants, stores, and services near you. Find exactly what you want.', ar: 'استكشف المطاعم والمتاجر والخدمات القريبة منك. اعثر على ما تريد بالضبط.' },
+  'step2_title': { en: 'Place Your Order', ar: 'أدخل طلبك' },
+  'step2_desc': { en: 'Checkout with cash, Sham Cash, or card. Schedule for later or order now.', ar: 'ادفع نقداً، شام كاش، أو بطاقة. جدول للوقت اللاحق أو اطلب الآن.' },
+  'step3_title': { en: 'Track & Receive', ar: 'تتبع واستلم' },
+  'step3_desc': { en: 'Watch your driver in real-time. Get notified at every step. Enjoy your order.', ar: 'تابع سائقك في الوقت الحقيقي. احصل على إشعار في كل خطوة. استمتع بطلبك.' },
+  // Features
+  'features_tag': { en: 'Why TayyebGo', ar: 'لماذا TayyebGo' },
+  'features_title': { en: 'Built for your city', ar: 'مصمم لمدينتك' },
+  'features_subtitle': { en: 'Everything you need in one app, designed for the Middle East.', ar: 'كل ما تحتاجه في تطبيق واحد، مصمم للشرق الأوسط.' },
+  'feat1_title': { en: 'Lightning Fast', ar: 'سريع كالبرق' },
+  'feat1_desc': { en: 'Average delivery in 20 minutes. Real-time tracking from restaurant to your door.', ar: 'متوسط التوصيل 20 دقيقة. تتبع مباشر من المطعم إلى بابك.' },
+  'feat2_title': { en: 'Anything Delivery', ar: 'توصيل أي شيء' },
+  'feat2_desc': { en: "Don't just order food. Request anything — medicine, documents, gifts. We buy it for you.", ar: 'لا تطلب فقط الطعام. اطلب أي شيء — أدوية، مستندات، هدايا. نشتريه لك.' },
+  'feat3_title': { en: 'Multiple Payments', ar: 'دفع متعدد' },
+  'feat3_desc': { en: 'Cash, Sham Cash, or card. Pay however works for you. Secure and encrypted.', ar: 'نقداً، شام كاش، أو بطاقة. ادفع بالطريقة المناسبة لك. آمن ومشفر.' },
+  'feat4_title': { en: 'Loyalty Rewards', ar: 'مكافآت الولاء' },
+  'feat4_desc': { en: 'Earn points on every order. Redeem for discounts, free delivery, and exclusive deals.', ar: 'اكسب نقاطاً في كل طلب. استبدلها بخصومات وتوصيل مجاني وعروض حصرية.' },
+  'feat5_title': { en: 'Safe & Secure', ar: 'آمن ومحمي' },
+  'feat5_desc': { en: 'Encrypted payments, verified drivers, and SOS safety features for peace of mind.', ar: 'مدفوعات مشفرة، سائقون موثوقون، وميزات أمان طوارئ لراحة بالك.' },
+  'feat6_title': { en: 'Top Rated', ar: 'الأعلى تقييماً' },
+  'feat6_desc': { en: '4.9 average rating. Loved by customers, drivers, and partners across Syria.', ar: 'متوسط تقييم 4.9. محبوب من العملاء والسائقين والشركاء في سوريا.' },
+  // Sections
+  'customers_tag': { en: 'For Customers', ar: 'للعملاء' },
+  'customers_title': { en: 'Your city, your way.', ar: 'مدينتك، بطريقتك.' },
+  'customers_desc': { en: 'Order from your favorite restaurants or ask us to pick up anything — medicine, documents, gifts. TayyebGo delivers it all.', ar: 'اطلب من مطاعمك المفضلة أو اطلب منا توصيل أي شيء — أدوية، مستندات، هدايا. TayyebGo يوصّل كل شيء.' },
+  'drivers_tag': { en: 'For Drivers', ar: 'للسائقين' },
+  'drivers_title': { en: 'Earn on your schedule.', ar: 'أربحك بجدولك.' },
+  'drivers_desc': { en: 'Drive when you want, earn what you need. Join hundreds of drivers already earning with TayyebGo.', ar: 'قُد متى تشاء، اكسب ما تحتاجه. انضم لمئات السائقين الذين يكسبون مع TayyebGo.' },
+  'partners_tag': { en: 'For Partners', ar: 'للشركاء' },
+  'partners_title': { en: 'Grow your business.', ar: 'نمِّ عملك.' },
+  'partners_desc': { en: 'Reach thousands of customers. Manage orders, menu, and analytics — all in one place.', ar: 'الآلاف من العملاء في متناول يدك. أدر الطلبات والقائمة والتحليلات — كلها في مكان واحد.' },
+  // Pricing
+  'pricing_tag': { en: 'Pricing', ar: 'الأسعار' },
+  'pricing_title': { en: 'Simple, transparent pricing', ar: 'أسعار بسيطة وشفافة' },
+  'pricing_subtitle': { en: 'No hidden fees. You only pay for what you use.', ar: 'بدون رسوم خفية. تدفع فقط لما تستخدمه.' },
+  'price_customer': { en: 'Customer', ar: 'عميل' },
+  'price_free': { en: 'Free', ar: 'مجاني' },
+  'price_touse': { en: 'To download & use', ar: 'للتحميل والاستخدام' },
+  'price_subscription': { en: 'Subscription', ar: 'اشتراك' },
+  'price_partner': { en: 'Partner', ar: 'شريك' },
+  'price_commission': { en: 'Commission per order', ar: 'عمولة لكل طلب' },
+  'btn_getstarted': { en: 'Get Started', ar: 'ابدأ الآن' },
+  'btn_subscribenow': { en: 'Subscribe Now', ar: 'اشترك الآن' },
+  'btn_joinpartner': { en: 'Join as Partner', ar: 'انضم كشريك' },
+  // CTA
+  'cta_title': { en: 'Ready to get started?', ar: 'مستعد للبدء؟' },
+  'cta_desc': { en: 'Join thousands of people already using TayyebGo.', ar: 'انضم لآلاف الأشخاص الذين يستخدمون TayyebGo.' },
+  'cta_create': { en: 'Create Account', ar: 'إنشاء حساب' },
+  // Footer
+  'footer_product': { en: 'Product', ar: 'المنتج' },
+  'footer_company': { en: 'Company', ar: 'الشركة' },
+  'footer_support': { en: 'Support', ar: 'الدعم' },
+  'footer_about': { en: 'About Us', ar: 'من نحن' },
+  'footer_careers': { en: 'Careers', ar: 'الوظائف' },
+  'footer_blog': { en: 'Blog', ar: 'المدونة' },
+  'footer_help': { en: 'Help Center', ar: 'مركز المساعدة' },
+  'footer_safety': { en: 'Safety', ar: 'الأمان' },
+  'footer_terms': { en: 'Terms of Service', ar: 'شروط الخدمة' },
+  'footer_privacy': { en: 'Privacy Policy', ar: 'سياسة الخصوصية' },
+  'footer_download': { en: 'Download', ar: 'التحميل' },
+  'footer_refer': { en: 'Refer & Earn', ar: 'أصدِف واكسب' },
+  'footer_homs': { en: 'Homs', ar: 'حمص' },
+};
+
+let currentLang = localStorage.getItem('tayyebgo-lang') || 'en';
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'ar' : 'en';
+  localStorage.setItem('tayyebgo-lang', currentLang);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  document.documentElement.setAttribute('lang', currentLang);
+  document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+  const langText = document.getElementById('langText');
+  if (langText) langText.textContent = currentLang === 'en' ? 'AR' : 'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[key] && translations[key][currentLang]) {
+      el.textContent = translations[key][currentLang];
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[key] && translations[key][currentLang]) {
+      el.placeholder = translations[key][currentLang];
+    }
+  });
+}
+
+// Apply language on load
+applyLanguage();
+
 // --- Console branding ---
 console.log(
   '%c TayyebGo %c Everything Delivered ',
