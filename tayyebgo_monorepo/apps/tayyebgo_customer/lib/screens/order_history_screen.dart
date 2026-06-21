@@ -103,7 +103,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                       stream: context.read<CustomerHomeProvider>().watchOrderHistory(customerId),
                       builder: (context, snap) {
                         if (snap.hasError) {
-                          debugPrint('Order history error: ${snap.error}');
                           return EmptyState(
                             icon: Icons.error_outline_rounded,
                             title: 'Failed to load orders',

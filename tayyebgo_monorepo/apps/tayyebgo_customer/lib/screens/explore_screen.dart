@@ -57,8 +57,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     try {
       final trending = await _smartSearch.getTrendingSearches();
       if (mounted) setState(() => _trendingSearches = trending);
-    } catch (e) {
-      debugPrint('Failed to load trending searches: $e');
+    } catch (_) {
     }
   }
 
@@ -74,8 +73,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           try {
             final suggestions = await _smartSearch.getSuggestions(query.trim());
             if (mounted) setState(() => _suggestions = suggestions);
-          } catch (e) {
-            debugPrint('Failed to get suggestions: $e');
+          } catch (_) {
           }
         }
       }
@@ -107,8 +105,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           _isSearching = false;
         });
       }
-    } catch (e) {
-      debugPrint('Search failed: $e');
+    } catch (_) {
       if (mounted) {
         setState(() {
           _searchResults = [];

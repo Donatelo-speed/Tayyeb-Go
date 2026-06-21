@@ -53,8 +53,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
     try {
       final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024);
       if (file != null && mounted) setState(() => _photoPath = file.path);
-    } catch (e) {
-      debugPrint('Failed to pick photo: $e');
+    } catch (_) {
     }
   }
 
@@ -94,8 +93,7 @@ class _AnythingRequestScreenState extends State<AnythingRequestScreen> {
       } else {
         _showSnack('Failed to submit request');
       }
-    } catch (e) {
-      debugPrint('Submit request failed: $e');
+    } catch (_) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       _showSnack('Failed to submit request');
