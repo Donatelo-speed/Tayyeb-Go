@@ -973,6 +973,12 @@
   </style>
 </head>
 <body>
+  <div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:16px;transition:opacity .3s">
+    <div style="width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite"></div>
+    <div style="font-weight:700;font-size:18px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent">TayyebGo</div>
+    <div style="color:var(--text-secondary);font-size:13px">Loading...</div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
   <div id="app"></div>
   <div class="toast-container" id="toastContainer"></div>
 
@@ -1021,6 +1027,8 @@
       } else {
         renderAuth();
       }
+      const ls = document.getElementById('loadingScreen');
+      if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 300); }
     });
 
     // ========================================
