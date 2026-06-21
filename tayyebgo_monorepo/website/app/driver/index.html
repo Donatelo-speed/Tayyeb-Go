@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo — Driver</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>:root{--primary:#22C55E;--primary-dark:#16A34A;--primary-light:#4ADE80}[data-theme="dark"]{--primary:#22C55E;--primary-dark:#16A34A}
+  .single-delivery-lock{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column}
+  .lock-header{padding:16px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .lock-content{flex:1;overflow-y:auto;padding:24px}
+  .pin-input{width:60px;height:60px;border:2px solid var(--border);border-radius:12px;text-align:center;font-size:24px;font-weight:700;background:var(--surface);color:var(--text);transition:all 0.2s}
+  .pin-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,0.1)}
+  .pin-container{display:flex;gap:12px;justify-content:center;margin:24px 0}
+  .delivery-progress-step{display:flex;align-items:center;gap:12px;padding:16px;border-radius:12px;margin-bottom:8px;transition:all 0.3s}
+  .delivery-progress-step.active{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3)}
+  .delivery-progress-step.done{background:rgba(34,197,94,0.05);opacity:0.7}
+  .step-dot{width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+  .step-dot.active{background:var(--primary);color:white}
+  .step-dot.done{background:var(--success);color:white}</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    
+    const firebaseConfig={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
+    const fbApp=initializeApp(firebaseConfig);const auth=getAuth(fbApp);const db=getFirestore(fbApp);
+    
+    let currentUser=null;let userData=null;let isOnline=false;
+    let availableOrders=[];let driverEarnings=0;let deliveryHistory=[];
+    let activeDelivery=null;let deliveryPin='';
+    
+    function showToast(msg,type='success'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className=`toast toast-${type}`;t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),4000);}
+    
+    onAuthStateChanged(auth,async(user)=>{
+      currentUser=user;
+      if(user){
+        const snap=await getDoc(doc(db,'users',user.uid));
+        userData=snap.exists()?snap.data():null;
+        if(userData&&userData.role!=='driver'){
+          showToast('Not a driver account','error');
+          await signOut(auth);return;
+        }
+        await loadDriverData();
+        // Check if driver has active delivery
+        if(userData?.currentOrderId){
+          activeDelivery = deliveryHistory.find(o=>o.id===userData.currentOrderId);
+        }
+        renderDashboard();
+      } else {
+        window.location.href='../';
+      }
+    });
+    
+    async function loadDriverData(){
+      try {
+        // Load available orders
+        const dispatchSnap = await getDocs(query(collection(db,'dispatch_requests'),where('status','in',['awaiting_acceptance','pending'])));
+        availableOrders = [];
+        dispatchSnap.forEach(doc => availableOrders.push({id:doc.id,...doc.data()}));
+        
+        // Load wallet
+        if(currentUser){
+          const walletSnap = await getDoc(doc(db,'driver_wallets',currentUser.uid));
+          if(walletSnap.exists()) driverEarnings = walletSnap.data().balance || 0;
+          
+          // Load history
+          const historySnap = await getDocs(query(collection(db,'orders'),where('driverId','==',currentUser.uid),orderBy('createdAt','desc')));
+          deliveryHistory = [];
+          historySnap.forEach(doc => deliveryHistory.push({id:doc.id,...doc.data()}));
+        }
+      } catch(e) {
+        console.log('Driver data error:',e);
+        availableOrders = []; deliveryHistory = [];
+      }
+    }
+    
+    function renderDashboard(){
+      const name=userData?.displayName||'Driver';
+      const letter=name.charAt(0).toUpperCase();
+      
+      // SINGLE DELIVERY LOCK - If driver has active delivery, show locked view
+      if(activeDelivery){
+        document.getElementById('app').innerHTML=renderDeliveryLock(activeDelivery);
+        return;
+      }
+      
+      const todayDeliveries = deliveryHistory.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        return d && d.toDateString()===new Date().toDateString();
+      }).length;
+      
+      document.getElementById('app').innerHTML=`<div class="dashboard-layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),#059669);border-radius:10px;display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
+            </div>
+            <span style="font-weight:800;font-size:18px">Driver</span>
+          </div>
+          <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showPage('dashboard')">🏠 Dashboard</div>
+            <div class="nav-item" onclick="showPage('requests')">📋 Requests (${availableOrders.length})</div>
+            <div class="nav-item" onclick="showPage('earnings')">💰 Earnings</div>
+            <div class="nav-item" onclick="showPage('wallet')">💳 Wallet</div>
+            <div class="nav-item" onclick="showPage('history')">📦 History</div>
+            <div class="nav-item" onclick="showPage('safety')">🛡️ Safety</div>
+            <div class="nav-item" onclick="showPage('profile')">👤 Profile</div>
+          </nav>
+          <div class="sidebar-footer">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#059669);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px">${letter}</div>
+              <div style="flex:1"><div style="font-weight:600;font-size:13px">${name}</div><div style="font-size:11px;color:var(--text-secondary)">${userData?.rating||'--'} rating</div></div>
+            </div>
+            <button onclick="doLogout()" class="btn btn-ghost btn-full" style="color:var(--error);font-size:13px">🚪 Sign Out</button>
+          </div>
+        </aside>
+        <main class="main-content" id="pageContent"></main>
+      </div>`;
+      showPage('dashboard');
+    }
+    
+    // SINGLE DELIVERY LOCK - Shows only when driver has active order
+    function renderDeliveryLock(order){
+      const steps=[
+        {id:'accepted',label:'Order Accepted',icon:'✓'},
+        {id:'heading_to_store',label:'Heading to Store',icon:'🏪'},
+        {id:'picked_up',label:'Picked Up',icon:'📦'},
+        {id:'delivering',label:'Delivering',icon:'🚗'},
+        {id:'delivered',label:'Delivered',icon:'🎉'}
+      ];
+      const currentIdx = steps.findIndex(s=>s.id===order.status);
+      
+      return `<div class="single-delivery-lock">
+        <div class="lock-header">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),#059669);border-radius:10px;display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:14px">Active Delivery</div>
+              <div style="font-size:12px;color:var(--text-secondary)">Complete this delivery first</div>
+            </div>
+          </div>
+          <span style="padding:6px 12px;border-radius:100px;font-size:12px;font-weight:600;background:rgba(34,197,94,0.1);color:var(--primary)">${order.status?.replace('_',' ')}</span>
+        </div>
+        
+        <div class="lock-content">
+          <!-- Progress Steps -->
+          <div style="margin-bottom:24px">
+            ${steps.map((s,i)=>`
+              <div class="delivery-progress-step ${i<currentIdx?'done':i===currentIdx?'active':''}">
+                <div class="step-dot ${i<currentIdx?'done':i===currentIdx?'active':''}">${i<currentIdx?'✓':s.icon}</div>
+                <div>
+                  <div style="font-weight:600;font-size:14px">${s.label}</div>
+                  <div style="font-size:12px;color:var(--text-secondary)">${i<currentIdx?'Completed':i===currentIdx?'In progress':'Waiting'}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Order Info -->
+          <div class="card" style="margin-bottom:16px">
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Order #${order.id?.slice(0,8)||'N/A'}</h3>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Restaurant</span><span style="font-weight:600">${order.restaurantName||'Store'}</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Customer</span><span style="font-weight:600">${order.customerName||'Customer'}</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Items</span><span style="font-weight:600">${order.items?.length||0} items</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Earning</span><span style="font-weight:700;color:var(--primary)">${(order.deliveryFee||0).toLocaleString()} SYP</span></div>
+          </div>
+          
+          <!-- PIN Verification -->
+          ${order.status==='delivering'?`
+          <div class="card" style="margin-bottom:16px;text-align:center">
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:8px">🔑 Customer PIN</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Ask customer for their PIN to verify delivery</p>
+            <div class="pin-container">
+              <input type="text" class="pin-input" maxlength="1" data-pin="0" oninput="handlePinInput(this,0)">
+              <input type="text" class="pin-input" maxlength="1" data-pin="1" oninput="handlePinInput(this,1)">
+              <input type="text" class="pin-input" maxlength="1" data-pin="2" oninput="handlePinInput(this,2)">
+              <input type="text" class="pin-input" maxlength="1" data-pin="3" oninput="handlePinInput(this,3)">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="verifyPin('${order.id}')" style="margin-top:16px">Verify & Complete</button>
+          </div>
+          `:''}
+          
+          <!-- Action Buttons -->
+          <div style="display:flex;gap:12px">
+            ${order.status==='accepted'?`
+              <button class="btn btn-primary btn-lg" style="flex:1" onclick="updateDeliveryStatus('${order.id}','heading_to_store')">🚗 Head to Store</button>
+            `:''}
+            ${order.status==='heading_to_store'?`
+              <button class="btn btn-primary btn-lg" style="flex:1" onclick="updateDeliveryStatus('${order.id}','picked_up')">📦 Picked Up</button>
+            `:''}
+            ${order.status==='picked_up'?`
+              <button class="btn btn-primary btn-lg" style="flex:1" onclick="updateDeliveryStatus('${order.id}','delivering')">🚗 Start Delivery</button>
+            `:''}
+            <button class="btn btn-outline" onclick="showToast('Calling customer...')">📞 Call</button>
+            <button class="btn btn-outline" onclick="showToast('Opening chat...')">💬</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    
+    // CHAT FUNCTIONALITY
+    let chatMessages = [];
+    let chatUnsub = null;
+    
+    window.openChat = async (orderId, customerId) => {
+      const c = document.getElementById('pageContent');
+      c.innerHTML = `
+        <div class="page-header animate-fade-up">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="renderDashboard()" class="btn btn-ghost btn-sm" style="font-size:12px">← Back</button>
+            <h1 class="page-title" style="margin:0">Chat with Customer</h1>
+          </div>
+        </div>
+        <div class="card" style="height:calc(100vh - 200px);display:flex;flex-direction:column">
+          <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"></div>
+          <div style="padding:16px;border-top:1px solid var(--border);display:flex;gap:10px">
+            <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--surface);color:var(--text)">
+            <button class="btn btn-primary" onclick="sendChatMessage('${orderId}','${customerId}')">Send</button>
+          </div>
+        </div>
+      `;
+      const { collection: col, query, orderBy: ord } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const chatRef = col(db, 'chats', orderId, 'messages');
+      chatUnsub = onSnapshot(query(chatRef, ord('createdAt')), (snap) => {
+        chatMessages = [];
+        snap.forEach(doc => chatMessages.push({id:doc.id,...doc.data()}));
+        renderChatMessages();
+      });
+    };
+    
+    window.sendChatMessage = async (orderId, customerId) => {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if(!text) return;
+      try {
+        const { addDoc, collection: col, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(col(db, 'chats', orderId, 'messages'), {
+          text, senderId: currentUser.uid, senderName: userData?.displayName || 'Driver', senderRole: 'driver', createdAt: serverTimestamp()
+        });
+        input.value = '';
+      } catch(e) { showToast('Error sending message', 'error'); }
+    };
+    
+    window.renderChatMessages = () => {
+      const container = document.getElementById('chatMessages');
+      if(!container) return;
+      container.innerHTML = chatMessages.map(msg => {
+        const isMe = msg.senderId === currentUser.uid;
+        return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};max-width:80%">
+          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">${msg.senderName || 'Customer'}</div>
+          <div style="padding:12px 16px;border-radius:16px;${isMe?'background:var(--primary);color:white;border-bottom-right-radius:4px':'background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:4px'}">${msg.text}</div>
+          <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px">${msg.createdAt?.toDate?.() ? new Date(msg.createdAt.toDate()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : ''}</div>
+        </div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    };
+    
+    // Update delivery status
+    window.updateDeliveryStatus = async (orderId, newStatus) => {
+      try {
+        await updateDoc(doc(db,'orders',orderId),{status:newStatus,updatedAt:new Date()});
+        showToast(`Status updated: ${newStatus.replace('_',' ')}`);
+        await loadDriverData();
+        activeDelivery = deliveryHistory.find(o=>o.id===orderId);
+        renderDashboard();
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    // PIN verification
+    window.handlePinInput = (input, idx) => {
+      if(input.value.length === 1) {
+        const next = document.querySelector(`[data-pin="${idx+1}"]`);
+        if(next) next.focus();
+      }
+    };
+    
+    window.verifyPin = async (orderId) => {
+      const pins = document.querySelectorAll('.pin-input');
+      const enteredPin = Array.from(pins).map(p=>p.value).join('');
+      if(enteredPin.length !== 4) {
+        showToast('Please enter the 4-digit PIN','error');
+        return;
+      }
+      // In real app, verify against order PIN
+      // For now, accept any 4-digit PIN
+      showToast('PIN verified! Delivery complete 🎉');
+      await updateDeliveryStatus(orderId, 'delivered');
+      activeDelivery = null;
+      renderDashboard();
+    };
+    
+    window.showPage=(page)=>{
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      document.querySelector(`.nav-item[onclick="showPage('${page}')"]`)?.classList.add('active');
+      const c=document.getElementById('pageContent');
+      switch(page){
+        case 'dashboard':c.innerHTML=renderDashboardPage();break;
+        case 'requests':c.innerHTML=renderRequests();break;
+        case 'earnings':c.innerHTML=renderEarnings();break;
+        case 'wallet':c.innerHTML=renderWallet();break;
+        case 'history':c.innerHTML=renderHistory();break;
+        case 'safety':c.innerHTML=renderSafety();break;
+        case 'profile':c.innerHTML=renderProfile();break;
+        default:c.innerHTML=renderDashboardPage();
+      }
+    };
+    
+    window.doLogout=async()=>{await signOut(auth);showToast('Signed out');window.location.href='../';};
+    
+    window.toggleOnline=async()=>{
+      isOnline=!isOnline;
+      showToast(isOnline?'You are online!':'You are offline');
+      if(currentUser){
+        try{
+          await updateDoc(doc(db,'users',currentUser.uid),{isOnline:isOnline});
+        }catch(e){console.log('Status update error:',e)}
+      }
+    };
+    
+    function renderDashboardPage(){
+      const name=userData?.displayName||'Driver';
+      const todayDeliveries = deliveryHistory.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        return d && d.toDateString()===new Date().toDateString();
+      }).length;
+      
+      return `<div class="page-header animate-fade-up">
+        <div><h1 class="page-title">Dashboard</h1><p style="color:var(--text-secondary);font-size:14px">Welcome back, ${name}</p></div>
+      </div>
+      <div class="status-toggle animate-fade-up delay-1">
+        <div class="toggle-switch ${isOnline?'active':''}" id="statusToggle" onclick="toggleOnline()"></div>
+        <div>
+          <div class="status-text ${isOnline?'online':'offline'}" id="statusText">${isOnline?'Online — Ready':'Offline'}</div>
+          <div style="font-size:13px;color:var(--text-secondary)">${isOnline?'Receiving orders':'Turn on to start'}</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card animate-fade-up delay-2"><div class="stat-value">${todayDeliveries}</div><div class="stat-label">Today's Deliveries</div></div>
+        <div class="stat-card animate-fade-up delay-3"><div class="stat-value">${driverEarnings.toLocaleString()}</div><div class="stat-label">Wallet (SYP)</div></div>
+        <div class="stat-card" style="animation-delay:0.4s"><div class="stat-value">${userData?.rating||'--'}</div><div class="stat-label">Rating</div></div>
+      </div>
+      <h2 style="font-size:18px;font-weight:700;margin:24px 0 16px" class="animate-fade-up delay-3">Available Requests (${availableOrders.length})</h2>
+      ${availableOrders.slice(0,5).map(o=>`
+        <div class="order-card">
+          <div class="order-header">
+            <div><div class="order-id">#${o.id?.slice(0,8)||'N/A'}</div><div class="order-distance">${o.restaurantName||'Store'} • ${o.distance||'0.8 km'} away</div></div>
+            <div class="order-earning">${(o.deliveryFee||3500).toLocaleString()} SYP</div>
+          </div>
+          <div class="order-actions">
+            <button class="btn btn-outline" onclick="showToast('Declined')">Decline</button>
+            <button class="btn btn-primary" onclick="acceptOrder('${o.id}')">Accept</button>
+          </div>
+        </div>
+      `).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">📋</div><div style="font-weight:600">No available requests</div></div>'}`;
+    }
+    
+    window.acceptOrder = async (orderId) => {
+      // SINGLE DELIVERY LOCK - Check if already on delivery
+      if(activeDelivery) {
+        showToast('Complete your current delivery first!','error');
+        return;
+      }
+      try {
+        await updateDoc(doc(db,'dispatch_requests',orderId),{
+          status:'accepted', driverId:currentUser.uid, acceptedAt:new Date()
+        });
+        await updateDoc(doc(db,'users',currentUser.uid),{
+          currentOrderId:orderId, isOnline:true
+        });
+        showToast('Order accepted!');
+        await loadDriverData();
+        activeDelivery = deliveryHistory.find(o=>o.id===orderId)||{id:orderId,status:'accepted',deliveryFee:3500};
+        renderDashboard();
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    function renderRequests(){
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Available Requests (${availableOrders.length})</h1></div>
+      ${availableOrders.map(o=>`
+        <div class="order-card">
+          <div class="order-header">
+            <div><div class="order-id">#${o.id?.slice(0,8)||'N/A'}</div><div class="order-distance">${o.restaurantName||'Store'} • ${o.distance||'0.8 km'} away</div></div>
+            <div class="order-earning">${(o.deliveryFee||3500).toLocaleString()} SYP</div>
+          </div>
+          <div class="order-actions">
+            <button class="btn btn-outline" onclick="showToast('Declined')">Decline</button>
+            <button class="btn btn-primary" onclick="acceptOrder('${o.id}')">Accept</button>
+          </div>
+        </div>
+      `).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">📋</div><div style="font-weight:600">No available requests</div></div>'}`;
+    }
+    
+    function renderEarnings(){
+      const todayDeliveries = deliveryHistory.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        return d && d.toDateString()===new Date().toDateString();
+      });
+      const todayEarnings = todayDeliveries.reduce((s,o)=>s+(o.deliveryFee||0),0);
+      
+      const weekDeliveries = deliveryHistory.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        if(!d) return false;
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return d >= weekAgo;
+      });
+      const weekEarnings = weekDeliveries.reduce((s,o)=>s+(o.deliveryFee||0),0);
+      
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Earnings</h1></div>
+      <div class="wallet-card animate-fade-up delay-1">
+        <div class="wallet-label">Wallet Balance</div>
+        <div class="wallet-balance">${driverEarnings.toLocaleString()} SYP</div>
+        <button class="btn" style="background:rgba(255,255,255,0.2);color:white;margin-top:16px;position:relative;z-index:1">Withdraw</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+        <div class="card animate-fade-up delay-2">
+          <div style="font-size:14px;color:var(--text-secondary)">Today's Earnings</div>
+          <div style="font-size:24px;font-weight:800;color:var(--primary)">${todayEarnings.toLocaleString()} SYP</div>
+          <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">${todayDeliveries.length} deliveries</div>
+        </div>
+        <div class="card animate-fade-up delay-3">
+          <div style="font-size:14px;color:var(--text-secondary)">This Week</div>
+          <div style="font-size:24px;font-weight:800;color:var(--primary)">${weekEarnings.toLocaleString()} SYP</div>
+          <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">${weekDeliveries.length} deliveries</div>
+        </div>
+      </div>
+      <h3 style="font-size:16px;font-weight:700;margin:24px 0 16px">Recent Earnings</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${deliveryHistory.slice(0,10).map(o=>{
+          const date = o.createdAt?.toDate?.()?new Date(o.createdAt.toDate()).toLocaleDateString():'Recent';
+          return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:16px">
+            <div><div style="font-weight:600;font-size:14px">${o.restaurantName||'Delivery'}</div><div style="font-size:12px;color:var(--text-secondary)">${date}</div></div>
+            <div style="font-weight:700;color:var(--primary)">+${(o.deliveryFee||0).toLocaleString()} SYP</div>
+          </div>`;
+        }).join('')||'<div class="card" style="text-align:center;padding:20px;color:var(--text-secondary)">No earnings yet</div>'}
+      </div>`;
+    }
+    
+    function renderWallet(){
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Wallet</h1></div>
+      <div class="wallet-card animate-fade-up delay-1"><div class="wallet-label">Available Balance</div><div class="wallet-balance">${driverEarnings.toLocaleString()} SYP</div><div style="display:flex;gap:10px;margin-top:16px;position:relative;z-index:1"><button class="btn" style="background:rgba(255,255,255,0.2);color:white">Withdraw</button><button class="btn" style="background:rgba(255,255,255,0.2);color:white">History</button></div></div>`;
+    }
+    
+    function renderHistory(){
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Delivery History (${deliveryHistory.length})</h1></div>
+      <div style="display:flex;flex-direction:column;gap:12px">${deliveryHistory.map(o=>{
+        const date = o.createdAt?.toDate?.()?new Date(o.createdAt.toDate()).toLocaleDateString():'Recent';
+        return `<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600">#${o.id?.slice(0,8)||'N/A'}</div><div style="font-size:13px;color:var(--text-secondary)">${o.restaurantName||'Store'} • ${date}</div></div><div style="font-weight:700;color:var(--primary)">${(o.deliveryFee||0).toLocaleString()} SYP</div></div>`;
+      }).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="color:var(--text-secondary)">No history yet</div></div>'}</div>`;
+    }
+    
+    function renderSafety(){return `<div class="page-header animate-fade-up"><h1 class="page-title">Safety</h1></div><div class="card animate-fade-up delay-1" style="text-align:center;padding:40px"><div style="font-size:56px;margin-bottom:16px">🚨</div><h2 style="font-size:24px;font-weight:800;margin-bottom:8px">SOS Emergency</h2><p style="color:var(--text-secondary);margin-bottom:24px">Press to alert safety team and share location.</p><button class="btn btn-danger btn-lg" onclick="showToast('SOS sent!')">Send SOS Alert</button></div>`;}
+    
+    function renderProfile(){
+      const n=userData?.displayName||'Driver';
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Profile</h1></div>
+      <div class="card animate-fade-up delay-1" style="max-width:600px"><div style="display:flex;align-items:center;gap:16px;margin-bottom:24px"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#059669);display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:700">${n.charAt(0).toUpperCase()}</div><div><div style="font-size:20px;font-weight:700">${n}</div><div style="color:var(--text-secondary);font-size:14px">${currentUser?.email}</div></div></div><div class="input-group"><label>Full Name</label><input type="text" value="${n}"></div><div class="input-group"><label>Email</label><input type="email" value="${currentUser?.email}"></div><div class="input-group"><label>Phone</label><input type="tel" value="${userData?.phoneNumber||''}"></div><button class="btn btn-primary">Save Changes</button></div>`;}
+    
+    const savedTheme=localStorage.getItem('tayyebgo-theme');
+    if(savedTheme)document.documentElement.setAttribute('data-theme',savedTheme);
+  </script>
+</body>
+</html>

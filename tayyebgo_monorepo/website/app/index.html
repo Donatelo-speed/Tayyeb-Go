@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo — Sign In</title>
+  <meta name="description" content="Sign in to TayyebGo - Your delivery platform">
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#090B10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    
+    .login-wrapper{width:100%;max-width:900px;display:grid;grid-template-columns:1fr 1fr;border-radius:24px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.5);min-height:580px}
+    
+    /* Left Panel - Form */
+    .login-left{background:#141C18;padding:48px 40px;display:flex;flex-direction:column;justify-content:center}
+    .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:40px}
+    .logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#FF5A2C,#8B5CF6);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,90,44,0.4)}
+    .logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:white}
+    
+    .tabs{display:flex;gap:4px;background:#0D1210;border-radius:12px;padding:4px;margin-bottom:32px}
+    .tab{flex:1;padding:12px;border-radius:10px;border:none;background:transparent;color:#8A9A92;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s}
+    .tab.active{background:#1A2420;color:white}
+    
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#8A9A92;margin-bottom:8px}
+    .form-group input{width:100%;padding:14px 16px;border:2px solid #2A3B33;border-radius:12px;font-size:14px;color:white;background:#0D1210;transition:all 0.2s}
+    .form-group input:focus{outline:none;border-color:#FF5A2C;box-shadow:0 0 0 4px rgba(255,90,44,0.1)}
+    .form-group input::placeholder{color:#5A6B63}
+    
+    .form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .remember-me{display:flex;align-items:center;gap:8px;font-size:13px;color:#8A9A92;cursor:pointer}
+    .remember-me input{width:16px;height:16px;accent-color:#FF5A2C}
+    .forgot-link{font-size:13px;color:#FF5A2C;font-weight:500;text-decoration:none}
+    .forgot-link:hover{text-decoration:underline}
+    
+    .btn-login{width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#FF5A2C,#E84A1E);color:white;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px rgba(255,90,44,0.3)}
+    .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,90,44,0.4)}
+    .btn-login:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+    
+    .divider{display:flex;align-items:center;gap:16px;margin:24px 0;color:#5A6B63;font-size:13px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:#2A3B33}
+    
+    .social-row{display:flex;gap:10px}
+    .social-btn{flex:1;padding:12px;border:2px solid #2A3B33;border-radius:12px;background:#0D1210;display:flex;align-items:center;justify-content:center;gap:8px;color:white;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s}
+    .social-btn:hover{border-color:#FF5A2C;transform:translateY(-1px)}
+    
+    .signup-link{text-align:center;margin-top:24px;font-size:14px;color:#8A9A92}
+    .signup-link a{color:#FF5A2C;font-weight:600;text-decoration:none}
+    .signup-link a:hover{text-decoration:underline}
+    
+    /* Right Panel - Branding */
+    .login-right{background:linear-gradient(135deg,#FF5A2C,#8B5CF6);padding:48px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden}
+    .login-right::before{content:'';position:absolute;width:400px;height:400px;background:rgba(255,255,255,0.1);border-radius:50%;top:-100px;right:-100px}
+    .login-right::after{content:'';position:absolute;width:300px;height:300px;background:rgba(255,255,255,0.08);border-radius:50%;bottom:-80px;left:-80px}
+    
+    .brand-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;color:white;margin-bottom:16px;line-height:1.2;position:relative;z-index:1}
+    .brand-desc{font-size:16px;color:rgba(255,255,255,0.9);line-height:1.7;max-width:320px;margin-bottom:32px;position:relative;z-index:1}
+    
+    .mockup{width:240px;height:420px;background:rgba(0,0,0,0.2);border-radius:28px;padding:10px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);animation:float 4s ease-in-out infinite;position:relative;z-index:1}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .mockup-screen{background:#0D1210;border-radius:20px;height:100%;padding:14px;display:flex;flex-direction:column;gap:10px}
+    .mockup-header{display:flex;justify-content:space-between;font-size:10px;color:white;font-weight:600}
+    .mockup-greeting{font-size:16px;font-weight:700;color:white}
+    .mockup-search{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;color:#666;font-size:11px}
+    .mockup-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .mockup-cat{text-align:center;padding:8px 2px;background:rgba(255,255,255,0.04);border-radius:8px}
+    .mockup-cat-icon{font-size:18px}
+    .mockup-cat span{font-size:8px;color:#888;display:block;margin-top:2px}
+    .mockup-card{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border-radius:8px;padding:8px}
+    .mockup-card-img{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .mockup-card-info strong{font-size:10px;color:white;display:block}
+    .mockup-card-info span{font-size:8px;color:#888}
+    
+    /* Test accounts */
+    .test-box{margin-top:20px;padding:14px;background:#0D1210;border-radius:10px;border:1px dashed #2A3B33}
+    .test-box h4{font-size:11px;font-weight:700;color:#8A9A92;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+    .test-box p{font-size:10px;color:#5A6B63;line-height:1.6}
+    
+    /* Toast */
+    .toast-container{position:fixed;top:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:8px}
+    .toast{padding:14px 20px;border-radius:12px;background:#141C18;border:1px solid #2A3B33;color:white;font-size:14px;font-weight:500;animation:fadeIn .3s ease;max-width:400px}
+    .toast-success{border-left:4px solid #22C55E}
+    .toast-error{border-left:4px solid #EF4444}
+    @keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    
+    /* Loading */
+    .loading{position:fixed;inset:0;background:#090B10;display:flex;align-items:center;justify-content:center;z-index:10000}
+    .spinner{width:40px;height:40px;border:3px solid #2A3B33;border-top-color:#FF5A2C;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    
+    /* Responsive */
+    @media(max-width:768px){
+      .login-wrapper{grid-template-columns:1fr}
+      .login-right{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loadingOverlay"><div class="spinner"></div></div>
+  
+  <div class="login-wrapper" id="loginContainer" style="display:none">
+    <!-- Left Panel - Form -->
+    <div class="login-left">
+      <div class="login-logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
+        </div>
+        <span class="logo-text">TayyebGo</span>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" id="loginTab" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      
+      <!-- Login Form -->
+      <div id="loginForm">
+        <form id="authForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+          </div>
+          <div class="form-row">
+            <label class="remember-me">
+              <input type="checkbox" id="rememberMe">
+              Remember me
+            </label>
+            <a href="#" class="forgot-link" onclick="handleForgotPassword();return false">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
+        </form>
+        
+        <div class="divider">or continue with</div>
+        
+        <div class="social-row">
+          <button class="social-btn" onclick="loginWithGoogle()">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="social-btn" onclick="loginWithApple()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+        </div>
+        
+        <div class="signup-link">
+          Don't have an account? <a href="#" onclick="switchTab('signup');return false">Sign up</a>
+        </div>
+        
+        <!-- Test Accounts -->
+        <div class="test-box">
+          <h4>Demo Accounts</h4>
+          <p>
+            admin@test.com / test123<br>
+            customer@test.com / test123<br>
+            driver@test.com / test123<br>
+            owner@test.com / test123
+          </p>
+        </div>
+      </div>
+      
+      <!-- Signup Form -->
+      <div id="signupForm" style="display:none">
+        <form id="signupFormEl" onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="signupName" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="signupEmail" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="signupPhone" placeholder="+963 9XX XXX XXX">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signupPassword" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn-login" style="margin-top:8px">Create Account</button>
+        </form>
+        <div class="signup-link">
+          Already have an account? <a href="#" onclick="switchTab('login');return false">Sign in</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Panel - Branding -->
+    <div class="login-right">
+      <h2 class="brand-title">Everything Delivered.</h2>
+      <p class="brand-desc">Food, groceries, pharmacy, and anything you need — delivered to your door in minutes.</p>
+      <div class="mockup">
+        <div class="mockup-screen">
+          <div class="mockup-header"><span>9:41</span><span>●●●</span></div>
+          <div class="mockup-greeting">Good evening 👋</div>
+          <div class="mockup-search">🔍 What do you need?</div>
+          <div class="mockup-cats">
+            <div class="mockup-cat"><div class="mockup-cat-icon">🍔</div><span>Food</span></div>
+            <div class="mockup-cat"><div class="mockup-cat-icon">🛒</div><span>Grocery</span></div>
+            <div class="mockup-cat"><div class="mockup-cat-icon">💊</div><span>Pharmacy</span></div>
+            <div class="mockup-cat"><div class="mockup-cat-icon">📦</div><span>Any</span></div>
+          </div>
+          <div class="mockup-card">
+            <div class="mockup-card-img" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">🍕</div>
+            <div class="mockup-card-info"><strong>Pizza House</strong><span>25-35 min · ⭐ 4.8</span></div>
+          </div>
+          <div class="mockup-card">
+            <div class="mockup-card-img" style="background:linear-gradient(135deg,#22C55E,#06B6D4)">🍔</div>
+            <div class="mockup-card-info"><strong>Burger King</strong><span>15-25 min · ⭐ 4.6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    
+    const firebaseConfig={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
+    const fbApp=initializeApp(firebaseConfig);
+    const auth=getAuth(fbApp);
+    const db=getFirestore(fbApp);
+    const googleProvider=new GoogleAuthProvider();
+    
+    function showToast(msg,type='success'){
+      const c=document.getElementById('toastContainer');
+      const t=document.createElement('div');
+      t.className=`toast toast-${type}`;
+      t.textContent=msg;
+      c.appendChild(t);
+      setTimeout(()=>t.remove(),4000);
+    }
+    
+    // Check auth state - redirect if already logged in
+    let isRedirecting = false;
+    onAuthStateChanged(auth, async(user)=>{
+      document.getElementById('loadingOverlay').style.display='none';
+      
+      if(user && !isRedirecting){
+        isRedirecting = true;
+        showToast('Welcome back! Redirecting...');
+        
+        // Get user role from Firestore
+        try {
+          const snap = await getDoc(doc(db,'users',user.uid));
+          const data = snap.exists() ? snap.data() : null;
+          const role = data?.role || 'customer';
+          
+          console.log('User role:', role);
+          
+          // Role-based redirect
+          const rolePaths = {
+            'admin': 'admin/',
+            'customer': 'customer/',
+            'driver': 'driver/',
+            'partner': 'partner/',
+            'owner': 'partner/',
+            'cashier': 'partner/'
+          };
+          
+          const redirectPath = rolePaths[role] || 'customer/';
+          console.log('Redirecting to:', redirectPath);
+          
+          window.location.href = redirectPath;
+        } catch(e) {
+          console.error('Role lookup error:', e);
+          showToast('Error checking role. Please try again.', 'error');
+          isRedirecting = false;
+          document.getElementById('loginContainer').style.display='flex';
+        }
+      } else if(!user) {
+        document.getElementById('loginContainer').style.display='flex';
+      }
+    });
+    
+    // Login handler
+    window.handleLogin = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      const btn = document.getElementById('loginBtn');
+      
+      btn.textContent = 'Signing in...';
+      btn.disabled = true;
+      
+      try {
+        // Set persistence based on remember me
+        const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+        await setPersistence(auth, persistence);
+        
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast('Signed in successfully!');
+        // Redirect happens in onAuthStateChanged
+      } catch(error) {
+        showToast(getErrorMessage(error.code), 'error');
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+        isRedirecting = false;
+      }
+    };
+    
+    // Signup handler
+    window.handleSignup = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid,
+          email: email,
+          displayName: name,
+          role: 'customer',
+          loyaltyPoints: 0,
+          loyaltyTier: 'bronze',
+          walletBalance: 0,
+          subscriptionStatus: 'inactive',
+          createdAt: serverTimestamp()
+        });
+        showToast('Account created! Redirecting...');
+        // Redirect happens in onAuthStateChanged
+      } catch(error) {
+        showToast(getErrorMessage(error.code), 'error');
+      }
+    };
+    
+    // Google login
+    window.loginWithGoogle = async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const snap = await getDoc(doc(db, 'users', result.user.uid));
+        if(!snap.exists()) {
+          await setDoc(doc(db, 'users', result.user.uid), {
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName || 'User',
+            role: 'customer',
+            loyaltyPoints: 0,
+            loyaltyTier: 'bronze',
+            walletBalance: 0,
+            createdAt: serverTimestamp()
+          });
+        }
+        showToast('Signed in with Google!');
+        // Redirect happens in onAuthStateChanged
+      } catch(error) {
+        showToast(getErrorMessage(error.code), 'error');
+      }
+    };
+    
+    // Apple login
+    window.loginWithApple = () => {
+      showToast('Apple Sign-In coming soon', 'error');
+    };
+    
+    // Forgot password
+    window.handleForgotPassword = async () => {
+      const email = prompt('Enter your email address:');
+      if(email) {
+        try {
+          await sendPasswordResetEmail(auth, email);
+          showToast('Password reset email sent!');
+        } catch(error) {
+          showToast(getErrorMessage(error.code), 'error');
+        }
+      }
+    };
+    
+    // Switch tabs
+    window.switchTab = (tab) => {
+      document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+      document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+    };
+    
+    // Error messages
+    function getErrorMessage(code) {
+      const messages = {
+        'auth/user-not-found': 'No account found with this email',
+        'auth/wrong-password': 'Incorrect password',
+        'auth/invalid-email': 'Invalid email address',
+        'auth/email-already-in-use': 'Email already registered',
+        'auth/weak-password': 'Password is too weak (min 6 characters)',
+        'auth/too-many-requests': 'Too many attempts. Try again later',
+        'auth/popup-closed-by-user': 'Sign-in cancelled',
+        'auth/network-request-failed': 'Network error. Check your connection'
+      };
+      return messages[code] || 'An error occurred. Please try again.';
+    }
+  </script>
+</body>
+</html>

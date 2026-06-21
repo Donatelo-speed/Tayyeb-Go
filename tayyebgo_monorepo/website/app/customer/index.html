@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo — Customer</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .tracking-map-container { height: 400px; border-radius: var(--radius-lg); overflow: hidden; position: relative; }
+    .tracking-map-container .leaflet-container { height: 100%; width: 100%; }
+    .tracking-status-bar { display: flex; justify-content: space-between; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 16px; }
+    .tracking-step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tracking-step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); }
+    .tracking-step-dot.active { background: var(--primary); box-shadow: 0 0 8px rgba(34,197,94,0.4); }
+    .tracking-step-dot.done { background: var(--success); }
+    .tracking-step-label { font-size: 10px; color: var(--text-tertiary); font-weight: 500; }
+    .tracking-step-label.active { color: var(--primary); font-weight: 700; }
+    .driver-card { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    .driver-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
+    .driver-info { flex: 1; }
+    .driver-name { font-weight: 700; font-size: 16px; }
+    .driver-rating { font-size: 13px; color: var(--text-secondary); }
+    .driver-actions { display: flex; gap: 8px; }
+    .driver-action-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .driver-action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    
+    const firebaseConfig={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
+    const fbApp=initializeApp(firebaseConfig);const auth=getAuth(fbApp);const db=getFirestore(fbApp);
+    
+    let currentUser=null;let userData=null;let currentPage='home';
+    let restaurants=[];let userOrders=[];
+    let trackingMap=null;let driverMarker=null;let trackingUnsub=null;
+    const HOMS_CENTER=[34.7369,36.7114]; // Homs, Syria coordinates
+    
+    function showToast(msg,type='success'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className=`toast toast-${type}`;t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),4000);}
+    
+    onAuthStateChanged(auth,async(user)=>{
+      currentUser=user;
+      if(user){
+        const snap=await getDoc(doc(db,'users',user.uid));
+        userData=snap.exists()?snap.data():null;
+        if(userData&&userData.role!=='customer'){
+          showToast('Not a customer account','error');
+          await signOut(auth);return;
+        }
+        await loadCustomerData();
+        renderDashboard();
+      } else {
+        window.location.href='../';
+      }
+    });
+    
+    async function loadCustomerData(){
+      try {
+        const restSnap = await getDocs(collection(db,'restaurants'));
+        restaurants = [];
+        restSnap.forEach(d => {
+          const data = d.data();
+          if(data.isActive !== false) restaurants.push({id:d.id,...data});
+        });
+        
+        if(currentUser){
+          const ordersSnap = await getDocs(query(collection(db,'orders'),where('customerId','==',currentUser.uid),orderBy('createdAt','desc')));
+          userOrders = [];
+          ordersSnap.forEach(d => userOrders.push({id:d.id,...d.data()}));
+        }
+      } catch(e) {
+        console.log('Data load error:',e);
+        restaurants = []; userOrders = [];
+      }
+    }
+    
+    function renderDashboard(){
+      const name=userData?.displayName||'Customer';
+      const letter=name.charAt(0).toUpperCase();
+      const activeOrders = userOrders.filter(o=>o.status==='accepted'||o.status==='delivering'||o.status==='preparing');
+      
+      document.getElementById('app').innerHTML=`<div class="dashboard-layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
+            </div>
+            <span style="font-weight:800;font-size:18px">TayyebGo</span>
+          </div>
+          <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showPage('home')">🏠 Home</div>
+            ${activeOrders.length>0?`<div class="nav-item" onclick="showPage('tracking')" style="color:var(--primary);font-weight:700">📍 Track Order (${activeOrders.length})</div>`:''}
+            <div class="nav-item" onclick="showPage('orders')">📦 My Orders</div>
+            <div class="nav-item" onclick="showPage('anything')">📦 Anything Delivery</div>
+            <div class="nav-item" onclick="showPage('wallet')">💰 Wallet</div>
+            <div class="nav-item" onclick="showPage('loyalty')">⭐ Points</div>
+            <div class="nav-item" onclick="showPage('subscription')">🎫 Subscription</div>
+            <div class="nav-item" onclick="showPage('profile')">👤 Profile</div>
+          </nav>
+          <div class="sidebar-footer">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px">${letter}</div>
+              <div style="flex:1"><div style="font-weight:600;font-size:13px">${name}</div><div style="font-size:11px;color:var(--text-secondary)">${userData?.loyaltyTier||'bronze'} tier</div></div>
+            </div>
+            <button onclick="doLogout()" class="btn btn-ghost btn-full" style="color:var(--error);font-size:13px">🚪 Sign Out</button>
+          </div>
+        </aside>
+        <main class="main-content" id="pageContent"></main>
+      </div>`;
+      showPage('home');
+    }
+    
+    window.showPage=(page)=>{
+      currentPage=page;
+      if(trackingUnsub){trackingUnsub();trackingUnsub=null;}
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const navItem = document.querySelector(`.nav-item[onclick="showPage('${page}')"]`);
+      if(navItem) navItem.classList.add('active');
+      const c=document.getElementById('pageContent');
+      switch(page){
+        case 'home':c.innerHTML=renderHome();break;
+        case 'restaurant':c.innerHTML='';viewRestaurant(currentRestaurantId);break;
+        case 'cart':c.innerHTML=renderCartPage();break;
+        case 'tracking':c.innerHTML=renderTracking();initTrackingMap();break;
+        case 'orders':c.innerHTML=renderOrders();break;
+        case 'anything':c.innerHTML=renderAnything();break;
+        case 'wallet':c.innerHTML=renderWallet();break;
+        case 'loyalty':c.innerHTML=renderLoyalty();break;
+        case 'subscription':c.innerHTML=renderSubscription();break;
+        case 'profile':c.innerHTML=renderProfile();break;
+        default:c.innerHTML=renderHome();
+      }
+    };
+    
+    window.doLogout=async()=>{if(trackingUnsub)trackingUnsub();await signOut(auth);showToast('Signed out');window.location.href='../';};
+    
+    // Home
+    function renderHome(){
+      const activeOrders = userOrders.filter(o=>o.status==='accepted'||o.status==='delivering'||o.status==='preparing');
+      const activeBanner = activeOrders.length>0 ? `<div class="card" style="background:linear-gradient(135deg,var(--primary),var(--accent));color:white;margin-bottom:24px;cursor:pointer" onclick="showPage('tracking')">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-weight:700;font-size:16px">📍 Active Order</div><div style="font-size:13px;opacity:0.9;margin-top:4px">${activeOrders.length} order(s) being delivered</div></div>
+          <div style="font-size:24px">→</div>
+        </div>
+      </div>` : '';
+      
+      const restaurantsHtml = restaurants.length > 0 ? restaurants.slice(0,12).map(r=>{
+        const emoji = r.category==='food'?'🍔':r.category==='grocery'?'🛒':r.category==='pharmacy'?'💊':'🏪';
+        const gradient = r.category==='food'?'linear-gradient(135deg,#FF5A2C,#FF8C42)':r.category==='grocery'?'linear-gradient(135deg,#22C55E,#06B6D4)':r.category==='pharmacy'?'linear-gradient(135deg,#F59E0B,#EF4444)':'linear-gradient(135deg,#8B5CF6,#EC4899)';
+        return `<div class="restaurant-card" onclick="viewRestaurant('${r.id}')">
+          <div class="restaurant-img" style="background:${gradient}">${emoji}</div>
+          <div class="restaurant-body">
+            <div class="restaurant-name">${r.name||'Store'}</div>
+            <div class="restaurant-meta"><span>${r.category||'Restaurant'}</span><span>•</span><span>⭐ ${r.rating||'4.5'}</span></div>
+          </div>
+        </div>`;
+      }).join('') : '<div class="card" style="text-align:center;padding:40px;grid-column:1/-1"><div style="font-size:48px;margin-bottom:12px">🏪</div><div style="font-weight:600;margin-bottom:4px">No restaurants nearby</div><div style="font-size:13px;color:var(--text-secondary)">Check back soon or try Anything Delivery</div></div>';
+      
+      return `<div class="page-header animate-fade-up"><div><h1 class="page-title">Good evening 👋</h1><p style="color:var(--text-secondary);font-size:14px">What would you like to order?</p></div></div>
+      ${activeBanner}
+      <div class="search-box animate-fade-up delay-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Search restaurants or food..." oninput="filterRestaurants(this.value)"></div>
+      <div class="categories animate-fade-up delay-2">
+        <button class="category-chip active" onclick="filterByCategory('all',this)">All</button>
+        <button class="category-chip" onclick="filterByCategory('food',this)">🍔 Food</button>
+        <button class="category-chip" onclick="filterByCategory('grocery',this)">🛒 Grocery</button>
+        <button class="category-chip" onclick="filterByCategory('pharmacy',this)">💊 Pharmacy</button>
+      </div>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:16px" class="animate-fade-up delay-3">Nearby (${restaurants.length})</h2>
+      <div class="restaurant-grid" id="restaurantGrid">${restaurantsHtml}</div>`;
+    }
+    
+    window.viewRestaurant = (id) => {
+      const r = restaurants.find(rest=>rest.id===id);
+      if(!r) return;
+      currentPage = 'restaurant';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const c = document.getElementById('pageContent');
+      const items = r.menuItems || [
+        {id:'1',name:'Classic Burger',price:8000,description:'Beef patty, lettuce, tomato',emoji:'🍔'},
+        {id:'2',name:'Margherita Pizza',price:12000,description:'Tomato, mozzarella, basil',emoji:'🍕'},
+        {id:'3',name:'Caesar Salad',price:6000,description:'Romaine, croutons, parmesan',emoji:'🥗'},
+        {id:'4',name:'Cola',price:1500,description:'Cold refreshing cola',emoji:'🥤'},
+        {id:'5',name:'French Fries',price:4000,description:'Crispy golden fries',emoji:'🍟'},
+        {id:'6',name:'Ice Cream',price:3000,description:'Vanilla, chocolate, or strawberry',emoji:'🍦'}
+      ];
+      c.innerHTML = `
+        <div class="page-header animate-fade-up">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="showPage('home')" class="btn btn-ghost btn-sm" style="font-size:12px">← Back</button>
+            <h1 class="page-title" style="margin:0">${r.name||'Restaurant'}</h1>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+          <span class="badge badge-primary">${r.category||'Restaurant'}</span>
+          <span class="badge" style="background:rgba(34,197,94,0.1);color:var(--success)">⭐ ${r.rating||'4.5'}</span>
+          <span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning)">⏱️ ${r.deliveryTime||'20-30 min'}</span>
+        </div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">Menu Items</h3>
+        <div class="menu-grid">
+          ${items.map(item=>`
+            <div class="menu-item" onclick="addToCart('${item.id}','${item.name}',${item.price})">
+              <div class="menu-item-img">${item.emoji||'🍽️'}</div>
+              <div class="menu-item-info">
+                <div class="menu-item-name">${item.name}</div>
+                <div class="menu-item-desc">${item.description||''}</div>
+                <div class="menu-item-price">${item.price.toLocaleString()} SYP</div>
+              </div>
+              <button class="add-btn">+</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="card" style="margin-top:24px;text-align:center;cursor:pointer" onclick="showPage('cart')">
+          <span style="font-weight:700;color:var(--primary)">🛒 View Cart</span>
+        </div>
+      `;
+    };
+    
+    window.filterByCategory = (cat, btn) => {
+      document.querySelectorAll('.category-chip').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const grid = document.getElementById('restaurantGrid');
+      if(!grid) return;
+      const filtered = cat==='all' ? restaurants : restaurants.filter(r=>r.category===cat);
+      grid.innerHTML = filtered.map(r=>{
+        const emoji = r.category==='food'?'🍔':r.category==='grocery'?'🛒':r.category==='pharmacy'?'💊':'🏪';
+        return `<div class="restaurant-card" onclick="viewRestaurant('${r.id}')"><div class="restaurant-img" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">${emoji}</div><div class="restaurant-body"><div class="restaurant-name">${r.name||'Store'}</div><div class="restaurant-meta"><span>${r.category||'Restaurant'}</span><span>•</span><span>⭐ ${r.rating||'4.5'}</span></div></div></div>`;
+      }).join('') || '<div class="card" style="text-align:center;padding:40px;grid-column:1/-1"><div style="color:var(--text-secondary)">No results</div></div>';
+    };
+    
+    // CHAT FUNCTIONALITY
+    let chatMessages = [];
+    let chatUnsub = null;
+    
+    window.openChat = async (orderId, driverId) => {
+      currentPage = 'chat';
+      const c = document.getElementById('pageContent');
+      c.innerHTML = `
+        <div class="page-header animate-fade-up">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="showPage('tracking')" class="btn btn-ghost btn-sm" style="font-size:12px">← Back</button>
+            <h1 class="page-title" style="margin:0">Chat with Driver</h1>
+          </div>
+        </div>
+        <div class="card" style="height:calc(100vh - 200px);display:flex;flex-direction:column">
+          <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"></div>
+          <div style="padding:16px;border-top:1px solid var(--border);display:flex;gap:10px">
+            <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--surface);color:var(--text)">
+            <button class="btn btn-primary" onclick="sendChatMessage('${orderId}','${driverId}')">Send</button>
+          </div>
+        </div>
+      `;
+      // Subscribe to chat messages
+      const { collection, query, orderBy: ord } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const chatRef = collection(db, 'chats', orderId, 'messages');
+      chatUnsub = onSnapshot(query(chatRef, ord('createdAt')), (snap) => {
+        chatMessages = [];
+        snap.forEach(doc => chatMessages.push({id:doc.id,...doc.data()}));
+        renderChatMessages();
+      });
+    };
+    
+    window.sendChatMessage = async (orderId, driverId) => {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if(!text) return;
+      try {
+        const { addDoc, collection: col, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(col(db, 'chats', orderId, 'messages'), {
+          text, senderId: currentUser.uid, senderName: userData?.displayName || 'Customer', senderRole: 'customer', createdAt: serverTimestamp()
+        });
+        input.value = '';
+      } catch(e) { showToast('Error sending message', 'error'); }
+    };
+    
+    window.renderChatMessages = () => {
+      const container = document.getElementById('chatMessages');
+      if(!container) return;
+      container.innerHTML = chatMessages.map(msg => {
+        const isMe = msg.senderId === currentUser.uid;
+        return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};max-width:80%">
+          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:4px">${msg.senderName || 'Driver'}</div>
+          <div style="padding:12px 16px;border-radius:16px;${isMe?'background:var(--primary);color:white;border-bottom-right-radius:4px':'background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:4px'}">${msg.text}</div>
+          <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px">${msg.createdAt?.toDate?.() ? new Date(msg.createdAt.toDate()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : ''}</div>
+        </div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    };
+    
+    // Cart functionality
+    let cart = [];
+    
+    window.addToCart = (id, name, price) => {
+      const existing = cart.find(i=>i.id===id);
+      if(existing) {
+        existing.quantity++;
+      } else {
+        cart.push({id, name, price, quantity:1});
+      }
+      showToast(`${name} added to cart!`);
+    };
+    
+    window.removeFromCart = (id) => {
+      cart = cart.filter(i=>i.id!==id);
+      renderCartPage();
+    };
+    
+    window.updateQuantity = (id, delta) => {
+      const item = cart.find(i=>i.id===id);
+      if(item) {
+        item.quantity += delta;
+        if(item.quantity <= 0) cart = cart.filter(i=>i.id!==id);
+        renderCartPage();
+      }
+    };
+    
+    window.placeOrder = async () => {
+      if(cart.length === 0) {
+        showToast('Your cart is empty','error');
+        return;
+      }
+      try {
+        const { addDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const total = cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+        const deliveryFee = 3000;
+        const orderData = {
+          customerId: currentUser.uid,
+          customerName: userData?.displayName || 'Customer',
+          items: cart.map(i=>({name:i.name,price:i.price,quantity:i.quantity})),
+          total: total + deliveryFee,
+          subtotal: total,
+          deliveryFee: deliveryFee,
+          status: 'placed',
+          paymentMethod: 'Cash on Delivery',
+          createdAt: new Date()
+        };
+        await addDoc(collection(db,'orders'), orderData);
+        cart = [];
+        showToast('Order placed successfully! 🎉');
+        await loadCustomerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error placing order: '+e.message,'error');
+      }
+    };
+    
+    // Cart page
+    function renderCartPage() {
+      const total = cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+      const deliveryFee = 3000;
+      return `
+        <div class="page-header animate-fade-up">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="showPage('home')" class="btn btn-ghost btn-sm" style="font-size:12px">← Back</button>
+            <h1 class="page-title" style="margin:0">Cart</h1>
+          </div>
+        </div>
+        ${cart.length === 0 ? `
+          <div class="card" style="text-align:center;padding:60px">
+            <div style="font-size:64px;margin-bottom:16px">🛒</div>
+            <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Your cart is empty</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Browse restaurants and add items to your cart.</p>
+            <button class="btn btn-primary" onclick="showPage('home')">Browse Restaurants</button>
+          </div>
+        ` : `
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+            ${cart.map(item=>`
+              <div class="cart-item">
+                <div class="cart-item-img">${item.emoji||'🍽️'}</div>
+                <div class="cart-item-info">
+                  <div class="cart-item-name">${item.name}</div>
+                  <div class="cart-item-price">${item.price.toLocaleString()} SYP</div>
+                </div>
+                <div class="qty-control">
+                  <button class="qty-btn" onclick="updateQuantity('${item.id}',-1)">−</button>
+                  <span style="font-weight:600">${item.quantity}</span>
+                  <button class="qty-btn" onclick="updateQuantity('${item.id}',1)">+</button>
+                </div>
+                <button class="btn btn-ghost" style="font-size:12px;color:var(--error)" onclick="removeFromCart('${item.id}')">✕</button>
+              </div>
+            `).join('')}
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Subtotal</span><span style="font-weight:600">${total.toLocaleString()} SYP</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Delivery Fee</span><span style="font-weight:600">${deliveryFee.toLocaleString()} SYP</span></div>
+            <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:16px;display:flex;justify-content:space-between"><span style="font-weight:700">Total</span><span style="font-weight:800;font-size:18px;color:var(--primary)">${(total+deliveryFee).toLocaleString()} SYP</span></div>
+            <button class="btn btn-primary btn-full btn-lg" onclick="placeOrder()">Place Order</button>
+          </div>
+        `;
+      }
+    
+    window.filterRestaurants = (search) => {
+      const grid = document.getElementById('restaurantGrid');
+      if(!grid) return;
+      const filtered = restaurants.filter(r=>r.name?.toLowerCase().includes(search.toLowerCase()));
+      grid.innerHTML = filtered.map(r=>{
+        const emoji = r.category==='food'?'🍔':'🏪';
+        return `<div class="restaurant-card"><div class="restaurant-img" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">${emoji}</div><div class="restaurant-body"><div class="restaurant-name">${r.name||'Store'}</div><div class="restaurant-meta"><span>⭐ ${r.rating||'4.5'}</span></div></div></div>`;
+      }).join('') || '<div class="card" style="text-align:center;padding:40px;grid-column:1/-1"><div style="color:var(--text-secondary)">No results</div></div>';
+    };
+    
+    // TRACKING PAGE WITH REAL-TIME MAP
+    function renderTracking(){
+      const activeOrder = userOrders.find(o=>o.status==='accepted'||o.status==='delivering'||o.status==='preparing');
+      if(!activeOrder){
+        return `<div class="page-header animate-fade-up"><h1 class="page-title">Order Tracking</h1></div>
+        <div class="card" style="text-align:center;padding:60px">
+          <div style="font-size:64px;margin-bottom:16px">📍</div>
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">No active orders</h2>
+          <p style="color:var(--text-secondary);margin-bottom:24px">When you place an order, you can track it here in real-time.</p>
+          <button class="btn btn-primary" onclick="showPage('home')">Browse Restaurants</button>
+        </div>`;
+      }
+      
+      const statusSteps = ['placed','accepted','preparing','picked_up','delivering','delivered'];
+      const currentIdx = statusSteps.indexOf(activeOrder.status)||0;
+      
+      return `<div class="page-header animate-fade-up">
+        <div><h1 class="page-title">Order Tracking</h1><p style="color:var(--text-secondary);font-size:14px">Order #${activeOrder.id?.slice(0,8)||'N/A'}</p></div>
+        <button class="btn btn-outline btn-sm" onclick="showPage('orders')">View All Orders</button>
+      </div>
+      
+      <!-- Status Timeline -->
+      <div class="tracking-status-bar animate-fade-up delay-1">
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=0?'done':''}"></div><div class="tracking-step-label ${currentIdx===0?'active':''}">Placed</div></div>
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=1?'done':''}"></div><div class="tracking-step-label ${currentIdx===1?'active':''}">Accepted</div></div>
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=2?'done':''}"></div><div class="tracking-step-label ${currentIdx===2?'active':''}">Preparing</div></div>
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=3?'done':''}"></div><div class="tracking-step-label ${currentIdx===3?'active':''}">Picked Up</div></div>
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=4?'done':''}"></div><div class="tracking-step-label ${currentIdx===4?'active':''}">On the Way</div></div>
+        <div class="tracking-step"><div class="tracking-step-dot ${currentIdx>=5?'done':''}"></div><div class="tracking-step-label ${currentIdx===5?'active':''}">Delivered</div></div>
+      </div>
+      
+      <!-- Map -->
+      <div class="tracking-map-container animate-fade-up delay-2" id="trackingMapContainer">
+        <div id="trackingMap" style="height:100%;width:100%;"></div>
+      </div>
+      
+      <!-- Driver Info -->
+      <div class="driver-card animate-fade-up delay-3" style="margin-top:16px">
+        <div class="driver-avatar">${activeOrder.driverName?.charAt(0)||'D'}</div>
+        <div class="driver-info">
+          <div class="driver-name">${activeOrder.driverName||'Driver assigned'}</div>
+          <div class="driver-rating">⭐ ${activeOrder.driverRating||'4.9'} • ${activeOrder.status==='delivering'?'On the way':'Preparing order'}</div>
+        </div>
+        <div class="driver-actions">
+          <button class="driver-action-btn" onclick="showToast('Calling driver...')" title="Call">📞</button>
+          <button class="driver-action-btn" onclick="openChat('${activeOrder.id}','${activeOrder.driverId}')" title="Chat">💬</button>
+        </div>
+      </div>
+      
+      <!-- Order Details -->
+      <div class="card animate-fade-up delay-4" style="margin-top:16px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Order Details</h3>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Restaurant</span><span style="font-weight:600">${activeOrder.restaurantName||'Store'}</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Items</span><span style="font-weight:600">${activeOrder.items?.length||0} items</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--text-secondary)">Total</span><span style="font-weight:700;color:var(--primary)">${(activeOrder.total||0).toLocaleString()} SYP</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Payment</span><span style="font-weight:600">${activeOrder.paymentMethod||'Cash on Delivery'}</span></div>
+      </div>`;
+    }
+    
+    // Initialize Leaflet map with real-time driver tracking
+    window.initTrackingMap = () => {
+      const activeOrder = userOrders.find(o=>o.status==='accepted'||o.status==='delivering'||o.status==='preparing');
+      if(!activeOrder) return;
+      
+      const mapContainer = document.getElementById('trackingMap');
+      if(!mapContainer) return;
+      
+      // Initialize map centered on Homs
+      if(trackingMap) { trackingMap.remove(); }
+      trackingMap = L.map('trackingMap').setView(HOMS_CENTER, 13);
+      
+      // Add tile layer (OpenStreetMap - free, no API key)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(trackingMap);
+      
+      // Add restaurant marker
+      const restaurantLat = activeOrder.restaurantLat || HOMS_CENTER[0];
+      const restaurantLng = activeOrder.restaurantLng || HOMS_CENTER[1];
+      L.marker([restaurantLat, restaurantLng], {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          html: '<div style="background:#FF5A2C;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;box-shadow:0 2px 8px rgba(255,90,44,0.4)">🏪</div>',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        })
+      }).addTo(trackingMap).bindPopup(`<b>${activeOrder.restaurantName||'Restaurant'}</b><br>Pickup location`);
+      
+      // Add customer marker
+      const customerLat = activeOrder.deliveryLat || HOMS_CENTER[0] + 0.01;
+      const customerLng = activeOrder.deliveryLng || HOMS_CENTER[1] + 0.01;
+      L.marker([customerLat, customerLng], {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          html: '<div style="background:#22C55E;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;box-shadow:0 2px 8px rgba(34,197,94,0.4)">📍</div>',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        })
+      }).addTo(trackingMap).bindPopup(`<b>Your Location</b><br>Delivery address`);
+      
+      // Add driver marker (will update in real-time)
+      const driverLat = activeOrder.driverLat || HOMS_CENTER[0] + 0.005;
+      const driverLng = activeOrder.driverLng || HOMS_CENTER[1] + 0.005;
+      driverMarker = L.marker([driverLat, driverLng], {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          html: '<div style="background:#5263F3;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;box-shadow:0 2px 12px rgba(82,99,243,0.5);border:3px solid white">🚗</div>',
+          iconSize: [36, 36],
+          iconAnchor: [18, 18]
+        })
+      }).addTo(trackingMap).bindPopup(`<b>${activeOrder.driverName||'Driver'}</b><br>On the way`);
+      
+      // Fit map to show all markers
+      const bounds = L.latLngBounds([
+        [restaurantLat, restaurantLng],
+        [customerLat, customerLng],
+        [driverLat, driverLng]
+      ]);
+      trackingMap.fitBounds(bounds, { padding: [50, 50] });
+      
+      // Subscribe to real-time driver location updates
+      if(activeOrder.driverId) {
+        const driverLocRef = doc(db, 'driver_locations', activeOrder.driverId);
+        trackingUnsub = onSnapshot(driverLocRef, (snap) => {
+          if(snap.exists() && driverMarker) {
+            const data = snap.data();
+            const newLat = data.latitude || data.lat;
+            const newLng = data.longitude || data.lng;
+            if(newLat && newLng) {
+              driverMarker.setLatLng([newLat, newLng]);
+              // Smooth pan to driver
+              trackingMap.panTo([newLat, newLng], { animate: true });
+            }
+          }
+        });
+      }
+      
+      // Also subscribe to order status changes
+      const orderRef = doc(db, 'orders', activeOrder.id);
+      onSnapshot(orderRef, (snap) => {
+        if(snap.exists()) {
+          const data = snap.data();
+          // Update status display if needed
+          if(data.status === 'delivered') {
+            showToast('Your order has been delivered! 🎉', 'success');
+          }
+        }
+      });
+    }
+    
+    // Orders
+    function renderOrders(){
+      const ordersHtml = userOrders.map(o=>{
+        const sc={delivered:'var(--success)',delivering:'var(--primary)',pending:'var(--warning)',accepted:'var(--info)',cancelled:'var(--error)',preparing:'var(--accent)'};
+        const date = o.createdAt?.toDate?.() ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
+        const isTrackable = o.status==='accepted'||o.status==='delivering'||o.status==='preparing';
+        return `<div class="card" style="cursor:pointer" onclick="${isTrackable?`showPage('tracking')`:''}">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,90,44,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">📦</div>
+              <div><div style="font-weight:700">${o.restaurantName||'Order'}</div><div style="font-size:13px;color:var(--text-secondary)">#${o.id?.slice(0,8)||'N/A'} • ${date}</div></div>
+            </div>
+            <span style="padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;background:${sc[o.status]||'var(--text-tertiary)'}20;color:${sc[o.status]||'var(--text-tertiary)'}">${o.status||'unknown'}</span>
+          </div>
+          <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border)">
+            <span style="font-weight:700;color:var(--primary)">${(o.total||0).toLocaleString()} SYP</span>
+            ${isTrackable?'<button class="btn btn-primary" style="font-size:12px;padding:6px 12px">📍 Track</button>':o.status==='delivered'&&!o.rated?`<button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="rateOrder('${o.id}')">⭐ Rate</button>`:o.status==='delivered'?'<span style="font-size:12px;color:var(--success)">✓ Rated</span>':'<span style="font-size:12px;color:var(--text-tertiary)">'+o.status+'</span>'}
+          </div>
+        </div>`;
+      }).join('');
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">My Orders (${userOrders.length})</h1></div><div style="display:flex;flex-direction:column;gap:16px">${ordersHtml||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">📦</div><div style="font-weight:600">No orders yet</div></div>'}</div>`;
+    }
+    
+    function renderAnything(){return `<div class="page-header animate-fade-up"><h1 class="page-title">Anything Delivery</h1></div><div class="card animate-fade-up delay-1" style="text-align:center;padding:48px"><div style="font-size:64px;margin-bottom:16px">📦</div><h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Need something special?</h2><p style="color:var(--text-secondary);margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">Pin a location, describe what you need, and a driver will buy it and deliver it.</p><button class="btn btn-primary btn-lg">Start Request</button></div>`;}
+    function renderWallet(){const b=userData?.walletBalance||0;return `<div class="page-header animate-fade-up"><h1 class="page-title">Wallet</h1></div><div class="wallet-card animate-fade-up delay-1"><div class="wallet-label">Available Balance</div><div class="wallet-balance">${b.toLocaleString()} SYP</div><button class="btn" style="background:rgba(255,255,255,0.2);color:white;margin-top:16px;position:relative;z-index:1">Top Up</button></div>`;}
+    function renderLoyalty(){const p=userData?.loyaltyPoints||0;const t=userData?.loyaltyTier||'bronze';return `<div class="page-header animate-fade-up"><h1 class="page-title">Points & Rewards</h1></div><div class="card animate-fade-up delay-1" style="text-align:center"><div style="font-size:14px;color:var(--text-secondary)">Your Points</div><div style="font-size:48px;font-weight:800;color:var(--primary);margin:8px 0">${p.toLocaleString()}</div><div style="font-size:14px;color:var(--text-secondary);text-transform:capitalize">${t} tier</div></div>`;}
+    function renderSubscription(){
+      const isSubscribed = userData?.subscriptionStatus === 'active';
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Subscription</h1></div>
+      ${isSubscribed ? `
+        <div class="card animate-fade-up delay-1" style="max-width:500px;text-align:center;padding:40px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white">
+          <div style="font-size:56px;margin-bottom:16px">⭐</div>
+          <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">TayyebGo Plus Active</h2>
+          <p style="opacity:0.9;margin-bottom:24px">Your subscription is active until ${userData?.subscriptionEnd?.toDate?.()?.toLocaleDateString() || 'next month'}</p>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <button class="btn btn-white">Manage Subscription</button>
+            <button class="btn btn-glass-dark">View Benefits</button>
+          </div>
+        </div>
+      ` : `
+        <div class="card animate-fade-up delay-1" style="max-width:500px;text-align:center;padding:40px">
+          <div style="font-size:56px;margin-bottom:16px">⭐</div>
+          <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">TayyebGo Plus</h2>
+          <div style="font-size:40px;font-weight:800;color:var(--primary);margin:16px 0">4,999 <span style="font-size:16px;color:var(--text-secondary)">SYP/mo</span></div>
+          <ul style="text-align:left;margin:24px 0;list-style:none;display:flex;flex-direction:column;gap:12px">
+            <li style="display:flex;align-items:center;gap:10px">✅ Free delivery on all orders</li>
+            <li style="display:flex;align-items:center;gap:10px">✅ 3-15% discount on orders</li>
+            <li style="display:flex;align-items:center;gap:10px">✅ Priority support</li>
+            <li style="display:flex;align-items:center;gap:10px">✅ Exclusive deals</li>
+          </ul>
+          <button class="btn btn-primary btn-full btn-lg" onclick="subscribeToPlan()">Subscribe Now</button>
+          <p style="font-size:12px;color:var(--text-secondary);margin-top:12px">Pay with Sham Cash. Admin verifies and activates.</p>
+        </div>
+      `;
+    }
+    
+    // RATING FUNCTIONALITY
+    window.rateOrder = (orderId) => {
+      currentPage = 'rate';
+      const c = document.getElementById('pageContent');
+      c.innerHTML = `
+        <div class="page-header animate-fade-up">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="showPage('orders')" class="btn btn-ghost btn-sm" style="font-size:12px">← Back</button>
+            <h1 class="page-title" style="margin:0">Rate Your Order</h1>
+          </div>
+        </div>
+        <div class="card animate-fade-up delay-1" style="max-width:500px;margin:0 auto;text-align:center">
+          <div style="font-size:48px;margin-bottom:16px">⭐</div>
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">How was your order?</h2>
+          <p style="color:var(--text-secondary);margin-bottom:24px">Your feedback helps us improve</p>
+          
+          <div id="ratingStars" style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">
+            ${[1,2,3,4,5].map(i=>`<button class="rating-star" data-rating="${i}" onclick="selectRating(${i})" style="font-size:32px;background:none;border:none;cursor:pointer;transition:transform 0.2s">☆</button>`).join('')}
+          </div>
+          
+          <div class="input-group" style="text-align:left">
+            <label>Add a comment (optional)</label>
+            <textarea id="ratingComment" placeholder="Tell us about your experience..." style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:14px;min-height:80px;resize:vertical;background:var(--surface);color:var(--text)"></textarea>
+          </div>
+          
+          <button class="btn btn-primary btn-full" onclick="submitRating('${orderId}')">Submit Rating</button>
+        </div>
+      `;
+    };
+    
+    let selectedRating = 0;
+    
+    window.selectRating = (rating) => {
+      selectedRating = rating;
+      document.querySelectorAll('.rating-star').forEach((star, i) => {
+        star.textContent = i < rating ? '★' : '☆';
+        star.style.color = i < rating ? '#F59E0B' : 'var(--text-tertiary)';
+      });
+    };
+    
+    window.submitRating = async (orderId) => {
+      if(selectedRating === 0) {
+        showToast('Please select a rating', 'error');
+        return;
+      }
+      try {
+        const { addDoc, collection, serverTimestamp, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(collection(db, 'reviews'), {
+          orderId: orderId,
+          customerId: currentUser.uid,
+          customerName: userData?.displayName,
+          rating: selectedRating,
+          comment: document.getElementById('ratingComment')?.value || '',
+          createdAt: serverTimestamp()
+        });
+        await updateDoc(doc(db, 'orders', orderId), { rated: true, rating: selectedRating });
+        showToast('Thank you for your rating! ⭐');
+        await loadCustomerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error submitting rating', 'error');
+      }
+    };
+    
+    window.subscribeToPlan = async () => {
+      try {
+        const {addDoc, collection} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(collection(db,'subscriptions'),{
+          userId: currentUser.uid,
+          userName: userData?.displayName,
+          plan: 'plus',
+          amount: 4999,
+          status: 'pending',
+          createdAt: new Date()
+        });
+        showToast('Subscription request sent! Admin will verify your payment.');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    function renderProfile(){const n=userData?.displayName||'Customer';const e=currentUser?.email||'';return `<div class="page-header animate-fade-up"><h1 class="page-title">Profile</h1></div><div class="card animate-fade-up delay-1" style="max-width:600px"><div style="display:flex;align-items:center;gap:16px;margin-bottom:24px"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:700">${n.charAt(0).toUpperCase()}</div><div><div style="font-size:20px;font-weight:700">${n}</div><div style="color:var(--text-secondary);font-size:14px">${e}</div></div></div><div class="input-group"><label>Full Name</label><input type="text" value="${n}"></div><div class="input-group"><label>Email</label><input type="email" value="${e}"></div><div class="input-group"><label>Phone</label><input type="tel" value="${userData?.phoneNumber||''}"></div><button class="btn btn-primary">Save Changes</button></div>`;}
+    
+    const savedTheme=localStorage.getItem('tayyebgo-theme');
+    if(savedTheme)document.documentElement.setAttribute('data-theme',savedTheme);
+  </script>
+</body>
+</html>

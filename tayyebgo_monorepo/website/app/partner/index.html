@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TayyebGo — Partner</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>:root{--primary:#F59E0B;--primary-dark:#D97706;--primary-light:#FBBF24}[data-theme="dark"]{--primary:#F59E0B;--primary-dark:#D97706}</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    
+    const firebaseConfig={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
+    const fbApp=initializeApp(firebaseConfig);const auth=getAuth(fbApp);const db=getFirestore(fbApp);
+    
+    let currentUser=null;let userData=null;
+    let storeOrders=[];let storeStats={orders:0,revenue:0,rating:0};
+    
+    function showToast(msg,type='success'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className=`toast toast-${type}`;t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),4000);}
+    
+    onAuthStateChanged(auth,async(user)=>{
+      currentUser=user;
+      if(user){
+        const snap=await getDoc(doc(db,'users',user.uid));
+        userData=snap.exists()?snap.data():null;
+        if(userData&&userData.role!=='partner'&&userData.role!=='owner'&&userData.role!=='cashier'){
+          showToast('Not a partner account','error');
+          await signOut(auth);return;
+        }
+        await loadPartnerData();
+        renderDashboard();
+      } else {
+        window.location.href='../';
+      }
+    });
+    
+    async function loadPartnerData(){
+      try {
+        // Load orders for this partner's store
+        const ordersSnap = await getDocs(query(collection(db,'orders'),where('partnerId','==',currentUser.uid),orderBy('createdAt','desc')));
+        storeOrders = [];
+        ordersSnap.forEach(doc => {
+          storeOrders.push({id:doc.id,...doc.data()});
+        });
+        storeStats.orders = storeOrders.length;
+        storeStats.revenue = storeOrders.reduce((sum,o)=>sum+(o.total||0),0);
+        storeStats.rating = userData?.rating||4.7;
+      } catch(e) {
+        console.log('Partner data load error:',e);
+        storeOrders = [];
+      }
+    }
+    
+    function renderDashboard(){
+      const name=userData?.displayName||'Partner';
+      const letter=name.charAt(0).toUpperCase();
+      const todayOrders = storeOrders.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        return d && d.toDateString()===new Date().toDateString();
+      });
+      
+      document.getElementById('app').innerHTML=`<div class="dashboard-layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),#D97706);border-radius:10px;display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
+            </div>
+            <span style="font-weight:800;font-size:18px">Partner</span>
+          </div>
+          <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showPage('dashboard')">🏠 Dashboard</div>
+            <div class="nav-item" onclick="showPage('orders')">📋 Orders (${storeOrders.length})</div>
+            <div class="nav-item" onclick="showPage('menu')">🍽️ Menu</div>
+            <div class="nav-item" onclick="showPage('analytics')">📊 Analytics</div>
+            <div class="nav-item" onclick="showPage('payouts')">💰 Payouts</div>
+            <div class="nav-item" onclick="showPage('settings')">⚙️ Settings</div>
+          </nav>
+          <div class="sidebar-footer">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#D97706);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px">${letter}</div>
+              <div style="flex:1"><div style="font-weight:600;font-size:13px">${name}</div><div style="font-size:11px;color:var(--text-secondary)">Partner</div></div>
+            </div>
+            <button onclick="doLogout()" class="btn btn-ghost btn-full" style="color:var(--error);font-size:13px">🚪 Sign Out</button>
+          </div>
+        </aside>
+        <main class="main-content" id="pageContent"></main>
+      </div>`;
+      showPage('dashboard');
+    }
+    
+    window.showPage=(page)=>{
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      document.querySelector(`.nav-item[onclick="showPage('${page}')"]`)?.classList.add('active');
+      const c=document.getElementById('pageContent');
+      switch(page){
+        case 'dashboard':c.innerHTML=renderDashboardPage();break;
+        case 'orders':c.innerHTML=renderOrders();break;
+        case 'menu':c.innerHTML=renderMenu();break;
+        case 'analytics':c.innerHTML=renderAnalytics();break;
+        case 'payouts':c.innerHTML=renderPayouts();break;
+        default:c.innerHTML=renderDashboardPage();
+      }
+    };
+    
+    window.doLogout=async()=>{await signOut(auth);showToast('Signed out');window.location.href='../';};
+    
+    function renderDashboardPage(){
+      const todayOrders = storeOrders.filter(o=>{
+        const d = o.createdAt?.toDate?.();
+        return d && d.toDateString()===new Date().toDateString();
+      });
+      const todayRevenue = todayOrders.reduce((s,o)=>s+(o.total||0),0);
+      
+      const recentOrdersHtml = storeOrders.slice(0,10).map(o=>{
+        const statusColors={delivered:'var(--success)',delivering:'var(--primary)',pending:'var(--warning)',accepted:'var(--info)'};
+        const date = o.createdAt?.toDate?.() ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
+        return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>
+            <div>
+              <div style="font-weight:600;font-size:14px">#${o.id?.slice(0,8)||'N/A'}</div>
+              <div style="font-size:12px;color:var(--text-secondary)">${o.items?.length||0} items • ${date}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span style="padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;background:${statusColors[o.status]||'var(--text-tertiary)'}20;color:${statusColors[o.status]||'var(--text-tertiary)'}">${o.status||'unknown'}</span>
+            <div style="font-weight:700;color:var(--primary)">${(o.total||0).toLocaleString()} SYP</div>
+          </div>
+        </div>`;
+      }).join('');
+      
+      return `<div class="page-header animate-fade-up">
+        <div><h1 class="page-title">Partner Dashboard</h1><p style="color:var(--text-secondary);font-size:14px">Welcome back, ${name}</p></div>
+        <button class="btn btn-outline btn-sm" onclick="loadPartnerData().then(()=>showPage('dashboard'))">🔄 Refresh</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card animate-fade-up delay-2"><div class="stat-value">${todayOrders.length}</div><div class="stat-label">Today's Orders</div></div>
+        <div class="stat-card animate-fade-up delay-3"><div class="stat-value">${todayRevenue.toLocaleString()}</div><div class="stat-label">Today's Revenue (SYP)</div></div>
+        <div class="stat-card" style="animation-delay:0.4s"><div class="stat-value">${storeStats.rating}</div><div class="stat-label">Rating</div></div>
+      </div>
+      <h2 style="font-size:18px;font-weight:700;margin:24px 0 16px" class="animate-fade-up delay-3">Recent Orders (${storeOrders.length})</h2>
+      ${recentOrdersHtml||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">📋</div><div style="color:var(--text-secondary)">No orders yet</div></div>'}
+    `;
+    }
+    
+    // Accept order
+    window.acceptOrder = async (orderId) => {
+      try {
+        const {updateDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await updateDoc(doc(db,'orders',orderId),{status:'accepted',acceptedAt:new Date()});
+        showToast('Order accepted!');
+        await loadPartnerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    // Reject order
+    window.rejectOrder = async (orderId) => {
+      try {
+        const {updateDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await updateDoc(doc(db,'orders',orderId),{status:'rejected',rejectedAt:new Date()});
+        showToast('Order rejected');
+        await loadPartnerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    // Mark preparing
+    window.markPreparing = async (orderId) => {
+      try {
+        const {updateDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await updateDoc(doc(db,'orders',orderId),{status:'preparing'});
+        showToast('Marked as preparing');
+        await loadPartnerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    // Mark ready
+    window.markReady = async (orderId) => {
+      try {
+        const {updateDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await updateDoc(doc(db,'orders',orderId),{status:'ready'});
+        showToast('Order ready for pickup!');
+        await loadPartnerData();
+        showPage('orders');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    function renderOrders(){
+      const ordersHtml = storeOrders.map(o=>{
+        const statusColors={delivered:'var(--success)',delivering:'var(--primary)',pending:'var(--warning)',accepted:'var(--info)',preparing:'var(--accent)',ready:'var(--success)',rejected:'var(--error)'};
+        const date = o.createdAt?.toDate?.() ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
+        const isPending = o.status==='placed';
+        const isAccepted = o.status==='accepted';
+        const isPreparing = o.status==='preparing';
+        return `<div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:48px;height:48px;border-radius:12px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">📦</div>
+              <div>
+                <div style="font-weight:700">#${o.id?.slice(0,8)||'N/A'}</div>
+                <div style="font-size:13px;color:var(--text-secondary)">${o.items?.length||0} items • ${date}</div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Customer: ${o.customerName||'Unknown'}</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <span style="padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;background:${statusColors[o.status]||'var(--text-tertiary)'}20;color:${statusColors[o.status]||'var(--text-tertiary)'}">${o.status||'unknown'}</span>
+              <div style="font-weight:700;color:var(--primary);margin-top:8px">${(o.total||0).toLocaleString()} SYP</div>
+            </div>
+          </div>
+          ${isPending?`
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+            <button class="btn btn-outline" style="flex:1" onclick="rejectOrder('${o.id}')">Reject</button>
+            <button class="btn btn-primary" style="flex:1" onclick="acceptOrder('${o.id}')">Accept Order</button>
+          </div>
+          `:isAccepted?`
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+            <button class="btn btn-primary" style="flex:1" onclick="markPreparing('${o.id}')">🍳 Start Preparing</button>
+          </div>
+          `:isPreparing?`
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+            <button class="btn btn-primary" style="flex:1" onclick="markReady('${o.id}')">✅ Mark Ready</button>
+          </div>
+          `:''}
+        </div>`;
+      }).join('');
+      
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Orders (${storeOrders.length})</h1></div>
+      <div class="categories" style="margin-bottom:24px">
+        <button class="category-chip active">All</button>
+        <button class="category-chip">New</button>
+        <button class="category-chip">Preparing</button>
+        <button class="category-chip">Ready</button>
+      </div>
+      ${ordersHtml||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">📋</div><div style="color:var(--text-secondary)">No orders yet</div></div>'}`;
+    }
+    
+    // Menu Management
+    window.addMenuItem = async () => {
+      const name = document.getElementById('itemName')?.value;
+      const price = parseInt(document.getElementById('itemPrice')?.value);
+      const description = document.getElementById('itemDesc')?.value;
+      
+      if(!name || !price) {
+        showToast('Please fill in required fields','error');
+        return;
+      }
+      
+      try {
+        const {addDoc, collection} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await addDoc(collection(db,'menu_items'),{
+          restaurantId: currentUser.uid,
+          name: name,
+          price: price,
+          description: description || '',
+          isAvailable: true,
+          createdAt: new Date()
+        });
+        showToast('Menu item added!');
+        showPage('menu');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    window.toggleItemAvailability = async (itemId, currentStatus) => {
+      try {
+        const {updateDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await updateDoc(doc(db,'menu_items',itemId),{isAvailable:!currentStatus});
+        showToast(currentStatus?'Item marked unavailable':'Item marked available');
+        showPage('menu');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    window.deleteMenuItem = async (itemId) => {
+      if(!confirm('Delete this item?')) return;
+      try {
+        const {deleteDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await deleteDoc(doc(db,'menu_items',itemId));
+        showToast('Item deleted');
+        showPage('menu');
+      } catch(e) {
+        showToast('Error: '+e.message,'error');
+      }
+    };
+    
+    async function renderMenu(){
+      let menuItems = [];
+      try {
+        const menuSnap = await getDocs(query(collection(db,'menu_items'),where('restaurantId','==',currentUser.uid)));
+        menuSnap.forEach(doc => menuItems.push({id:doc.id,...doc.data()}));
+      } catch(e) { console.log('Menu load error:',e); }
+      
+      const menuHtml = menuItems.map(item=>`
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">🍽️</div>
+            <div>
+              <div style="font-weight:700">${item.name}</div>
+              <div style="font-size:13px;color:var(--text-secondary)">${item.description||'No description'}</div>
+              <div style="font-size:14px;font-weight:700;color:var(--primary);margin-top:4px">${(item.price||0).toLocaleString()} SYP</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm ${item.isAvailable?'btn-outline':'btn-primary'}" onclick="toggleItemAvailability('${item.id}',${item.isAvailable})">${item.isAvailable?'Disable':'Enable'}</button>
+            <button class="btn btn-sm btn-outline" onclick="deleteMenuItem('${item.id}')" style="color:var(--error)">Delete</button>
+          </div>
+        </div>
+      `).join('');
+      
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Menu Management</h1><button class="btn btn-primary" onclick="showAddItemForm()">+ Add Item</button></div>
+      <div id="addItemForm" style="display:none" class="card animate-fade-up delay-1" style="margin-bottom:24px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">Add New Item</h3>
+        <div class="input-group"><label>Item Name *</label><input type="text" id="itemName" placeholder="e.g. Margherita Pizza"></div>
+        <div class="input-group"><label>Price (SYP) *</label><input type="number" id="itemPrice" placeholder="12000"></div>
+        <div class="input-group"><label>Description</label><input type="text" id="itemDesc" placeholder="Tomato, mozzarella, basil"></div>
+        <div style="display:flex;gap:10px"><button class="btn btn-outline" onclick="hideAddItemForm()">Cancel</button><button class="btn btn-primary" onclick="addMenuItem()">Add Item</button></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">${menuHtml||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">🍽️</div><div style="font-weight:600">No menu items</div><div style="font-size:13px;color:var(--text-secondary)">Add your first item to get started</div></div>'}</div>`;
+    }
+    
+    window.showAddItemForm = () => { document.getElementById('addItemForm').style.display = 'block'; };
+    window.hideAddItemForm = () => { document.getElementById('addItemForm').style.display = 'none'; };
+    
+    function renderAnalytics(){
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Analytics</h1></div>
+      <div class="card animate-fade-up delay-1"><h3 style="font-size:16px;font-weight:700;margin-bottom:16px">Revenue Overview</h3>
+        <div style="height:200px;display:flex;align-items:flex-end;justify-content:space-around;padding:20px">
+          <div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:60%"></div>
+          <div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:80%"></div>
+          <div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:45%"></div>
+          <div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:90%"></div>
+          <div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:70%"></div>
+        </div>
+      </div>`;
+    }
+    
+    function renderPayouts(){
+      return `<div class="page-header animate-fade-up"><h1 class="page-title">Payouts</h1></div>
+      <div class="wallet-card animate-fade-up delay-1">
+        <div class="wallet-label">Available Balance</div>
+        <div class="wallet-balance">${storeStats.revenue.toLocaleString()} SYP</div>
+        <button class="btn" style="background:rgba(255,255,255,0.2);color:white;margin-top:16px;position:relative;z-index:1">Request Payout</button>
+      </div>`;
+    }
+    
+    const savedTheme=localStorage.getItem('tayyebgo-theme');
+    if(savedTheme)document.documentElement.setAttribute('data-theme',savedTheme);
+  </script>
+</body>
+</html>
