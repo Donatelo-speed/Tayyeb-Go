@@ -199,7 +199,9 @@ class ReferralScreen extends StatelessWidget {
                         if (await canLaunchUrl(uri)) {
                           await launchUrl(uri, mode: LaunchMode.externalApplication);
                         }
-                      } catch (_) {}
+                      } catch (_) {
+                        // WhatsApp not available on this device
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -236,7 +238,9 @@ class ReferralScreen extends StatelessWidget {
                         if (await canLaunchUrl(uri)) {
                           await launchUrl(uri);
                         }
-                      } catch (_) {}
+                      } catch (_) {
+                        // SMS not available on this device
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),

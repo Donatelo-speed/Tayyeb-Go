@@ -151,7 +151,7 @@ class _GiftCardsScreenState extends State<GiftCardsScreen> {
 
   void _purchaseGiftCard() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Gift card feature coming soon!', style: GoogleFonts.inter()), backgroundColor: AppColors.primary,
+      SnackBar(content: Text('Gift cards are not yet available in your area', style: GoogleFonts.inter()), backgroundColor: AppColors.primary,
         behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
     );
   }

@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PartnerSettingsScreen extends StatefulWidget {
   const PartnerSettingsScreen({super.key});
@@ -157,17 +160,64 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                 _row(context, Icons.person_rounded, 'Personal Info', () {
                   _showPersonalInfoSheet(context, user);
                 }),
+                _row(context, Icons.lock_outline_rounded, 'Change Password', () {
+                  _showChangePasswordSheet(context);
+                }),
+                _row(context, Icons.info_outline_rounded, 'About', () async {
+                  final info = await PackageInfo.fromPlatform();
+                  if (context.mounted) {
+                    showAboutDialog(
+                      context: context,
+                      applicationName: 'TayyebGo Partner',
+                      applicationVersion: '${info.version}+${info.buildNumber}',
+                      children: [
+                        Text('Restaurant partner management app', style: GoogleFonts.inter()),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Build: ${info.buildNumber}',
+                          style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12),
+                        ),
+                      ],
+                    );
+                  }
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'Support', [
                 _row(context, Icons.help_outline_rounded, 'Help Center', () {
                   context.push('/help-support');
                 }),
-                _row(context, Icons.info_outline_rounded, 'About', () {
-                  showAboutDialog(
-                    context: context,
-                    applicationName: 'TayyebGo Partner',
-                    applicationVersion: '1.0.0',
-                    children: [Text('Restaurant partner management app', style: GoogleFonts.inter())],
-                  );
+                _row(context, Icons.mail_outline_rounded, 'Contact Support', () {
+                  _launchSupportEmail(context);
                 }),
+                _row(context, Icons.privacy_tip_outlined, 'Privacy Policy', () {
+                  context.push('/privacy-policy');
+                }),
+                _row(context, Icons.description_outlined, 'Terms of Service', () {
+                  context.push('/terms-conditions');
+                }),
+              ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: _section(context, 'App', [
+                _row(context, Icons.smartphone_rounded, 'App Version', () async {
+                  final info = await PackageInfo.fromPlatform();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('TayyebGo Partner v${info.version} (${info.buildNumber})')),
+                    );
+                  }
+                }),
+                _row(context, Icons.delete_outline_rounded, 'Delete Account', () {
+                  _showDeleteAccountDialog(context);
+                }, color: context.errorColor),
               ]),
             ),
           ),
@@ -314,7 +364,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
           future: FirebaseFirestore.instance.collection('restaurants').doc(restaurantId).get(),
           builder: (context, snap) {
             final data = snap.data?.data() as Map<String, dynamic>?;
-            final existing = data?['businessHours'] as Map<String, dynamic>? ?? {};
+            final existing = data?['operatingHours'] as Map<String, dynamic>? ?? data?['businessHours'] as Map<String, dynamic>? ?? {};
             return StatefulBuilder(
               builder: (ctx, setModalState) => Padding(
                 padding: const EdgeInsets.all(20),
@@ -411,7 +461,7 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
                             .collection('restaurants')
                             .doc(restaurantId)
                             .update({
-                          'businessHours': hours.isNotEmpty ? hours : existing,
+                          'operatingHours': hours.isNotEmpty ? hours : existing,
                           'updatedAt': FieldValue.serverTimestamp(),
                         });
                         if (ctx.mounted) Navigator.pop(ctx);
@@ -503,51 +553,89 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     );
   }
 
-  void _showNotificationsSettings(BuildContext context) {
+  void _showNotificationsSettings(BuildContext context) async {
+    final user = context.read<AuthProvider>().user;
+    if (user == null) return;
+    final doc = await FirebaseFirestore.instance.collection('users').doc(user.id).get();
+    final prefs = (doc.data()?['notificationPrefs'] as Map<String, dynamic>?) ?? {};
+    bool newOrders = prefs['newOrders'] ?? true;
+    bool orderUpdates = prefs['orderUpdates'] ?? true;
+    bool promotions = prefs['promotions'] ?? false;
+    if (!context.mounted) return;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: AppRadius.brSm,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: AppRadius.brSm,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Notification Settings',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: Text('New Order Alerts', style: GoogleFonts.inter(fontSize: 14)),
-              value: true,
-              onChanged: (v) {},
-              activeColor: AppColors.partnerAccent,
-            ),
-            SwitchListTile(
-              title: Text('Order Status Updates', style: GoogleFonts.inter(fontSize: 14)),
-              value: true,
-              onChanged: (v) {},
-              activeColor: AppColors.partnerAccent,
-            ),
-            SwitchListTile(
-              title: Text('Promotion Alerts', style: GoogleFonts.inter(fontSize: 14)),
-              value: false,
-              onChanged: (v) {},
-              activeColor: AppColors.partnerAccent,
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'Notification Settings',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+              ),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: Text('New Order Alerts', style: GoogleFonts.inter(fontSize: 14)),
+                value: newOrders,
+                onChanged: (v) => setModalState(() => newOrders = v),
+                activeColor: AppColors.partnerAccent,
+              ),
+              SwitchListTile(
+                title: Text('Order Status Updates', style: GoogleFonts.inter(fontSize: 14)),
+                value: orderUpdates,
+                onChanged: (v) => setModalState(() => orderUpdates = v),
+                activeColor: AppColors.partnerAccent,
+              ),
+              SwitchListTile(
+                title: Text('Promotion Alerts', style: GoogleFonts.inter(fontSize: 14)),
+                value: promotions,
+                onChanged: (v) => setModalState(() => promotions = v),
+                activeColor: AppColors.partnerAccent,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+                    'notificationPrefs': {
+                      'newOrders': newOrders,
+                      'orderUpdates': orderUpdates,
+                      'promotions': promotions,
+                    },
+                    'updatedAt': FieldValue.serverTimestamp(),
+                  });
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Notification preferences saved')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.partnerAccent,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+                ),
+                child: const Text(
+                  'Save',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -619,6 +707,209 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
         ),
       ),
     );
+  }
+
+  void _showChangePasswordSheet(BuildContext context) {
+    final currentPwCtrl = TextEditingController();
+    final newPwCtrl = TextEditingController();
+    final confirmPwCtrl = TextEditingController();
+    bool isLoading = false;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: AppRadius.brSm,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Change Password',
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 20),
+                ),
+                const SizedBox(height: 16),
+                _inputField('Current Password', currentPwCtrl, obscureText: true),
+                const SizedBox(height: 12),
+                _inputField('New Password', newPwCtrl, obscureText: true),
+                const SizedBox(height: 12),
+                _inputField('Confirm New Password', confirmPwCtrl, obscureText: true),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          if (newPwCtrl.text != confirmPwCtrl.text) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Passwords do not match')),
+                            );
+                            return;
+                          }
+                          if (newPwCtrl.text.length < 6) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Password must be at least 6 characters')),
+                            );
+                            return;
+                          }
+                          setModalState(() => isLoading = true);
+                          try {
+                            final fbUser = fb.FirebaseAuth.instance.currentUser;
+                            if (fbUser == null || fbUser.email == null) return;
+                            final credential = fb.EmailAuthProvider.credential(
+                              email: fbUser.email!,
+                              password: currentPwCtrl.text,
+                            );
+                            await fbUser.reauthenticateWithCredential(credential);
+                            await fbUser.updatePassword(newPwCtrl.text);
+                            if (ctx.mounted) Navigator.pop(ctx);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Password updated successfully')),
+                              );
+                            }
+                          } on fb.FirebaseAuthException catch (e) {
+                            setModalState(() => isLoading = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.code == 'wrong-password' ? 'Current password is incorrect' : 'Failed to update password')),
+                              );
+                            }
+                          } catch (e) {
+                            setModalState(() => isLoading = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update password')),
+                              );
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.partnerAccent,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text(
+                          'Update Password',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final confirmCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text('Delete Account', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'This action is permanent and cannot be undone. All your data, including store information, menu, and order history will be permanently deleted.',
+                style: GoogleFonts.inter(fontSize: 14, color: context.textSecondaryColor),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Type "DELETE" to confirm:',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: confirmCtrl,
+                textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(
+                  hintText: 'DELETE',
+                  hintStyle: GoogleFonts.inter(color: context.textMutedColor),
+                  border: OutlineInputBorder(borderRadius: AppRadius.brMd),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                ),
+                onChanged: (_) => setDialogState(() {}),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('Cancel', style: GoogleFonts.inter(color: context.textMutedColor)),
+            ),
+            TextButton(
+              onPressed: confirmCtrl.text == 'DELETE'
+                  ? () async {
+                      Navigator.pop(ctx);
+                      try {
+                        final fbUser = fb.FirebaseAuth.instance.currentUser;
+                        if (fbUser == null) return;
+                        await FirebaseFirestore.instance.collection('users').doc(fbUser.uid).delete();
+                        await fbUser.delete();
+                        if (context.mounted) context.go('/login');
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to delete account')),
+                          );
+                        }
+                      }
+                    }
+                  : null,
+              child: Text(
+                'Delete',
+                style: GoogleFonts.inter(
+                  color: confirmCtrl.text == 'DELETE' ? context.errorColor : context.textMutedColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _launchSupportEmail(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: 'support@tayyebgo.com',
+      query: 'subject=TayyebGo Partner Support Request',
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open email client')),
+      );
+    }
   }
 
   Widget _profileHeader(BuildContext context, String initial, String name, String email) {
@@ -723,19 +1014,20 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     );
   }
 
-  Widget _row(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+  Widget _row(BuildContext context, IconData icon, String label, VoidCallback onTap, {Color? color}) {
+    final c = color ?? context.textPrimaryColor;
     return InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: context.textMutedColor),
+            Icon(icon, size: 20, color: color ?? context.textMutedColor),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(fontSize: 14, color: context.textPrimaryColor),
+                style: GoogleFonts.inter(fontSize: 14, color: c),
               ),
             ),
             Icon(Icons.chevron_right_rounded, color: context.textMutedColor, size: 20),
@@ -750,11 +1042,13 @@ class _PartnerSettingsScreenState extends State<PartnerSettingsScreen> {
     TextEditingController ctrl, {
     TextInputType? keyboardType,
     int maxLines = 1,
+    bool obscureText = false,
   }) {
     return TextField(
       controller: ctrl,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: AppRadius.brMd),

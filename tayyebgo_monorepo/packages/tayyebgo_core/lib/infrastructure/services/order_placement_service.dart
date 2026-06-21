@@ -27,6 +27,7 @@ class OrderPlacementService {
     int? subtotalCents,
     int? deliveryFeeCents,
     int? taxCents,
+    double? tip,
   }) async {
     // Fraud detection before creating anything
     DetectionResult? fraudResult;
@@ -79,6 +80,7 @@ class OrderPlacementService {
       if (subtotalCents != null) 'subtotalAmount': subtotalCents,
       if (deliveryFeeCents != null) 'deliveryFee': deliveryFeeCents,
       if (taxCents != null) 'taxAmount': taxCents,
+      if (tip != null && tip > 0) 'tip': tip,
       if (fraudResult != null) 'fraudCheck': fraudResult.toMap(),
     };
 

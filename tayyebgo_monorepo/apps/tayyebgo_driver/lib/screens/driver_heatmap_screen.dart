@@ -36,8 +36,9 @@ class _DriverHeatMapScreenState extends State<DriverHeatMapScreen> {
           setState(() => _center = LatLng(pos.latitude, pos.longitude));
         }
       }
-    } catch (_) {}
-  }
+    } catch (_) {
+      // Location permission denied or unavailable; keep default center
+    }
 
   Future<void> _loadDemandData() async {
     try {

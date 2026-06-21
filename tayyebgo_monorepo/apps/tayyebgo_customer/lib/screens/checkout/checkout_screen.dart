@@ -27,6 +27,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   CustomerSubscription? _activeSubscription;
   double _subscriptionDiscount = 0;
   bool _subscriptionFreeDelivery = false;
+  double _tipAmount = 0;
 
   @override
   void dispose() {
@@ -62,8 +63,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _subscriptionFreeDelivery = benefits.freeDelivery;
         });
       }
-    } catch (_) {}
-  }
+    } catch (_) {
+      // Subscription check is non-critical; proceed without benefits
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -161,6 +163,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           activeSubscription: _activeSubscription,
           subscriptionDiscount: _subscriptionDiscount,
           subscriptionFreeDelivery: _subscriptionFreeDelivery,
+          onTipChanged: (v) => setState(() => _tipAmount = v),
         );
     }
   }
@@ -224,6 +227,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         subtotalCents: (cart.subtotal * 100).round(),
         deliveryFeeCents: (effectiveDeliveryFee * 100).round(),
         taxCents: (cart.tax * 100).round(),
+        tip: _tipAmount,
       );
 
       if (_selectedPaymentMethod == PaymentMethodType.shamCash) {
@@ -259,17 +263,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               customerId: auth.user?.id ?? '',
               phone: auth.user?.phone,
             );
-            final promoSnap = await FirebaseFirestore.instance
-                .collection('promos')
-                .where('code', isEqualTo: cart.appliedCoupon!)
-                .get();
-            for (final doc in promoSnap.docs) {
-              await doc.reference.update({
-                'usageCount': FieldValue.increment(1),
-                'updatedAt': FieldValue.serverTimestamp(),
-              });
-            }
-          } catch (_) {}
+            // usageCount is incremented server-side via validatePromo Cloud Function
+          } catch (_) {
+            // Promo usage tracking is non-critical; order already placed
+          }
         }
         await cart.clearCart();
         setState(() => _step = _CheckoutStep.done);
@@ -339,6 +336,7 @@ class _CheckoutForm extends StatefulWidget {
   final CustomerSubscription? activeSubscription;
   final double subscriptionDiscount;
   final bool subscriptionFreeDelivery;
+  final ValueChanged<double> onTipChanged;
 
   const _CheckoutForm({
     required this.addressCtrl,
@@ -354,6 +352,7 @@ class _CheckoutForm extends StatefulWidget {
     this.activeSubscription,
     this.subscriptionDiscount = 0,
     this.subscriptionFreeDelivery = false,
+    required this.onTipChanged,
   });
 
   @override
@@ -891,7 +890,19 @@ class _CheckoutFormState extends State<_CheckoutForm> {
     final isSelected = _selectedTip == label;
     return Expanded(
       child: AnimatedPressScale(
-        onTap: () => setState(() => _selectedTip = label),
+        onTap: () {
+          setState(() => _selectedTip = label);
+          // Calculate tip amount
+          double tipValue = 0;
+          if (label == '5%') {
+            tipValue = widget.cart.subtotal * 0.05;
+          } else if (label == '10%') {
+            tipValue = widget.cart.subtotal * 0.10;
+          } else if (label == '15%') {
+            tipValue = widget.cart.subtotal * 0.15;
+          }
+          widget.onTipChanged(tipValue);
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 12),

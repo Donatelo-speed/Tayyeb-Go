@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 /// Header row with location selector and notification bell
@@ -9,81 +11,103 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userId = context.watch<AuthProvider>().user?.id;
+    if (userId == null) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
     return SliverToBoxAdapter(
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-          child: AnimatedFadeSlide(
-            duration: const Duration(milliseconds: 500),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => context.push('/addresses'),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      borderRadius: AppRadius.brCard,
-                      border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 28, height: 28,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryHover]),
-                            borderRadius: AppRadius.brSm,
-                          ),
-                          child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 16),
+      child: StreamBuilder<int>(
+        stream: FirebaseFirestore.instance
+            .collection('notifications')
+            .where('recipientId', isEqualTo: userId)
+            .where('read', isEqualTo: false)
+            .limit(100)
+            .snapshots()
+            .map((snap) => snap.docs.length),
+        builder: (context, snapshot) {
+          final unreadCount = snapshot.data ?? 0;
+          return SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: AnimatedFadeSlide(
+                duration: const Duration(milliseconds: 500),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => context.push('/addresses'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: context.surfaceColor,
+                          borderRadius: AppRadius.brCard,
+                          border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                         ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Deliver to', style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
-                            Text('Al Hamra, Homs', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                            Container(
+                              width: 28, height: 28,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryHover]),
+                                borderRadius: AppRadius.brSm,
+                              ),
+                              child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 16),
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Deliver to', style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
+                                Text('Al Hamra, Homs', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: context.textPrimaryColor)),
+                              ],
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMuted, size: 18),
                           ],
                         ),
-                        const SizedBox(width: 4),
-                        Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMuted, size: 18),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                const Spacer(),
-                AnimatedPressScale(
-                  onTap: () => context.push('/notifications'),
-                  child: Container(
-                    width: 44, height: 44,
-                    decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      borderRadius: AppRadius.brCard,
-                      border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22)),
-                        Positioned(
-                          right: 10, top: 10,
-                          child: Container(
-                            width: 8, height: 8,
-                            decoration: BoxDecoration(
-                              color: AppColors.error,
-                              shape: BoxShape.circle,
-                              boxShadow: [BoxShadow(color: AppColors.error, blurRadius: 4, spreadRadius: 1)],
-                            ),
-                          ),
+                    const Spacer(),
+                    AnimatedPressScale(
+                      onTap: () => context.push('/notifications'),
+                      child: Container(
+                        width: 44, height: 44,
+                        decoration: BoxDecoration(
+                          color: context.surfaceColor,
+                          borderRadius: AppRadius.brCard,
+                          border: Border.all(color: context.borderColor.withValues(alpha: 0.3), width: 0.5),
                         ),
-                      ],
+                        child: Stack(
+                          children: [
+                            Center(child: Icon(Icons.notifications_outlined, color: context.textMutedColor, size: 22)),
+                            if (unreadCount > 0)
+                              Positioned(
+                                right: 8, top: 8,
+                                child: Container(
+                                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      unreadCount > 99 ? '99+' : '$unreadCount',
+                                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

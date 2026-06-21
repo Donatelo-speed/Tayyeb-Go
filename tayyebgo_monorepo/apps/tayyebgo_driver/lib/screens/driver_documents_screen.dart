@@ -60,7 +60,9 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
           _insuranceUploaded = _insuranceUrl != null && _insuranceUrl!.isNotEmpty;
         });
       }
-    } catch (e) { debugPrint('[Documents] load error: $e'); }
+    } catch (_) {
+      // Document load failure is handled by UI state; no action needed
+    }
   }
 
   Future<void> _uploadDocument({

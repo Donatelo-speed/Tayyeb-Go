@@ -72,18 +72,34 @@ const cleanupNotifications = functions.scheduler
   .onSchedule('0 0 * * *', async () => {
     try {
       const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const oldNotifications = await db
-        .collection('notifications')
-        .where('createdAt', '<', cutoff)
-        .get();
-
       let deleted = 0;
-      const batch = db.batch();
-      oldNotifications.forEach((doc) => {
-        batch.delete(doc.ref);
-        deleted++;
-      });
-      if (deleted > 0) await batch.commit();
+      let hasMore = true;
+
+      // S8 FIX: Paginate in batches of 400 to stay under Firestore's 500 limit
+      while (hasMore) {
+        const oldNotifications = await db
+          .collection('notifications')
+          .where('createdAt', '<', cutoff)
+          .limit(400)
+          .get();
+
+        if (oldNotifications.empty) {
+          hasMore = false;
+          break;
+        }
+
+        const batch = db.batch();
+        oldNotifications.forEach((doc) => {
+          batch.delete(doc.ref);
+          deleted++;
+        });
+        await batch.commit();
+
+        // If we got fewer than 400, we're done
+        if (oldNotifications.size < 400) {
+          hasMore = false;
+        }
+      }
 
       console.log(`Cleaned up ${deleted} stale notifications`);
     } catch (error) {

@@ -21,6 +21,9 @@ dependencies:
     path: ../../packages/tayyebgo_core
   tayyebgo_multi_tenant:
     path: ../../packages/tayyebgo_multi_tenant
+  firebase_auth: ^5.7.0
+  firebase_messaging: ^15.2.2
+  cloud_functions: ^5.3.6
   google_sign_in_web: ^1.1.3
 
 dev_dependencies:

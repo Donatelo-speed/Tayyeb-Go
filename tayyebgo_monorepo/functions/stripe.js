@@ -156,7 +156,10 @@ const confirmWalletTopUp = functions.https.onCall(async (request) => {
 
     const intentDoc = await db.collection('payment_intents').doc(paymentIntentId).get();
     if (!intentDoc.exists || intentDoc.data().status === 'completed') {
-      return { success: true, message: 'Already processed' };
+      const userId = request.auth.uid;
+      const userSnap = await db.collection('users').doc(userId).get();
+      const currentBalance = userSnap.data()?.walletBalance ?? 0;
+      return { success: true, newBalance: currentBalance, message: 'Already processed' };
     }
 
     const amountInDollars = pi.amount / 100;

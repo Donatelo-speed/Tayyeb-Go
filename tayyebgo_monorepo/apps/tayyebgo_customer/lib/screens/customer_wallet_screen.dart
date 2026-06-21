@@ -89,7 +89,15 @@ class CustomerWalletScreen extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const WalletSendScreen()));
                   }),
                   const SizedBox(width: 12),
-                  _walletAction(context, Icons.history_rounded, 'History', () {}),
+                  _walletAction(context, Icons.history_rounded, 'History', () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('View your full transaction history below', style: GoogleFonts.inter()),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ],

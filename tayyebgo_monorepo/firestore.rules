@@ -131,14 +131,12 @@ service cloud.firestore {
         allow delete: if isAdmin() || isOwner(request.auth.uid);
       }
 
-      // Subcollection: promo codes
+      // Subcollection: promo codes — S1 FIX: Customers cannot write promo docs directly.
+      // usageCount is incremented server-side via validatePromo Cloud Function only.
       match /promos/{promoId} {
         allow read: if isAuthenticated();
         allow write: if isAdmin()
           || isRestaurantOwner(restaurantId);
-        allow update: if isCustomer()
-          && request.resource.data.diff(resource.data).affectedKeys()
-              .hasOnly(['usageCount', 'updatedAt']);
       }
 
       // Subcollection: products (admin catalog management)
@@ -254,8 +252,10 @@ service cloud.firestore {
       allow create: if isCustomer()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == 'pending';
+      // S4 FIX: Drivers can only update their own anything-requests (or unassigned ones they're accepting)
       allow update: if isAdmin()
         || (isDriver()
+          && (resource.data.driverId == request.auth.uid || resource.data.driverId == null || resource.data.driverId == '')
           && request.resource.data.diff(resource.data).affectedKeys()
               .hasOnly(['status', 'driverId', 'driverLat', 'driverLng', 'updatedAt']));
       allow delete: if isAdmin();
@@ -310,9 +310,9 @@ service cloud.firestore {
       allow create: if isAuthenticated()
         && request.resource.data.userId == request.auth.uid;
       allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
+        && resource.data.userId == request.auth.uid;
+      // S5 FIX: Users can delete own payment methods (GDPR compliance)
+      allow delete: if isAdmin() || isOwner(resource.data.userId);
     }
 
     // ============================================================

@@ -55,10 +55,12 @@ const checkDispatchTimeouts = functions.scheduler
       const data = doc.data();
       const previousDriverId = data.assignedDriverId;
 
+      // S7 FIX: Single atomic update instead of two sequential writes
       await doc.ref.update({
-        status: 'timedOut',
+        status: 'reassigning',
         timedOutAt: admin.firestore.FieldValue.serverTimestamp(),
         previousDriverId: previousDriverId,
+        needsReassign: true,
       });
 
       if (previousDriverId) {
@@ -67,11 +69,6 @@ const checkDispatchTimeouts = functions.scheduler
           currentOrderId: admin.firestore.FieldValue.delete(),
         }).catch(() => {});
       }
-
-      await db.collection('dispatch_requests').doc(doc.id).update({
-        status: 'reassigning',
-        needsReassign: true,
-      });
 
       timedOutCount++;
     }

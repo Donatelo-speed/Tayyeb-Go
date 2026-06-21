@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:latlong2/latlong2.dart';
 import 'package:provider/provider.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -272,17 +274,46 @@ class _MapCard extends StatelessWidget {
         borderRadius: AppRadius.brMd,
         border: Border.all(color: context.borderColor),
       ),
-      child: SizedBox(
-        height: 200,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.map_rounded, size: 48, color: context.surfaceAltColor),
-            const SizedBox(height: 10),
-            Text('Driver location: $lat, $lng', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 13)),
-            const SizedBox(height: 4),
-            Text('(Live map placeholder)', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
-          ],
+      child: ClipRRect(
+        borderRadius: AppRadius.brMd,
+        child: SizedBox(
+          height: 200,
+          child: FlutterMap(
+            options: MapOptions(
+              initialCenter: LatLng(lat, lng),
+              initialZoom: 14.0,
+              interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.tayyebgo.customer',
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: LatLng(lat, lng),
+                    width: 40,
+                    height: 40,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: context.primaryColor,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: context.primaryColor.withValues(alpha: 0.4),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

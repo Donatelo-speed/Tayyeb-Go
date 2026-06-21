@@ -1,18 +1,15 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-
-const db = admin.firestore();
+const { functions, admin, db } = require('./config');
 
 /**
  * Logs an admin action to the audit_log collection.
  * Call from client: firebase.functions().httpsCallable('logAuditEvent')({...})
  */
-exports.logAuditEvent = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
+exports.logAuditEvent = functions.https.onCall(async (request) => {
+  if (!request.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
   }
 
-  const callerUid = context.auth.uid;
+  const callerUid = request.auth.uid;
   const callerDoc = await db.collection('users').doc(callerUid).get();
   const callerRole = callerDoc.data()?.role;
 
@@ -20,7 +17,7 @@ exports.logAuditEvent = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('permission-denied', 'Admin only');
   }
 
-  const { action, targetType, targetId, details } = data;
+  const { action, targetType, targetId, details } = request.data;
 
   if (!action || !targetType) {
     throw new functions.https.HttpsError('invalid-argument', 'action and targetType required');
@@ -34,7 +31,7 @@ exports.logAuditEvent = functions.https.onCall(async (data, context) => {
     actorId: callerUid,
     actorRole: callerRole,
     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    ip: context.rawRequest?.headers?.['x-forwarded-for'] || 'unknown',
+    ip: request.rawRequest?.headers?.['x-forwarded-for'] || 'unknown',
   });
 
   return { success: true };
@@ -44,11 +41,10 @@ exports.logAuditEvent = functions.https.onCall(async (data, context) => {
  * Firestore trigger: logs when a user document is updated with sensitive fields.
  */
 exports.onUserSensitiveUpdate = functions.firestore
-  .document('users/{userId}')
-  .onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
-    const userId = context.params.userId;
+  .onDocumentUpdated('users/{userId}', async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
+    const userId = event.params.userId;
 
     const sensitiveFields = ['role', 'isBlocked', 'isVerified', 'commissionPercent', 'phone', 'email'];
     const changes = {};
@@ -78,11 +74,10 @@ exports.onUserSensitiveUpdate = functions.firestore
  * Firestore trigger: logs when an order status changes.
  */
 exports.onOrderStatusChange = functions.firestore
-  .document('orders/{orderId}')
-  .onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
-    const orderId = context.params.orderId;
+  .onDocumentUpdated('orders/{orderId}', async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
+    const orderId = event.params.orderId;
 
     if (before.status === after.status) return null;
 
@@ -108,19 +103,19 @@ exports.onOrderStatusChange = functions.firestore
 /**
  * Returns recent audit log entries (admin only).
  */
-exports.getAuditLog = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
+exports.getAuditLog = functions.https.onCall(async (request) => {
+  if (!request.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'Must be authenticated');
   }
 
-  const callerDoc = await db.collection('users').doc(context.auth.uid).get();
+  const callerDoc = await db.collection('users').doc(request.auth.uid).get();
   const callerRole = callerDoc.data()?.role;
 
   if (callerRole !== 'superAdmin') {
     throw new functions.https.HttpsError('permission-denied', 'Admin only');
   }
 
-  const { targetType, targetId, limit = 50 } = data || {};
+  const { targetType, targetId, limit = 50 } = request.data || {};
 
   let query = db.collection('audit_log').orderBy('timestamp', 'desc').limit(limit);
 

@@ -1,4 +1,7 @@
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,11 +23,34 @@ void main() async {
     AuthGateService.instance.init();
     TestAccountSeeder.instance.seedIfNeeded();
     AppLocator.instance.init();
+    try {
+      final messaging = FirebaseMessaging.instance;
+      final settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        final token = await messaging.getToken();
+        if (token != null) {
+          await FirebaseFunctions.instance
+              .httpsCallable('registerFcmToken')
+              .call({'uid': FirebaseAuth.instance.currentUser?.uid, 'token': token});
+        }
+        messaging.onTokenRefresh.listen((newToken) {
+          FirebaseFunctions.instance
+              .httpsCallable('registerFcmToken')
+              .call({'uid': FirebaseAuth.instance.currentUser?.uid, 'token': newToken});
+        });
+      }
+    } catch (_) {
+      // FCM token registration is non-critical; app continues without push notifications
+    }
     runApp(const AdminApp());
   } catch (e, s) {
     if (kDebugMode) {
-      print('[FIREBASE INIT ERROR] $e');
-      print(s);
+      debugPrint('[FIREBASE INIT ERROR] $e');
+      debugPrint('$s');
     }
     runApp(
       _ErrorApp(message: 'Unable to start. Please check your connection.'),

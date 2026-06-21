@@ -11,24 +11,50 @@ const onSOSEmergency = functions.firestore.onDocumentCreated(
     console.log(`[onSOSEmergency] SOS ${event.params.sosId} from driver ${sos.driverId}`);
 
     try {
-      const notifRef = db.collection('notifications').doc();
-      await notifRef.set({
-        id: notifRef.id,
-        recipientId: 'admin',
-        type: 'sos_emergency',
-        driverId: sos.driverId,
-        title: 'SOS EMERGENCY',
-        body: `Driver ${sos.driverName || sos.driverId} triggered SOS at ${sos.latitude || 'unknown'}, ${sos.longitude || 'unknown'}`,
-        location: {
-          latitude: sos.latitude || 0,
-          longitude: sos.longitude || 0,
-        },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        read: false,
-        priority: 'high',
+      // S2 FIX: Query real admin users instead of using hardcoded 'admin' string
+      const adminsSnap = await db.collection('users')
+        .where('role', '==', 'superAdmin')
+        .get();
+
+      const batch = db.batch();
+      let notified = 0;
+
+      adminsSnap.forEach((adminDoc) => {
+        const notifRef = db.collection('notifications').doc();
+        batch.set(notifRef, {
+          id: notifRef.id,
+          recipientId: adminDoc.id,
+          type: 'sos_emergency',
+          driverId: sos.driverId,
+          title: 'SOS EMERGENCY',
+          body: `Driver ${sos.driverName || sos.driverId} triggered SOS emergency`,
+          location: {
+            latitude: sos.latitude || 0,
+            longitude: sos.longitude || 0,
+          },
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          read: false,
+          priority: 'high',
+        });
+        notified++;
       });
 
-      console.log(`[onSOSEmergency] Notified admin for SOS ${event.params.sosId}`);
+      if (notified > 0) {
+        await batch.commit();
+        console.log(`[onSOSEmergency] Notified ${notified} admins for SOS ${event.params.sosId}`);
+      }
+
+      // Also create an emergency_alerts document for the operations center
+      await db.collection('emergency_alerts').doc(event.params.sosId).set({
+        id: event.params.sosId,
+        driverId: sos.driverId,
+        driverName: sos.driverName || 'Unknown',
+        latitude: sos.latitude || 0,
+        longitude: sos.longitude || 0,
+        status: 'active',
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+
     } catch (error) {
       console.error('[onSOSEmergency] Error:', error);
     }
