@@ -23,16 +23,15 @@ class _CustomerSplashScreenState extends State<CustomerSplashScreen> {
   Future<void> _waitForAuth() async {
     final auth = context.read<AuthProvider>();
     var waited = 0;
-    while (auth.isInitializing && mounted && waited < 15000) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      waited += 100;
+    while (auth.isInitializing && mounted && waited < 5000) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      waited += 50;
     }
     if (!mounted) return;
     _navigate(auth);
   }
 
   Future<void> _navigate(AuthProvider auth) async {
-    await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
     if (auth.user != null) {
       context.go('/home');

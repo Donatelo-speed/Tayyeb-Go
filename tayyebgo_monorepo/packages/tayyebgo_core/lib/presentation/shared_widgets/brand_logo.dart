@@ -153,7 +153,7 @@ class _BrandedSplashViewState extends State<BrandedSplashView>
     // Staggered entrance — one-shot
     _staggerCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 800),
     );
 
     _logoFade = CurvedAnimation(

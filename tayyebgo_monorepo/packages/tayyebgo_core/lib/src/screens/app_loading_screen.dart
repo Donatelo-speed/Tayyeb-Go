@@ -70,7 +70,7 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
       if (mounted) setState(() => _isOnline = online);
     });
 
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 300));
     if (mounted) {
       setState(() => _checking = false);
       if (_isOnline) {

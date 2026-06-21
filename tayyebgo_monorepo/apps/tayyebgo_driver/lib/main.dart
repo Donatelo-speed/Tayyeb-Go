@@ -30,20 +30,38 @@ void main() async {
     AuthGateService.instance.init();
     TestAccountSeeder.instance.seedIfNeeded();
     AppLocator.instance.init();
-    try {
-      final messaging = FirebaseMessaging.instance;
-      final settings = await messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+    runApp(const DriverApp());
+    _registerFcmToken();
+  } catch (e, s) {
+    if (kDebugMode) {
+      debugPrint('[FIREBASE INIT ERROR] $e');
+      debugPrint('$s');
+    }
+    runApp(_ErrorApp(message: 'Unable to start. Please check your connection.'));
+  }
+}
+
+void _registerFcmToken() {
+  try {
+    final messaging = FirebaseMessaging.instance;
+    messaging.requestPermission(alert: true, badge: true, sound: true).then((settings) {
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        final token = await messaging.getToken();
-        if (token != null) {
-          await FirebaseFunctions.instance
-              .httpsCallable('registerFcmToken')
-              .call({'uid': FirebaseAuth.instance.currentUser?.uid, 'token': token});
-        }
+        messaging.getToken().then((token) {
+          if (token != null && FirebaseAuth.instance.currentUser != null) {
+            FirebaseFunctions.instance.httpsCallable('registerFcmToken')
+                .call({'uid': FirebaseAuth.instance.currentUser!.uid, 'token': token});
+          }
+        });
+        messaging.onTokenRefresh.listen((newToken) {
+          if (FirebaseAuth.instance.currentUser != null) {
+            FirebaseFunctions.instance.httpsCallable('registerFcmToken')
+                .call({'uid': FirebaseAuth.instance.currentUser!.uid, 'token': newToken});
+          }
+        });
+      }
+    });
+  } catch (_) {}
+}
         messaging.onTokenRefresh.listen((newToken) {
           FirebaseFunctions.instance
               .httpsCallable('registerFcmToken')
