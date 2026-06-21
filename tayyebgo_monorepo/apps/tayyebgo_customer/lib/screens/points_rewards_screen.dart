@@ -1,9 +1,43 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
-class PointsRewardsScreen extends StatelessWidget {
+class PointsRewardsScreen extends StatefulWidget {
   const PointsRewardsScreen({super.key});
+
+  @override
+  State<PointsRewardsScreen> createState() => _PointsRewardsScreenState();
+}
+
+class _PointsRewardsScreenState extends State<PointsRewardsScreen> {
+  int _points = 0;
+  bool _loading = true;
+
+  String get _userId => FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPoints();
+  }
+
+  Future<void> _loadPoints() async {
+    if (_userId.isEmpty) {
+      setState(() { _loading = false; });
+      return;
+    }
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
+      setState(() {
+        _points = (doc.data()?['loyaltyPoints'] as num?)?.toInt() ?? 0;
+        _loading = false;
+      });
+    } catch (_) {
+      setState(() { _loading = false; });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +63,6 @@ class PointsRewardsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-            // Points balance
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -42,9 +75,11 @@ class PointsRewardsScreen extends StatelessWidget {
                 children: [
                   Text('Your Points', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
                   const SizedBox(height: 8),
-                  Text('2,450', style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 44, color: Colors.white, letterSpacing: 0)),
+                  _loading
+                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text(_points.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},'), style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 44, color: Colors.white, letterSpacing: 0)),
                   const SizedBox(height: 4),
-                  Text('\$24.50 value', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 14)),
+                  Text('\$${(_points / 100).toStringAsFixed(2)} value', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 14)),
                 ],
               ),
             ),
@@ -71,10 +106,10 @@ class PointsRewardsScreen extends StatelessWidget {
             const SizedBox(height: 28),
             Text('Redeem Points', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 18, color: context.textPrimaryColor)),
             const SizedBox(height: 16),
-            _redeemRow(context, 'Free Delivery', '100 points', Icons.delivery_dining_rounded),
-            _redeemRow(context, '\$1 Off', '100 points', Icons.money_off_rounded),
-            _redeemRow(context, '\$5 Off', '450 points', Icons.local_offer_rounded),
-            _redeemRow(context, '\$10 Off', '850 points', Icons.card_giftcard_rounded),
+            _redeemRow(context, 'Free Delivery', 100, Icons.delivery_dining_rounded),
+            _redeemRow(context, '\$1 Off', 100, Icons.money_off_rounded),
+            _redeemRow(context, '\$5 Off', 450, Icons.local_offer_rounded),
+            _redeemRow(context, '\$10 Off', 850, Icons.card_giftcard_rounded),
           ],
         ),
       ),
@@ -101,7 +136,8 @@ class PointsRewardsScreen extends StatelessWidget {
     );
   }
 
-  Widget _redeemRow(BuildContext context, String title, String points, IconData icon) {
+  Widget _redeemRow(BuildContext context, String title, int cost, IconData icon) {
+    final canRedeem = _points >= cost;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -114,15 +150,50 @@ class PointsRewardsScreen extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(child: Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15, color: context.textPrimaryColor))),
           AnimatedPressScale(
-            onTap: () {},
+            onTap: canRedeem ? () => _redeem(title, cost) : null,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(color: AppColors.primary, borderRadius: AppRadius.brMd),
-              child: Text(points, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: Colors.white)),
+              decoration: BoxDecoration(
+                color: canRedeem ? AppColors.primary : context.textMutedColor.withValues(alpha: 0.2),
+                borderRadius: AppRadius.brMd,
+              ),
+              child: Text('$cost pts', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: canRedeem ? Colors.white : context.textMutedColor)),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _redeem(String title, int cost) async {
+    if (_userId.isEmpty || _points < cost) return;
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(_userId).update({
+        'loyaltyPoints': FieldValue.increment(-cost),
+      });
+      await FirebaseFirestore.instance.collection('points_history').add({
+        'userId': _userId,
+        'type': 'redeem',
+        'points': -cost,
+        'description': 'Redeemed: $title',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      setState(() => _points -= cost);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Redeemed "$title" for $cost points', style: GoogleFonts.inter()),
+            backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to redeem: $e', style: GoogleFonts.inter()),
+            backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.brMd)),
+        );
+      }
+    }
   }
 }
