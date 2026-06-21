@@ -188,12 +188,29 @@
     // Splash → Auth
     setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},1200);
     
-    // Auth state
+    // Auth state - with role detection from email
     onAuthStateChanged(auth,async(u)=>{
       if(u){
         user=u;
+        console.log('User logged in:', u.email);
+        
+        // Get or create user document
         const s=await getDoc(doc(db,'users',u.uid));
-        uData=s.exists()?s.data():{role:'customer',displayName:'User'};
+        if(s.exists()){
+          uData=s.data();
+          console.log('User data from Firestore:', uData);
+        }else{
+          // Auto-detect role from email and create document
+          let role='customer';
+          if(u.email==='admin@test.com')role='admin';
+          else if(u.email==='driver@test.com')role='driver';
+          else if(u.email==='owner@test.com'||u.email==='cashier@test.com')role='partner';
+          
+          uData={uid:u.uid,email:u.email,role,displayName:u.email.split('@')[0],loyaltyPoints:0,walletBalance:0};
+          await setDoc(doc(db,'users',u.uid),uData);
+          console.log('Created user doc with role:', role);
+        }
+        
         document.getElementById('splash').classList.add('hide');
         document.getElementById('authScreen').classList.remove('show');
         document.getElementById('dashScreen').classList.add('show');
