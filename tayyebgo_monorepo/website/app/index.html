@@ -129,7 +129,17 @@
     .toast-ok{border-left:4px solid var(--success)}
     .toast-err{border-left:4px solid var(--error)}
     @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    @media(max-width:768px){.side{display:none}.main{margin-left:0;padding:16px}.grid{grid-template-columns:1fr}}
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 0;z-index:100;justify-content:space-around}
+    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 12px;color:var(--text-secondary);font-size:10px;font-weight:600;cursor:pointer;border-radius:var(--radius);transition:0.2s}
+    .bottom-nav-item.active{color:var(--primary)}
+    .bottom-nav-item span{font-size:20px}
+    @media(max-width:768px){
+      .side{display:none}
+      .main{margin-left:0;padding:16px;padding-bottom:80px}
+      .grid{grid-template-columns:1fr}
+      .dash-layout{position:relative}
+      .bottom-nav{display:flex!important}
+    }
   </style>
 </head>
 <body>
@@ -314,12 +324,22 @@
           <div class="side-foot"><button onclick="doLogout()" class="btn" style="background:var(--error);color:white;font-size:12px">Sign Out</button></div>
         </aside>
         <main class="main" id="custContent"></main>
+        <nav class="bottom-nav">
+          <div class="bottom-nav-item active" onclick="showCust('home')"><span>🏠</span>Home</div>
+          <div class="bottom-nav-item" onclick="showCust('orders')"><span>📦</span>Orders</div>
+          <div class="bottom-nav-item" onclick="showCust('cart')"><span>🛒</span>Cart</div>
+          <div class="bottom-nav-item" onclick="showCust('wallet')"><span>💰</span>Wallet</div>
+          <div class="bottom-nav-item" onclick="showCust('profile')"><span>👤</span>Profile</div>
+        </nav>
       </div>`;
     }
     
     window.showCust=async p=>{
       document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
-      event?.target?.classList.add('on');
+      document.querySelectorAll('.bottom-nav-item').forEach(n=>n.classList.remove('active'));
+      event?.target?.classList?.add('on');
+      const navMap={home:0,orders:1,cart:2,wallet:3,profile:4};
+      if(navMap[p]!==undefined)document.querySelectorAll('.bottom-nav-item')[navMap[p]]?.classList.add('active');
       const c=document.getElementById('custContent');
       if(p==='home'){
         let rests=[];try{const s=await getDocs(collection(db,'restaurants'));s.forEach(d=>rests.push({id:d.id,...d.data()}))}catch(e){}
