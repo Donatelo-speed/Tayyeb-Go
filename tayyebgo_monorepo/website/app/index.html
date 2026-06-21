@@ -3,347 +3,492 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TayyebGo — Sign In</title>
+  <title>TayyebGo</title>
   <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{--primary:#FF5A2C;--primary-dark:#E84A1E;--accent:#8B5CF6;--success:#22C55E;--error:#EF4444;--bg:#090B10;--surface:#141C18;--surface-2:#1A2420;--text:#F0F5F2;--text-secondary:#8A9A92;--border:#2A3B33;--radius:12px;--radius-lg:20px;--radius-xl:28px}
+    :root{--primary:#FF5A2C;--primary-dark:#E84A1E;--accent:#8B5CF6;--success:#22C55E;--warning:#F59E0B;--error:#EF4444;--info:#06B6D4;--bg:#090B10;--surface:#141C18;--surface-2:#1A2420;--text:#F0F5F2;--text-secondary:#8A9A92;--text-tertiary:#5A6B63;--border:#2A3B33;--radius:12px;--radius-lg:20px;--radius-xl:28px;--sidebar:260px}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
     
-    /* Loading Screen */
+    /* Splash */
     .splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10000;transition:opacity 0.5s ease}
-    .splash.hidden{opacity:0;pointer-events:none}
-    .splash-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:24px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;animation:pulse 1.5s ease infinite;box-shadow:0 8px 32px rgba(255,90,44,0.4)}
-    .splash-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:white;margin-bottom:8px}
-    .splash-sub{color:var(--text-secondary);font-size:14px}
-    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.8}}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading-dots{display:flex;gap:6px;margin-top:24px}
-    .loading-dots span{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:bounce 1.4s ease-in-out infinite}
-    .loading-dots span:nth-child(2){animation-delay:0.2s}
-    .loading-dots span:nth-child(3){animation-delay:0.4s}
-    @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+    .splash.hide{opacity:0;pointer-events:none}
+    .splash-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:20px;display:flex;align-items:center;justify-content:center;animation:pulse 1.5s ease infinite;box-shadow:0 8px 32px rgba(255,90,44,0.4)}
+    .splash-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:white;margin-top:20px}
+    .dots{display:flex;gap:6px;margin-top:20px}
+    .dots span{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:dotBounce 1.4s ease infinite}
+    .dots span:nth-child(2){animation-delay:0.2s}
+    .dots span:nth-child(3){animation-delay:0.4s}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    @keyframes dotBounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
     
-    /* Main Login */
-    .login-page{min-height:100vh;display:flex;opacity:0;transition:opacity 0.5s ease}
-    .login-page.visible{opacity:1}
-    .login-left{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)}
-    .login-right{flex:1;background:linear-gradient(135deg,#FF5A2C 0%,#E84A1E 50%,#8B5CF6 100%);display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden}
-    .login-right::before{content:'';position:absolute;width:500px;height:500px;background:rgba(255,255,255,0.08);border-radius:50%;top:-150px;right:-150px;animation:float 6s ease-in-out infinite}
-    .login-right::after{content:'';position:absolute;width:400px;height:400px;background:rgba(255,255,255,0.05);border-radius:50%;bottom:-100px;left:-100px;animation:float 8s ease-in-out infinite reverse}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-    
-    .login-card{width:100%;max-width:420px}
-    .login-header{text-align:center;margin-bottom:36px}
-    .login-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
-    .logo-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(255,90,44,0.4)}
-    .login-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:6px}
-    .login-subtitle{color:var(--text-secondary);font-size:14px}
-    
-    /* Tabs */
-    .tabs{display:flex;gap:4px;background:var(--surface);border-radius:var(--radius);padding:4px;margin-bottom:28px}
-    .tab{flex:1;padding:11px;border-radius:8px;border:none;background:transparent;color:var(--text-secondary);font-weight:600;font-size:13px;cursor:pointer;transition:all 0.25s ease;font-family:inherit}
+    /* Auth Screen */
+    .auth-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+    .auth-screen.show{display:flex}
+    .auth-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:36px;animation:slideUp 0.4s ease}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .auth-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px}
+    .auth-logo-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(255,90,44,0.3)}
+    .auth-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:4px}
+    .auth-sub{text-align:center;color:var(--text-secondary);font-size:14px;margin-bottom:24px}
+    .tabs{display:flex;gap:4px;background:var(--bg);border-radius:var(--radius);padding:4px;margin-bottom:24px}
+    .tab{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--text-secondary);font-weight:600;font-size:13px;cursor:pointer;transition:0.2s;font-family:inherit}
     .tab.active{background:var(--surface-2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-    
-    /* Form */
-    .form-group{margin-bottom:18px}
-    .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
-    .form-group input{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:14px;color:var(--text);background:var(--surface);transition:all 0.25s ease;font-family:inherit}
-    .form-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,90,44,0.15)}
-    .form-group input::placeholder{color:#5A6B63}
-    
-    .form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-    .remember{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);cursor:pointer}
-    .remember input{width:16px;height:16px;accent-color:var(--primary);cursor:pointer}
-    .forgot{font-size:13px;color:var(--primary);font-weight:500;text-decoration:none;transition:color 0.2s}
-    .forgot:hover{color:var(--primary-dark)}
-    
-    .btn-primary{width:100%;padding:14px;border-radius:var(--radius);border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s ease;font-family:inherit;box-shadow:0 4px 16px rgba(255,90,44,0.3)}
-    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,90,44,0.4)}
-    .btn-primary:active{transform:translateY(0)}
-    .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-    
-    .divider{display:flex;align-items:center;gap:14px;margin:22px 0;color:var(--text-secondary);font-size:13px}
+    .fg{margin-bottom:16px}
+    .fg label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+    .fg input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:14px;color:var(--text);background:var(--bg);transition:0.2s;font-family:inherit}
+    .fg input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,90,44,0.1)}
+    .fg input::placeholder{color:var(--text-tertiary)}
+    .form-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .remember{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);cursor:pointer}
+    .remember input{accent-color:var(--primary)}
+    .forgot{font-size:12px;color:var(--primary);text-decoration:none;font-weight:500}
+    .btn{width:100%;padding:13px;border-radius:var(--radius);border:none;font-size:14px;font-weight:700;cursor:pointer;transition:0.2s;font-family:inherit}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 4px 16px rgba(255,90,44,0.3)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,90,44,0.4)}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+    .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text-tertiary);font-size:12px}
     .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .social-row{display:flex;gap:8px}
+    .social-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;gap:6px;color:var(--text);font-weight:600;font-size:12px;cursor:pointer;transition:0.2s;font-family:inherit}
+    .social-btn:hover{border-color:var(--primary)}
+    .switch-link{text-align:center;margin-top:16px;font-size:13px;color:var(--text-secondary)}
+    .switch-link a{color:var(--primary);font-weight:600;text-decoration:none}
+    .test-box{margin-top:16px;padding:12px;background:var(--bg);border-radius:var(--radius);border:1px dashed var(--border)}
+    .test-box h4{font-size:10px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase}
+    .test-box p{font-size:10px;color:var(--text-tertiary);line-height:1.6}
     
-    .social-row{display:flex;gap:10px}
-    .social-btn{flex:1;padding:12px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text);font-weight:600;font-size:13px;cursor:pointer;transition:all 0.25s ease;font-family:inherit}
-    .social-btn:hover{border-color:var(--primary);transform:translateY(-2px)}
-    
-    .switch-link{text-align:center;margin-top:22px;font-size:14px;color:var(--text-secondary)}
-    .switch-link a{color:var(--primary);font-weight:600;text-decoration:none;transition:color 0.2s}
-    .switch-link a:hover{color:var(--primary-dark)}
-    
-    /* Right Panel */
-    .brand-content{text-align:center;position:relative;z-index:1}
-    .brand-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(28px,4vw,40px);font-weight:800;color:white;margin-bottom:14px;line-height:1.2}
-    .brand-desc{font-size:16px;color:rgba(255,255,255,0.9);line-height:1.7;max-width:340px;margin:0 auto 36px}
-    .phone-mockup{width:260px;height:460px;background:rgba(0,0,0,0.25);border-radius:32px;padding:12px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);animation:float 5s ease-in-out infinite;position:relative;z-index:1}
-    .mockup-screen{background:#0D1210;border-radius:22px;height:100%;padding:14px;display:flex;flex-direction:column;gap:10px}
-    .mockup-header{display:flex;justify-content:space-between;font-size:10px;color:white;font-weight:600}
-    .mockup-greeting{font-size:18px;font-weight:700;color:white}
-    .mockup-search{background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;color:#666;font-size:12px;display:flex;align-items:center;gap:8px}
-    .mockup-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-    .mockup-cat{text-align:center;padding:10px 4px;background:rgba(255,255,255,0.04);border-radius:10px}
-    .mockup-cat-icon{font-size:20px}
-    .mockup-cat span{font-size:9px;color:#888;display:block;margin-top:4px}
-    .mockup-card{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:10px;padding:10px}
-    .mockup-card-img{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-    .mockup-card-info strong{font-size:11px;color:white;display:block}
-    .mockup-card-info span{font-size:9px;color:#888}
-    
-    /* Test Box */
-    .test-box{margin-top:20px;padding:14px;background:var(--surface);border-radius:10px;border:1px dashed var(--border)}
-    .test-box h4{font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
-    .test-box p{font-size:11px;color:var(--text-tertiary);line-height:1.7}
-    
-    /* Toast */
-    .toast-container{position:fixed;top:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:8px}
-    .toast{padding:14px 20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:14px;font-weight:500;animation:slideIn .3s ease;max-width:400px}
-    .toast-success{border-left:4px solid var(--success)}
-    .toast-error{border-left:4px solid var(--error)}
+    /* Dashboard */
+    .dash{display:none;min-height:100vh}
+    .dash.show{display:flex}
+    .side{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;animation:slideRight 0.3s ease}
+    [dir="rtl"] .side{left:auto;right:0;border-right:none;border-left:1px solid var(--border)}
+    @keyframes slideRight{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+    .side-head{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .side-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:white}
+    .side-brand{font-weight:800;font-size:16px}
+    .side-nav{flex:1;padding:8px;overflow-y:auto}
+    .side-foot{padding:12px;border-top:1px solid var(--border)}
+    .nav-i{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius);color:var(--text-secondary);font-weight:500;font-size:13px;transition:0.2s;cursor:pointer;margin-bottom:2px}
+    .nav-i:hover{background:rgba(255,255,255,0.05);color:var(--text)}
+    .nav-i.on{background:rgba(255,90,44,0.1);color:var(--primary);font-weight:600}
+    .main{flex:1;margin-left:var(--sidebar);padding:20px;min-height:100vh;animation:fadeIn 0.3s ease}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    [dir="rtl"] .main{margin-left:0;margin-right:var(--sidebar)}
+    .pg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .pg-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+    .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;animation:slideUp 0.4s ease}
+    .stat-val{font-size:28px;font-weight:800;color:var(--primary)}
+    .stat-lbl{font-size:11px;color:var(--text-secondary);margin-top:4px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px;animation:slideUp 0.4s ease}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .rest-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:0.3s;animation:slideUp 0.4s ease}
+    .rest-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+    .rest-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:48px}
+    .rest-body{padding:14px}
+    .rest-name{font-weight:700;font-size:15px;margin-bottom:2px}
+    .rest-meta{font-size:12px;color:var(--text-secondary)}
+    .menu-i{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:0.2s}
+    .menu-i:hover{border-color:var(--primary)}
+    .menu-icon{width:64px;height:64px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+    .menu-info{flex:1}
+    .menu-name{font-weight:600;font-size:14px}
+    .menu-desc{font-size:12px;color:var(--text-secondary);margin:2px 0}
+    .menu-price{font-weight:700;color:var(--primary)}
+    .add-btn{width:32px;height:32px;border-radius:50%;background:var(--primary);color:white;border:none;font-size:16px;cursor:pointer;transition:0.2s}
+    .add-btn:hover{transform:scale(1.1)}
+    .cart-i{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+    .cart-info{flex:1}
+    .cart-name{font-weight:600;font-size:13px}
+    .cart-price{font-size:12px;color:var(--primary)}
+    .qty{display:flex;align-items:center;gap:10px}
+    .qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+    .order-i{padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+    .badge{display:inline-block;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:600}
+    .badge-s{background:rgba(34,197,94,0.15);color:var(--success)}
+    .badge-p{background:rgba(255,90,44,0.15);color:var(--primary)}
+    .badge-w{background:rgba(245,158,11,0.15);color:var(--warning)}
+    .badge-i{background:rgba(6,182,212,0.15);color:var(--info)}
+    .wallet{background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:var(--radius-xl);padding:28px;color:white;position:relative;overflow:hidden}
+    .wallet::before{content:'';position:absolute;width:180px;height:180px;background:rgba(255,255,255,0.1);border-radius:50%;top:-40px;right:-40px}
+    .wallet-val{font-size:40px;font-weight:800;position:relative;z-index:1}
+    .wallet-lbl{font-size:13px;opacity:0.8;position:relative;z-index:1}
+    .toggle{width:56px;height:28px;border-radius:14px;background:var(--border);position:relative;cursor:pointer;transition:0.3s}
+    .toggle.on{background:var(--primary)}
+    .toggle::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:white;top:3px;left:3px;transition:0.3s}
+    .toggle.on::after{transform:translateX(28px)}
+    .order-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-xl);padding:20px;margin-bottom:12px;transition:0.3s}
+    .order-card:hover{border-color:var(--primary)}
+    .toast-box{position:fixed;top:20px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:8px}
+    .toast{padding:12px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:500;animation:slideIn 0.3s ease}
+    .toast-ok{border-left:4px solid var(--success)}
+    .toast-err{border-left:4px solid var(--error)}
     @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    
-    /* Responsive */
-    @media(max-width:768px){
-      .login-right{display:none}
-      .login-left{padding:24px}
-      .login-card{max-width:100%}
-    }
+    @media(max-width:768px){.side{display:none}.main{margin-left:0;padding:16px}.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <!-- Splash Screen -->
   <div class="splash" id="splash">
-    <div class="splash-logo">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
-    </div>
+    <div class="splash-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg></div>
     <div class="splash-text">TayyebGo</div>
-    <div class="splash-sub">Loading...</div>
-    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <div class="dots"><span></span><span></span><span></span></div>
   </div>
+  
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <div class="auth-logo"><div class="auth-logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg></div></div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to TayyebGo</p>
+      <div class="tabs"><button class="tab active" id="tabLogin" onclick="showTab('login')">Sign In</button><button class="tab" id="tabSignup" onclick="showTab('signup')">Sign Up</button></div>
+      <div id="loginForm">
+        <form onsubmit="doLogin(event)">
+          <div class="fg"><label>Email</label><input type="email" id="email" placeholder="you@example.com" required></div>
+          <div class="fg"><label>Password</label><input type="password" id="password" placeholder="••••••••" required></div>
+          <div class="form-row"><label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label><a href="#" class="forgot" onclick="doForgot();return false">Forgot?</a></div>
+          <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+        </form>
+        <div class="divider">or</div>
+        <div class="social-row">
+          <button class="social-btn" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
+          <button class="social-btn" onclick="toast('Apple coming soon','err')">Apple</button>
+        </div>
+        <div class="switch-link">No account? <a href="#" onclick="showTab('signup');return false">Sign up</a></div>
+        <div class="test-box"><h4>Demo</h4><p>admin / customer / driver / owner<br>@test.com — Password: test123</p></div>
+      </div>
+      <div id="signupForm" style="display:none">
+        <form onsubmit="doSignup(event)">
+          <div class="fg"><label>Name</label><input type="text" id="sName" placeholder="John Doe" required></div>
+          <div class="fg"><label>Email</label><input type="email" id="sEmail" placeholder="you@example.com" required></div>
+          <div class="fg"><label>Password</label><input type="password" id="sPass" placeholder="••••••••" required minlength="6"></div>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+        <div class="switch-link">Have account? <a href="#" onclick="showTab('login');return false">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="dash" id="dashScreen"></div>
+  <div class="toast-box" id="toastBox"></div>
 
-  <!-- Login Page -->
-  <div class="login-page" id="loginPage">
-    <div class="login-left">
-      <div class="login-card">
-        <div class="login-header">
-          <div class="login-logo">
-            <div class="logo-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" fill="white" opacity="0.9"/></svg>
-            </div>
-          </div>
-          <h1 class="login-title">Welcome back</h1>
-          <p class="login-subtitle">Sign in to your TayyebGo account</p>
-        </div>
-        
-        <div class="tabs">
-          <button class="tab active" id="loginTab" onclick="switchTab('login')">Sign In</button>
-          <button class="tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
-        </div>
-        
-        <!-- Login Form -->
-        <div id="loginForm">
-          <form id="authForm" onsubmit="handleLogin(event)">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-            </div>
-            <div class="form-row">
-              <label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label>
-              <a href="#" class="forgot" onclick="handleForgotPassword();return false">Forgot password?</a>
-            </div>
-            <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
-          </form>
-          <div class="divider">or continue with</div>
-          <div class="social-row">
-            <button class="social-btn" onclick="loginGoogle()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
-            <button class="social-btn" onclick="loginApple()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> Apple</button>
-          </div>
-          <div class="switch-link">Don't have an account? <a href="#" onclick="switchTab('signup');return false">Sign up</a></div>
-          <div class="test-box">
-            <h4>Demo Accounts</h4>
-            <p>admin@test.com / test123<br>customer@test.com / test123<br>driver@test.com / test123<br>owner@test.com / test123</p>
-          </div>
-        </div>
-        
-        <!-- Signup Form -->
-        <div id="signupForm" style="display:none">
-          <form id="signupFormEl" onsubmit="handleSignup(event)">
-            <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="John Doe" required></div>
-            <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com" required></div>
-            <div class="form-group"><label>Phone</label><input type="tel" id="signupPhone" placeholder="+963 9XX XXX XXX"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••••••" required minlength="6"></div>
-            <button type="submit" class="btn-primary" style="margin-top:4px">Create Account</button>
-          </form>
-          <div class="switch-link">Already have an account? <a href="#" onclick="switchTab('login');return false">Sign in</a></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="login-right">
-      <div class="brand-content">
-        <h2 class="brand-title">Everything<br>Delivered.</h2>
-        <p class="brand-desc">Food, groceries, pharmacy, and anything you need — delivered to your door in minutes.</p>
-        <div class="phone-mockup">
-          <div class="mockup-screen">
-            <div class="mockup-header"><span>9:41</span><span>●●●</span></div>
-            <div class="mockup-greeting">Good evening 👋</div>
-            <div class="mockup-search"><span>🔍</span> What do you need?</div>
-            <div class="mockup-cats">
-              <div class="mockup-cat"><div class="mockup-cat-icon">🍔</div><span>Food</span></div>
-              <div class="mockup-cat"><div class="mockup-cat-icon">🛒</div><span>Grocery</span></div>
-              <div class="mockup-cat"><div class="mockup-cat-icon">💊</div><span>Pharmacy</span></div>
-              <div class="mockup-cat"><div class="mockup-cat-icon">📦</div><span>Any</span></div>
-            </div>
-            <div class="mockup-card"><div class="mockup-card-img" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">🍕</div><div class="mockup-card-info"><strong>Pizza House</strong><span>25-35 min · ⭐ 4.8</span></div></div>
-            <div class="mockup-card"><div class="mockup-card-img" style="background:linear-gradient(135deg,#22C55E,#06B6D4)">🍔</div><div class="mockup-card-info"><strong>Burger King</strong><span>15-25 min · ⭐ 4.6</span></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="toast-container" id="toastContainer"></div>
-  
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import{getAuth,GoogleAuthProvider,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,signInWithPopup,onAuthStateChanged,setPersistence,browserLocalPersistence,browserSessionPersistence}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import{getFirestore,doc,getDoc,setDoc,serverTimestamp,collection,getDocs,query,where,orderBy,updateDoc,addDoc,onSnapshot}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
     
-    const firebaseConfig={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
-    const fbApp=initializeApp(firebaseConfig);
-    const auth=getAuth(fbApp);
-    const db=getFirestore(fbApp);
-    const googleProvider=new GoogleAuthProvider();
+    const cfg={apiKey:"AIzaSyBwVf76nVKlxpVloPRklEax7EjlXivZcK4",authDomain:"tayyebgo.firebaseapp.com",projectId:"tayyebgo",storageBucket:"tayyebgo.firebasestorage.app",messagingSenderId:"704530942839",appId:"1:704530942839:web:7e11271910bc913d6e2f72"};
+    const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),gProvider=new GoogleAuthProvider();
+    let user=null,uData=null,cart=[],isOnline=false,activeDelivery=null;
     
-    // Toast
-    function showToast(msg,type='success'){
-      const c=document.getElementById('toastContainer');
-      const t=document.createElement('div');
-      t.className=`toast toast-${type}`;
-      t.textContent=msg;
-      c.appendChild(t);
-      setTimeout(()=>t.remove(),4000);
-    }
+    function toast(m,t='ok'){const c=document.getElementById('toastBox'),d=document.createElement('div');d.className=`toast toast-${t==='err'?'err':'ok'}`;d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),4000)}
     
-    // Splash screen → Login page transition
-    setTimeout(()=>{
-      document.getElementById('splash').classList.add('hidden');
-      document.getElementById('loginPage').classList.add('visible');
-    },1500);
+    // Splash → Auth
+    setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},1200);
     
-    // Auth state handler
-    let redirected = false;
-    onAuthStateChanged(auth, async(user)=>{
-      if(user && !redirected){
-        redirected = true;
-        try {
-          const snap = await getDoc(doc(db, 'users', user.uid));
-          const data = snap.exists() ? snap.data() : null;
-          const role = data?.role || 'customer';
-          
-          // Role-based redirect paths
-          const routes = {
-            'admin': 'admin/',
-            'superAdmin': 'admin/',
-            'customer': 'customer/',
-            'driver': 'driver/',
-            'partner': 'partner/',
-            'owner': 'partner/',
-            'cashier': 'partner/'
-          };
-          
-          const path = routes[role] || 'customer/';
-          window.location.href = path;
-        } catch(e) {
-          console.error('Redirect error:', e);
-          // Default to customer if error
-          window.location.href = 'customer/';
-        }
+    // Auth state
+    onAuthStateChanged(auth,async(u)=>{
+      if(u){
+        user=u;
+        const s=await getDoc(doc(db,'users',u.uid));
+        uData=s.exists()?s.data():{role:'customer',displayName:'User'};
+        document.getElementById('splash').classList.add('hide');
+        document.getElementById('authScreen').classList.remove('show');
+        document.getElementById('dashScreen').classList.add('show');
+        renderDash();
+      }else{
+        document.getElementById('dashScreen').classList.remove('show');
+        document.getElementById('authScreen').classList.add('show');
       }
     });
     
-    // Login
-    window.handleLogin = async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const remember = document.getElementById('rememberMe').checked;
-      const btn = document.getElementById('loginBtn');
-      
-      btn.textContent = 'Signing in...';
-      btn.disabled = true;
-      
-      try {
-        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-        await signInWithEmailAndPassword(auth, email, password);
-        showToast('Welcome! Redirecting...');
-      } catch(error) {
-        showToast(getErrorMsg(error.code), 'error');
-        btn.textContent = 'Sign In';
-        btn.disabled = false;
-        redirected = false;
+    // Auth functions
+    window.showTab=t=>{document.getElementById('tabLogin').classList.toggle('active',t==='login');document.getElementById('tabSignup').classList.toggle('active',t==='signup');document.getElementById('loginForm').style.display=t==='login'?'block':'none';document.getElementById('signupForm').style.display=t==='signup'?'block':'none'};
+    
+    window.doLogin=async e=>{e.preventDefault();const b=document.getElementById('loginBtn');b.textContent='Signing in...';b.disabled=true;try{await setPersistence(auth,document.getElementById('rememberMe').checked?browserLocalPersistence:browserSessionPersistence);await signInWithEmailAndPassword(auth,document.getElementById('email').value,document.getElementById('password').value);toast('Welcome!')}catch(er){toast(errMsg(er.code),'err');b.textContent='Sign In';b.disabled=false}};
+    
+    window.doSignup=async e=>{e.preventDefault();try{const c=await createUserWithEmailAndPassword(auth,document.getElementById('sEmail').value,document.getElementById('sPass').value);await setDoc(doc(db,'users',c.user.uid),{uid:c.user.uid,email:c.user.email,displayName:document.getElementById('sName').value,role:'customer',loyaltyPoints:0,walletBalance:0,createdAt:serverTimestamp()});toast('Account created!')}catch(er){toast(errMsg(er.code),'err')}};
+    
+    window.doGoogle=async()=>{try{const r=await signInWithPopup(auth,gProvider);const s=await getDoc(doc(db,'users',r.user.uid));if(!s.exists())await setDoc(doc(db,'users',r.user.uid),{uid:r.user.uid,email:r.user.email,displayName:r.user.displayName||'User',role:'customer',loyaltyPoints:0,walletBalance:0,createdAt:serverTimestamp()});toast('Welcome!')}catch(er){toast(errMsg(er.code),'err')}};
+    
+    window.doForgot=async()=>{const e=prompt('Enter email:');if(e)try{await sendPasswordResetEmail(auth,e);toast('Reset link sent!')}catch(er){toast(errMsg(er.code),'err')}};
+    
+    function errMsg(c){return{'auth/user-not-found':'No account found','auth/wrong-password':'Wrong password','auth/invalid-email':'Invalid email','auth/email-already-in-use':'Email taken','auth/weak-password':'Min 6 characters'}[c]||'Error occurred'}
+    
+    // ============ DASHBOARD RENDERER ============
+    window.renderDash=()=>{
+      const role=uData?.role||'customer';
+      const dash=document.getElementById('dashScreen');
+      switch(role){
+        case'admin':dash.innerHTML=renderAdmin();break;
+        case'driver':dash.innerHTML=renderDriver();break;
+        case'partner':case'owner':case'cashier':dash.innerHTML=renderPartner();break;
+        default:dash.innerHTML=renderCustomer();
       }
-    };
-    
-    // Signup
-    window.handleSignup = async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', cred.user.uid), {
-          uid: cred.user.uid, email, displayName: name, role: 'customer',
-          loyaltyPoints: 0, loyaltyTier: 'bronze', walletBalance: 0, createdAt: serverTimestamp()
-        });
-        showToast('Account created!');
-      } catch(error) { showToast(getErrorMsg(error.code), 'error'); }
-    };
-    
-    // Google
-    window.loginGoogle = async () => {
-      try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const snap = await getDoc(doc(db, 'users', result.user.uid));
-        if(!snap.exists()) {
-          await setDoc(doc(db, 'users', result.user.uid), {
-            uid: result.user.uid, email: result.user.email, displayName: result.user.displayName || 'User',
-            role: 'customer', loyaltyPoints: 0, loyaltyTier: 'bronze', walletBalance: 0, createdAt: serverTimestamp()
-          });
-        }
-        showToast('Welcome!');
-      } catch(error) { showToast(getErrorMsg(error.code), 'error'); }
-    };
-    
-    window.loginApple = () => showToast('Apple Sign-In coming soon', 'error');
-    
-    window.handleForgotPassword = async () => {
-      const email = prompt('Enter your email:');
-      if(email) { try { await sendPasswordResetEmail(auth, email); showToast('Reset email sent!'); } catch(e) { showToast(getErrorMsg(e.code), 'error'); } }
-    };
-    
-    window.switchTab = (tab) => {
-      document.getElementById('loginTab').classList.toggle('active', tab==='login');
-      document.getElementById('signupTab').classList.toggle('active', tab==='signup');
-      document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
-      document.getElementById('signupForm').style.display = tab==='signup' ? 'block' : 'none';
-    };
-    
-    function getErrorMsg(code) {
-      const m = {'auth/user-not-found':'No account found','auth/wrong-password':'Incorrect password','auth/invalid-email':'Invalid email','auth/email-already-in-use':'Email already registered','auth/weak-password':'Password too weak (min 6 chars)','auth/too-many-requests':'Too many attempts'};
-      return m[code] || 'An error occurred';
     }
+    
+    // ============ CUSTOMER APP ============
+    function renderCustomer(){
+      return`<div class="dash-layout">
+        <aside class="side">
+          <div class="side-head"><div class="side-icon" style="background:linear-gradient(135deg,var(--primary),var(--accent))">🏠</div><span class="side-brand">TayyebGo</span></div>
+          <nav class="side-nav">
+            <div class="nav-i on" onclick="showCust('home')">🏠 Home</div>
+            <div class="nav-i" onclick="showCust('orders')">📦 Orders</div>
+            <div class="nav-i" onclick="showCust('tracking')">📍 Track</div>
+            <div class="nav-i" onclick="showCust('cart')">🛒 Cart</div>
+            <div class="nav-i" onclick="showCust('wallet')">💰 Wallet</div>
+            <div class="nav-i" onclick="showCust('loyalty')">⭐ Points</div>
+            <div class="nav-i" onclick="showCust('profile')">👤 Profile</div>
+          </nav>
+          <div class="side-foot"><button onclick="doLogout()" class="btn" style="background:var(--error);color:white;font-size:12px">Sign Out</button></div>
+        </aside>
+        <main class="main" id="custContent"></main>
+      </div>`;
+    }
+    
+    window.showCust=async p=>{
+      document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+      event?.target?.classList.add('on');
+      const c=document.getElementById('custContent');
+      if(p==='home'){
+        let rests=[];try{const s=await getDocs(collection(db,'restaurants'));s.forEach(d=>rests.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Good evening 👋</h1></div>
+          <div class="grid">${rests.map(r=>`<div class="rest-card" onclick="viewRest('${r.id}')"><div class="rest-img" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">🍔</div><div class="rest-body"><div class="rest-name">${r.name||'Restaurant'}</div><div class="rest-meta">⭐ ${r.rating||'4.5'} • ${r.category||'Food'}</div></div></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🏪</div><div style="color:var(--text-secondary)">No restaurants yet</div></div>'}</div>`;
+      }else if(p==='orders'){
+        let orders=[];try{const s=await getDocs(query(collection(db,'orders'),where('customerId','==',user.uid)));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">My Orders (${orders.length})</h1></div>${orders.map(o=>`<div class="order-i"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.restaurantName||'Order'}</div></div><span class="badge badge-p">${o.status}</span></div><div style="margin-top:12px;display:flex;justify-content:space-between"><span style="font-weight:700;color:var(--primary)">${(o.total||0).toLocaleString()} SYP</span>${o.status==='delivered'?'<button class="btn" style="background:var(--primary);color:white;padding:6px 12px;font-size:12px">Rate</button>':''}</div></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📦</div><div style="color:var(--text-secondary)">No orders yet</div></div>'}</div>`;
+      }else if(p==='tracking'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Order Tracking</h1></div><div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📍</div><div style="font-weight:600">No active orders</div><div style="font-size:13px;color:var(--text-secondary)">Place an order to track it here</div></div>`;
+      }else if(p==='cart'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Cart (${cart.length})</h1></div>${cart.length?cart.map(i=>`<div class="cart-i"><div style="font-size:24px">🍔</div><div class="cart-info"><div class="cart-name">${i.name}</div><div class="cart-price">${i.price.toLocaleString()} SYP</div></div><div class="qty"><button class="qty-btn" onclick="updCart(${i.id},-1)">-</button><span>${i.qty}</span><button class="qty-btn" onclick="updCart(${i.id},1)">+</button></div></div>`).join(''):'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🛒</div><div style="color:var(--text-secondary)">Cart is empty</div></div>'}<div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><span>Total</span><span style="font-weight:700;color:var(--primary)">${cart.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString()} SYP</span></div><button class="btn btn-primary" onclick="placeOrder()">Place Order</button></div>`;
+      }else if(p==='wallet'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Wallet</h1></div><div class="wallet"><div class="wallet-lbl">Balance</div><div class="wallet-val">${(uData?.walletBalance||0).toLocaleString()} SYP</div><button class="btn" style="background:rgba(255,255,255,0.2);color:white;margin-top:12px;position:relative;z-index:1">Top Up</button></div>`;
+      }else if(p==='loyalty'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Points & Rewards</h1></div><div class="card" style="text-align:center"><div style="font-size:12px;color:var(--text-secondary)">Your Points</div><div style="font-size:40px;font-weight:800;color:var(--primary)">${uData?.loyaltyPoints||0}</div><div style="font-size:13px;color:var(--text-secondary);text-transform:capitalize">${uData?.loyaltyTier||'bronze'} Tier</div></div>`;
+      }else if(p==='profile'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Profile</h1></div><div class="card"><div class="fg"><label>Name</label><input value="${uData?.displayName||''}"></div><div class="fg"><label>Email</label><input value="${user?.email||''}" readonly></div><div class="fg"><label>Phone</label><input value="${uData?.phoneNumber||''}"></div><button class="btn btn-primary">Save</button></div>`;
+      }
+    }
+    
+    window.viewRest=async id=>{
+      const c=document.getElementById('custContent');
+      let items=[];try{const s=await getDocs(query(collection(db,'menu_items'),where('restaurantId','==',id)));s.forEach(d=>items.push({id:d.id,...d.data()}))}catch(e){items=[{name:'Margherita Pizza',price:12000,description:'Tomato, mozzarella'},{name:'Burger',price:8000,description:'Beef patty, lettuce'},{name:'Cola',price:1500,description:'Cold drink'}]}
+      c.innerHTML=`<div class="pg-head"><button class="btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-size:12px" onclick="showCust('home')">← Back</button><h1 class="pg-title">Menu</h1></div><div style="display:flex;flex-direction:column;gap:8px">${items.map(i=>`<div class="menu-i"><div class="menu-icon" style="background:linear-gradient(135deg,#FF5A2C,#FF8C42)">🍔</div><div class="menu-info"><div class="menu-name">${i.name}</div><div class="menu-desc">${i.description||''}</div><div class="menu-price">${(i.price||0).toLocaleString()} SYP</div></div><button class="add-btn" onclick="addCart('${i.id}','${i.name}',${i.price||0})">+</button></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🍽️</div><div style="color:var(--text-secondary)">No items</div></div>'}</div>`;
+    }
+    
+    window.addCart=(id,name,price)=>{const e=cart.find(i=>i.id===id);if(e)e.qty++;else cart.push({id,name,price,qty:1});toast(`${name} added!`);updCartBadge()};
+    window.updCart=(id,d)=>{const i=cart.find(x=>x.id===id);if(i){i.qty+=d;if(i.qty<=0)cart=cart.filter(x=>x.id!==id);showCust('cart')}};
+    window.updCartBadge=()=>{const b=document.querySelector('[onclick*="cart"]');if(b)b.innerHTML=`🛒 Cart (${cart.length})`};
+    
+    window.placeOrder=async()=>{
+      if(!cart.length)return toast('Cart is empty','err');
+      try{await addDoc(collection(db,'orders'),{customerId:user.uid,customerName:uData?.displayName,items:cart.map(i=>({name:i.name,price:i.price,quantity:i.qty})),total:cart.reduce((s,i)=>s+i.price*i.qty,0)+3000,status:'placed',paymentMethod:'Cash on Delivery',createdAt:new Date()});cart=[];toast('Order placed!');showCust('orders')}catch(e){toast('Error','err')}
+    };
+    
+    // ============ DRIVER APP ============
+    function renderDriver(){
+      return`<div class="dash-layout">
+        <aside class="side">
+          <div class="side-head"><div class="side-icon" style="background:linear-gradient(135deg,#22C55E,#059669)">🚗</div><span class="side-brand">Driver</span></div>
+          <nav class="side-nav">
+            <div class="nav-i on" onclick="showDrv('home')">🏠 Dashboard</div>
+            <div class="nav-i" onclick="showDrv('requests')">📋 Requests</div>
+            <div class="nav-i" onclick="showDrv('active')">🚗 Active</div>
+            <div class="nav-i" onclick="showDrv('earnings')">💰 Earnings</div>
+            <div class="nav-i" onclick="showDrv('wallet')">💳 Wallet</div>
+            <div class="nav-i" onclick="showDrv('profile')">👤 Profile</div>
+          </nav>
+          <div class="side-foot"><button onclick="doLogout()" class="btn" style="background:var(--error);color:white;font-size:12px">Sign Out</button></div>
+        </aside>
+        <main class="main" id="drvContent"></main>
+      </div>`;
+    }
+    
+    window.showDrv=async p=>{
+      document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+      event?.target?.classList.add('on');
+      const c=document.getElementById('drvContent');
+      if(p==='home'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Driver Dashboard</h1></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding:16px;background:var(--surface);border-radius:var(--radius-xl);border:2px solid var(--border)">
+            <div class="toggle ${isOnline?'on':''}" onclick="toggleOnline()"></div>
+            <div><div style="font-weight:700">${isOnline?'Online — Ready':'Offline'}</div><div style="font-size:12px;color:var(--text-secondary)">${isOnline?'Receiving orders':'Go online to start'}</div></div>
+          </div>
+          <div class="stats"><div class="stat"><div class="stat-val">${uData?.totalDeliveries||0}</div><div class="stat-lbl">Deliveries</div></div><div class="stat"><div class="stat-val">${(uData?.walletBalance||0).toLocaleString()}</div><div class="stat-lbl">Balance SYP</div></div><div class="stat"><div class="stat-val">${uData?.rating||'--'}</div><div class="stat-lbl">Rating</div></div></div>
+          <h3 style="margin-bottom:12px">Available Requests</h3>
+          <div id="drvRequests"><div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📋</div><div style="color:var(--text-secondary)">Loading...</div></div></div>`;
+        loadDrvRequests();
+      }else if(p==='requests'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Available Requests</h1></div><div id="drvRequests2"><div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📋</div><div style="color:var(--text-secondary)">Loading...</div></div></div>`;
+        loadDrvRequests('drvRequests2');
+      }else if(p==='active'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Active Delivery</h1></div>${activeDelivery?`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><div><div style="font-weight:700">#${activeDelivery.id?.slice(0,8)}</div><div style="font-size:13px;color:var(--text-secondary)">${activeDelivery.restaurantName||'Store'}</div></div><span style="font-weight:700;color:var(--primary)">${(activeDelivery.deliveryFee||0).toLocaleString()} SYP</span></div><div style="display:flex;gap:8px"><button class="btn" style="background:var(--primary);color:white;flex:1" onclick="completeDelivery()">Complete</button></div></div>`:'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🚗</div><div style="color:var(--text-secondary)">No active delivery</div></div>'}`;
+      }else if(p==='earnings'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Earnings</h1></div><div class="wallet"><div class="wallet-lbl">Balance</div><div class="wallet-val">${(uData?.walletBalance||0).toLocaleString()} SYP</div></div>`;
+      }else if(p==='wallet'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Wallet</h1></div><div class="wallet"><div class="wallet-lbl">Available</div><div class="wallet-val">${(uData?.walletBalance||0).toLocaleString()} SYP</div><button class="btn" style="background:rgba(255,255,255,0.2);color:white;margin-top:12px;position:relative;z-index:1">Withdraw</button></div>`;
+      }else if(p==='profile'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Profile</h1></div><div class="card"><div class="fg"><label>Name</label><input value="${uData?.displayName||''}"></div><div class="fg"><label>Email</label><input value="${user?.email||''}" readonly></div><button class="btn btn-primary">Save</button></div>`;
+      }
+    }
+    
+    window.toggleOnline=async()=>{isOnline=!isOnline;toast(isOnline?'Online!':'Offline');try{await updateDoc(doc(db,'users',user.uid),{isOnline})}catch(e){}showDrv('home')};
+    
+    window.loadDrvRequests=async(target='drvRequests')=>{
+      let orders=[];try{const s=await getDocs(query(collection(db,'dispatch_requests'),where('status','in',['awaiting_acceptance','pending'])));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+      const el=document.getElementById(target);if(!el)return;
+      el.innerHTML=orders.length?orders.slice(0,5).map(o=>`<div class="order-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.restaurantName||'Store'}</div></div><span style="font-weight:700;color:var(--primary)">${(o.deliveryFee||3500).toLocaleString()} SYP</span></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);flex:1;font-size:12px" onclick="toast('Declined')">Decline</button><button class="btn" style="background:var(--primary);color:white;flex:1;font-size:12px" onclick="acceptDrvOrder('${o.id}')">Accept</button></div></div>`).join(''):'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📋</div><div style="color:var(--text-secondary)">No requests</div></div>';
+    }
+    
+    window.acceptDrvOrder=async id=>{
+      try{await updateDoc(doc(db,'dispatch_requests',id),{status:'accepted',driverId:user.uid});activeDelivery={id};toast('Accepted!');showDrv('active')}catch(e){toast('Error','err')}
+    };
+    
+    window.completeDelivery=async()=>{
+      if(!activeDelivery)return;
+      try{await updateDoc(doc(db,'orders',activeDelivery.id),{status:'delivered'});activeDelivery=null;toast('Delivered!');showDrv('home')}catch(e){toast('Error','err')}
+    };
+    
+    // ============ PARTNER APP ============
+    function renderPartner(){
+      return`<div class="dash-layout">
+        <aside class="side">
+          <div class="side-head"><div class="side-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706)">🏪</div><span class="side-brand">Partner</span></div>
+          <nav class="side-nav">
+            <div class="nav-i on" onclick="showPart('home')">🏠 Dashboard</div>
+            <div class="nav-i" onclick="showPart('orders')">📋 Orders</div>
+            <div class="nav-i" onclick="showPart('menu')">🍽️ Menu</div>
+            <div class="nav-i" onclick="showPart('analytics')">📊 Analytics</div>
+            <div class="nav-i" onclick="showPart('profile')">👤 Profile</div>
+          </nav>
+          <div class="side-foot"><button onclick="doLogout()" class="btn" style="background:var(--error);color:white;font-size:12px">Sign Out</button></div>
+        </aside>
+        <main class="main" id="partContent"></main>
+      </div>`;
+    }
+    
+    window.showPart=async p=>{
+      document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+      event?.target?.classList.add('on');
+      const c=document.getElementById('partContent');
+      if(p==='home'){
+        let orders=[];try{const s=await getDocs(query(collection(db,'orders'),where('partnerId','==',user.uid)));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Partner Dashboard</h1></div>
+          <div class="stats"><div class="stat"><div class="stat-val">${orders.length}</div><div class="stat-lbl">Total Orders</div></div><div class="stat"><div class="stat-val">${orders.reduce((s,o)=>s+(o.total||0),0).toLocaleString()}</div><div class="stat-lbl">Revenue SYP</div></div></div>
+          <h3 style="margin-bottom:12px">Recent Orders</h3>
+          ${orders.slice(0,5).map(o=>`<div class="order-i"><div style="display:flex;justify-content:space-between"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.items?.length||0} items</div></div><span class="badge badge-p">${o.status}</span></div></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📋</div><div style="color:var(--text-secondary)">No orders</div></div>'}</div>`;
+      }else if(p==='orders'){
+        let orders=[];try{const s=await getDocs(query(collection(db,'orders'),where('partnerId','==',user.uid)));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Orders (${orders.length})</h1></div>${orders.map(o=>`<div class="order-i"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.items?.length||0} items</div></div><span class="badge badge-p">${o.status}</span></div>${o.status==='placed'?`<div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="background:var(--error);color:white;flex:1;font-size:12px" onclick="partReject('${o.id}')">Reject</button><button class="btn" style="background:var(--primary);color:white;flex:1;font-size:12px" onclick="partAccept('${o.id}')">Accept</button></div>`:o.status==='accepted'?`<div style="margin-top:12px"><button class="btn" style="background:var(--primary);color:white;width:100%;font-size:12px" onclick="partReady('${o.id}')">Ready</button></div>`:''}</div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📋</div><div style="color:var(--text-secondary)">No orders</div></div>'}</div>`;
+      }else if(p==='menu'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Menu</h1><button class="btn" style="background:var(--primary);color:white;padding:8px 16px;font-size:12px" onclick="showAddItem()">+ Add Item</button></div><div id="menuList"><div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🍽️</div><div style="color:var(--text-secondary)">Loading menu...</div></div></div>`;
+        loadMenu();
+      }else if(p==='analytics'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Analytics</h1></div><div class="card"><h3>Revenue Overview</h3><div style="height:200px;display:flex;align-items:flex-end;justify-content:space-around;padding:20px;margin-top:16px"><div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:60%"></div><div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:80%"></div><div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:45%"></div><div style="width:100%;max-width:40px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--primary),var(--primary-dark));height:90%"></div></div></div>`;
+      }else if(p==='profile'){
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Profile</h1></div><div class="card"><div class="fg"><label>Store Name</label><input value="${uData?.displayName||''}"></div><div class="fg"><label>Email</label><input value="${user?.email||''}" readonly></div><button class="btn btn-primary">Save</button></div>`;
+      }
+    }
+    
+    window.partAccept=async id=>{try{await updateDoc(doc(db,'orders',id),{status:'accepted'});toast('Accepted!');showPart('orders')}catch(e){toast('Error','err')}};
+    window.partReject=async id=>{try{await updateDoc(doc(db,'orders',id),{status:'rejected'});toast('Rejected');showPart('orders')}catch(e){toast('Error','err')}};
+    window.partReady=async id=>{try{await updateDoc(doc(db,'orders',id),{status:'ready'});toast('Ready!');showPart('orders')}catch(e){toast('Error','err')}};
+    
+    window.loadMenu=async targetId='menuList'=>{
+      let items=[];try{const s=await getDocs(query(collection(db,'menu_items'),where('restaurantId','==',user.uid)));s.forEach(d=>items.push({id:d.id,...d.data()}))}catch(e){items=[{name:'Margherita Pizza',price:12000},{name:'Burger',price:8000},{name:'Cola',price:1500}]}
+      const el=document.getElementById(targetId);if(!el)return;
+      el.innerHTML=items.length?items.map(i=>`<div class="menu-i"><div class="menu-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706)">🍽️</div><div class="menu-info"><div class="menu-name">${i.name}</div><div class="menu-price">${(i.price||0).toLocaleString()} SYP</div></div></div>`).join(''):'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🍽️</div><div style="color:var(--text-secondary)">No menu items</div></div>';
+    }
+    
+    window.showAddItem=()=>{
+      const c=document.getElementById('menuList');
+      if(!c)return;
+      const html=`<div class="card" style="margin-bottom:16px"><h3 style="margin-bottom:12px">Add Item</h3><div class="fg"><label>Name</label><input id="itemName" placeholder="Item name"></div><div class="fg"><label>Price (SYP)</label><input id="itemPrice" type="number" placeholder="12000"></div><div style="display:flex;gap:8px"><button class="btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);flex:1" onclick="loadMenu()">Cancel</button><button class="btn" style="background:var(--primary);color:white;flex:1" onclick="addMenuItem()">Add</button></div></div>${c.innerHTML}`;
+      c.innerHTML=html;
+    }
+    
+    window.addMenuItem=async()=>{
+      const name=document.getElementById('itemName')?.value;
+      const price=parseInt(document.getElementById('itemPrice')?.value);
+      if(!name||!price)return toast('Fill required fields','err');
+      try{await addDoc(collection(db,'menu_items'),{restaurantId:user.uid,name,price,createdAt:new Date()});toast('Added!');loadMenu()}catch(e){toast('Error','err')}
+    };
+    
+    // ============ ADMIN APP ============
+    function renderAdmin(){
+      return`<div class="dash-layout">
+        <aside class="side">
+          <div class="side-head"><div class="side-icon" style="background:linear-gradient(135deg,#5263F3,#4338CA)">⚙️</div><span class="side-brand">Admin</span></div>
+          <nav class="side-nav">
+            <div class="nav-i on" onclick="showAdmin('home')">🏠 Dashboard</div>
+            <div class="nav-i" onclick="showAdmin('users')">👥 Users</div>
+            <div class="nav-i" onclick="showAdmin('orders')">📦 Orders</div>
+            <div class="nav-i" onclick="showAdmin('stores')">🏪 Stores</div>
+            <div class="nav-i" onclick="showAdmin('finance')">💰 Finance</div>
+            <div class="nav-i" onclick="showAdmin('approvals')">✅ Approvals</div>
+          </nav>
+          <div class="side-foot"><button onclick="doLogout()" class="btn" style="background:var(--error);color:white;font-size:12px">Sign Out</button></div>
+        </aside>
+        <main class="main" id="adminContent"></main>
+      </div>`;
+    }
+    
+    window.showAdmin=async p=>{
+      document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+      event?.target?.classList.add('on');
+      const c=document.getElementById('adminContent');
+      if(p==='home'){
+        let users=[],orders=[];
+        try{const s=await getDocs(collection(db,'users'));s.forEach(d=>users.push({id:d.id,...d.data()}))}catch(e){}
+        try{const s=await getDocs(collection(db,'orders'));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Admin Dashboard</h1></div>
+          <div class="stats">
+            <div class="stat"><div class="stat-val">${users.filter(u=>u.role==='customer').length}</div><div class="stat-lbl">Customers</div></div>
+            <div class="stat"><div class="stat-val">${users.filter(u=>u.role==='driver').length}</div><div class="stat-lbl">Drivers</div></div>
+            <div class="stat"><div class="stat-val">${users.filter(u=>u.role==='partner'||u.role==='owner').length}</div><div class="stat-lbl">Partners</div></div>
+            <div class="stat"><div class="stat-val">${orders.length}</div><div class="stat-lbl">Orders</div></div>
+            <div class="stat"><div class="stat-val">${(orders.reduce((s,o)=>s+(o.total||0),0)/1000000).toFixed(1)}M</div><div class="stat-lbl">Revenue SYP</div></div>
+          </div>
+          <h3 style="margin-bottom:12px">Recent Orders</h3>
+          ${orders.slice(0,10).map(o=>`<div class="order-i"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.restaurantName||'Order'}</div></div><span class="badge badge-p">${o.status}</span></div></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📦</div><div style="color:var(--text-secondary)">No orders</div></div>'}</div>`;
+      }else if(p==='users'){
+        let users=[];try{const s=await getDocs(collection(db,'users'));s.forEach(d=>users.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Users (${users.length})</h1></div>${users.map(u=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700">${(u.displayName||'U').charAt(0)}</div><div><div style="font-weight:600">${u.displayName||'User'}</div><div style="font-size:12px;color:var(--text-secondary)">${u.email}</div></div></div><span class="badge badge-s">${u.role}</span></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">👥</div><div style="color:var(--text-secondary)">No users</div></div>'}</div>`;
+      }else if(p==='orders'){
+        let orders=[];try{const s=await getDocs(collection(db,'orders'));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">All Orders (${orders.length})</h1></div>${orders.map(o=>`<div class="order-i"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">#${o.id?.slice(0,8)}</div><div style="font-size:12px;color:var(--text-secondary)">${o.restaurantName||'Order'} • ${(o.total||0).toLocaleString()} SYP</div></div><span class="badge badge-p">${o.status}</span></div></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">📦</div><div style="color:var(--text-secondary)">No orders</div></div>'}</div>`;
+      }else if(p==='stores'){
+        let rests=[];try{const s=await getDocs(collection(db,'restaurants'));s.forEach(d=>rests.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Stores (${rests.length})</h1><button class="btn" style="background:var(--primary);color:white;padding:8px 16px;font-size:12px" onclick="showCreateStore()">+ Create</button></div>${rests.map(r=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;font-size:18px">🏪</div><div><div style="font-weight:600">${r.name||'Store'}</div><div style="font-size:12px;color:var(--text-secondary)">${r.category||'Restaurant'}</div></div></div><span class="badge badge-s">${r.isActive?'Active':'Inactive'}</span></div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">🏪</div><div style="color:var(--text-secondary)">No stores</div></div>'}</div>`;
+      }else if(p==='finance'){
+        let orders=[];try{const s=await getDocs(collection(db,'orders'));s.forEach(d=>orders.push({id:d.id,...d.data()}))}catch(e){}
+        const rev=orders.reduce((s,o)=>s+(o.total||0),0);
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Finance</h1></div><div class="wallet"><div class="wallet-lbl">Total Revenue</div><div class="wallet-val">${(rev/1000000).toFixed(1)}M SYP</div></div><div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Commission (15%)</span><span style="font-weight:700;color:var(--primary)">${(rev*0.15/1000000).toFixed(1)}M SYP</span></div></div>`;
+      }else if(p==='approvals'){
+        let subs=[];try{const s=await getDocs(collection(db,'subscriptions'));s.forEach(d=>subs.push({id:d.id,...d.data()}))}catch(e){}
+        c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Approvals (${subs.length})</h1></div>${subs.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700">${s.userName||'User'}</div><div style="font-size:12px;color:var(--text-secondary)">${s.plan} • ${(s.amount||0).toLocaleString()} SYP</div></div>${s.status==='pending'?`<button class="btn" style="background:var(--primary);color:white;padding:8px 16px;font-size:12px" onclick="approveSub('${s.id}','${s.userId}')">Approve</button>`:`<span class="badge badge-s">${s.status}</span>`}</div>`).join('')||'<div class="card" style="text-align:center;padding:40px"><div style="font-size:48px">✅</div><div style="color:var(--text-secondary)">No pending approvals</div></div>'}</div>`;
+      }
+    }
+    
+    window.showCreateStore=()=>{
+      const c=document.getElementById('adminContent');
+      if(!c)return;
+      c.innerHTML=`<div class="pg-head"><h1 class="pg-title">Create Store</h1></div><div class="card"><div class="fg"><label>Store Name *</label><input id="storeName" placeholder="Pizza House"></div><div class="fg"><label>Category *</label><select id="storeCat"><option value="food">Food</option><option value="grocery">Grocery</option><option value="pharmacy">Pharmacy</option></select></div><div class="fg"><label>Owner Email</label><input id="storeEmail" placeholder="owner@example.com"></div><div class="fg"><label>Delivery Fee (SYP)</label><input id="storeFee" type="number" value="3000"></div><div style="display:flex;gap:8px"><button class="btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);flex:1" onclick="showAdmin('stores')">Cancel</button><button class="btn" style="background:var(--primary);color:white;flex:1" onclick="createStore()">Create</button></div></div>`;
+    }
+    
+    window.createStore=async()=>{
+      const name=document.getElementById('storeName')?.value;
+      const cat=document.getElementById('storeCat')?.value;
+      if(!name||!cat)return toast('Fill required fields','err');
+      try{await addDoc(collection(db,'restaurants'),{name,category:cat,ownerEmail:document.getElementById('storeEmail')?.value||'',deliveryFee:parseInt(document.getElementById('storeFee')?.value)||3000,rating:0,isActive:true,createdAt:new Date(),createdBy:user.uid});toast('Store created!');showAdmin('stores')}catch(e){toast('Error','err')}
+    };
+    
+    window.approveSub=async(id,uid)=>{try{await updateDoc(doc(db,'subscriptions',id),{status:'active'});await updateDoc(doc(db,'users',uid),{subscriptionStatus:'active'});toast('Approved!');showAdmin('approvals')}catch(e){toast('Error','err')}};
+    
+    window.doLogout=async()=>{try{await signOut(auth);toast('Signed out')}catch(e){toast('Error','err')}};
   </script>
 </body>
 </html>
