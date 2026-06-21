@@ -300,9 +300,9 @@
       const role=uData?.role||'customer';
       const dash=document.getElementById('dashScreen');
       switch(role){
-        case'admin':dash.innerHTML=renderAdmin();break;
+        case'admin':case'superAdmin':dash.innerHTML=renderAdmin();break;
         case'driver':dash.innerHTML=renderDriver();break;
-        case'partner':case'owner':case'cashier':dash.innerHTML=renderPartner();break;
+        case'partner':case'owner':case'cashier':case'restaurantOwner':dash.innerHTML=renderPartner();break;
         default:dash.innerHTML=renderCustomer();
       }
     }
