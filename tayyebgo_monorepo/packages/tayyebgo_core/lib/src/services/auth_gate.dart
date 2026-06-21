@@ -29,7 +29,7 @@ class AuthGateService {
     _logoutListeners.clear();
     try {
       await fb.FirebaseAuth.instance.signOut();
-    } catch (_) {}
+    } catch (_) {} // Sign-out may fail on network; local state is still cleared
     _currentUser = null;
   }
 }

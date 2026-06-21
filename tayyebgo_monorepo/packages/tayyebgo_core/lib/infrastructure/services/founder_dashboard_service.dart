@@ -121,7 +121,7 @@ class FounderDashboardService {
       retention = customerOrderCounts.isNotEmpty
           ? returning / customerOrderCounts.length
           : 0;
-    } catch (_) {}
+    } catch (_) {} // Retention calc failure should not block dashboard load
 
     const avgDriverCost = 12000.0;
     const avgPlatformCost = 2000.0;

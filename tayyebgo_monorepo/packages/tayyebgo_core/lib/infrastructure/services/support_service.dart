@@ -266,6 +266,6 @@ class SupportService {
         ...data,
         'timestamp': FieldValue.serverTimestamp(),
       });
-    } catch (_) {}
+    } catch (_) {} // Activity log write is non-critical
   }
 }

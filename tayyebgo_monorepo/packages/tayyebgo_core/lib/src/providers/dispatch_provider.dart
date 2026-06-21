@@ -93,7 +93,7 @@ class DispatchProvider extends ChangeNotifier {
         branchId: '',
         excludeDriverId: _driverId,
       );
-    } catch (_) {}
+    } catch (_) {} // Reassignment failure is non-blocking; next dispatch cycle will retry
   }
 
   Future<bool> markPickedUp(String dispatchId, String orderId) async {

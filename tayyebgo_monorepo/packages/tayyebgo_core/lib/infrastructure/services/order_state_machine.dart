@@ -143,7 +143,7 @@ class OrderStateMachine {
             deliveryFee: deliveryFee,
             commissionPercent: commissionPercent,
           );
-        } catch (_) {}
+        } catch (_) {} // Driver earnings credit failure should not block order status update
       }));
 
       if (customerId != null && totalAmount != null) {
@@ -158,7 +158,7 @@ class OrderStateMachine {
                 description: 'Points for order',
                 orderId: orderId,
               );
-            } catch (_) {}
+            } catch (_) {} // Loyalty points award is best-effort
           }));
         }
       }
@@ -173,7 +173,7 @@ class OrderStateMachine {
           status: newStatus.value,
           restaurantName: restaurantName ?? 'Restaurant',
         );
-      } catch (_) {}
+      } catch (_) {} // Push notification failure should not block order status update
     }
   }
 
@@ -230,7 +230,7 @@ class OrderStateMachine {
           status: 'cancelled',
           restaurantName: restaurantName ?? 'Restaurant',
         );
-      } catch (_) {}
+      } catch (_) {} // Push notification failure should not block rejection flow
     }
   }
 

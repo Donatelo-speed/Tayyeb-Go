@@ -265,7 +265,7 @@ class AutoDispatcher implements IAutoDispatcher {
           }
         ]),
       });
-    } catch (_) {}
+    } catch (_) {} // Status history update failure is non-critical
   }
 
   @override

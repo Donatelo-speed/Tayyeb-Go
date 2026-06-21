@@ -96,7 +96,7 @@ class OrderPlacementService {
         pickupLat = (rData['latitude'] as num?)?.toDouble();
         pickupLon = (rData['longitude'] as num?)?.toDouble();
       }
-    } catch (_) {}
+    } catch (_) {} // Restaurant location fetch is non-critical
 
     final dispatchRef = _firestore.collection('dispatch_requests').doc();
     final isHighRisk = fraudResult != null && fraudResult.riskLevel == 'HIGH';

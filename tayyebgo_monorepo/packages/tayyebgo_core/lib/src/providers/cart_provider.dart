@@ -128,7 +128,7 @@ class CartProvider extends ChangeNotifier {
       _deliveryOverrideFee = (data['delivery_override_fee'] as num?)?.toDouble() ?? -1.0;
       _taxRate = (data['tax_rate'] as num?)?.toDouble() ?? AppConstants.taxRate;
       notifyListeners();
-    } catch (_) {}
+    } catch (_) {} // Cart restore from local prefs is best-effort; empty cart is acceptable
   }
 
   void setRestaurant(String id, String name, {double commissionPercent = AppConstants.commissionPercent}) {

@@ -98,7 +98,7 @@ class FirebaseLoyaltyRepository implements ILoyaltyRepository {
           'bestStreak': (d['bestStreak'] as num?)?.toInt() ?? 0,
         };
       }
-    } catch (_) {}
+    } catch (_) {} // Streak fetch failure defaults to zero; non-critical
     return {'currentStreak': 0, 'bestStreak': 0};
   }
 }
