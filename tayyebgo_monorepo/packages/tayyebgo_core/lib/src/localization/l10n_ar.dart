@@ -505,7 +505,6 @@ class L10nAr {
   String get memberSince => 'عضو منذ';
 
   // General UI
-  String get comingSoon => 'قريباً';
   String get underMaintenance => 'قيد الصيانة';
   String get maintenanceSubtitle => 'نعمل على شيء جديد';
   String get updateAvailable => 'تحديث متاح';

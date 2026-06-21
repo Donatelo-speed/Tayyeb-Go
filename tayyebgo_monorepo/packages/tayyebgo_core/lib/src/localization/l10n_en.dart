@@ -505,7 +505,6 @@ class L10nEn {
   String get memberSince => 'Member since';
 
   // General UI
-  String get comingSoon => 'Coming Soon';
   String get underMaintenance => 'Under Maintenance';
   String get maintenanceSubtitle => 'We\'re working on something new';
   String get updateAvailable => 'Update Available';

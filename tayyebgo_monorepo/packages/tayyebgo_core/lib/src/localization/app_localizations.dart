@@ -569,7 +569,6 @@ class AppLocalizations {
   String get memberSince => _strings.memberSince;
 
   // General UI
-  String get comingSoon => _strings.comingSoon;
   String get underMaintenance => _strings.underMaintenance;
   String get maintenanceSubtitle => _strings.maintenanceSubtitle;
   String get updateAvailable => _strings.updateAvailable;
