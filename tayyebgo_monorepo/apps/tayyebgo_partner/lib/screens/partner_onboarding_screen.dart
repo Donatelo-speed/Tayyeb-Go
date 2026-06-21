@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tayyebgo_core/tayyebgo_core.dart';
 
 class PartnerOnboardingScreen extends StatefulWidget {
@@ -25,6 +29,13 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
   bool _platformDrivers = true;
   bool _pickupOnly = false;
   bool _isSaving = false;
+
+  final _picker = ImagePicker();
+  final Map<String, String> _uploadedDocUrls = {};
+  final Map<String, bool> _uploadingDocs = {};
+  final Map<String, double> _uploadProgress = {};
+
+  String get _uid => fb.FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void dispose() {
@@ -61,6 +72,7 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
         'platformDrivers': _platformDrivers,
         'pickupOnly': _pickupOnly,
         'onboardingCompleted': true,
+        'documents': _uploadedDocUrls,
         'updatedAt': FieldValue.serverTimestamp(),
       });
       if (mounted) context.go('/dashboard');
@@ -77,6 +89,34 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
 
   void _back() {
     if (_step > 0) setState(() => _step--);
+  }
+
+  Future<void> _uploadDoc(String docType, String storageName, String firestoreField) async {
+    if (_uploadedDocUrls.containsKey(firestoreField)) return;
+    try {
+      final picked = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1920, maxHeight: 1080, imageQuality: 85);
+      if (picked == null) return;
+      setState(() {
+        _uploadingDocs[firestoreField] = true;
+        _uploadProgress[firestoreField] = 0;
+      });
+      final ref = FirebaseStorage.instance.ref().child('partners/$_uid/$storageName');
+      final uploadTask = ref.putFile(File(picked.path));
+      uploadTask.snapshotEvents.listen((event) {
+        if (mounted) setState(() => _uploadProgress[firestoreField] = event.bytesTransferred / event.totalBytes);
+      });
+      await uploadTask;
+      final url = await ref.getDownloadURL();
+      if (mounted) {
+        setState(() {
+          _uploadedDocUrls[firestoreField] = url;
+          _uploadingDocs[firestoreField] = false;
+        });
+      }
+    } catch (e) {
+      setState(() => _uploadingDocs[firestoreField] = false);
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload $docType: $e'), backgroundColor: Colors.red));
+    }
   }
 
   @override
@@ -205,13 +245,13 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
           const SizedBox(height: 4),
           Text('Upload required documents', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 14)),
           const SizedBox(height: 24),
-          _docUpload(context, 'Trade License', Icons.description_rounded, true),
+          _docUpload(context, 'Trade License', Icons.description_rounded, 'tradeLicense'),
           const SizedBox(height: 12),
-          _docUpload(context, 'Tax Registration', Icons.receipt_rounded, false),
+          _docUpload(context, 'Tax Registration', Icons.receipt_rounded, 'taxRegistration'),
           const SizedBox(height: 12),
-          _docUpload(context, 'Food Safety Certificate', Icons.health_and_safety_rounded, false),
+          _docUpload(context, 'Food Safety Certificate', Icons.health_and_safety_rounded, 'foodSafetyCert'),
           const SizedBox(height: 12),
-          _docUpload(context, 'Store Photos', Icons.camera_alt_rounded, false),
+          _docUpload(context, 'Store Photos', Icons.camera_alt_rounded, 'storePhotos'),
         ];
       case 5:
         return [
@@ -318,29 +358,52 @@ class _PartnerOnboardingScreenState extends State<PartnerOnboardingScreen> {
     );
   }
 
-  Widget _docUpload(BuildContext context, String label, IconData icon, bool uploaded) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: AppRadius.brLg,
-        border: Border.all(color: uploaded ? context.warningColor : context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: uploaded ? context.warningColor : context.textMutedColor, size: 22),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _docUpload(BuildContext context, String label, IconData icon, String firestoreField) {
+    final uploaded = _uploadedDocUrls.containsKey(firestoreField);
+    final uploading = _uploadingDocs[firestoreField] == true;
+    final progress = _uploadProgress[firestoreField] ?? 0;
+    return GestureDetector(
+      onTap: uploaded || uploading ? null : () => _uploadDoc(label, '${firestoreField}.jpg', firestoreField),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: AppRadius.brLg,
+          border: Border.all(color: uploaded ? context.warningColor : context.borderColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
-                Text(uploaded ? 'Uploaded' : 'Tap to upload', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                Icon(icon, color: uploaded ? context.warningColor : context.textMutedColor, size: 22),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14, color: context.textPrimaryColor)),
+                      Text(uploaded ? 'Uploaded' : uploading ? 'Uploading...' : 'Tap to upload', style: GoogleFonts.inter(color: context.textMutedColor, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                if (uploaded)
+                  Icon(Icons.check_circle_rounded, color: context.warningColor, size: 22)
+                else if (uploading)
+                  SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, value: progress, color: context.warningColor))
+                else
+                  Icon(Icons.upload_rounded, color: context.textMutedColor, size: 22),
               ],
             ),
-          ),
-          Icon(uploaded ? Icons.check_circle_rounded : Icons.upload_rounded, color: uploaded ? context.warningColor : context.textMutedColor, size: 22),
-        ],
+            if (uploading) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: AppRadius.brSm,
+                child: LinearProgressIndicator(value: progress, backgroundColor: context.borderColor, valueColor: AlwaysStoppedAnimation<Color>(context.warningColor), minHeight: 4),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -22,7 +22,6 @@ class _SettingsScreenState extends State<SettingsScreen>
   String _locale = 'en';
   bool _loadingPrefs = true;
   bool _savingPrefs = false;
-  bool _exportingData = false;
 
   final List<_TabInfo> _tabs = const [
     _TabInfo('Notifications', Icons.notifications_outlined),
@@ -70,18 +69,6 @@ class _SettingsScreenState extends State<SettingsScreen>
       if (mounted) context.showError('Failed to save preferences');
     }
     if (mounted) setState(() => _savingPrefs = false);
-  }
-
-  Future<void> _exportData() async {
-    setState(() => _exportingData = true);
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) context.showSuccess('Data export started. You will receive an email shortly.');
-    } catch (_) {
-      if (mounted) context.showError('Export failed. Please try again.');
-    } finally {
-      if (mounted) setState(() => _exportingData = false);
-    }
   }
 
   @override
@@ -362,23 +349,6 @@ class _SettingsScreenState extends State<SettingsScreen>
             border: Border.all(color: AppColors.divider.withValues(alpha: 0.6)),
           ),
           child: Column(children: [
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: AppRadius.brMd,
-                ),
-                child: const Icon(Icons.download_outlined, color: AppColors.primary, size: 20),
-              ),
-              title: const Text('Export Platform Data', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              subtitle: const Text('CSV export of orders, users, and finance', style: TextStyle(fontSize: 12)),
-              trailing: _exportingData
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.chevron_right, color: AppColors.textMuted),
-              onTap: _exportingData ? null : _exportData,
-            ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
             ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),

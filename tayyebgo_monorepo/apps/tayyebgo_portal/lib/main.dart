@@ -21,7 +21,7 @@ void main() async {
     AppLocator.instance.init();
     runApp(const TayyebGoPortal());
   } catch (e, s) {
-    if (kDebugMode) print('[PORTAL ERROR] $e\n$s');
+    if (kDebugMode) debugPrint('[PORTAL ERROR] $e\n$s');
     runApp(_ErrorApp(message: 'Unable to start. Please check your connection.'));
   }
 }

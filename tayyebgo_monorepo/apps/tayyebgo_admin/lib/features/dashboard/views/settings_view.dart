@@ -100,9 +100,16 @@ class _ProfileCard extends StatelessWidget {
   }
 }
 
-class _PreferencesCard extends StatelessWidget {
+class _PreferencesCard extends StatefulWidget {
   final ThemeProvider theme;
   const _PreferencesCard({required this.theme});
+  @override
+  State<_PreferencesCard> createState() => _PreferencesCardState();
+}
+
+class _PreferencesCardState extends State<_PreferencesCard> {
+  ThemeProvider get theme => widget.theme;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -142,7 +149,7 @@ class _PreferencesCard extends StatelessWidget {
               value: AdminFirestoreService.instance.getLocalFlag('push_notifications', defaultValue: true),
               onChanged: (v) {
                 AdminFirestoreService.instance.setLocalFlag('push_notifications', v);
-                (context as Element).markNeedsBuild();
+                setState(() {});
                 if (v) {
                   context.showSuccess('Admin alerts enabled');
                 } else {
@@ -162,6 +169,40 @@ class _PreferencesCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context) {
+    const languages = <(String, String)>[
+      ('English (US)', 'en'),
+      ('English (UK)', 'en-gb'),
+      ('العربية', 'ar'),
+      ('Türkçe', 'tr'),
+      ('Français', 'fr'),
+    ];
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: context.surfaceColor,
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
+          title: Text('Choose language', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: languages.map((l) => ListTile(
+              leading: Icon(Icons.language_rounded, color: context.primaryColor),
+              title: Text(l.$1, style: GoogleFonts.inter(color: context.textPrimaryColor)),
+              onTap: () {
+                AdminFirestoreService.instance.setLocalFlag('language', l.$1);
+                AdminFirestoreService.instance.setLocalFlag('language_code', l.$2);
+                Navigator.pop(ctx);
+                context.showSuccess('Language set to ${l.$1}');
+                setState(() {});
+              },
+            )).toList(),
+          ),
+        );
+      },
     );
   }
 }
@@ -402,40 +443,6 @@ class _SettingRow extends StatelessWidget {
       ),
     );
   }
-}
-
-void _showLanguagePicker(BuildContext context) {
-  const languages = <(String, String)>[
-    ('English (US)', 'en'),
-    ('English (UK)', 'en-gb'),
-    ('العربية', 'ar'),
-    ('Türkçe', 'tr'),
-    ('Français', 'fr'),
-  ];
-  showDialog<void>(
-    context: context,
-    builder: (ctx) {
-      return AlertDialog(
-        backgroundColor: context.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.brCard),
-        title: Text('Choose language', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: context.textPrimaryColor)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: languages.map((l) => ListTile(
-            leading: Icon(Icons.language_rounded, color: context.primaryColor),
-            title: Text(l.$1, style: GoogleFonts.inter(color: context.textPrimaryColor)),
-            onTap: () {
-              AdminFirestoreService.instance.setLocalFlag('language', l.$1);
-              AdminFirestoreService.instance.setLocalFlag('language_code', l.$2);
-              Navigator.pop(ctx);
-              context.showSuccess('Language set to ${l.$1}');
-              (context as Element).markNeedsBuild();
-            },
-          )).toList(),
-        ),
-      );
-    },
-  );
 }
 
 Future<void> _sendPasswordReset(BuildContext context, AuthProvider auth) async {
