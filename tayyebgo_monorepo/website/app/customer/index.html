@@ -52,36 +52,76 @@
     onAuthStateChanged(auth,async(user)=>{
       currentUser=user;
       if(user){
-        const snap=await getDoc(doc(db,'users',user.uid));
-        userData=snap.exists()?snap.data():null;
-        if(userData&&userData.role!=='customer'){
-          showToast('Not a customer account','error');
-          await signOut(auth);return;
+        try {
+          const snap=await getDoc(doc(db,'users',user.uid));
+          userData=snap.exists()?snap.data():null;
+          console.log('User data:', userData);
+          
+          if(userData && userData.role && userData.role!=='customer'){
+            showToast('Not a customer account. Redirecting...','error');
+            setTimeout(()=>{window.location.href='../';},1500);
+            return;
+          }
+          
+          // If no user doc exists, create one with default customer role
+          if(!userData) {
+            userData = {role:'customer', displayName:'Customer', loyaltyPoints:0, loyaltyTier:'bronze', walletBalance:0};
+          }
+          
+          await loadCustomerData();
+          renderDashboard();
+        } catch(e) {
+          console.error('Auth error:', e);
+          // Still render dashboard with defaults
+          userData = userData || {role:'customer', displayName:'Customer'};
+          renderDashboard();
         }
-        await loadCustomerData();
-        renderDashboard();
       } else {
+        // Not logged in - show login page
         window.location.href='../';
       }
     });
     
     async function loadCustomerData(){
       try {
+        // Load restaurants
         const restSnap = await getDocs(collection(db,'restaurants'));
         restaurants = [];
         restSnap.forEach(d => {
           const data = d.data();
           if(data.isActive !== false) restaurants.push({id:d.id,...data});
         });
+        console.log('Loaded restaurants:', restaurants.length);
         
+        // Load user orders - try simple query first
         if(currentUser){
-          const ordersSnap = await getDocs(query(collection(db,'orders'),where('customerId','==',currentUser.uid),orderBy('createdAt','desc')));
-          userOrders = [];
-          ordersSnap.forEach(d => userOrders.push({id:d.id,...d.data()}));
+          try {
+            const ordersSnap = await getDocs(query(collection(db,'orders'),where('customerId','==',currentUser.uid)));
+            userOrders = [];
+            ordersSnap.forEach(d => userOrders.push({id:d.id,...d.data()}));
+            console.log('Loaded orders:', userOrders.length);
+          } catch(e2) {
+            console.log('Orders query error (trying fallback):', e2);
+            // Fallback: load all orders and filter client-side
+            try {
+              const allOrdersSnap = await getDocs(collection(db,'orders'));
+              userOrders = [];
+              allOrdersSnap.forEach(d => {
+                const data = d.data();
+                if(data.customerId === currentUser.uid) userOrders.push({id:d.id,...data});
+              });
+              console.log('Loaded orders (fallback):', userOrders.length);
+            } catch(e3) {
+              console.log('Orders fallback error:', e3);
+              userOrders = [];
+            }
+          }
         }
       } catch(e) {
-        console.log('Data load error:',e);
-        restaurants = []; userOrders = [];
+        console.log('Data load error:', e);
+        // Don't crash - just use empty arrays
+        restaurants = [];
+        userOrders = [];
       }
     }
     
