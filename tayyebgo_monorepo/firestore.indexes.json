@@ -416,13 +416,6 @@
       ]
     },
     {
-      "collectionGroup": "activity_log",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "dispatch_requests",
       "queryScope": "COLLECTION",
       "fields": [
