@@ -186,7 +186,7 @@
     function toast(m,t='ok'){const c=document.getElementById('toastBox'),d=document.createElement('div');d.className=`toast toast-${t==='err'?'err':'ok'}`;d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),4000)}
     
     // Splash → Auth
-    setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},1200);
+    setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},500);
     
     // Auth state - with role detection from email
     onAuthStateChanged(auth,async(u)=>{

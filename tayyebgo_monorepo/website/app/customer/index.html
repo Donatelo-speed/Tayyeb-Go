@@ -84,8 +84,8 @@
           renderDashboard();
         }
       } else {
-        // Not logged in - show login page
-        window.location.href='../';
+        // Not logged in - redirect to login (use replace to avoid history entry)
+        window.location.replace('../');
       }
     });
     
