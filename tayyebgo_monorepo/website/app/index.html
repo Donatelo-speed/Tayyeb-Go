@@ -158,7 +158,7 @@
           <button class="social-btn" onclick="toast('Apple coming soon','err')">Apple</button>
         </div>
         <div class="switch-link">No account? <a href="#" onclick="showTab('signup');return false">Sign up</a></div>
-        <div class="test-box"><h4>Demo</h4><p>admin / customer / driver / owner<br>@test.com — Password: test123</p></div>
+        <div class="test-box"><h4>Demo Accounts</h4><p>admin / customer / driver / owner<br>@test.com — Password: test123</p><button onclick="createTestAccounts()" style="margin-top:8px;padding:6px 12px;background:var(--accent);color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;width:100%">Create Test Accounts</button></div>
       </div>
       <div id="signupForm" style="display:none">
         <form onsubmit="doSignup(event)">
@@ -188,28 +188,31 @@
     
     // Splash → Auth
     setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},500);
+    // Fallback: force show auth after 3s even if Firebase is slow
+    setTimeout(()=>{const s=document.getElementById('splash');if(s&&!s.classList.contains('hide')){s.classList.add('hide');document.getElementById('authScreen').classList.add('show')}},3000);
     
     // Auth state - with role detection from email
     onAuthStateChanged(auth,async(u)=>{
+      try{
       if(u){
         user=u;
-        console.log('User logged in:', u.email);
         
         // Get or create user document
-        const s=await getDoc(doc(db,'users',u.uid));
-        if(s.exists()){
-          uData=s.data();
-          console.log('User data from Firestore:', uData);
-        }else{
-          // Auto-detect role from email and create document
-          let role='customer';
-          if(u.email==='admin@test.com')role='admin';
-          else if(u.email==='driver@test.com')role='driver';
-          else if(u.email==='owner@test.com'||u.email==='cashier@test.com')role='partner';
-          
-          uData={uid:u.uid,email:u.email,role,displayName:u.email.split('@')[0],loyaltyPoints:0,walletBalance:0};
-          await setDoc(doc(db,'users',u.uid),uData);
-          console.log('Created user doc with role:', role);
+        try{
+          const s=await getDoc(doc(db,'users',u.uid));
+          if(s.exists()){
+            uData=s.data();
+          }else{
+            let role='customer';
+            if(u.email==='admin@test.com')role='superAdmin';
+            else if(u.email==='driver@test.com')role='driver';
+            else if(u.email==='owner@test.com'||u.email==='cashier@test.com')role='restaurantOwner';
+            
+            uData={uid:u.uid,email:u.email,role,displayName:u.email.split('@')[0],loyaltyPoints:0,walletBalance:0,createdAt:new Date().toISOString()};
+            await setDoc(doc(db,'users',u.uid),uData);
+          }
+        }catch(fsErr){
+          uData={uid:u.uid,email:u.email,role:'customer',displayName:u.email.split('@')[0],loyaltyPoints:0,walletBalance:0};
         }
         
         document.getElementById('splash').classList.add('hide');
@@ -217,7 +220,13 @@
         document.getElementById('dashScreen').classList.add('show');
         renderDash();
       }else{
+        document.getElementById('splash').classList.add('hide');
         document.getElementById('dashScreen').classList.remove('show');
+        document.getElementById('authScreen').classList.add('show');
+      }
+      }catch(err){
+        console.error('Auth state error:',err);
+        document.getElementById('splash').classList.add('hide');
         document.getElementById('authScreen').classList.add('show');
       }
     });
@@ -225,7 +234,48 @@
     // Auth functions
     window.showTab=t=>{document.getElementById('tabLogin').classList.toggle('active',t==='login');document.getElementById('tabSignup').classList.toggle('active',t==='signup');document.getElementById('loginForm').style.display=t==='login'?'block':'none';document.getElementById('signupForm').style.display=t==='signup'?'block':'none'};
     
-    window.doLogin=async e=>{e.preventDefault();const b=document.getElementById('loginBtn');b.textContent='Signing in...';b.disabled=true;try{await setPersistence(auth,document.getElementById('rememberMe').checked?browserLocalPersistence:browserSessionPersistence);await signInWithEmailAndPassword(auth,document.getElementById('email').value,document.getElementById('password').value);toast('Welcome!')}catch(er){toast(errMsg(er.code),'err');b.textContent='Sign In';b.disabled=false}};
+    // Create test accounts
+    window.createTestAccounts=async()=>{
+      const accounts=[
+        {email:'admin@test.com',password:'test123',role:'superAdmin',name:'Admin'},
+        {email:'customer@test.com',password:'test123',role:'customer',name:'Customer'},
+        {email:'driver@test.com',password:'test123',role:'driver',name:'Driver'},
+        {email:'owner@test.com',password:'test123',role:'restaurantOwner',name:'Owner'},
+      ];
+      let created=0;
+      for(const a of accounts){
+        try{
+          const c=await createUserWithEmailAndPassword(auth,a.email,a.password);
+          await setDoc(doc(db,'users',c.user.uid),{uid:c.user.uid,email:a.email,role:a.role,displayName:a.name,loyaltyPoints:0,walletBalance:0,createdAt:new Date().toISOString()});
+          created++;
+        }catch(e){
+          if(e.code!=='auth/email-already-in-use'){
+            console.log('Failed to create:',a.email,e.code);
+          }
+        }
+      }
+      // Sign out after creating accounts
+      await signOut(auth);
+      toast(`Created ${created} test accounts. You can now login!`);
+    };
+    
+    window.doLogin=async e=>{
+      e.preventDefault();
+      const b=document.getElementById('loginBtn');
+      const email=document.getElementById('email').value;
+      const pass=document.getElementById('password').value;
+      if(!email||!pass){toast('Please fill in all fields','err');return}
+      b.textContent='Signing in...';b.disabled=true;
+      try{
+        await setPersistence(auth,document.getElementById('rememberMe').checked?browserLocalPersistence:browserSessionPersistence);
+        await signInWithEmailAndPassword(auth,email,pass);
+        toast('Welcome!');
+      }catch(er){
+        console.error('Login error:',er);
+        toast(errMsg(er.code),'err');
+        b.textContent='Sign In';b.disabled=false;
+      }
+    };
     
     window.doSignup=async e=>{e.preventDefault();try{const c=await createUserWithEmailAndPassword(auth,document.getElementById('sEmail').value,document.getElementById('sPass').value);await setDoc(doc(db,'users',c.user.uid),{uid:c.user.uid,email:c.user.email,displayName:document.getElementById('sName').value,role:'customer',loyaltyPoints:0,walletBalance:0,createdAt:serverTimestamp()});toast('Account created!')}catch(er){toast(errMsg(er.code),'err')}};
     
