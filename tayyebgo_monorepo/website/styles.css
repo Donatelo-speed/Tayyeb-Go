@@ -68,7 +68,7 @@
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
 }
 
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; touch-action: manipulation; }
 
 [dir="rtl"] body {
   font-family: 'Noto Sans Arabic', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -92,8 +92,20 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
-button { font-family: inherit; }
+button { font-family: inherit; cursor: pointer; }
 img { max-width: 100%; display: block; }
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* Touch-friendly targets */
+.nav-item, .mobile-nav-item, .category-chip, .faq-trigger {
+  touch-action: manipulation;
+}
 
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 

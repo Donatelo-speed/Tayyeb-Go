@@ -28,6 +28,7 @@
     .form-section h4 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
     .form-actions { display: flex; gap: 12px; margin-top: 32px; }
     .form-actions .btn { flex: 1; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-checkbox { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
     .form-checkbox input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
     .form-checkbox label { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
@@ -43,6 +44,35 @@
     .stat-card { text-align: center; padding: 24px 16px; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); }
     .stat-card .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
     .stat-card .stat-lbl { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,90,44,0.1);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .form-group input:invalid:not(:placeholder-shown) {
+      border-color: var(--error);
+    }
+
     @media (max-width: 768px) {
       .category-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: 1fr; }
@@ -252,7 +282,36 @@
       el.classList.add('selected');
     }
 
+    function validateStep(step) {
+      const section = document.querySelector(`.form-section[data-section="${step}"]`);
+      const required = section.querySelectorAll('[required]');
+      let valid = true;
+      required.forEach(field => {
+        if (!field.value.trim()) {
+          field.style.borderColor = 'var(--error)';
+          valid = false;
+        } else {
+          field.style.borderColor = '';
+        }
+      });
+      if (step === 1) {
+        const category = section.querySelector('input[name="category"]:checked');
+        if (!category) {
+          valid = false;
+          const grid = section.querySelector('.category-grid');
+          if (grid) grid.style.outline = '2px solid var(--error)';
+          setTimeout(() => { if (grid) grid.style.outline = ''; }, 2000);
+        }
+      }
+      if (!valid) {
+        const firstInvalid = section.querySelector('[required]:invalid, [style*="border-color: var(--error)"]');
+        if (firstInvalid) firstInvalid.focus();
+      }
+      return valid;
+    }
+
     function nextStep(step) {
+      if (!validateStep(currentStep)) return;
       document.querySelector(`.form-section[data-section="${currentStep}"]`).classList.remove('active');
       document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
       document.querySelectorAll('.form-step').forEach((s, i) => {
@@ -301,7 +360,8 @@
     const savedTheme = localStorage.getItem('tayyebgo-theme');
     if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
     else if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.setAttribute('data-theme', 'dark');
-    window.addEventListener('load', () => { setTimeout(() => { const el = document.getElementById('loadingScreen'); if(el) el.classList.add('hidden'); }, 300); });
+    window.addEventListener('load', () => { setTimeout(() => { const el = document.getElementById('loadingScreen'); if(el) { el.style.opacity='0'; setTimeout(()=>el.remove(),300); } }, 300); });
+    setTimeout(() => { const el = document.getElementById('loadingScreen'); if(el) { el.style.opacity='0'; setTimeout(()=>el.remove(),300); } }, 3000);
     const btt = document.getElementById('backToTop');
     if(btt) { window.addEventListener('scroll', () => { btt.classList.toggle('visible', window.scrollY > 300); }); btt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'})); }
   </script>

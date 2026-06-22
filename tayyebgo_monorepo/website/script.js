@@ -461,13 +461,15 @@ if (backToTop) {
 }
 
 // --- Loading Screen ---
-window.addEventListener('load', () => {
+function hideLoadingScreen() {
   const loadingScreen = document.getElementById('loadingScreen');
   if (loadingScreen) {
-    setTimeout(() => loadingScreen.classList.add('hidden'), 300);
-    setTimeout(() => loadingScreen.remove(), 700);
+    loadingScreen.classList.add('hidden');
+    setTimeout(() => loadingScreen.remove(), 500);
   }
-});
+}
+window.addEventListener('load', () => setTimeout(hideLoadingScreen, 300));
+setTimeout(hideLoadingScreen, 3000);
 
 // --- Cookie Consent ---
 function acceptCookies() {
