@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TayyebGo</title>
   <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,9 @@
   <style>
     :root{--primary:#FF5A2C;--primary-dark:#E84A1E;--accent:#8B5CF6;--success:#22C55E;--warning:#F59E0B;--error:#EF4444;--info:#06B6D4;--bg:#090B10;--surface:#141C18;--surface-2:#1A2420;--text:#F0F5F2;--text-secondary:#8A9A92;--text-tertiary:#5A6B63;--border:#2A3B33;--radius:12px;--radius-lg:20px;--radius-xl:28px;--sidebar:260px}
     *{margin:0;padding:0;box-sizing:border-box}
+    html{touch-action:manipulation}
+    :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+    :focus:not(:focus-visible){outline:none}
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
     
     /* Splash */
@@ -197,9 +200,11 @@
     function toast(m,t='ok'){const c=document.getElementById('toastBox'),d=document.createElement('div');d.className=`toast toast-${t==='err'?'err':'ok'}`;d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),4000)}
     
     // Splash → Auth
-    setTimeout(()=>{document.getElementById('splash').classList.add('hide');document.getElementById('authScreen').classList.add('show')},500);
-    // Fallback: force show auth after 3s even if Firebase is slow
-    setTimeout(()=>{const s=document.getElementById('splash');if(s&&!s.classList.contains('hide')){s.classList.add('hide');document.getElementById('authScreen').classList.add('show')}},3000);
+    setTimeout(()=>{const s=document.getElementById('splash');if(s){s.classList.add('hide')}const a=document.getElementById('authScreen');if(a){a.classList.add('show')}},500);
+    // Safety: force hide splash after 3s even if Firebase is slow
+    setTimeout(()=>{const s=document.getElementById('splash');if(s&&!s.classList.contains('hide')){s.classList.add('hide');const a=document.getElementById('authScreen');if(a)a.classList.add('show')}},3000);
+    // Ultimate fallback: remove splash after 5s
+    setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},5000);
     
     // Auth state - with role detection from email
     onAuthStateChanged(auth,async(u)=>{
@@ -325,11 +330,11 @@
         </aside>
         <main class="main" id="custContent"></main>
         <nav class="bottom-nav">
-          <div class="bottom-nav-item active" onclick="showCust('home')"><span>🏠</span>Home</div>
-          <div class="bottom-nav-item" onclick="showCust('orders')"><span>📦</span>Orders</div>
-          <div class="bottom-nav-item" onclick="showCust('cart')"><span>🛒</span>Cart</div>
-          <div class="bottom-nav-item" onclick="showCust('wallet')"><span>💰</span>Wallet</div>
-          <div class="bottom-nav-item" onclick="showCust('profile')"><span>👤</span>Profile</div>
+          <div class="bottom-nav-item active" onclick="showCust('home')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></span>Home</div>
+          <div class="bottom-nav-item" onclick="showCust('orders')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>Orders</div>
+          <div class="bottom-nav-item" onclick="showCust('cart')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg></span>Cart</div>
+          <div class="bottom-nav-item" onclick="showCust('wallet')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 10H2"/></svg></span>Wallet</div>
+          <div class="bottom-nav-item" onclick="showCust('profile')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profile</div>
         </nav>
       </div>`;
     }
